@@ -1,0 +1,27 @@
+server:
+  port: 7777
+  profiles:
+    active: native
+
+endpoints:
+  restart:
+    enabled: true
+
+spring:
+  main:
+    banner-mode: "off"
+  application:
+    name: erp-config
+  profiles:
+    active: composite
+  cloud:
+    config:
+      server:
+        composite:
+          - type: native
+            search-locations: classpath:config/
+        bootstrap: true
+      discovery:
+        enabled: true
+        serviceId: erp-config
+

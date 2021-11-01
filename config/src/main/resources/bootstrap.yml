@@ -1,0 +1,7 @@
+encrypt:
+  key: erp#71025207@sam
+
+spring:
+  security:
+    user:
+      password: '{cipher}da6979b54c4c00a2f6954b46d72ccd7cd04f7c19dcf556c9a7262e04b64438af9023d3f818e385d3cdf34e7556c44dff'

@@ -1,0 +1,61 @@
+package com.centram.common.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
+
+@Service
+public class EmailService {
+    private static final Logger log = LoggerFactory.getLogger(FileService.class);
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Value("${app.mail.from.email}")
+    private String fromAddress;
+
+    @Value("${app.mail.from.name}")
+    private String fromName;
+
+    @Value("${app.mail.reply.email}")
+    private String replyTo;
+
+    public void sendMail(Map<String, Object> mailMap) {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        Object[] bcc = mailMap.containsKey("bcc") ? (Object[]) mailMap.get("bcc") : new Object[]{};
+        Object[] cc = mailMap.containsKey("cc") ? (Object[]) mailMap.get("cc") : new Object[]{};
+        Object[] to = mailMap.containsKey("to") ? (Object[]) mailMap.get("to") : new Object[]{};
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setBcc(Arrays.copyOf(bcc, bcc.length, String[].class));
+            helper.setCc(Arrays.copyOf(cc, cc.length, String[].class));
+            helper.setFrom((mailMap.containsKey("fromAddress")) ? mailMap.get("fromAddress").toString() : fromAddress, (mailMap.containsKey("fromName")) ? mailMap.get("fromName").toString() : fromName);
+            helper.setReplyTo((mailMap.containsKey("replyTo")) ? mailMap.get("replyTo").toString() : replyTo, (mailMap.containsKey("fromName")) ? mailMap.get("fromName").toString() : fromName);
+            helper.setSentDate(new Date());
+            helper.setTo(Arrays.copyOf(to, to.length, String[].class));
+            helper.setSubject(mailMap.get("subject").toString());
+            helper.setText(mailMap.get("content").toString(), Boolean.TRUE);
+
+            /*FileSystemResource file = new FileSystemResource("C:\\log.txt");
+            helper.addAttachment(file.getFilename(), file);*/
+
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new MailParseException(e);
+        }
+        if (to.length > 0) {
+            javaMailSender.send(message);
+        }
+    }
+}

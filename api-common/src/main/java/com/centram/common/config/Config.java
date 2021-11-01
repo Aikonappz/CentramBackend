@@ -1,0 +1,313 @@
+package com.centram.common.config;
+
+import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.filter.RestFilter;
+import com.centram.common.interceptor.RestEndPointInterceptor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.annotation.PreDestroy;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Executor;
+
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableTransactionManagement
+@EnableAutoConfiguration
+@Configuration
+@EnableCaching
+@EnableAsync
+@EnableSpringDataWebSupport
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
+public class Config {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Config.class);
+
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    private String dateTimeFormat;
+
+    @Value("${date.format:yyyy-MM-dd}")
+    private String dateFormat;
+
+    @Value("${spring.redis.host}")
+    private String redisHostName;
+
+    @Value("${spring.redis.port}")
+    private Integer redisPort;
+
+    /*@Value("${spring.redis.password}")
+    private String redisPassword;*/
+
+    @Value("${spring.application.name}")
+    private String appName;
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedMethods("GET", "POST", "OPTION", "PUT", "DELETE")
+                        .allowedHeaders("*")
+                        .maxAge(3600)
+                        .allowedOrigins("*");
+            }
+        };
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
+                .indentOutput(true)
+                .simpleDateFormat(dateFormat)
+                .serializerByType(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)))
+                .deserializerByType(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(dateFormat)))
+                /*.serializerByType(HashMap.class, new JsonSerializer<HashMap<String, HashMap<String, ArrayList<String>>>>() {
+                    public void serialize(HashMap<String, HashMap<String, ArrayList<String>>> stringMapMap, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String jsonStr;
+                        try {
+                            jsonStr = objectMapper.writeValueAsString(stringMapMap);
+                            jsonGenerator.writeString(jsonStr);
+                        } catch (IOException e) {
+                            throw new AppException(GenericErrorCode.SERIALIZATION_ISSUE);
+                        }
+                    }
+                })
+                .deserializerByType(HashMap.class, new JsonDeserializer<HashMap<String, HashMap<String, ArrayList<String>>>>() {
+                    @Override
+                    public HashMap<String, HashMap<String, ArrayList<String>>> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        HashMap<String, HashMap<String, ArrayList<String>>> d = null;
+                        try {
+                            d = objectMapper.readValue(jsonParser.getText(), new TypeReference<HashMap<String, HashMap<String, ArrayList<String>>>>() {
+                            });
+                        } catch (JsonProcessingException e) {
+                            throw new AppException(GenericErrorCode.DESERIALIZATION_ISSUE);
+                        }
+                        return d;
+                    }
+                })*/
+                .serializerByType(LocalDateTime.class, new JsonSerializer<LocalDateTime>() {
+                    @Override
+                    public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+                        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(dateTimeFormat).withZone(ZoneId.systemDefault());
+                        String s = localDateTime.atZone(ZoneId.systemDefault()).format(DATE_TIME_FORMATTER);
+                        jsonGenerator.writeString(s);
+                    }
+                })
+                .deserializerByType(LocalDateTime.class, new JsonDeserializer<LocalDateTime>() {
+                    @Override
+                    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+                        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(dateTimeFormat).withZone(ZoneId.systemDefault());
+                        String str = jsonParser.getText();
+                        LocalDateTime localDateTime = null;
+                        try {
+                            localDateTime = LocalDateTime.parse(str, DATE_TIME_FORMATTER);
+                        } catch (DateTimeParseException e) {
+                            e.printStackTrace();
+                        }
+                        return localDateTime;
+                    }
+                })
+                .serializerByType(ZonedDateTime.class, new JsonSerializer<ZonedDateTime>() {
+                    @Override
+                    public void serialize(ZonedDateTime zonedDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+                        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(dateTimeFormat);
+                        try {
+                            String s = zonedDateTime.format(DATE_TIME_FORMATTER);
+                            jsonGenerator.writeString(s);
+                        } catch (DateTimeParseException e) {
+                            System.err.println(e);
+                            jsonGenerator.writeString("");
+                        }
+                    }
+                })
+                .deserializerByType(ZonedDateTime.class, new JsonDeserializer<ZonedDateTime>() {
+                    @Override
+                    public ZonedDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+                        String str = jsonParser.getText();
+                        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(dateTimeFormat);
+                        try {
+                            return ZonedDateTime.parse(str, DATE_TIME_FORMATTER);
+                        } catch (DateTimeParseException e) {
+                            System.err.println(e);
+                            return null;
+                        }
+                    }
+                })
+                .build();
+        objectMapper.addMixIn(Object.class, IgnoreHibernatePropertiesInJackson.class);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        return objectMapper;
+    }
+
+    @Bean
+    public TerminateBean getTerminateBean() {
+        return new TerminateBean();
+    }
+
+    @Bean
+    protected JedisConnectionFactory jedisConnectionFactory() {
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHostName, redisPort);
+        //configuration.setPassword(redisPassword);
+        JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder().usePooling().build();
+        JedisConnectionFactory factory = new JedisConnectionFactory(configuration, jedisClientConfiguration);
+        factory.afterPropertiesSet();
+        return factory;
+    }
+
+    @Bean
+    public CacheManager redisCacheManager(RedisConnectionFactory factory, ObjectMapper objectMapper) {
+        RedisSerializationContext.SerializationPair<Object> jsonSerializer = RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        return RedisCacheManager
+                .RedisCacheManagerBuilder
+                .fromConnectionFactory(factory)
+                .cacheDefaults(
+                        RedisCacheConfiguration.defaultCacheConfig()
+                        //.entryTtl(Duration.ofDays(1))
+                        //.serializeValuesWith(jsonSerializer)
+                )
+                .build();
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+        template.setConnectionFactory(factory);
+        return template;
+    }
+
+    @Bean("stringRedisTemplate")
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory factory) {
+        return new StringRedisTemplate(factory);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
+        RestTemplate restTemplate = new RestTemplate(factory);
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestEndPointInterceptor());
+        restTemplate.setInterceptors(interceptors);
+        return restTemplate;
+    }
+
+    @Bean
+    public StandardPBEStringEncryptor standardPBEStringEncryptor() {
+        return new StandardPBEStringEncryptor();
+    }
+
+    @Bean
+    public FilterRegistrationBean<RestFilter> restFilter() {
+        FilterRegistrationBean<RestFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new RestFilter());
+        registrationBean.addUrlPatterns("/*");
+        return registrationBean;
+    }
+
+    @Bean(name = "asyncExecutor")
+    public Executor asyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(3);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("AsynchThread-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean
+    public AuditorAware<BigInteger> auditorAware() {
+        return new AuditorAwareImpl();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private abstract class IgnoreHibernatePropertiesInJackson {
+    }
+
+    class TerminateBean {
+        @PreDestroy
+        public void onDestroy() {
+            LOG.info("{} shutting down...", appName);
+
+        }
+    }
+
+    public class AuditorAwareImpl implements AuditorAware<BigInteger> {
+        @Override
+        public Optional<BigInteger> getCurrentAuditor() {
+            LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (loggedInUserDTO == null) {
+                return null;
+            }
+            return Optional.of(loggedInUserDTO.getUserId());
+        }
+    }
+
+}

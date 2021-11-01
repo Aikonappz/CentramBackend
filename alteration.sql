@@ -1,0 +1,18 @@
+SET foreign_key_checks = 0;
+drop table organisation_aud;
+drop table bill;
+drop table bill_aud;
+drop table category;
+drop table category_aud;
+drop table hibernate_sequence;
+drop table item;
+drop table item_aud;
+drop table purchase_order;
+drop table purchase_order_aud;
+drop table purchase_return;
+drop table purchase_return_aud;
+drop table return_aud;
+drop table revinfo;
+drop table sale;
+drop table sale_aud;
+SET foreign_key_checks = 1;

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: erp-core
+  profiles:
+    active: native
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: "off"
+  cloud:
+    config:
+      fail-fast: true
+      uri: http://localhost:7777
+      username: user
+      password: hrim@71025207@rknm
+    circuit:
+      breaker:
+        enabled: false
+  #needto remove
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
