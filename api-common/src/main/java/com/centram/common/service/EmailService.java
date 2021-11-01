@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Service
 public class EmailService {
-    private static final Logger log = LoggerFactory.getLogger(FileService.class);
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -47,10 +47,8 @@ public class EmailService {
             helper.setTo(Arrays.copyOf(to, to.length, String[].class));
             helper.setSubject(mailMap.get("subject").toString());
             helper.setText(mailMap.get("content").toString(), Boolean.TRUE);
-
             /*FileSystemResource file = new FileSystemResource("C:\\log.txt");
             helper.addAttachment(file.getFilename(), file);*/
-
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new MailParseException(e);
         }

@@ -77,9 +77,7 @@ public class RedisService {
         return userVO;
     }
     @Cacheable(value = "userByName", key = "#userName")
-    public UserVO getCachedUser(String userName) {
-        return null;
-    }
+    public UserVO getCachedUser(String userName) {return null;}
     /*USER*/
 
 

@@ -70,7 +70,6 @@ public class UserService implements UserDetailsService {
     private RedisService redisService;
 
 
-
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
@@ -96,10 +95,11 @@ public class UserService implements UserDetailsService {
     private ActivityLogService activityLogService;
 
     @Autowired
-    private OperationalEmailService operationalEmailService;
+    private AppEmailService appEmailService;
 
     /**
      * Sign In
+     *
      * @param username
      * @return
      * @throws UsernameNotFoundException
@@ -140,6 +140,7 @@ public class UserService implements UserDetailsService {
 
     /**
      * Sign Out
+     *
      * @return
      */
     public CommonResponse signOut() {
@@ -155,27 +156,74 @@ public class UserService implements UserDetailsService {
         return commonResponse;
     }
 
+    /**
+     * Forgot Password
+     *
+     * @param authRequestDTO
+     * @return
+     */
+    @Transactional
+    public CommonResponse forgotPassword(AuthRequestDTO authRequestDTO) {
+        UserVO userVO = redisService.getCachedUser(authRequestDTO.getUsername());
+        if (userVO == null) {
+            User user = userDao.getUserByUserName(authRequestDTO.getUsername());
+            userVO = new UserVO(user);
+            redisService.redisOperation(userVO.getId(), userVO);
+        }
+        CommonResponse commonResponse = null;
+        if (userVO != null) {
+            String uuid = UUID.randomUUID().toString();
+            Map<String, String> mailValues = new HashMap<>();
+            mailValues.put("uuid", uuid);
+            log.info("uuid => {}", uuid);
+            redisTemplate.opsForValue().set(uuid, userVO, Duration.ofHours(24));
+            appEmailService.sendForgotPasswordMail(userVO, mailValues);
+            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.FORGOT_PASSWORD));
+            commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_REQUEST_SUCCESS");
+            //commonResponse = new CommonResponse(Boolean.TRUE, link);
+        } else {
+            commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_REQUEST_FAILED");
+        }
+        return commonResponse;
+    }
 
+    /**
+     * Reset Password
+     *
+     * @param authRequestDTO
+     * @return
+     */
+    @Transactional
+    public CommonResponse resetPassword(AuthRequestDTO authRequestDTO) {
+        CommonResponse commonResponse = null;
+        UserVO userVO = (UserVO) redisTemplate.opsForValue().get(authRequestDTO.getUsername());
+        if (userVO != null) {
+            redisTemplate.delete(authRequestDTO.getUsername());
+            String encodedPassword = passwordEncoder.encode(authRequestDTO.getPassword());
+            userRepository.updatePassword(encodedPassword, userVO.getId());
+            Map<String, String> mailValues = new HashMap<>();
+            appEmailService.sendResetPasswordMail(userVO, mailValues);
+            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
+            commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_SUCCESS");
+            //commonResponse = new CommonResponse(Boolean.TRUE, link);
+        } else {
+            commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_FAILED");
+        }
+        return commonResponse;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Onboard request mail
+     *
+     * @param onboardRequestDTO
+     * @return
+     */
+    public CommonResponse onboardRequest(OnboardRequestDTO onboardRequestDTO) {
+        CommonResponse commonResponse = null;
+        appEmailService.sendOnboardRequestMail(onboardRequestDTO, new HashMap<>());
+        commonResponse = new CommonResponse(Boolean.TRUE, "Request send successfully");
+        return commonResponse;
+    }
 
 
     public UserVO save(User user) {
@@ -199,7 +247,7 @@ public class UserService implements UserDetailsService {
         if (newOnboard) {
             Map<String, String> mailValues = new HashMap<>();
             mailValues.put("password", password);
-            operationalEmailService.sendOnboardMail(userVO, mailValues);
+            appEmailService.sendOnboardMail(userVO, mailValues);
         }
         activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return redisService.redisOperation(userVO.getId(), userVO);
@@ -270,55 +318,6 @@ public class UserService implements UserDetailsService {
         return userVO;
     }
 
-
-
-    public CommonResponse forgotPassword(AuthRequestDTO authRequestDTO) {
-        UserVO userVO = redisService.getCachedUser(authRequestDTO.getUsername());
-        if (userVO == null) {
-            User user = userDao.getUserByUserName(authRequestDTO.getUsername());
-            userVO = new UserVO(user);
-            redisService.redisOperation(userVO.getId(), userVO);
-        }
-        CommonResponse commonResponse = null;
-        if (userVO != null) {
-            String uuid = UUID.randomUUID().toString();
-            Map<String, String> mailValues = new HashMap<>();
-            mailValues.put("uuid", uuid);
-            redisTemplate.opsForValue().set(uuid, userVO, Duration.ofHours(24));
-            operationalEmailService.sendForgotPasswordMail(userVO, mailValues);
-            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.FORGOT_PASSWORD));
-            commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_REQUEST_SUCCESS");
-            //commonResponse = new CommonResponse(Boolean.TRUE, link);
-        } else {
-            commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_REQUEST_FAILED");
-        }
-        return commonResponse;
-    }
-
-    public CommonResponse resetPassword(AuthRequestDTO authRequestDTO) {
-        CommonResponse commonResponse = null;
-        UserVO userVO = (UserVO) redisTemplate.opsForValue().get(authRequestDTO.getUsername());
-        if (userVO != null) {
-            redisTemplate.delete(authRequestDTO.getUsername());
-            String encodedPassword = passwordEncoder.encode(authRequestDTO.getPassword());
-            userDao.updatePassword(encodedPassword, userVO.getId());
-            Map<String, String> mailValues = new HashMap<>();
-            operationalEmailService.sendResetPasswordMail(userVO, mailValues);
-            commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_SUCCESS");
-            //commonResponse = new CommonResponse(Boolean.TRUE, link);
-            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
-        } else {
-            commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_FAILED");
-        }
-        return commonResponse;
-    }
-
-    public CommonResponse onboardRequest(OnboardRequestDTO onboardRequestDTO) {
-        CommonResponse commonResponse = null;
-        operationalEmailService.sendOnboardRequestMail(onboardRequestDTO, new HashMap<>());
-        commonResponse = new CommonResponse(Boolean.TRUE, "Request send successfully");
-        return commonResponse;
-    }
 
     public MediaFile getProfilePhoto(BigInteger userId) {
         return userDao.getProfilePhoto(userId);
