@@ -18,8 +18,8 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, BigInteger> {
 
     @Modifying
-    @Query("update User set status = (:status) where id = (:userId)")
-    Integer updateStatus(@Param("status") Status status, @Param("userId") BigInteger userId);
+    @Query("update User set status = (:status) where id in (:userIds)")
+    Integer updateStatus(@Param("status") Status status, @Param("userIds") List<BigInteger> userIds);
 
     @Modifying
     @Query("update User set password = (:password) where id = (:userId)")

@@ -14,6 +14,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
 
+/**
+ * App utility
+ */
 public class Utility {
 
     public static String prepareUniqueId(final String prefix) {
@@ -65,12 +68,10 @@ public class Utility {
             public int getPageNumber() {
                 return 0;
             }
-
             @Override
             public int getPageSize() {
                 return Integer.MAX_VALUE;
             }
-
             @Override
             public long getOffset() {
                 return 0;

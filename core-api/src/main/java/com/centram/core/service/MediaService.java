@@ -6,6 +6,8 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.MediaFileRepository;
 import com.centram.domain.MediaFile;
+import com.centram.domain.enumarator.EntityType;
+import com.centram.domain.enumarator.MediaType;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -24,9 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.util.List;
 
-@Transactional
 @Service
 public class MediaService {
 
@@ -38,6 +38,7 @@ public class MediaService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Transactional(readOnly = true)
     public MediaFile getById(BigInteger mediaId) {
         MediaFile mediaFile = mediaFileRepository.getOne(mediaId);
         if (mediaFile == null) {
@@ -46,10 +47,21 @@ public class MediaService {
         return mediaFile;
     }
 
+    @Transactional(readOnly = true)
+    public MediaFile getMediaFile(EntityType entityType, MediaType mediaType, BigInteger entityId) {
+        MediaFile mediaFile = mediaFileRepository.getMediaFile(entityType, mediaType, entityId);
+        /*if (mediaFile == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }*/
+        return mediaFile;
+    }
+
+    @Transactional
     public MediaFile save(MediaFile mediaFile) {
         return mediaFileRepository.save(mediaFile);
     }
 
+    @Transactional
     public void delete(BigInteger mediaId) {
         mediaFileRepository.deleteById(mediaId);
     }
@@ -80,10 +92,10 @@ public class MediaService {
                     mediaFile.setFileName(filename);
                     mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(filename));
                     mediaFile.setContent(IOUtils.toByteArray(stream));
-                    //OutputStream out = new FileOutputStream(filename);
-                    //IOUtils.copy(stream, out);
+                    /*OutputStream out = new FileOutputStream(filename);
+                    IOUtils.copy(stream, out);
+                    out.close();*/
                     stream.close();
-                    //out.close();
                 }
             }
         } catch (FileUploadException e) {

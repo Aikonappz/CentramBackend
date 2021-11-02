@@ -31,12 +31,12 @@ public class RedisService {
         return null;
     }
     /*ACTIVITY LOG*/
+
     /*ROLE*/
     @CachePut(value = "role", key = "#roleId")
     public Role redisOperation(BigInteger roleId, Role role) {
         return role;
     }
-
     @Cacheable(value = "role", key = "#roleId")
     public Role getCachedRole(BigInteger roleId) {
         return null;
@@ -56,11 +56,8 @@ public class RedisService {
     public Organisation redisOperation(BigInteger organisationId, Organisation organisation) {
         return organisation;
     }
-
     @Cacheable(value = "organisation", key = "#organisationId")
-    public Organisation getCachedOrganisation(BigInteger organisationId) {
-        return null;
-    }
+    public Organisation getCachedOrganisation(BigInteger organisationId) { return null; }
     /*ORGANISATION*/
 
     /*USER*/

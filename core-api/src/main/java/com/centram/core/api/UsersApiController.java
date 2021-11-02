@@ -183,21 +183,21 @@ public class UsersApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "User not found")
     })
-    @RequestMapping(value = "/{userId}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Void> updateStatusUser(@ApiParam(value = "User id", required = true) @PathVariable("userId") BigInteger userId) {
-        userService.updateStatus(Status.fromValue("INACTIVE"), userId);
+    @RequestMapping(value = "/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Void> updateStatusUser(@NotNull @ApiParam(value = "User id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+        userService.updateStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by username", nickname = "getUserByUserName", notes = "Find user by username", response = UserVO.class, tags = {"user",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid email supplied"),
+            @ApiResponse(code = 400, message = "Invalid username supplied"),
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/{userName}/findByUserName", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<UserVO> getUserByUserName(@ApiParam(value = "user_name of user to return", required = true) @PathVariable("email") String username) {
-        return new ResponseEntity<UserVO>(userService.getUserByUserName(username), HttpStatus.OK);
+    public ResponseEntity<UserVO> getUserByUserName(@ApiParam(value = "userName of user to return", required = true) @PathVariable("userName") String userName) {
+        return new ResponseEntity<UserVO>(userService.getUserByUserName(userName), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by Id", nickname = "getUserById", notes = "Find user by Id", response = UserVO.class, tags = {"user",})
