@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: 'login.component.html'
+  templateUrl: './forgot-password.component.html',
+  styleUrls: ['./forgot-password.component.scss']
 })
-export class LoginComponent {
+export class ForgotPasswordComponent implements OnInit {
+
   constructor(titleService: Title, router: Router) {
     router.events.subscribe(event => {
       if(event instanceof NavigationEnd) {
@@ -25,5 +27,9 @@ export class LoginComponent {
       data.push(... this.getTitle(state, state.firstChild(parent)));
     }
     return data;
-  }    
- }
+  }
+
+  ngOnInit(): void {
+  }
+
+}

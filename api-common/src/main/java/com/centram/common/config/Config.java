@@ -1,6 +1,6 @@
 package com.centram.common.config;
 
-import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.filter.RestFilter;
 import com.centram.common.interceptor.RestEndPointInterceptor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -302,11 +302,11 @@ public class Config {
     public class AuditorAwareImpl implements AuditorAware<BigInteger> {
         @Override
         public Optional<BigInteger> getCurrentAuditor() {
-            LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (loggedInUserDTO == null) {
+            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (loggedInUser == null) {
                 return null;
             }
-            return Optional.of(loggedInUserDTO.getUserId());
+            return Optional.of(loggedInUser.getUserId());
         }
     }
 

@@ -44,18 +44,8 @@ public class RedisService {
     /*ROLE*/
 
     /*ORGANISATION*/
-    @CachePut(value = "organisationByMnemonic", key = "#mnemonic")
-    public Organisation redisOperation(String mnemonic, Organisation organisation) {
-        return organisation;
-    }
-    @Cacheable(value = "organisationByMnemonic", key = "#mnemonic")
-    public Organisation getCachedOrganisation(String mnemonic) {
-        return null;
-    }
     @CachePut(value = "organisation", key = "#organisationId")
-    public Organisation redisOperation(BigInteger organisationId, Organisation organisation) {
-        return organisation;
-    }
+    public Organisation redisOperation(BigInteger organisationId, Organisation organisation) {return organisation;}
     @Cacheable(value = "organisation", key = "#organisationId")
     public Organisation getCachedOrganisation(BigInteger organisationId) { return null; }
     /*ORGANISATION*/

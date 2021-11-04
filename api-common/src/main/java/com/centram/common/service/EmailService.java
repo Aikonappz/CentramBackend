@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -34,17 +33,17 @@ public class EmailService {
 
     public void sendMail(Map<String, Object> mailMap) {
         MimeMessage message = javaMailSender.createMimeMessage();
-        Object[] bcc = mailMap.containsKey("bcc") ? (Object[]) mailMap.get("bcc") : new Object[]{};
-        Object[] cc = mailMap.containsKey("cc") ? (Object[]) mailMap.get("cc") : new Object[]{};
-        Object[] to = mailMap.containsKey("to") ? (Object[]) mailMap.get("to") : new Object[]{};
+        String[] bcc = mailMap.containsKey("bcc") ? (String[]) mailMap.get("bcc") : new String[]{};
+        String[] cc = mailMap.containsKey("cc") ? (String[]) mailMap.get("cc") : new String[]{};
+        String[] to = mailMap.containsKey("to") ? (String[]) mailMap.get("to") : new String[]{};
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setBcc(Arrays.copyOf(bcc, bcc.length, String[].class));
-            helper.setCc(Arrays.copyOf(cc, cc.length, String[].class));
+            helper.setBcc(bcc);
+            helper.setCc(cc);
             helper.setFrom((mailMap.containsKey("fromAddress")) ? mailMap.get("fromAddress").toString() : fromAddress, (mailMap.containsKey("fromName")) ? mailMap.get("fromName").toString() : fromName);
             helper.setReplyTo((mailMap.containsKey("replyTo")) ? mailMap.get("replyTo").toString() : replyTo, (mailMap.containsKey("fromName")) ? mailMap.get("fromName").toString() : fromName);
             helper.setSentDate(new Date());
-            helper.setTo(Arrays.copyOf(to, to.length, String[].class));
+            helper.setTo(to);
             helper.setSubject(mailMap.get("subject").toString());
             helper.setText(mailMap.get("content").toString(), Boolean.TRUE);
             /*FileSystemResource file = new FileSystemResource("C:\\log.txt");

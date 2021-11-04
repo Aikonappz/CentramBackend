@@ -8,20 +8,45 @@ import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
 import { RegisterComponent } from './views/register/register.component';
+import {AppSettings} from './configs/AppSettings';
+import { ForgotPasswordComponent } from './views/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
+import { RequestDemoComponent } from './views/request-demo/request-demo.component';
 
 export const routes: Routes = [
   {
     path: 'sign-in',
     component: LoginComponent,
     data: {
-      title: 'Sign In'
+      title: AppSettings.APP_NAME+' - '+'Sign In'
+    }
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    data: {
+      title: AppSettings.APP_NAME+' - '+'Forgot Password'
+    }
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    data: {
+      title: AppSettings.APP_NAME+' - '+'Reset Password'
+    }
+  },
+  {
+    path: 'request-demo',
+    component: RequestDemoComponent,
+    data: {
+      title: AppSettings.APP_NAME+' - '+'Request a Demo'
     }
   },
   {
     path: 'sign-up',
     component: RegisterComponent,
     data: {
-      title: 'Sign Up'
+      title: AppSettings.APP_NAME+' - '+ 'Sign Up'
     }
   },
   {
@@ -33,21 +58,21 @@ export const routes: Routes = [
     path: '404',
     component: P404Component,
     data: {
-      title: 'Page 404'
+      title: AppSettings.APP_NAME+' - '+ 'Page 404'
     }
   },
   {
     path: '500',
     component: P500Component,
     data: {
-      title: 'Page 500'
+      title: AppSettings.APP_NAME+' - '+ 'Page 500'
     }
   },
   {
     path: '',
     component: DefaultLayoutComponent,
     data: {
-      title: 'Home'
+      title: AppSettings.APP_NAME+' - '+ 'Home'
     },
     children: [
       {

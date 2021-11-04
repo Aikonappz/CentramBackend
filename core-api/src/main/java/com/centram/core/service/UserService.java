@@ -1,7 +1,7 @@
 package com.centram.core.service;
 
 import com.centram.common.dto.AuthRequestDTO;
-import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.OnboardRequestDTO;
 import com.centram.common.dto.UserDTO;
 import com.centram.common.exeception.AppException;
@@ -85,22 +85,28 @@ public class UserService implements UserDetailsService {
     @Autowired
     private AppEmailService appEmailService;
 
+    @Autowired
+    private DepartmentService departmentService;
+
+    @Autowired
+    private LocationService locationService;
+
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
     /**
      * Sign In
      *
-     * @param username
+     * @param email
      * @return
      * @throws UsernameNotFoundException
      */
     @Transactional
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getUserByUserName(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.getUserByEmail(email);
         if (user != null) {
-            UserVO userVO = new UserVO(userRepository.getUserByUserName(username));
+            UserVO userVO = new UserVO(user);
             List<String> roleNames = new ArrayList<>();
             for (BigInteger roleId : userVO.getRoles()) {
                 roleNames.add(roleService.getById(roleId).getName());
@@ -119,13 +125,13 @@ public class UserService implements UserDetailsService {
                 }
                 modulePermissions.put(permission.getModule().getName(), prm);
             }
-            LoggedInUserDTO loggedInUserDTO = new LoggedInUserDTO(userVO, modulePermissions);
+            LoggedInUser loggedInUser = new LoggedInUser(userVO, modulePermissions);
             //save data in redis
-            redisTemplate.opsForValue().set(username, loggedInUserDTO);
+            redisTemplate.opsForValue().set(email, loggedInUser);
             activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.SIGNIN));
-            return loggedInUserDTO;
+            return loggedInUser;
         } else {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found with username: " + email);
         }
     }
 
@@ -135,15 +141,15 @@ public class UserService implements UserDetailsService {
      * @return
      */
     public CommonResponse signOut() {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userName = jwtTokenUtil.getUsernameFromToken(loggedInUserDTO.getAuthToken().replaceAll("(?i)".concat(jwtTokenPrefix), ""));
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userName = jwtTokenUtil.getUsernameFromToken(loggedInUser.getAuthToken().replaceAll("(?i)".concat(jwtTokenPrefix), ""));
         CommonResponse commonResponse = null;
         if (redisTemplate.delete(userName)) {
             commonResponse = new CommonResponse(Boolean.TRUE, "LOGGED_OUT_SUCCESS");
         } else {
             commonResponse = new CommonResponse(Boolean.FALSE, "LOGGED_OUT_FAILED");
         }
-        activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, ActivityType.SIGNOUT));
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.SIGNOUT));
         return commonResponse;
     }
 
@@ -157,7 +163,7 @@ public class UserService implements UserDetailsService {
     public CommonResponse forgotPassword(AuthRequestDTO authRequestDTO) {
         UserVO userVO = redisService.getCachedUser(authRequestDTO.getUsername());
         if (userVO == null) {
-            User user = userRepository.getUserByUserName(authRequestDTO.getUsername());
+            User user = userRepository.getUserByEmail(authRequestDTO.getUsername());
             userVO = new UserVO(user);
             redisService.redisOperation(userVO.getId(), userVO);
         }
@@ -224,17 +230,22 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public UserVO save(User user) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Boolean newOnboard = user.getId() == null;
         String password = null;
         if (newOnboard) {
-            user.setUserName(Utility.getUniqueString(10));
             password = Utility.getUniqueString(8);
             user.setPassword(passwordEncoder.encode(password));
         }
-        if (loggedInUserDTO.getOrganisationId() != null) {
-            user.setOrganisation(organisationService.getOrganisationById(loggedInUserDTO.getOrganisationId()));
+        if (loggedInUser.getOrganisationId() != null) {
+            user.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         }
+        /*if (user.getDepartment().getId() != null) {
+            user.setDepartment(departmentService.getById(user.getDepartment().getId()));
+        }
+        if (user.getLocation().getId() != null) {
+            user.setLocation(locationService.getById(user.getLocation().getId()));
+        }*/
         UserVO userVO = new UserVO(userRepository.save(user));
         List<String> roleNames = new ArrayList<>();
         for (BigInteger roleId : userVO.getRoles()) {
@@ -246,7 +257,7 @@ public class UserService implements UserDetailsService {
             mailValues.put("password", password);
             appEmailService.sendOnboardMail(userVO, mailValues);
         }
-        activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return userVO;
     }
 
@@ -258,9 +269,9 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public void updateStatus(Status status, List<BigInteger> userIds) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userRepository.updateStatus(status, userIds);
-        activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, ActivityType.UPDATE_USER));
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_USER));
     }
 
     /**
@@ -294,12 +305,12 @@ public class UserService implements UserDetailsService {
      */
     @Transactional(readOnly = true)
     public Page<UserVO> getUsers(Pageable pageable) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<User> users = new ArrayList<>();
-        if (loggedInUserDTO.getOrganisationId() == null) {
+        if (loggedInUser.getOrganisationId() == null) {
             users = userRepository.getAppUsers(pageable).getContent();
         } else {
-            users = userRepository.getUsers(loggedInUserDTO.getOrganisationId(), pageable).getContent();
+            users = userRepository.getUsers(loggedInUser.getOrganisationId(), pageable).getContent();
         }
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
@@ -341,7 +352,7 @@ public class UserService implements UserDetailsService {
      */
     @Transactional(readOnly = true)
     public UserVO getUserByUserName(String userName) {
-        User user = userRepository.getUserByUserName(userName);
+        User user = userRepository.getUserByEmail(userName);
         UserVO userVO = null;
         if (user != null) {
             userVO = new UserVO(user);
@@ -368,8 +379,8 @@ public class UserService implements UserDetailsService {
      */
     public UserDTO getUserSettings() {
         UserDTO userDTO = new UserDTO();
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userDTO.setMediaFile(this.getProfilePhoto(loggedInUserDTO.getUserId()));
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userDTO.setMediaFile(this.getProfilePhoto(loggedInUser.getUserId()));
         return userDTO;
     }
 
@@ -380,10 +391,10 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public void changePassword(UserDTO userDTO) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserVO userVO = this.getUserById(loggedInUserDTO.getUserId());
-        userRepository.changePassword(passwordEncoder.encode(userDTO.getNewPassword()), loggedInUserDTO.getUserId());
-        activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserVO userVO = this.getUserById(loggedInUser.getUserId());
+        userRepository.changePassword(passwordEncoder.encode(userDTO.getNewPassword()), loggedInUser.getUserId());
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
     }
 
     /**
@@ -395,13 +406,13 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDTO uploadUserProfile(HttpServletRequest request) {
         UserDTO userDTO = new UserDTO();
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!ServletFileUpload.isMultipartContent(request)) {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
-        MediaFile mediaFile = this.getProfilePhoto(loggedInUserDTO.getUserId());
+        MediaFile mediaFile = this.getProfilePhoto(loggedInUser.getUserId());
         mediaFile = (mediaFile == null) ? new MediaFile() : mediaFile;
-        mediaFile.setEntityId(loggedInUserDTO.getUserId());
+        mediaFile.setEntityId(loggedInUser.getUserId());
         mediaFile.setEntityType(EntityType.USER);
         mediaFile.setMediaType(MediaType.USER_PROFILE_IMAGE);
         try {
@@ -428,12 +439,12 @@ public class UserService implements UserDetailsService {
             throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
         }
         userDTO.setMediaFile(mediaService.save(mediaFile));
-        activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, ActivityType.USER_PROFILE_PHOTO_UPLOAD));
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.USER_PROFILE_PHOTO_UPLOAD));
         return userDTO;
     }
 
     public Page<ActivityLog> getActivityLogs(Pageable pageable) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return activityLogService.getActivities(loggedInUserDTO.getUserId(), pageable);
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return activityLogService.getActivities(loggedInUser.getUserId(), pageable);
     }
 }

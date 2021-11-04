@@ -1,14 +1,13 @@
 package com.centram.domain;
 
-import com.centram.domain.converter.BankDetailConverter;
-import com.centram.domain.converter.SettingConverter;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
-import com.centram.domain.converter.AddressConverter;
-import com.centram.domain.converter.ContactConverter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -16,7 +15,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @ApiModel(description = "Organisation")
 @Validated
@@ -30,8 +29,7 @@ import java.util.List;
 @Entity
 @Table(name = "organisation",
         indexes = {
-                @Index(name = "org_name_idx", columnList = "name", unique = false),
-                @Index(name = "org_mnemonic_idx", columnList = "mnemonic", unique = true),
+                @Index(name = "org_name_idx", columnList = "name", unique = false)
         }
 )
 @Audited
@@ -51,45 +49,32 @@ public class Organisation extends BaseEntity implements Serializable {
     private String name;
 
     @ApiModelProperty(value = "")
-    @NotNull
-    @Column(name = "mnemonic", columnDefinition = "varchar(255) not null")
-    private String mnemonic;
+    @Column(name = "add1", columnDefinition = "varchar(255)")
+    private String add1;
 
     @ApiModelProperty(value = "")
-    @Valid
-    @NotNull
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "addresses", nullable = true)
-    @Convert(converter = AddressConverter.class)
-    private List<Address> addresses;
+    @Column(name = "add2", columnDefinition = "varchar(255) not null")
+    private String add2;
 
     @ApiModelProperty(value = "")
-    @Valid
-    @NotNull
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "setting", nullable = true)
-    @Convert(converter = SettingConverter.class)
-    private Setting setting;
-
+    @Column(name = "city", columnDefinition = "varchar(255)")
+    private String city;
 
     @ApiModelProperty(value = "")
-    @Valid
-    @NotNull
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "contacts", nullable = true)
-    @Convert(converter = ContactConverter.class)
-    private List<Contact> contacts;
+    @Column(name = "pincode", columnDefinition = "varchar(255)")
+    private String pincode;
 
     @ApiModelProperty(value = "")
-    @Valid
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "bank_details", nullable = true)
-    @Convert(converter = BankDetailConverter.class)
-    private List<BankDetail> bankDetails;
+    @Column(name = "pan", columnDefinition = "varchar(255)")
+    private String pan;
+
+    @ApiModelProperty(value = "")
+    @Column(name = "tan", columnDefinition = "varchar(255)")
+    private String tan;
+
+    @ApiModelProperty(value = "")
+    @Column(name = "gstin", columnDefinition = "varchar(255)")
+    private String gstin;
 
     @ApiModelProperty(value = "")
     @NotNull
@@ -97,6 +82,27 @@ public class Organisation extends BaseEntity implements Serializable {
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @ApiModelProperty(value = "")
+    @NotNull
+    @Valid
+    @Column(name = "license_Type")
+    @Enumerated(EnumType.ORDINAL)
+    private LicenseType licenseType;
+
+    @ApiModelProperty(value = "")
+    @NotNull
+    @Valid
+    @Column(name = "license_start", nullable = true)
+    @CreatedDate
+    private LocalDateTime licenseStart;
+
+    @ApiModelProperty(value = "")
+    @NotNull
+    @Valid
+    @Column(name = "license_end", nullable = true)
+    @LastModifiedDate
+    private LocalDateTime licenseEnd;
 
     public Organisation(@NotNull BigInteger id) {
         this.id = id;

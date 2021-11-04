@@ -29,5 +29,5 @@ public interface OrganisationRepository extends JpaRepository<Organisation, BigI
     /*@Query("select new com.erp.common.vo.OrganisationVO(o.createdDate, o.modifiedDate, o.version, o.modifiedBy, o.createdBy,o.id,o.name,o.mnemonic,o.setting,o.addresses,o.contacts,o.bankDetails,o.status) from Organisation o where o.id = (:id)")
     OrganisationVO getById(@Param("id") BigInteger id);*/
 
-    Organisation findByMnemonic(@Param("mnemonic") String mnemonic);
+    //Organisation findByMnemonic(@Param("mnemonic") String mnemonic);
 }

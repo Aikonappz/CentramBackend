@@ -39,7 +39,7 @@ public class OrganisationDao {
 
     @Transactional
     public Organisation save(Organisation organisation) {
-        organisation.setMnemonic(Utility.getUniqueString(10));
+
         Organisation newOrganisation = organisationRepository.save(organisation);
         return newOrganisation;
     }
@@ -75,7 +75,7 @@ public class OrganisationDao {
 
     @Transactional(readOnly = true)
     public Organisation getOrganisationByMnemonic(String mnemonic) {
-        Organisation organisation = organisationRepository.findByMnemonic(mnemonic);
+        Organisation organisation = null;//organisationRepository.findByMnemonic(mnemonic);
         if (organisation == null) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }

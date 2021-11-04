@@ -26,10 +26,8 @@ public class MediaApiController {
 
     private static final Logger log = LoggerFactory.getLogger(MediaApiController.class);
 
-
     @Autowired
     private MediaService mediaService;
-
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload media", nickname = "uploadMedia", notes = "Upload media", tags = {"media",})
     @ApiResponses(value = {

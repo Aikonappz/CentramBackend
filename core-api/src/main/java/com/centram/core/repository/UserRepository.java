@@ -29,8 +29,8 @@ public interface UserRepository extends JpaRepository<User, BigInteger> {
     @Query("update User set password = (:password) where id = (:userId)")
     Integer updatePassword(@Param("password") String password, @Param("userId") BigInteger userId);
 
-    @Query("select u from User u where u.userName = (:userName) and u.status = 1")
-    User getUserByUserName(@Param("userName") String userName);
+    @Query("select u from User u where u.email = (:email) and u.status = 1")
+    User getUserByEmail(@Param("email") String email);
 
     @Query("select u from User u where u.id in (:ids)")
     Page getUserByIds(@Param("ids") List<BigInteger> ids, Pageable pageable);

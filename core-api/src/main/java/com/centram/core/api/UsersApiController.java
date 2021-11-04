@@ -2,7 +2,7 @@ package com.centram.core.api;
 
 
 import com.centram.common.dto.AuthRequestDTO;
-import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.OnboardRequestDTO;
 import com.centram.common.dto.UserDTO;
 import com.centram.common.utility.JwtTokenUtil;
@@ -61,10 +61,10 @@ public class UsersApiController {
     @RequestMapping(value = "/sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<LoggedInUserVO> login(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
         try {
-            LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())).getPrincipal();
-            LoggedInUserVO loggedInUserVO = new LoggedInUserVO(userService.getProfilePhoto(loggedInUserDTO.getUserId()), loggedInUserDTO);
+            LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())).getPrincipal();
+            LoggedInUserVO loggedInUserVO = new LoggedInUserVO(userService.getProfilePhoto(loggedInUser.getUserId()), loggedInUser);
             HttpHeaders responseHeaders = new HttpHeaders() {{
-                set("Authorization", jwtTokenUtil.generateToken(loggedInUserDTO, body.getRememberMe()));
+                set("Authorization", jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
             }};
             return ResponseEntity.ok().headers(responseHeaders).body(loggedInUserVO);
         } catch (DisabledException e) {

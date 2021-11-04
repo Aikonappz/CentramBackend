@@ -1,7 +1,7 @@
 package com.centram.common.vo;
 
 
-import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.dto.LoggedInUser;
 import com.centram.domain.MediaFile;
 import lombok.*;
 
@@ -20,16 +20,16 @@ public class LoggedInUserVO implements Serializable {
     private BigInteger userId;
     private BigInteger organisationId;
     private Boolean appManager;
-    private String userName;
+    private String email;
     private MediaFile profileImage;
     private HashMap<String, String> modulePermissions;
 
-    public LoggedInUserVO(MediaFile profileImage, LoggedInUserDTO loggedInUserDTO) {
-        this.userId = loggedInUserDTO.getUserId();
-        this.organisationId = loggedInUserDTO.getOrganisationId();
-        this.appManager = loggedInUserDTO.getAppManager();
-        this.userName = loggedInUserDTO.getUserName();
+    public LoggedInUserVO(MediaFile profileImage, LoggedInUser loggedInUser) {
+        this.userId = loggedInUser.getUserId();
+        this.organisationId = loggedInUser.getOrganisationId();
+        this.appManager = loggedInUser.getAppManager();
+        this.email = loggedInUser.getEmail();
         this.profileImage = profileImage;
-        this.modulePermissions = loggedInUserDTO.getModulePermissions();
+        this.modulePermissions = loggedInUser.getModulePermissions();
     }
 }

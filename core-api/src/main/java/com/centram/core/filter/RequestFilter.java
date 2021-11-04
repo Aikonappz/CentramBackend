@@ -1,6 +1,6 @@
 package com.centram.core.filter;
 
-import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.utility.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +57,9 @@ public class RequestFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            LoggedInUserDTO userDetails = null;
+            LoggedInUser userDetails = null;
             if (redisTemplate.hasKey(username)) {
-                userDetails = (LoggedInUserDTO) redisTemplate.opsForValue().get(username);
+                userDetails = (LoggedInUser) redisTemplate.opsForValue().get(username);
                 if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                     userDetails.setAuthToken(requestTokenHeader);
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

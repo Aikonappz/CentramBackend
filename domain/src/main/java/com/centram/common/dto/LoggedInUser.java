@@ -12,17 +12,20 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class LoggedInUserDTO implements UserDetails, Serializable {
+public class LoggedInUser implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 8129469224374551656L;
 
     private BigInteger userId;
     private BigInteger organisationId;
+    private BigInteger locationId;
+    private BigInteger departmentId;
     private Boolean appManager;
     @JsonIgnore
-    private String userName;
+    private String email;
     @JsonIgnore
     private String authToken;
     @JsonIgnore
@@ -36,19 +39,21 @@ public class LoggedInUserDTO implements UserDetails, Serializable {
     @JsonProperty("modulePermissions")
     private HashMap<String, String> modulePermissions;
 
-    public LoggedInUserDTO() {
+    public LoggedInUser() {
     }
 
-    public LoggedInUserDTO(UserVO userVO, HashMap<String, String> modulePermissions) {
+    public LoggedInUser(UserVO userVO, HashMap<String, String> modulePermissions) {
         this.userId = userVO.getId();
         this.organisationId = (userVO.getOrganisationId() == null) ? null : userVO.getOrganisationId();
-        this.userName = userVO.getUserName();
+        this.locationId = (userVO.getLocationId() == null) ? null : userVO.getLocationId();
+        this.departmentId = (userVO.getDepartmentId() == null) ? null : userVO.getDepartmentId();
+        this.email = userVO.getEmail();
         this.password = userVO.getPassword();
         this.modulePermissions = modulePermissions;
         //this.authorities = Collections.singletonList(new SimpleGrantedAuthority(userVO.getRoleNames()));
         this.authorities = userVO.getRoleNames()
                 .stream()
-                .map(r-> new SimpleGrantedAuthority(r))
+                .map(r -> new SimpleGrantedAuthority(r))
                 .collect(Collectors.toList());
         this.appManager = userVO.getOrganisationId() == null;
     }
@@ -77,12 +82,12 @@ public class LoggedInUserDTO implements UserDetails, Serializable {
         this.organisationId = organisationId;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @JsonIgnore
@@ -98,7 +103,7 @@ public class LoggedInUserDTO implements UserDetails, Serializable {
     @JsonIgnore
     @Override
     public String getUsername() {
-        return this.getUserName();
+        return this.getEmail();
     }
 
     @JsonIgnore
@@ -150,32 +155,32 @@ public class LoggedInUserDTO implements UserDetails, Serializable {
         this.authToken = authToken;
     }
 
+    public BigInteger getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(BigInteger locationId) {
+        this.locationId = locationId;
+    }
+
+    public BigInteger getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(BigInteger departmentId) {
+        this.departmentId = departmentId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LoggedInUserDTO that = (LoggedInUserDTO) o;
-
-        if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
-        if (organisationId != null ? !organisationId.equals(that.organisationId) : that.organisationId != null)
-            return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
-        if (authToken != null ? !authToken.equals(that.authToken) : that.authToken != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (authorities != null ? !authorities.equals(that.authorities) : that.authorities != null) return false;
-        return modulePermissions != null ? modulePermissions.equals(that.modulePermissions) : that.modulePermissions == null;
+        if (!(o instanceof LoggedInUser)) return false;
+        LoggedInUser that = (LoggedInUser) o;
+        return Objects.equals(getUserId(), that.getUserId()) && Objects.equals(getOrganisationId(), that.getOrganisationId()) && Objects.equals(getLocationId(), that.getLocationId()) && Objects.equals(getDepartmentId(), that.getDepartmentId()) && Objects.equals(getAppManager(), that.getAppManager()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getAuthToken(), that.getAuthToken()) && Objects.equals(getPassword(), that.getPassword()) && Objects.equals(getAuthorities(), that.getAuthorities()) && Objects.equals(getModulePermissions(), that.getModulePermissions());
     }
 
     @Override
     public int hashCode() {
-        int result = userId != null ? userId.hashCode() : 0;
-        result = 31 * result + (organisationId != null ? organisationId.hashCode() : 0);
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (authToken != null ? authToken.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (authorities != null ? authorities.hashCode() : 0);
-        result = 31 * result + (modulePermissions != null ? modulePermissions.hashCode() : 0);
-        return result;
+        return Objects.hash(getUserId(), getOrganisationId(), getLocationId(), getDepartmentId(), getAppManager(), getEmail(), getAuthToken(), getPassword(), getAuthorities(), getModulePermissions());
     }
 }

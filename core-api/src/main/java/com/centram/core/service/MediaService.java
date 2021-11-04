@@ -1,7 +1,7 @@
 package com.centram.core.service;
 
 
-import com.centram.common.dto.LoggedInUserDTO;
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.MediaFileRepository;
@@ -13,7 +13,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,6 @@ public class MediaService {
 
     @Autowired
     private MediaFileRepository mediaFileRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
     public MediaFile getById(BigInteger mediaId) {
@@ -72,7 +68,7 @@ public class MediaService {
     }*/
 
     public MediaFile uploadMediaFile(HttpServletRequest request) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!ServletFileUpload.isMultipartContent(request)) {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }

@@ -70,12 +70,8 @@ public class AppEmailService {
         context.setVariable("mail_body", forgotPasswordEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        List<Contact> contacts = userVO.getContacts()
-                .stream()
-                .filter(contact -> contact.getContactType() == ContactType.EMAIL)
-                .collect(Collectors.toList());
-        mailMap.put("to", contacts.stream().filter(contact -> contact.getPrimaryContact() == true).collect(Collectors.toList()).stream().map(Contact::getValue).collect(Collectors.toList()).toArray());
-        mailMap.put("cc", contacts.stream().map(Contact::getValue).collect(Collectors.toList()).toArray());
+        mailMap.put("to", new String[] {userVO.getEmail()} );
+        mailMap.put("cc", new String[] {userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -108,7 +104,7 @@ public class AppEmailService {
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
         context.setVariable("login_link", loginLink);
-        context.setVariable("user_name", userVO.getUserName());
+        context.setVariable("user_name", userVO.getEmail());
         context.setVariable("password", mailValues.get("password"));
         //context.setVariable("confirm_link", confirmLink);
         onboardEmailTemplate = templateEngine.process(onboardEmailTemplate, context);
@@ -117,12 +113,8 @@ public class AppEmailService {
         context.setVariable("mail_body", onboardEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        List<Contact> contacts = userVO.getContacts()
-                .stream()
-                .filter(contact -> contact.getContactType() == ContactType.EMAIL)
-                .collect(Collectors.toList());
-        mailMap.put("to", contacts.stream().filter(contact -> contact.getPrimaryContact() == true).collect(Collectors.toList()).stream().map(Contact::getValue).collect(Collectors.toList()).toArray());
-        mailMap.put("cc", contacts.stream().map(Contact::getValue).collect(Collectors.toList()).toArray());
+        mailMap.put("to", new String[] {userVO.getEmail()});
+        mailMap.put("cc", new String[] {userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -158,12 +150,8 @@ public class AppEmailService {
         context.setVariable("mail_body", resetPasswordEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        List<Contact> contacts = userVO.getContacts()
-                .stream()
-                .filter(contact -> contact.getContactType() == ContactType.EMAIL)
-                .collect(Collectors.toList());
-        mailMap.put("to", contacts.stream().filter(contact -> contact.getPrimaryContact() == true).collect(Collectors.toList()).stream().map(Contact::getValue).collect(Collectors.toList()).toArray());
-        mailMap.put("cc", contacts.stream().map(Contact::getValue).collect(Collectors.toList()).toArray());
+        mailMap.put("to", new String[] {userVO.getEmail()});
+        mailMap.put("cc", new String[] {userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -191,7 +179,7 @@ public class AppEmailService {
         context.setVariable("mail_body", demoRequestEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", new Object[]{onboardRequestDTO.getEmail()});
+        mailMap.put("to", new String[]{onboardRequestDTO.getEmail()});
         mailMap.put("subject", demoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -210,7 +198,7 @@ public class AppEmailService {
         context.setVariable("mail_body", adminDemoRequestEmailTemplate);
         adminBaseEmailTemplate = templateEngine.process(adminBaseEmailTemplate, context);
         mailMap = new HashMap<>();
-        mailMap.put("to", new Object[]{adminTeamEmail});
+        mailMap.put("to", new String[]{adminTeamEmail});
         mailMap.put("subject", adminDemoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(adminBaseEmailTemplate));
         emailService.sendMail(mailMap);
