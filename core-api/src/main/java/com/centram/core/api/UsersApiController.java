@@ -3,7 +3,6 @@ package com.centram.core.api;
 
 import com.centram.common.dto.AuthRequestDTO;
 import com.centram.common.dto.LoggedInUser;
-import com.centram.common.dto.OnboardRequestDTO;
 import com.centram.common.dto.UserDTO;
 import com.centram.common.utility.JwtTokenUtil;
 import com.centram.common.vo.CommonResponse;
@@ -90,15 +89,6 @@ public class UsersApiController {
     @RequestMapping(value = "/forgot-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<CommonResponse> forgotPassword(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
         return new ResponseEntity<CommonResponse>(userService.forgotPassword(body), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "Onboard Request Api", nickname = "onboardRequest", notes = "Onboard Request Api", tags = {"user",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
-    })
-    @RequestMapping(value = "/onboard-request", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<CommonResponse> onboardRequest(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody OnboardRequestDTO body) {
-        return new ResponseEntity<CommonResponse>(userService.onboardRequest(body), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Reset Password Api", nickname = "resetPassword", notes = "Reset Password Api", tags = {"user",})

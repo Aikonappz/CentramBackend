@@ -1,8 +1,11 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.RequestDemoDTO;
+import com.centram.common.vo.CommonResponse;
 import com.centram.core.service.DepartmentService;
 import com.centram.core.service.LocationService;
+import com.centram.core.service.MiscService;
 import com.centram.core.service.RoleService;
 import com.centram.domain.Department;
 import com.centram.domain.Location;
@@ -19,9 +22,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.validation.Valid;
 import java.math.BigInteger;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
@@ -40,6 +45,18 @@ public class MiscApiController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private MiscService miscService;
+
+    @ApiOperation(value = "Demo Request Api", nickname = "requestDemo", notes = "Demo Request Api", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<CommonResponse> requestDemo(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody RequestDemoDTO body) {
+        return new ResponseEntity<CommonResponse>(miscService.requestDemo(body), HttpStatus.OK);
+    }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find role by id", nickname = "getRoleById", notes = "Find role by id", response = Role.class, tags = {"misc",})
     @ApiResponses(value = {

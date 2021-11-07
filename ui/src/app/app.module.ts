@@ -45,9 +45,19 @@ import { ChartsModule } from 'ng2-charts';
 import { ForgotPasswordComponent } from './views/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 import { RequestDemoComponent } from './views/request-demo/request-demo.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthHtppInterceptorService } from './service/AuthHtppInterceptorService';
+import { MiscService } from './service/MiscService';
+import { ApiHttpService } from './service/ApiHttpService';
+import { UserService } from './service/UserService';
+import { Router } from '@angular/router';
 
 @NgModule({
   imports: [
+    HttpClientModule,
+    ReactiveFormsModule,
+    FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -76,11 +86,19 @@ import { RequestDemoComponent } from './views/request-demo/request-demo.componen
   ],
   providers: [
     {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthHtppInterceptorService,
+      multi: true,
+    },
+    ApiHttpService,
+    MiscService,
+    UserService,
+    {
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     },
     IconSetService,
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

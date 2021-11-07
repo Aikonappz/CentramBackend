@@ -1,14 +1,11 @@
 package com.centram.core.service;
 
 
-import com.centram.common.dto.OnboardRequestDTO;
+import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.service.EmailService;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.AppConfiguration;
-import com.centram.domain.Contact;
-import com.centram.domain.enumarator.ContactType;
-import com.centram.domain.enumarator.Status;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +19,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AppEmailService {
@@ -158,7 +154,7 @@ public class AppEmailService {
     }
 
     @Async("asyncExecutor")
-    public void sendOnboardRequestMail(OnboardRequestDTO onboardRequestDTO, Map<String, String> mailValues) {
+    public void sendOnboardRequestMail(RequestDemoDTO requestDemoDTO, Map<String, String> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "DEMO_REQUEST_EMAIL_TEMPLATE", "APP_DEMO_REQUEST_EMAIL_TEMPLATE"));
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
@@ -175,11 +171,11 @@ public class AppEmailService {
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
         context = new Context(Locale.ENGLISH);
-        context.setVariable("recipient_name", onboardRequestDTO.getFirstName());
+        context.setVariable("recipient_name", requestDemoDTO.getName());
         context.setVariable("mail_body", demoRequestEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", new String[]{onboardRequestDTO.getEmail()});
+        mailMap.put("to", new String[]{requestDemoDTO.getEmail()});
         mailMap.put("subject", demoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -189,9 +185,9 @@ public class AppEmailService {
         String adminDemoRequestEmailTemplate = appConfiguration.getConfigurationValue();
         String adminDemoRequestMailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
         context = new Context(Locale.ENGLISH);
-        context.setVariable("requester_name", onboardRequestDTO.getFirstName().concat(" ").concat(onboardRequestDTO.getLastName()));
-        context.setVariable("requester_email", onboardRequestDTO.getEmail());
-        context.setVariable("requester_phone", onboardRequestDTO.getPhone());
+        context.setVariable("requester_name", requestDemoDTO.getName());
+        context.setVariable("requester_email", requestDemoDTO.getEmail());
+        context.setVariable("requester_phone", requestDemoDTO.getPhone());
         adminDemoRequestEmailTemplate = templateEngine.process(adminDemoRequestEmailTemplate, context);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", "Team");

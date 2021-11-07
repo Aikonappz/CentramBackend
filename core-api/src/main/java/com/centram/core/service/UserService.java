@@ -2,7 +2,6 @@ package com.centram.core.service;
 
 import com.centram.common.dto.AuthRequestDTO;
 import com.centram.common.dto.LoggedInUser;
-import com.centram.common.dto.OnboardRequestDTO;
 import com.centram.common.dto.UserDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -164,8 +163,10 @@ public class UserService implements UserDetailsService {
         UserVO userVO = redisService.getCachedUser(authRequestDTO.getUsername());
         if (userVO == null) {
             User user = userRepository.getUserByEmail(authRequestDTO.getUsername());
-            userVO = new UserVO(user);
-            redisService.redisOperation(userVO.getId(), userVO);
+            if (user != null) {
+                userVO = new UserVO(user);
+                redisService.redisOperation(userVO.getId(), userVO);
+            }
         }
         CommonResponse commonResponse = null;
         if (userVO != null) {
@@ -179,7 +180,8 @@ public class UserService implements UserDetailsService {
             commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_REQUEST_SUCCESS");
             //commonResponse = new CommonResponse(Boolean.TRUE, link);
         } else {
-            commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_REQUEST_FAILED");
+            //commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_REQUEST_FAILED");
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
         return commonResponse;
     }
@@ -204,21 +206,9 @@ public class UserService implements UserDetailsService {
             commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_SUCCESS");
             //commonResponse = new CommonResponse(Boolean.TRUE, link);
         } else {
-            commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_FAILED");
+            //commonResponse = new CommonResponse(Boolean.FALSE, "RESET_PASSWORD_FAILED");
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
-        return commonResponse;
-    }
-
-    /**
-     * Onboard request mail
-     *
-     * @param onboardRequestDTO
-     * @return
-     */
-    public CommonResponse onboardRequest(OnboardRequestDTO onboardRequestDTO) {
-        CommonResponse commonResponse = null;
-        appEmailService.sendOnboardRequestMail(onboardRequestDTO, new HashMap<>());
-        commonResponse = new CommonResponse(Boolean.TRUE, "Request send successfully");
         return commonResponse;
     }
 

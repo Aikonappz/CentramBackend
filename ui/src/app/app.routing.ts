@@ -8,7 +8,7 @@ import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
 import { RegisterComponent } from './views/register/register.component';
-import {AppSettings} from './configs/AppSettings';
+import {AppSettings} from './config/AppSettings';
 import { ForgotPasswordComponent } from './views/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 import { RequestDemoComponent } from './views/request-demo/request-demo.component';
@@ -29,7 +29,7 @@ export const routes: Routes = [
     }
   },
   {
-    path: 'reset-password',
+    path: 'reset-password/:id',
     component: ResetPasswordComponent,
     data: {
       title: AppSettings.APP_NAME+' - '+'Reset Password'
