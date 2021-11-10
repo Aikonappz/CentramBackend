@@ -6,6 +6,7 @@ import com.centram.common.dto.UserDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.JwtTokenUtil;
+import com.centram.common.utility.PaginatedList;
 import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.UserVO;
@@ -258,7 +259,7 @@ public class UserService implements UserDetailsService {
      * @param userIds
      */
     @Transactional
-    public void updateStatus(Status status, List<BigInteger> userIds) {
+    public void updateUsersStatus(Status status, List<BigInteger> userIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userRepository.updateStatus(status, userIds);
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_USER));
@@ -294,18 +295,18 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Page<UserVO> getUsers(Pageable pageable) {
+    public PaginatedList<UserVO> getUsers(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> users = new ArrayList<>();
+        Page<User> page = null;
         if (loggedInUser.getOrganisationId() == null) {
-            users = userRepository.getAppUsers(pageable).getContent();
+            page = userRepository.getAppUsers(pageable);
         } else {
-            users = userRepository.getUsers(loggedInUser.getOrganisationId(), pageable).getContent();
+            page = userRepository.getUsers(loggedInUser.getOrganisationId(), pageable);
         }
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         List<String> roleNames = null;
-        for (User user : users) {
+        for (User user : page.getContent()) {
             userVO = new UserVO(user);
             roleNames = new ArrayList<>();
             for (BigInteger roleId : userVO.getRoles()) {
@@ -314,7 +315,7 @@ public class UserService implements UserDetailsService {
             userVO.setRoleNames(roleNames);
             userVOS.add(userVO);
         }
-        return new PageImpl<>(userVOS);
+        return new PaginatedList<UserVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), userVOS);
     }
 
     /**

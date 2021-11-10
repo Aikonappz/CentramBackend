@@ -11,23 +11,24 @@ export class ApiHttpService {
 
     private REST_API_SERVER = AppSettings.API_ENDPOINT;
 
-    constructor(private http: HttpClient, public router: Router) { }
+    constructor(private http: HttpClient, private router: Router) { }
 
     public get(url: string, options?: any): Observable<any> {
         return this.http
-            .get<any>(this.REST_API_SERVER + url)
+            .get<any>(this.REST_API_SERVER + url, options)
             .pipe(catchError(this.handleError.bind(this)));
     }
 
     public post(url: string, data: any, options?: any): Observable<any> {
         return this.http
-            .post(this.REST_API_SERVER + url, data)
+            .post(this.REST_API_SERVER + url, data, options)
             .pipe(catchError(this.handleError.bind(this)));
+        //.post(this.REST_API_SERVER + url, data, { observe: 'response' })
     }
 
     public delete(url: string, options?: any): Observable<any> {
         return this.http
-            .delete(this.REST_API_SERVER + url)
+            .delete(this.REST_API_SERVER + url, options)
             .pipe(catchError(this.handleError.bind(this)));
     }
 

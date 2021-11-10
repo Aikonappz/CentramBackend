@@ -5,6 +5,8 @@ import { RequestDemoDTO } from '../model/RequestDemoDTO';
 import { ApiHttpService } from './ApiHttpService';
 import { CommonResponse } from '../model/CommonResponse';
 import { AuthRequest } from '../model/AuthRequest';
+import { LoggedInUser } from '../model/LoggedInUser';
+import { Status } from '../model/enumerator/Status';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -20,6 +22,22 @@ export class UserService {
 
     resetPasswordService(authRequest: AuthRequest): Observable<CommonResponse> {
         return this.http.post('/v1/user/reset-password', authRequest);
+    }
+
+    signInService(authRequest: AuthRequest): Observable<any> {
+        return this.http.post('/v1/user/sign-in', authRequest);
+    }
+
+    signOutService(): Observable<any> {
+        return this.http.get('/v1/user/sign-out');
+    }
+
+    getUsersService(request?: any): Observable<any> {
+        return this.http.get('/v1/user/all', { "params": request });
+    }
+
+    updateStatusService(ids: number[], status: Status, request?: any): Observable<any> {
+        return this.http.get('/v1/user/'+ids.join(",")+'/'+Status[status], { "params": request });
     }
 
     //   getAllCompany(): Observable<Company[]> {

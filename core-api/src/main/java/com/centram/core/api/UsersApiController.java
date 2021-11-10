@@ -5,6 +5,7 @@ import com.centram.common.dto.AuthRequestDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.UserDTO;
 import com.centram.common.utility.JwtTokenUtil;
+import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.LoggedInUserVO;
 import com.centram.common.vo.UserVO;
@@ -61,9 +62,10 @@ public class UsersApiController {
     public ResponseEntity<LoggedInUserVO> login(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
         try {
             LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())).getPrincipal();
+            loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
             LoggedInUserVO loggedInUserVO = new LoggedInUserVO(userService.getProfilePhoto(loggedInUser.getUserId()), loggedInUser);
             HttpHeaders responseHeaders = new HttpHeaders() {{
-                set("Authorization", jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
+                set("Authorization", loggedInUser.getAuthToken());
             }};
             return ResponseEntity.ok().headers(responseHeaders).body(loggedInUserVO);
         } catch (DisabledException e) {
@@ -168,14 +170,14 @@ public class UsersApiController {
         return new ResponseEntity<UserVO>(userService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of a user", nickname = "updateStatusUser", notes = "Update status of a user", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateUsersStatus", notes = "Update status of user's", tags = {"user",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Void> updateStatusUser(@NotNull @ApiParam(value = "User id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
-        userService.updateStatus(status, ids);
+    public ResponseEntity<Void> updateUsersStatus(@NotNull @ApiParam(value = "User id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+        userService.updateUsersStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
@@ -210,13 +212,13 @@ public class UsersApiController {
         return new ResponseEntity<Page<UserVO>>(userService.getUserByIds(ids, pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Users", nickname = "getUsers", notes = "Get all Users", response = UserVO.class, responseContainer = "List", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Users", nickname = "getUsers", notes = "Get all Users", response = PaginatedList.class, tags = {"user",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<UserVO>> getUsers(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<Page<UserVO>>(userService.getUsers(pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<UserVO>> getUsers(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(pageable), HttpStatus.OK);
     }
 }

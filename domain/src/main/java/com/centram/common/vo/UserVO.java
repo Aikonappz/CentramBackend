@@ -29,8 +29,11 @@ public class UserVO extends BaseEntity implements Serializable {
     private List<String> roleNames;
     private Status status;
     private BigInteger organisationId;
+    private String organisation;
     private BigInteger locationId;
+    private String location;
     private BigInteger departmentId;
+    private String department;
 
 
     public UserVO(User user) {
@@ -48,6 +51,9 @@ public class UserVO extends BaseEntity implements Serializable {
         this.roles = user.getRoles();
         this.organisationId = (user.getOrganisation() != null) ? user.getOrganisation().getId() : null;
         this.status = user.getStatus();
+        this.location = (user.getLocation() != null) ? user.getLocation().getName() : null;
+        this.organisation = (user.getOrganisation() != null) ? user.getOrganisation().getName() : null;
+        this.department = (user.getDepartment() != null) ? user.getDepartment().getName() : null;
     }
 }
 

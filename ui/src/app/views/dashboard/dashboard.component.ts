@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
+import { Title } from '@angular/platform-browser';
+import { Router, NavigationEnd } from '@angular/router';
+import { MenuService } from '../../service/MenuService';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -8,6 +11,27 @@ import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 export class DashboardComponent implements OnInit {
 
   radioModel: string = 'Month';
+
+  constructor(titleService: Title, private router: Router, private menuService: MenuService) {
+    router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        var title = this.getTitle(router.routerState, router.routerState.root).join('-');
+        //console.log('title', title);
+        titleService.setTitle(title);
+      }
+    });
+  }
+
+  getTitle(state, parent) {
+    var data = [];
+    if (parent && parent.snapshot.data && parent.snapshot.data.title) {
+      data.push(parent.snapshot.data.title);
+    }
+    if (state && parent) {
+      data.push(... this.getTitle(state, state.firstChild(parent)));
+    }
+    return data;
+  }
 
   // lineChart1
   public lineChart1Data: Array<any> = [

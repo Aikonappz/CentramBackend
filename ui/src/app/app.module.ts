@@ -51,7 +51,17 @@ import { AuthHtppInterceptorService } from './service/AuthHtppInterceptorService
 import { MiscService } from './service/MiscService';
 import { ApiHttpService } from './service/ApiHttpService';
 import { UserService } from './service/UserService';
-import { Router } from '@angular/router';
+import { MatTableModule } from '@angular/material/table';
+import {  MatPaginatorModule } from '@angular/material/paginator';
+
+import { LogoutComponent } from './views/logout/logout.component';
+
+import { MenuService } from './service/MenuService';
+import { CheckLoggedIn } from './service/CheckLoggedIn';
+import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
+import { UserComponent } from './views/user/user.component';
+import { EditUserComponent } from './views/user/edituser.component';
+import { UserModule } from './views/user/user.module';
 
 @NgModule({
   imports: [
@@ -70,8 +80,11 @@ import { Router } from '@angular/router';
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
+    MatTableModule,
+    MatPaginatorModule,
     IconModule,
     IconSetModule.forRoot(),
+    UserModule
   ],
   declarations: [
     AppComponent,
@@ -82,9 +95,13 @@ import { Router } from '@angular/router';
     RegisterComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    RequestDemoComponent
+    RequestDemoComponent,
+    LogoutComponent,
+    //UserComponent,
+    //EditUserComponent
   ],
   providers: [
+    CheckLoggedInOuter,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHtppInterceptorService,
@@ -93,6 +110,8 @@ import { Router } from '@angular/router';
     ApiHttpService,
     MiscService,
     UserService,
+    CheckLoggedIn,
+    MenuService,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy

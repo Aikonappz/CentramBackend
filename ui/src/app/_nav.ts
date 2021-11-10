@@ -5,10 +5,34 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     icon: 'icon-speedometer',
-    badge: {
-      variant: 'info',
-      text: 'NEW'
-    }
+  },
+  {
+    name: 'Organisation',
+    url: '/organisation',
+    icon: 'icon-layers',    
+  },
+  {
+    name: 'User',
+    url: '/user',
+    icon: 'icon-people',
+  }
+];
+
+/*export const navItems: INavData[] = [
+  {
+    name: 'Dashboard',
+    url: '/dashboard',
+    icon: 'icon-speedometer',
+  },
+  {
+    name: 'Organisation',
+    url: '/dashboard',
+    icon: 'icon-speedometer',
+  },
+  {
+    name: 'User',
+    url: '/dashboard',
+    icon: 'icon-speedometer',
   },
   {
     title: true,
@@ -248,4 +272,4 @@ export const navItems: INavData[] = [
     variant: 'danger',
     attributes: { target: '_blank', rel: 'noopener' }
   }
-];
+];*/
