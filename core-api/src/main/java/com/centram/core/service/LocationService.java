@@ -1,13 +1,13 @@
 package com.centram.core.service;
 
 
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.LocationRepository;
 import com.centram.domain.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class LocationService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Location> getLocations(Pageable pageable) {
-        return locationRepository.findAll(pageable);
+    public PaginatedList<Location> getLocations(Pageable pageable) {
+        return new PaginatedList<Location>(locationRepository.findAll(pageable));
     }
 }

@@ -22,7 +22,6 @@ export class ResetPasswordComponent implements OnInit {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
-        //console.log('title', title);
         titleService.setTitle(title);
       }
     });

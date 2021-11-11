@@ -26,6 +26,16 @@ public enum LicenseType {
 
     }
 
+    @JsonCreator
+    public static LicenseType fromKey(Integer ordinal) {
+        for (LicenseType b : LicenseType.values()) {
+            if (b.ordinal() == ordinal) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException(ordinal + " is not a valid PropValue");
+    }
+
     @Override
     @JsonValue
     public String toString() {

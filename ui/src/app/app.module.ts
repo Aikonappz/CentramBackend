@@ -52,16 +52,15 @@ import { MiscService } from './service/MiscService';
 import { ApiHttpService } from './service/ApiHttpService';
 import { UserService } from './service/UserService';
 import { MatTableModule } from '@angular/material/table';
-import {  MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { LogoutComponent } from './views/logout/logout.component';
 
 import { MenuService } from './service/MenuService';
 import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
-import { UserComponent } from './views/user/user.component';
-import { EditUserComponent } from './views/user/edituser.component';
 import { UserModule } from './views/user/user.module';
+import { OrganisationComponent } from './views/organisation/organisation.component';
 
 @NgModule({
   imports: [
@@ -97,8 +96,7 @@ import { UserModule } from './views/user/user.module';
     ResetPasswordComponent,
     RequestDemoComponent,
     LogoutComponent,
-    //UserComponent,
-    //EditUserComponent
+    OrganisationComponent,
   ],
   providers: [
     CheckLoggedInOuter,

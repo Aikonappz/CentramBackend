@@ -7,6 +7,9 @@ import { CommonResponse } from '../model/CommonResponse';
 import { AuthRequest } from '../model/AuthRequest';
 import { LoggedInUser } from '../model/LoggedInUser';
 import { Status } from '../model/enumerator/Status';
+import { UserVO } from '../model/UserVO';
+import { User } from '../model/User';
+import { UserDTO } from '../model/UserDTO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -37,7 +40,23 @@ export class UserService {
     }
 
     updateStatusService(ids: number[], status: Status, request?: any): Observable<any> {
-        return this.http.get('/v1/user/'+ids.join(",")+'/'+Status[status], { "params": request });
+        return this.http.get('/v1/user/' + ids.join(",") + '/' + Status[status], { "params": request });
+    }
+
+    addUserService(user: User): Observable<UserVO> {
+        return this.http.post('/v1/user/', user);
+    }
+
+    editUserService(user: User): Observable<UserVO> {
+        return this.http.put('/v1/user/', user);
+    }
+
+    getUserService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/user/' + id, { "params": request });
+    }
+
+    changePasswordService(user: UserDTO, request?: any): Observable<any> {
+        return this.http.put('/v1/user/change-password', user, { "params": request });
     }
 
     //   getAllCompany(): Observable<Company[]> {

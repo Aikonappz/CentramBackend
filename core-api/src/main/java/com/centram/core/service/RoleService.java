@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.RoleRepository;
 import com.centram.domain.Role;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Role> getRoles(Pageable pageable) {
-        return roleRepository.findAll(pageable);
+    public PaginatedList<Role> getRoles(Pageable pageable) {
+        return new PaginatedList<Role>(roleRepository.findAll(pageable));
     }
 }

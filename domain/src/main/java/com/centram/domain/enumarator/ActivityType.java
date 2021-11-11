@@ -39,6 +39,16 @@ public enum ActivityType {
         return null;
     }
 
+    @JsonCreator
+    public static ActivityType fromKey(Integer ordinal) {
+        for (ActivityType b : ActivityType.values()) {
+            if (b.ordinal() == ordinal) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException(ordinal + " is not a valid PropValue");
+    }
+
     @Override
     @JsonValue
     public String toString() {

@@ -12,13 +12,14 @@ export class CheckLoggedInOuter implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         if (localStorage.getItem(AppSettings.LOGED_IN_PROFILE_JWT) && localStorage.getItem(AppSettings.LOGED_IN_PROFILE)) {
             //window.alert("aleady logged in");
-            let lastVisitedPage = localStorage.getItem(AppSettings.LOGED_IN_LAST_VISIT);
-            //console.log(lastVisitedPage);
-            //if(lastVisitedPage != ""  || lastVisitedPage != null){
-            //    this.router.navigate([lastVisitedPage]);
-            //}else{
-                this.router.navigate(['/dashboard']);
-            //}
+            //let lastVisitedPage = localStorage.getItem(AppSettings.LOGED_IN_LAST_VISIT);
+            // if (lastVisitedPage != null) {
+            //     console.log(lastVisitedPage);
+            //     //this.router.navigate([lastVisitedPage]);
+            // } else {
+            //     this.router.navigate(['/dashboard']);
+            // }
+            this.router.navigate(['/dashboard']);
             return true;
         } else {
             //window.alert("not logged in");

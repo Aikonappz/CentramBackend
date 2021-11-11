@@ -22,7 +22,7 @@ export class DefaultLayoutComponent {
     this.appBrandName = AppSettings.APP_BRAND_NAME;
     this.appDevName = AppSettings.APP_DEV_NAME;
     this.currentYear = m.format('YYYY');
-
+    
     navItems.forEach(function(value){
 
     });

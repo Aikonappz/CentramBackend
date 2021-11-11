@@ -26,6 +26,13 @@ export class ApiHttpService {
         //.post(this.REST_API_SERVER + url, data, { observe: 'response' })
     }
 
+    public put(url: string, data: any, options?: any): Observable<any> {
+        return this.http
+            .put(this.REST_API_SERVER + url, data, options)
+            .pipe(catchError(this.handleError.bind(this)));
+        //.post(this.REST_API_SERVER + url, data, { observe: 'response' })
+    }
+
     public delete(url: string, options?: any): Observable<any> {
         return this.http
             .delete(this.REST_API_SERVER + url, options)

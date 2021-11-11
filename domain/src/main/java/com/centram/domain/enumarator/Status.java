@@ -22,7 +22,16 @@ public enum Status {
             }
         }
         throw new IllegalArgumentException(text + " is not a valid PropName");
+    }
 
+    @JsonCreator
+    public static Status fromKey(Integer ordinal) {
+        for (Status b : Status.values()) {
+            if (b.ordinal() == ordinal) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException(ordinal + " is not a valid PropValue");
     }
 
     @Override

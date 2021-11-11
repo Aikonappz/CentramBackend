@@ -19,11 +19,9 @@ export class UserComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(titleService: Title, private router: Router, private userService: UserService) {
-    console.log("UserComponent");
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
-        //console.log('title', title);
         titleService.setTitle(title);
       }
     });

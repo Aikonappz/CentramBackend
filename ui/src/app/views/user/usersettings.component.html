@@ -1,0 +1,80 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <!-- Nav tabs -->
+      <tabset>
+        <tab heading="Home">
+          <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="passwordChanged">
+            <h6>Password changed successfully!</h6>
+          </div>
+          <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+
+            <div class="card-body">
+              <div class="row">
+                <!-- <div class="col">
+                  <label class="form-col-form-label control-label" for="oldPassword">Old Pasword</label>
+                  <input type="text" formControlName="oldPassword" ngModel id="oldPassword" name="oldPassword"
+                    class="form-control" placeholder="Old Password" aria-label="Old Password">
+                  <div *ngIf="f.oldPassword.touched && f.oldPassword.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.oldPassword.errors?.required">
+                      Old Password is required.
+                    </div>
+                  </div>
+                </div> -->
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="newPassword">New Password</label>
+                  <input type="password" formControlName="newPassword" ngModel id="newPassword" name="newPassword"
+                    class="form-control" placeholder="New Password" aria-label="New Password">
+                  <div *ngIf="f.newPassword.touched && f.newPassword.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.newPassword.errors?.required">
+                      New Password is required.
+                    </div>
+                    <div *ngIf="f.newPassword.errors?.pattern">
+                      New Password should be 8 character long, with at least a special character, upper & lower case
+                      letters
+                      and a number.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="confirmPassword">Confirm Password</label>
+                  <input type="password" formControlName="confirmPassword" ngModel id="confirmPassword"
+                    name="confirmPassword" class="form-control" placeholder="Confirm Password"
+                    aria-label="Confirm Password">
+                  <div *ngIf="f.confirmPassword.touched && f.confirmPassword.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.confirmPassword.errors?.required">
+                      Confirm Password is required.
+                    </div>
+                    <div *ngIf="f.confirmPassword.errors?.mustMatch">
+                      New Password & Confirm Password should match!
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="card-footer">
+              <button [disabled]="!angForm.valid" type="submit" class="btn btn-primary">Save</button>
+              <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+            </div>
+          </form>
+        </tab>
+        <tab heading="Profile">
+          2. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+          dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
+          id est laborum.
+        </tab>
+        <tab heading="Messages">
+          3. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+          dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+          commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
+          id est laborum.
+        </tab>
+      </tabset>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

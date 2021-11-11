@@ -3,6 +3,8 @@ package com.centram.domain.enumarator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import javax.print.attribute.standard.Media;
+
 public enum MediaType {
     ORGANISATION_LOGO_IMAGE("ORGANISATION LOGO IMAGE"),
     USER_PROFILE_IMAGE("USER PROFILE IMAGE"),
@@ -24,6 +26,16 @@ public enum MediaType {
             }
         }
         return null;
+    }
+
+    @JsonCreator
+    public static MediaType fromKey(Integer ordinal) {
+        for (MediaType b : MediaType.values()) {
+            if (b.ordinal() == ordinal) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException(ordinal + " is not a valid PropValue");
     }
 
     @Override

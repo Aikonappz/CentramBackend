@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { EditUserComponent } from './edituser.component';
 
 import { UserComponent } from './user.component';
+import { UserSettingsComponent } from './usersettings.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
       {
         path: 'add',
         component: EditUserComponent,
+        pathMatch: 'full',
         data: {
           title: 'Add User'
         }
@@ -29,10 +31,19 @@ const routes: Routes = [
       {
         path: 'edit/:id',
         component: EditUserComponent,
+        pathMatch: 'full',
         data: {
           title: 'Edit User'
         }
-      }
+      },
+      {
+        path: 'settings',
+        component: UserSettingsComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'User Settings'
+        },
+      },
     ]
   }
 ];

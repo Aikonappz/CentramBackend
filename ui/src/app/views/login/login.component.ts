@@ -9,7 +9,8 @@ import { UserService } from '../../service/UserService';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: 'login.component.html'
+  templateUrl: 'login.component.html',
+  styleUrls: ['login.component.scss']
 })
 export class LoginComponent {
   authRequest: AuthRequest;
@@ -72,8 +73,13 @@ export class LoginComponent {
         data.jwtToken = null;
         localStorage.setItem(AppSettings.LOGED_IN_PROFILE, JSON.stringify(data));
         //console.log(data);
-        //this.angForm.reset();
-        //this.toggleStockAddMode();
+        let lastVisitedPage = localStorage.getItem(AppSettings.LOGED_IN_LAST_VISIT);
+        // if (lastVisitedPage != null) {
+        //   console.log(lastVisitedPage);
+        //   this.router.navigate(["#" + lastVisitedPage]);
+        // } else {
+        //   this.router.navigate(['/dashboard']);
+        // }
         this.router.navigate(['/dashboard']);
       });
   }

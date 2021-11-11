@@ -17,6 +17,31 @@ export class MiscService {
         return this.http.post('/v1/misc/request-demo', requestDemo);
     }
 
+    rolesService(request?: any): Observable<any> {
+        return this.http.get('/v1/misc/all-roles', { "params": request });
+    }
+
+    roleService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/role/' + id, { "params": request });
+    }
+
+    locationsService(request?: any): Observable<any> {
+        return this.http.get('/v1/misc/all-locations', { "params": request });
+    }
+
+    locationService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/location/' + id, { "params": request });
+    }
+
+    departmentsService(request?: any): Observable<any> {
+        return this.http.get('/v1/misc/all-departments', { "params": request });
+    }
+
+    departmentService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/department/' + id, { "params": request });
+    }
+
+
     //   getAllCompany(): Observable<Company[]> {
     //     return this.http.get(this.getAllCompanyList);
     //   }

@@ -1,1 +1,17 @@
 // Here you can add other styles
+.alert-danger-custom{
+    background-color: none !important;
+    border-color: none !important;
+    color: red !important;
+    font-size: x-small !important;
+    margin-bottom: 0rem !important;
+    padding: 0.2rem 0 0.2rem !important;
+}
+.row-margin-05 { margin-top: 0.5em; }
+.row-margin-10 { margin-top: 1.0em; }
+.row-margin-20 { margin-top: 2.0em; }
+.row-margin-30 { margin-top: 3.0em; }
+.control-label::after{
+    content: " *";
+    color: red;
+}

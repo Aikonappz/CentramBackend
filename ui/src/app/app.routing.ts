@@ -95,14 +95,6 @@ export const routes: Routes = [
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/user/user.module').then(m => m.UserModule),
       },
-      // {
-      //   path: 'user',
-      //   component: UserComponent,
-      //   resolve: { myData: CheckLoggedIn },
-      //   data: {
-      //     title: 'User'
-      //   }
-      // },
       {
         path: 'base',
         loadChildren: () => import('./views/base/base.module').then(m => m.BaseModule)

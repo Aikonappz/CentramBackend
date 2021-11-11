@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.DepartmentRepository;
 import com.centram.domain.Department;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class DepartmentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Department> getDepartments(Pageable pageable) {
-        return departmentRepository.findAll(pageable);
+    public PaginatedList<Department> getDepartments(Pageable pageable) {
+        return new PaginatedList<Department>(departmentRepository.findAll(pageable));
     }
 }

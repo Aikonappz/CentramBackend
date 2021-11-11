@@ -2,6 +2,7 @@ package com.centram.core.api;
 
 
 import com.centram.common.dto.RequestDemoDTO;
+import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CommonResponse;
 import com.centram.core.service.DepartmentService;
 import com.centram.core.service.LocationService;
@@ -14,7 +15,6 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -69,14 +69,14 @@ public class MiscApiController {
         return new ResponseEntity<Role>(roleService.getById(roleId), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Roles", nickname = "getRoles", notes = "Get all Roles", response = Role.class, responseContainer = "List", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Roles", nickname = "getRoles", notes = "Get all Roles", response = PaginatedList.class, tags = {"misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Role.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/role/all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<Role>> getRoles(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<Page<Role>>(roleService.getRoles(pageable), HttpStatus.OK);
+    @RequestMapping(value = "/all-roles", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Role>> getRoles(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Role>>(roleService.getRoles(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"misc",})
@@ -90,14 +90,14 @@ public class MiscApiController {
         return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = Location.class, responseContainer = "List", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Role.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/locations/all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<Location>> getLocations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<Page<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
+    @RequestMapping(value = "/all-locations", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Location>> getLocations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find department by id", nickname = "getDepartentById", notes = "Find department by id", response = Department.class, tags = {"misc",})
@@ -111,13 +111,13 @@ public class MiscApiController {
         return new ResponseEntity<Department>(departmentService.getById(departmentId), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all departments", nickname = "getDepartments", notes = "Get all departments", response = Department.class, responseContainer = "List", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all departments", nickname = "getDepartments", notes = "Get all departments", response = PaginatedList.class, tags = {"misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Role.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/department/all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<Department>> getDepartments(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<Page<Department>>(departmentService.getDepartments(pageable), HttpStatus.OK);
+    @RequestMapping(value = "/all-departments", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Department>> getDepartments(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Department>>(departmentService.getDepartments(pageable), HttpStatus.OK);
     }
 }

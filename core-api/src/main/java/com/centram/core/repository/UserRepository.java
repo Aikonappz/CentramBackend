@@ -5,7 +5,6 @@ import com.centram.domain.User;
 import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -30,7 +29,10 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query("update User set password = (:password) where id = (:userId)")
     Integer updatePassword(@Param("password") String password, @Param("userId") BigInteger userId);
 
-    @Query("select u from User u where u.email = (:email) and u.status = 1")
+    @Query("select u from User u " +
+            "left join u.organisation o " +
+            "where u.email = (:email) and u.status = 1 " +
+            "and (u.organisation.id is null or o.status = 1)")
     User getUserByEmail(@Param("email") String email);
 
     @Query("select u from User u where u.id in (:ids)")

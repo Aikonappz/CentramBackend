@@ -26,6 +26,16 @@ public enum EntityType {
         return null;
     }
 
+    @JsonCreator
+    public static EntityType fromKey(Integer ordinal) {
+        for (EntityType b : EntityType.values()) {
+            if (b.ordinal() == ordinal) {
+                return b;
+            }
+        }
+        throw new IllegalArgumentException(ordinal + " is not a valid PropValue");
+    }
+
     @Override
     @JsonValue
     public String toString() {
