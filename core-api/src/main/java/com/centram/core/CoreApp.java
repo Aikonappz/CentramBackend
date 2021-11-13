@@ -8,15 +8,23 @@ import org.springframework.data.envers.repository.support.EnversRevisionReposito
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 //@EnableDiscoveryClient
 //@EnableFeignClients(basePackages = {"com.erp.api.client"})
 @EnableSwagger2
-@ComponentScan(basePackages = {"com.centram.core", "com.centram.common", "com.centram.domain"})
+@ComponentScan(basePackages = {"com.centram.core", "com.centram.core.config", "com.centram.common", "com.centram.domain"})
 @EntityScan(basePackages = {"com.centram.domain"})
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class, basePackages = {"com.centram.core.repository"})
-@SpringBootApplication(scanBasePackages = {"com.centram.core", "com.centram.common", "com.centram.domain"})
+@SpringBootApplication(scanBasePackages = {"com.centram.core", "com.centram.core.config", "com.centram.common", "com.centram.domain"})
 public class CoreApp {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(CoreApp.class, args);
+    }
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 }

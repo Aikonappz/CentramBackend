@@ -12,12 +12,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
+import java.util.List;
 
 
 public interface OrganisationRepository extends JpaRepository<Organisation, BigInteger> {
     @Modifying
-    @Query("update Organisation set status = (:status) where id = (:organisationId)")
-    Integer updateStatus(@Param("status") Status status, @Param("organisationId") BigInteger organisationId);
+    @Query("update Organisation set status = (:status) where id in (:organisationIds)")
+    Integer updateStatus(@Param("status") Status status, @Param("organisationIds") List<BigInteger> organisationId);
 
     @Modifying
     @Query("update Organisation set setting = (:setting) where id = (:organisationId)")

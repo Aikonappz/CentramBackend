@@ -11,10 +11,7 @@ import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.UserRepository;
-import com.centram.domain.ActivityLog;
-import com.centram.domain.MediaFile;
-import com.centram.domain.Permission;
-import com.centram.domain.User;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.MediaType;
@@ -230,6 +227,10 @@ public class UserService implements UserDetailsService {
         }
         if (loggedInUser.getOrganisationId() != null) {
             user.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+        } else {
+            if (user.getOrganisation() != null && user.getOrganisation().getId() != null) {
+                user.setOrganisation(new Organisation(user.getOrganisation().getId(), user.getOrganisation().getVersion()));
+            }
         }
         /*if (user.getDepartment().getId() != null) {
             user.setDepartment(departmentService.getById(user.getDepartment().getId()));

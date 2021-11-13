@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.hibernate.envers.Audited;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -94,17 +92,20 @@ public class Organisation extends BaseEntity implements Serializable {
     @NotNull
     @Valid
     @Column(name = "license_start", nullable = true)
-    @CreatedDate
     private LocalDateTime licenseStart;
 
     @ApiModelProperty(value = "")
     @NotNull
     @Valid
     @Column(name = "license_end", nullable = true)
-    @LastModifiedDate
     private LocalDateTime licenseEnd;
 
     public Organisation(@NotNull BigInteger id) {
+        this.id = id;
+    }
+
+    public Organisation(@NotNull BigInteger id, @NotNull Long version) {
+        super(version);
         this.id = id;
     }
 }

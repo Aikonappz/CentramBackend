@@ -4,15 +4,16 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.OrganisationDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.OrganisationRepository;
 import com.centram.domain.ActivityLog;
 import com.centram.domain.MediaFile;
 import com.centram.domain.Organisation;
-import com.centram.domain.User;
 import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.MediaType;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -21,18 +22,19 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,32 +59,28 @@ public class OrganisationService {
     @Autowired
     private OrganisationRepository organisationRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     /**
      * Create/Update new Organisation
      *
-     * @param organisationDTO
+     * @param organisation
      * @return
      */
     @Transactional
-    public Organisation save(OrganisationDTO organisationDTO) {
+    public Organisation save(Organisation organisation) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Organisation newOrganisation = null;
-        if (organisationDTO.getOrganisation().getId() == null) {
-            organisationDTO.getOrganisation().setStatus(Status.ACTIVE);
-            newOrganisation = organisationRepository.save(organisationDTO.getOrganisation());
-            User user = organisationDTO.getUser();
-            user.setOrganisation(newOrganisation);
-            userService.save(user);
-            /*User user = new User();
-            user.setFirstName(newOrganisation.getName());
-            user.setLastName(newOrganisation.getName());
-            user.setStatus(Status.ACTIVE);
-            user.setRoles(Arrays.asList(BigInteger.valueOf(Long.valueOf(2))));
-            user.setOrganisation(newOrganisation);
-            userService.save(user);*/
+        if (organisation.getId() == null) {
+            organisation.setStatus(Status.ACTIVE);
+            newOrganisation = organisationRepository.save(organisation);
             activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.ORGANISATION_ONBOARD));
         } else {
-            newOrganisation = organisationRepository.save(organisationDTO.getOrganisation());
+            newOrganisation = organisationRepository.save(organisation);
             activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
         }
         return newOrganisation;
@@ -92,12 +90,12 @@ public class OrganisationService {
      * Update Status
      *
      * @param status
-     * @param organisationId
+     * @param organisationIds
      */
     @Transactional
-    public void updateStatus(Status status, BigInteger organisationId) {
+    public void updateStatus(Status status, List<BigInteger> organisationIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        organisationRepository.updateStatus(status, organisationId);
+        organisationRepository.updateStatus(status, organisationIds);
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
     }
 
@@ -170,8 +168,8 @@ public class OrganisationService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Page<Organisation> getOrganisations(Pageable pageable) {
-        return organisationRepository.findAll(pageable);
+    public PaginatedList<Organisation> getOrganisations(Pageable pageable) {
+        return new PaginatedList<Organisation>(organisationRepository.findAll(pageable));
     }
 
     /**

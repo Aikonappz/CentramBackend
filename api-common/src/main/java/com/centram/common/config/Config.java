@@ -109,37 +109,11 @@ public class Config {
 
     @Bean
     public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new Jackson2ObjectMapperBuilder()
+        return new Jackson2ObjectMapperBuilder()
                 .indentOutput(true)
                 .simpleDateFormat(dateFormat)
                 .serializerByType(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)))
                 .deserializerByType(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(dateFormat)))
-                /*.serializerByType(HashMap.class, new JsonSerializer<HashMap<String, HashMap<String, ArrayList<String>>>>() {
-                    public void serialize(HashMap<String, HashMap<String, ArrayList<String>>> stringMapMap, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        String jsonStr;
-                        try {
-                            jsonStr = objectMapper.writeValueAsString(stringMapMap);
-                            jsonGenerator.writeString(jsonStr);
-                        } catch (IOException e) {
-                            throw new AppException(GenericErrorCode.SERIALIZATION_ISSUE);
-                        }
-                    }
-                })
-                .deserializerByType(HashMap.class, new JsonDeserializer<HashMap<String, HashMap<String, ArrayList<String>>>>() {
-                    @Override
-                    public HashMap<String, HashMap<String, ArrayList<String>>> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        HashMap<String, HashMap<String, ArrayList<String>>> d = null;
-                        try {
-                            d = objectMapper.readValue(jsonParser.getText(), new TypeReference<HashMap<String, HashMap<String, ArrayList<String>>>>() {
-                            });
-                        } catch (JsonProcessingException e) {
-                            throw new AppException(GenericErrorCode.DESERIALIZATION_ISSUE);
-                        }
-                        return d;
-                    }
-                })*/
                 .serializerByType(LocalDateTime.class, new JsonSerializer<LocalDateTime>() {
                     @Override
                     public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
@@ -187,11 +161,7 @@ public class Config {
                             return null;
                         }
                     }
-                })
-                .build();
-        objectMapper.addMixIn(Object.class, IgnoreHibernatePropertiesInJackson.class);
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        return objectMapper;
+                }).build();
     }
 
     @Bean
@@ -309,5 +279,4 @@ public class Config {
             return Optional.of(loggedInUser.getUserId());
         }
     }
-
 }

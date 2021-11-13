@@ -2,6 +2,7 @@ package com.centram.core.api;
 
 import com.centram.common.dto.OrganisationDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.OrganisationService;
 import com.centram.domain.Organisation;
 import com.centram.domain.User;
@@ -10,7 +11,6 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
+import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "organisation", description = "Organisation API")
@@ -47,7 +49,7 @@ public class OrganisationApiController {
     })
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<Organisation> addOrganisation(@ApiParam(value = "Organisation object", required = true) @Valid @RequestBody OrganisationDTO body) {
+    public ResponseEntity<Organisation> addOrganisation(@ApiParam(value = "Organisation object", required = true) @Valid @RequestBody Organisation body) {
         return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
     }
 
@@ -59,7 +61,7 @@ public class OrganisationApiController {
     })
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<Organisation> updateOrganisation(@ApiParam(value = "Organisation object", required = true) @Valid @RequestBody OrganisationDTO body) {
+    public ResponseEntity<Organisation> updateOrganisation(@ApiParam(value = "Organisation object", required = true) @Valid @RequestBody Organisation body) {
         return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
     }
 
@@ -68,10 +70,10 @@ public class OrganisationApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Organisation not found")
     })
-    @RequestMapping(value = "/{organisationId}/{status}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{ids}/{status}", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<Void> updateStatus(@ApiParam(value = "Organisation id ", required = true) @PathVariable("organisationId") BigInteger organisationId, @ApiParam(value = "Status ", required = true) @PathVariable("status") Status status) {
-        organisationService.updateStatus(status, organisationId);
+    public ResponseEntity<Void> updateStatus(@NotNull @ApiParam(value = "Organisation id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+        organisationService.updateStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
@@ -99,15 +101,15 @@ public class OrganisationApiController {
         return new ResponseEntity<OrganisationDTO>(organisationService.uploadOrganisationLogo(request), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all organisation", nickname = "getOrganisations", notes = "Get all Organisation", response = Organisation.class, responseContainer = "List", tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all organisation", nickname = "getOrganisations", notes = "Get all Organisation", response = PaginatedList.class, tags = {"organisation",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Organisation.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<Page<Organisation>> getOrganisations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<Page<Organisation>>(organisationService.getOrganisations(pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<Organisation>> getOrganisations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(pageable), HttpStatus.OK);
     }
 
     /*@ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get organisation settings", nickname = "getOrganisationSettings", notes = "Get organisation settings", response = OrganisationDTO.class, tags = {"organisation",})

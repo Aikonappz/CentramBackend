@@ -1,6 +1,8 @@
 import { Base } from "./Base";
 import { LicenseType } from "./enumerator/LicenseType";
 import { Status } from "./enumerator/Status";
+import { MediaFile } from "./MediaFile";
+import { User } from "./User";
 
 export class Organisation extends Base {
     id: number;
@@ -12,8 +14,8 @@ export class Organisation extends Base {
     pan: string;
     tan: string;
     gstin: string;
-    licenseStart: Date;
-    licenseEnd: Date;
+    licenseStart: any;
+    licenseEnd: any;
     status: Status;
     licenseType: LicenseType;
 
@@ -33,4 +35,10 @@ export class Organisation extends Base {
         this.status = Status.ACTIVE;
         this.licenseType = LicenseType.ALL;
     }
+}
+
+
+export interface OrganisationList {
+    content: Organisation[];
+    totalElements: number;
 }

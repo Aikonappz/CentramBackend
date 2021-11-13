@@ -1,1 +1,82 @@
-<p>organisation works!</p>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header ">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <strong>Organisations</strong>
+                        </div>
+                        <div class="col-md-2 float-right">
+                            <!-- <button type="button" class="btn btn-sm btn-minimize"><i
+                                    class="icon-cloud-upload"></i></button> -->
+                            <button type="button" class="btn btn-sm btn-minimize"><i
+                                    class="icon-cloud-download"></i></button>
+                            <button type="button" class="btn btn-sm btn-link" (click)="add()"><i
+                                    class="icon-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mat-elevation-z8">
+                            <table mat-table [dataSource]="datasource">
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.name}}<br />
+                                        {{element.pan}}<br />
+                                        {{element.tan}}<br />
+                                        {{element.gstin}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="addressDtl">
+                                    <th mat-header-cell *matHeaderCellDef> Address </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.add1}}<br />
+                                        {{element.add2}}<br />
+                                        {{element.city}}<br />
+                                        {{element.pincode}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="licence">
+                                    <th mat-header-cell *matHeaderCellDef> Licence Dtl. </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.licenseType}}<br />
+                                        {{formatDate(element.licenseStart)}}-
+                                        {{formatDate(element.licenseEnd)}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef> Status </th>
+                                    <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
+                                        *matCellDef="let element">
+                                        {{element.status}}
+                                    </td>
+                                </ng-container>
+                                <ng-container matColumnDef="action">
+                                    <th mat-header-cell *matHeaderCellDef> Action </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <button type="button" class="btn btn-sm btn-link"><i
+                                                (click)="updateStatus(element)" class="icon-ban"></i></button>
+                                        <button type="button" (click)="edit(element)" class="btn btn-sm btn-link"><i
+                                                class="icon-pencil"></i></button>
+                                    </td>
+                                </ng-container>
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;"
+                                    [ngClass]="{gray: even}"></tr>
+                            </table>
+                            <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
+                        </div>
+
+                    </div>
+                    <!--/.row-->
+                </div>
+                <!--/.row-->
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+</div>
+<!--/.row-->

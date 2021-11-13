@@ -170,13 +170,13 @@ public class UsersApiController {
         return new ResponseEntity<UserVO>(userService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateUsersStatus", notes = "Update status of user's", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateStatus", notes = "Update status of user's", tags = {"user",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Void> updateUsersStatus(@NotNull @ApiParam(value = "User id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+    public ResponseEntity<Void> updateStatus(@NotNull @ApiParam(value = "User id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
         userService.updateUsersStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

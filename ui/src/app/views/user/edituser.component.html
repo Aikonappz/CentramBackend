@@ -121,8 +121,9 @@
 
             <div class="row row-margin-05">
               <div class="col">
-                <div class="form-check form-check-inline mr-1">
-                  <input class="form-check-input" type="checkbox" [checked]="(user.status == 'ACTIVE')"
+                <label class="form-col-form-label " for="status">Status</label>
+                <div class="form-control form-control-check-box form-check form-check-inline mr-1">
+                  <input class="form-check-input form-control-check-box" type="checkbox" [checked]="(user.status == 'ACTIVE')"
                     formControlName="status" #status (change)="isChecked()" [value]="(user.status == 'ACTIVE')"
                     id="status" name="status">
                   <label class="form-check-label" for="status">Status</label>

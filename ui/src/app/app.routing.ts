@@ -77,7 +77,7 @@ export const routes: Routes = [
       title: AppSettings.APP_NAME + ' - ' + 'Page 500'
     }
   },
-  
+
   {
     path: '',
     component: DefaultLayoutComponent,
@@ -96,6 +96,11 @@ export const routes: Routes = [
         loadChildren: () => import('./views/user/user.module').then(m => m.UserModule),
       },
       {
+        path: 'organisation',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
+      },
+      {
         path: 'base',
         loadChildren: () => import('./views/base/base.module').then(m => m.BaseModule)
       },
@@ -107,7 +112,7 @@ export const routes: Routes = [
         path: 'charts',
         loadChildren: () => import('./views/chartjs/chartjs.module').then(m => m.ChartJSModule)
       },
-      
+
       {
         path: 'icons',
         loadChildren: () => import('./views/icons/icons.module').then(m => m.IconsModule)

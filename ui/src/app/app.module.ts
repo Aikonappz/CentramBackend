@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { LocationStrategy, HashLocationStrategy, DatePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -90,13 +90,13 @@ import { OrganisationComponent } from './views/organisation/organisation.compone
     ...APP_CONTAINERS,
     P404Component,
     P500Component,
-    LoginComponent,
     RegisterComponent,
+    
+    LoginComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
     RequestDemoComponent,
     LogoutComponent,
-    OrganisationComponent,
   ],
   providers: [
     CheckLoggedInOuter,
@@ -114,7 +114,9 @@ import { OrganisationComponent } from './views/organisation/organisation.compone
       provide: LocationStrategy,
       useClass: HashLocationStrategy
     },
+    DatePipe,
     IconSetService,
+
   ],
   bootstrap: [AppComponent]
 })
