@@ -10,6 +10,7 @@ import { Department } from '../../model/Department';
 import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
+import { AppUtility } from '../../config/AppUtility';
 
 @Component({
   selector: 'app-edituser',
@@ -95,6 +96,22 @@ export class EditUserComponent implements OnInit {
         .subscribe((data: any) => {
           //console.log("load roles");
           this.roles = data.content;
+          let tmpRoles: any = [];
+          let c = 0;
+          for (let i = 0; i < this.roles.length; i++) {
+            if (AppUtility.appManager()) {
+              if (!this.roles[i].name.match(/ORG_.*/)) {
+                tmpRoles[c] = this.roles[i];
+                c++;
+              }
+            } else {
+              if (this.roles[i].name.match(/ORG_.*/)) {
+                tmpRoles[c] = this.roles[i];
+                c++;
+              }
+            }
+          }
+          this.roles = tmpRoles;
         });
       this.miscService
         .locationsService()
@@ -114,6 +131,22 @@ export class EditUserComponent implements OnInit {
         .subscribe((data: any) => {
           //console.log("load roles");
           this.roles = data.content;
+          let tmpRoles: any = [];
+          let c = 0;
+          for (let i = 0; i < this.roles.length; i++) {
+            if (AppUtility.appManager()) {
+              if (!this.roles[i].name.match(/ORG_.*/)) {
+                tmpRoles[c] = this.roles[i];
+                c++;
+              }
+            } else {
+              if (this.roles[i].name.match(/ORG_.*/)) {
+                tmpRoles[c] = this.roles[i];
+                c++;
+              }
+            }
+          }
+          this.roles = tmpRoles;
           this.miscService
             .locationsService()
             .subscribe((data: any) => {

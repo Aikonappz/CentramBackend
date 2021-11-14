@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
-import { AppSettings } from '../../config/AppSettings';
+import { AppUtility } from '../../config/AppUtility';
 import { AuthRequest } from '../../model/AuthRequest';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { UserService } from '../../service/UserService';
@@ -69,11 +69,11 @@ export class LoginComponent {
         this.authRequest
       )
       .subscribe((data: LoggedInUser) => {
-        localStorage.setItem(AppSettings.LOGED_IN_PROFILE_JWT, data.jwtToken);
+        localStorage.setItem(AppUtility.LOGED_IN_PROFILE_JWT, data.jwtToken);
         data.jwtToken = null;
-        localStorage.setItem(AppSettings.LOGED_IN_PROFILE, JSON.stringify(data));
+        localStorage.setItem(AppUtility.LOGED_IN_PROFILE, JSON.stringify(data));
         //console.log(data);
-        let lastVisitedPage = localStorage.getItem(AppSettings.LOGED_IN_LAST_VISIT);
+        let lastVisitedPage = localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT);
         // if (lastVisitedPage != null) {
         //   console.log(lastVisitedPage);
         //   this.router.navigate(["#" + lastVisitedPage]);

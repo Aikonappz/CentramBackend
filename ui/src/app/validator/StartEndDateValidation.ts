@@ -1,6 +1,6 @@
 import { FormGroup } from '@angular/forms';
 import * as moment from 'moment';
-import { AppSettings } from '../config/AppSettings';
+import { AppUtility } from '../config/AppUtility';
 
 // custom validator to check that two fields 
 export function StartEndDateValidation(startDate: string, endDate: string) {
@@ -12,8 +12,8 @@ export function StartEndDateValidation(startDate: string, endDate: string) {
             return;
         }
         // set error on matchingControl if validation fails
-        let startD = moment((start.value), AppSettings.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
-        let endD = moment((end.value), AppSettings.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+        let startD = moment((start.value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+        let endD = moment((end.value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
         if (endD <= startD) {
             end.setErrors({ mustGreaterThanStartDate: true });
         } else {

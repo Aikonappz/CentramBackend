@@ -4,7 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { tap } from 'rxjs/operators';
-import { AppSettings } from '../../config/AppSettings';
+import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { Organisation } from '../../model/Organisation';
 import { OrganisationDataSource } from '../../service/datasource/OrganisationDataSource';
@@ -92,7 +92,7 @@ export class OrganisationComponent implements OnInit {
   }
 
   formatDate(d: string) {
-    return moment(d).format(AppSettings.APP_VIEW_DATE_FORMAT);
+    return moment(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
   }
 
 }

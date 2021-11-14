@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
-import { AppSettings } from '../../config/AppSettings';
+import { AppUtility } from '../../config/AppUtility';
 import { UserService } from '../../service/UserService';
 
 @Component({
@@ -40,8 +40,8 @@ export class LogoutComponent implements OnInit {
     this.userService
       .signOutService()
       .subscribe((data: any) => {
-        localStorage.removeItem(AppSettings.LOGED_IN_PROFILE_JWT);
-        localStorage.removeItem(AppSettings.LOGED_IN_PROFILE);
+        localStorage.removeItem(AppUtility.LOGED_IN_PROFILE_JWT);
+        localStorage.removeItem(AppUtility.LOGED_IN_PROFILE);
         //console.log(data);
         //this.angForm.reset();
         //this.toggleStockAddMode();

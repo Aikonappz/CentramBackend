@@ -56,7 +56,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { LogoutComponent } from './views/logout/logout.component';
 
-import { MenuService } from './service/MenuService';
 import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { UserModule } from './views/user/user.module';
@@ -91,7 +90,7 @@ import { OrganisationComponent } from './views/organisation/organisation.compone
     P404Component,
     P500Component,
     RegisterComponent,
-    
+
     LoginComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
@@ -109,7 +108,6 @@ import { OrganisationComponent } from './views/organisation/organisation.compone
     MiscService,
     UserService,
     CheckLoggedIn,
-    MenuService,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy

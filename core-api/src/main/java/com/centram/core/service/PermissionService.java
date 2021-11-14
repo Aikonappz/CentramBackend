@@ -42,7 +42,7 @@ public class PermissionService {
 
     @Transactional(readOnly = true)
     public Page<Permission> getPermissionByRoleIds(List<BigInteger> roleIds, Pageable pageable) {
-        return permissionRepository.findAll(pageable);
+        return permissionRepository.getPermissionByRoleIds(roleIds, pageable);
     }
 
     @Transactional(readOnly = true)

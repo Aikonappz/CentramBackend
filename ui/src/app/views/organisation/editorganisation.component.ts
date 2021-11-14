@@ -15,7 +15,7 @@ import { Organisation } from '../../model/Organisation';
 import { OrganisationService } from '../../service/OrganisationService';
 import { UserVO } from '../../model/UserVO';
 import * as moment from 'moment-timezone';
-import { AppSettings } from '../../config/AppSettings';
+import { AppUtility } from '../../config/AppUtility';
 import { StartEndDateValidation } from '../../validator/StartEndDateValidation';
 
 @Component({
@@ -278,8 +278,8 @@ export class EditOrganisationComponent implements OnInit {
       this.org.tan = this.angForm.controls['tan'].value;
       this.org.gstin = this.angForm.controls['gstin'].value;
       this.org.licenseType = LicenseType[String(this.angForm.controls['licenseType'].value)];
-      this.org.licenseStart = AppSettings.prepareDateToString(moment(this.angForm.controls['licenseStart'].value, AppSettings.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      this.org.licenseEnd = AppSettings.prepareDateToString(moment(this.angForm.controls['licenseEnd'].value, AppSettings.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.org.licenseStart = AppUtility.prepareDateToString(moment(this.angForm.controls['licenseStart'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.org.licenseEnd = AppUtility.prepareDateToString(moment(this.angForm.controls['licenseEnd'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       this.org.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(JSON.stringify(this.org));
       if (this.newEntity) {
@@ -378,8 +378,8 @@ export class EditOrganisationComponent implements OnInit {
         //console.log(JSON.stringify(this.org));
 
         this.angForm.get('licenseType').setValue(this.org.licenseType);
-        this.angForm.get('licenseStart').setValue(moment(this.org.licenseStart).format(AppSettings.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
-        this.angForm.get('licenseEnd').setValue(moment(this.org.licenseEnd).format(AppSettings.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+        this.angForm.get('licenseStart').setValue(moment(this.org.licenseStart).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+        this.angForm.get('licenseEnd').setValue(moment(this.org.licenseEnd).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
         this.angForm.get('pincode').setValue(this.org.pincode);
         this.angForm.get('city').setValue(this.org.city);
         this.angForm.get('add2').setValue(this.org.add2);

@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, } from '@angular/common/http';
-import { AppSettings } from '../config/AppSettings';
+import { AppUtility } from '../config/AppUtility';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthHtppInterceptorService implements HttpInterceptor {
   constructor() { }
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    if (localStorage.getItem(AppSettings.LOGED_IN_PROFILE_JWT)) {
+    if (localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)) {
       req = req.clone({
         setHeaders: {
-          Authorization: 'Bearer ' + localStorage.getItem(AppSettings.LOGED_IN_PROFILE_JWT),
+          Authorization: 'Bearer ' + localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT),
           //Accept: 'application/json',
           //'Content-Type': 'application/json'
         },

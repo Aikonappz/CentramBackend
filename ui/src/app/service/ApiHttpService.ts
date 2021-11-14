@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, } from '@angular/common/http';
 import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AppSettings } from '../config/AppSettings';
+import { AppUtility } from '../config/AppUtility';
 import { Router } from '@angular/router';
 @Injectable({
     providedIn: 'root'
 })
 export class ApiHttpService {
 
-    private REST_API_SERVER = AppSettings.API_ENDPOINT;
+    private REST_API_SERVER = AppUtility.API_ENDPOINT;
 
     constructor(private http: HttpClient, private router: Router) { }
 

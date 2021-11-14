@@ -7,14 +7,13 @@ import { DefaultLayoutComponent } from './containers';
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
-import { AppSettings } from './config/AppSettings';
+import { AppUtility } from './config/AppUtility';
 import { ForgotPasswordComponent } from './views/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
 import { RequestDemoComponent } from './views/request-demo/request-demo.component';
 import { LogoutComponent } from './views/logout/logout.component';
 import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
-import { UserComponent } from './views/user/user.component';
 
 export const routes: Routes = [
   {
@@ -22,7 +21,7 @@ export const routes: Routes = [
     component: LoginComponent,
     resolve: { myData: CheckLoggedInOuter },
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Sign In'
+      title: AppUtility.APP_NAME + ' - ' + 'Sign In'
     }
   },
   {
@@ -30,7 +29,7 @@ export const routes: Routes = [
     component: ForgotPasswordComponent,
     resolve: { myData: CheckLoggedInOuter },
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Forgot Password'
+      title: AppUtility.APP_NAME + ' - ' + 'Forgot Password'
     }
   },
   {
@@ -38,7 +37,7 @@ export const routes: Routes = [
     component: ResetPasswordComponent,
     resolve: { myData: CheckLoggedInOuter },
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Reset Password'
+      title: AppUtility.APP_NAME + ' - ' + 'Reset Password'
     }
   },
   {
@@ -46,7 +45,7 @@ export const routes: Routes = [
     component: RequestDemoComponent,
     resolve: { myData: CheckLoggedInOuter },
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Request a Demo'
+      title: AppUtility.APP_NAME + ' - ' + 'Request a Demo'
     }
   },
   {
@@ -54,7 +53,7 @@ export const routes: Routes = [
     component: LogoutComponent,
     resolve: { myData: CheckLoggedIn },
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Sign Out'
+      title: AppUtility.APP_NAME + ' - ' + 'Sign Out'
     }
   },
   {
@@ -67,14 +66,14 @@ export const routes: Routes = [
     path: '404',
     component: P404Component,
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Page 404'
+      title: AppUtility.APP_NAME + ' - ' + 'Page 404'
     }
   },
   {
     path: '500',
     component: P500Component,
     data: {
-      title: AppSettings.APP_NAME + ' - ' + 'Page 500'
+      title: AppUtility.APP_NAME + ' - ' + 'Page 500'
     }
   },
 
