@@ -2,16 +2,22 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DepartmentComponent } from './department.component';
 import { EditDepartmentComponent } from './editdepartment.component';
+import { EditLocationComponent } from './editlocation.component';
+import { LocationComponent } from './location.component';
 
 const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Department'
+      title: 'Master'
     },
     children: [
       {
         path: '',
+        redirectTo: 'department'
+      },
+      {
+        path: 'department',
         component: DepartmentComponent,
         pathMatch: 'full',
         data: {
@@ -19,7 +25,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'add',
+        path: 'department/add',
         component: EditDepartmentComponent,
         pathMatch: 'full',
         data: {
@@ -27,11 +33,35 @@ const routes: Routes = [
         }
       },
       {
-        path: 'edit/:id',
+        path: 'department/edit/:id',
         component: EditDepartmentComponent,
         pathMatch: 'full',
         data: {
           title: 'Edit Department'
+        }
+      },
+      {
+        path: 'location',
+        component: LocationComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Location'
+        },
+      },
+      {
+        path: 'location/add',
+        component: EditLocationComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Location'
+        }
+      },
+      {
+        path: 'location/edit/:id',
+        component: EditLocationComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Location'
         }
       },
     ]
@@ -42,4 +72,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class DepartmentRoutingModule { }
+export class MasterRoutingModule { }

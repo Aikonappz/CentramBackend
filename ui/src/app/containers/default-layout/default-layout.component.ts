@@ -51,7 +51,7 @@ export class DefaultLayoutComponent {
         }
       }
     }
-    this.navItems = this.newNavItems;
+    //this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
   }
 

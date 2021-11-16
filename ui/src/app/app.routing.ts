@@ -76,7 +76,6 @@ export const routes: Routes = [
       title: AppUtility.APP_NAME + ' - ' + 'Page 500'
     }
   },
-
   {
     path: '',
     component: DefaultLayoutComponent,
@@ -100,14 +99,9 @@ export const routes: Routes = [
         loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
       },
       {
-        path: 'department',
+        path: 'masters',
         resolve: { myData: CheckLoggedIn },
-        loadChildren: () => import('./views/department/department.module').then(m => m.DepartmentModule),
-      },
-      {
-        path: 'location',
-        resolve: { myData: CheckLoggedIn },
-        loadChildren: () => import('./views/location/location.module').then(m => m.LocationModule),
+        loadChildren: () => import('./views/master/master.module').then(m => m.MasterModule),
       },
       {
         path: 'base',

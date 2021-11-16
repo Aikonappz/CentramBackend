@@ -9,12 +9,29 @@ export const navItems: INavData[] = [
   {
     name: 'Organisation',
     url: '/organisation',
-    icon: 'icon-layers',    
+    icon: 'icon-target',    
   },
   {
     name: 'User',
     url: '/user',
     icon: 'icon-people',
+  },
+  {
+    name: 'Masters',
+    url: '/masters',
+    icon: 'icon-layers',
+    children: [
+      {
+        name: 'Department',
+        url: '/masters/department',
+        icon: 'icon-puzzle'
+      },
+      {
+        name: 'Location',
+        url: '/masters/location',
+        icon: 'icon-location-pin'
+      },
+    ]
   }
 ];
 
