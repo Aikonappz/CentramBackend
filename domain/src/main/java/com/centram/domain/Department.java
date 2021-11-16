@@ -26,9 +26,15 @@ import java.math.BigInteger;
 @EqualsAndHashCode
 @Entity
 @Audited
-@Table(name = "department", indexes = {@Index(name = "department_name_idx", columnList = "name", unique = true)})
+@Table(
+        name = "department",
+        uniqueConstraints = @UniqueConstraint(name = "department_org_constraint", columnNames = {"name", "organisation_id"}),
+        indexes = {
+                @Index(name = "dept_org_idx", columnList = "organisation_id", unique = false),
+        }
+)
 public class Department extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 7163306376698505219L;
+    private static final long serialVersionUID = 7161526376698505219L;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
@@ -48,4 +54,11 @@ public class Department extends BaseEntity implements Serializable {
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "organisation_id", referencedColumnName = "id")
+    private Organisation organisation;
 }

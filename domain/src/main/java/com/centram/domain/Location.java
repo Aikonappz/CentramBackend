@@ -26,7 +26,13 @@ import java.math.BigInteger;
 @EqualsAndHashCode
 @Entity
 @Audited
-@Table(name = "location", indexes = {@Index(name = "location_name_idx", columnList = "name", unique = true)})
+@Table(
+        name = "location",
+        uniqueConstraints = @UniqueConstraint(name = "location_org_constraint", columnNames = {"name", "organisation_id"}),
+        indexes = {
+                @Index(name = "loc_org_idx", columnList = "organisation_id", unique = false),
+        }
+)
 public class Location extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -8580165582808522922L;
 
@@ -36,6 +42,22 @@ public class Location extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "country", columnDefinition = "varchar(255) default null")
+    private String country;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "state", columnDefinition = "varchar(255) default null")
+    private String state;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "city", columnDefinition = "varchar(255) default null")
+    private String city;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "timezone", columnDefinition = "varchar(255) default null")
+    private String timezone;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
@@ -48,4 +70,11 @@ public class Location extends BaseEntity implements Serializable {
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "organisation_id", referencedColumnName = "id")
+    private Organisation organisation;
 }

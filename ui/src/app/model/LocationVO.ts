@@ -1,14 +1,29 @@
 import { Base } from "./Base";
 import { Status } from "./enumerator/Status";
+import { Organisation } from "./Organisation";
 
 export class LocationVO extends Base {
     id: number;
+    country: string;
+    state: string;
+    city: string;
+    timezone: string;
     name: string;
     status: Status;
+    organisation: Organisation;
     constructor() {
         super();
         this.id = null;
+        this.country = '';
+        this.state = '';
+        this.city = '';
+        this.timezone = '';
         this.name = '';
         this.status = Status.ACTIVE;
+        this.organisation = new Organisation();
     }
+}
+export interface LocationList {
+    content: LocationVO[];
+    totalElements: number;
 }

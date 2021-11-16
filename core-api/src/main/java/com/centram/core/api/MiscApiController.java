@@ -11,6 +11,7 @@ import com.centram.core.service.RoleService;
 import com.centram.domain.Department;
 import com.centram.domain.Location;
 import com.centram.domain.Role;
+import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
+import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "misc", description = "Misc API")
@@ -81,13 +84,13 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Role.class),
+            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
             @ApiResponse(code = 404, message = "Location not found")
     })
     @RequestMapping(value = "/location/{locationId}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Location> getLocationById(@ApiParam(value = "id of location", required = true) @PathVariable("locationId") BigInteger locationId) {
-        return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"misc",})
@@ -102,13 +105,13 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find department by id", nickname = "getDepartentById", notes = "Find department by id", response = Department.class, tags = {"misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Role.class),
+            @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
             @ApiResponse(code = 404, message = "Department not found")
     })
     @RequestMapping(value = "/department/{departmentId}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Department> getDepartentById(@ApiParam(value = "id of department", required = true) @PathVariable("departmentId") BigInteger departmentId) {
-        return new ResponseEntity<Department>(departmentService.getById(departmentId), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<Department>(departmentService.getById(departmentId), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all departments", nickname = "getDepartments", notes = "Get all departments", response = PaginatedList.class, tags = {"misc",})
@@ -119,5 +122,45 @@ public class MiscApiController {
     @RequestMapping(value = "/all-departments", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Department>> getDepartments(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Department>>(departmentService.getDepartments(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a department", nickname = "saveDepartment", notes = "Add a department", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/department", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<Department> saveDepartment(@ApiParam(value = "Department object", required = true) @Valid @RequestBody Department body) {
+        return new ResponseEntity<Department>(departmentService.save(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of department's", nickname = "updateStatus", notes = "Update status of department's", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "Department not found")
+    })
+    @RequestMapping(value = "/department/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Void> updateDepartmentsStatus(@NotNull @ApiParam(value = "Departent id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+        departmentService.updateDepartmentsStatus(status, ids);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a location", nickname = "saveLocation", notes = "Add a location", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/location", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<Location> saveLocation(@ApiParam(value = "Location object", required = true) @Valid @RequestBody Location body) {
+        return new ResponseEntity<Location>(locationService.save(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of location's", nickname = "updateStatus", notes = "Update status of location's", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "Location not found")
+    })
+    @RequestMapping(value = "/location/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Void> updateLocationsStatus(@NotNull @ApiParam(value = "Location id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+        locationService.updateLocationsStatus(status, ids);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

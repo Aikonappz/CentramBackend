@@ -100,6 +100,16 @@ export const routes: Routes = [
         loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
       },
       {
+        path: 'department',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/department/department.module').then(m => m.DepartmentModule),
+      },
+      {
+        path: 'location',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/location/location.module').then(m => m.LocationModule),
+      },
+      {
         path: 'base',
         loadChildren: () => import('./views/base/base.module').then(m => m.BaseModule)
       },

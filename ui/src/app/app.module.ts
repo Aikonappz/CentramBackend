@@ -59,7 +59,11 @@ import { LogoutComponent } from './views/logout/logout.component';
 import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { UserModule } from './views/user/user.module';
-import { OrganisationComponent } from './views/organisation/organisation.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { OrganisationModule } from './views/organisation/organisation.module';
+import { DepartmentComponent } from './views/department/department.component';
+import { LocationComponent } from './views/location/location.component';
 
 @NgModule({
   imports: [
@@ -82,7 +86,10 @@ import { OrganisationComponent } from './views/organisation/organisation.compone
     MatPaginatorModule,
     IconModule,
     IconSetModule.forRoot(),
-    UserModule
+    OrganisationModule,
+    UserModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
   ],
   declarations: [
     AppComponent,

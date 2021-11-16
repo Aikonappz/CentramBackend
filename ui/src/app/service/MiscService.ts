@@ -4,6 +4,9 @@ import { Observable, from } from 'rxjs';
 import { RequestDemoDTO } from '../model/RequestDemoDTO';
 import { ApiHttpService } from './ApiHttpService';
 import { CommonResponse } from '../model/CommonResponse';
+import { LocationList, LocationVO } from '../model/LocationVO';
+import { Department, DepartmentList } from '../model/Department';
+import { Status } from '../model/enumerator/Status';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -25,7 +28,7 @@ export class MiscService {
         return this.http.get('/v1/misc/role/' + id, { "params": request });
     }
 
-    locationsService(request?: any): Observable<any> {
+    locationsService(request?: any): Observable<LocationList> {
         return this.http.get('/v1/misc/all-locations', { "params": request });
     }
 
@@ -33,12 +36,28 @@ export class MiscService {
         return this.http.get('/v1/misc/location/' + id, { "params": request });
     }
 
-    departmentsService(request?: any): Observable<any> {
+    departmentsService(request?: any): Observable<DepartmentList> {
         return this.http.get('/v1/misc/all-departments', { "params": request });
     }
 
     departmentService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/department/' + id, { "params": request });
+    }
+
+    updateDepartmentsStatusService(ids: number[], status: Status, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/department/' + ids.join(",") + '/' + Status[status], { "params": request });
+    }
+
+    saveDepartmentService(dept: Department): Observable<Department> {
+        return this.http.post('/v1/misc/department', dept);
+    }
+
+    updateLocationsStatusService(ids: number[], status: Status, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/location/' + ids.join(",") + '/' + Status[status], { "params": request });
+    }
+
+    saveLocationService(loc: LocationVO): Observable<LocationVO> {
+        return this.http.post('/v1/misc/location', loc);
     }
 
 
