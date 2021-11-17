@@ -5,7 +5,7 @@
                 <div class="card-header ">
                     <div class="row">
                         <div class="col-md-11">
-                            <i class="fa fa-align-justify"></i> Organisations 
+                            <i class="fa fa-align-justify"></i> Organisations
                         </div>
                         <div class="col-md-1 float-right">
                             <!-- <button type="button" class="btn btn-sm btn-minimize"><i
@@ -20,6 +20,60 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="card ">
+                        <div class="card-header">
+                            <i class="fa fa-search"></i>Search Organisation
+                        </div>
+                        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col w-40">
+                                        <label class="form-col-form-label" for="orgName">Org.
+                                            Name</label>
+                                        <input type="text" formControlName="orgName" ngModel id="orgName" name="orgName"
+                                            class="form-control" placeholder="Organisation Name"
+                                            aria-label="Organisation Name">
+                                    </div>
+                                    <div class="col w-40">
+                                        <label class="form-col-form-label " for="status">Status</label>
+                                        <div class="col-md-9 col-form-label">
+                                            <div class="form-check form-check-inline mr-1">
+                                                <input class="form-check-input" type="radio" name="status" id="ALL"
+                                                    [checked]="(org.status == 'ALL')" #status
+                                                    (change)="onChange( 'ALL')" checked="checked" value="ALL">
+                                                <label class="form-check-label" for="ALL">ALL</label>
+                                            </div>
+                                            <div class="form-check form-check-inline mr-1" id="inline-radios">
+                                                <input class="form-check-input" type="radio" name="status" id="ACTIVE"
+                                                    [checked]="(org.status == 'ACTIVE')" #status
+                                                    (change)="onChange( 'ACTIVE')" value="ACTIVE">
+                                                <label class="form-check-label" for="ACTIVE">ACTIVE</label>
+                                            </div>
+                                            <div class="form-check form-check-inline mr-1">
+                                                <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                                                    [checked]="(org.status == 'INACTIVE')" #status
+                                                    (change)="onChange( 'INACTIVE')" value="INACTIVE">
+                                                <label class="form-check-label" for="INACTIVE">INACTIVE</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 w-20 justify-content-around d-flex flex-column">
+                                        <div>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-search"></i> Search
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
+                                                <i class="fa fa-close"></i> Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <hr />
                     <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="name">
                             <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -68,6 +122,11 @@
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;"
                             [ngClass]="{gray: even}"></tr>
+                        <tr class="mat-row" *matNoDataRow>
+                            <td class="mat-cell" align="center" colspan="9999">
+                                No data found!
+                            </td>
+                        </tr>
                     </table>
                     <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
                     <!--/.row-->

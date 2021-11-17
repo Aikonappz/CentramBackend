@@ -158,11 +158,18 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label " for="status">Status</label>
-                  <div class="form-control form-control-check-box form-check form-check-inline mr-1">
-                    <input class="form-check-input" type="checkbox" [checked]="(org.status == 'ACTIVE')"
-                      formControlName="status" #status (change)="isChecked()" [value]="(org.status == 'ACTIVE')"
-                      id="status" name="status">
-                    <label class="form-check-label" for="status">Status</label>
+                  <div class="col-md-9 col-form-label">
+                    <div class="form-check form-check-inline mr-1" id="inline-radios">
+                      <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
+                        name="status" id="ACTIVE" [checked]="(org.status == 'ACTIVE')" value="true">
+                      <label class="form-check-label" for="ACTIVE">ACTIVE</label>
+                    </div>
+                    <div class="form-check form-check-inline mr-1">
+                      <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                        [checked]="(org.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                        value="false">
+                      <label class="form-check-label" for="INACTIVE">INACTIVE</label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -228,6 +235,19 @@
                   </div>
                 </div>
                 <div class="col">
+                  <label class="form-col-form-label" for="secContactNo"> Secondary Contact No.</label>
+                  <input type="text" formControlName="secContactNo" ngModel id="secContactNo" name="secContactNo"
+                    class="form-control" placeholder="Secondary Contact No." aria-label="Secondary Contact No.">
+                  <div *ngIf="f.secContactNo.touched && f.secContactNo.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.secContactNo.errors?.pattern">
+                      Invalid input! Only phone numbers allowed.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+              </div>
+              <div class="row row-margin-05 d-none">
+                <div class="col">
                   <label class="form-col-form-label" for="employeeId">Employee Id.</label>
                   <input type="text" formControlName="employeeId" ngModel id="employeeId" name="employeeId"
                     class="form-control" placeholder="Employee Id." aria-label="Employee Id.">
@@ -253,8 +273,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label" for="department">Department</label>
                   <select class="form-control" formControlName="department" ngModel id="department" name="department">

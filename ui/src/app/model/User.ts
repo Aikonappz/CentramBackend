@@ -11,6 +11,7 @@ export class User extends Base {
     email: string;
     password: string;
     contactNo: string;
+    secContactNo: string;
     employeeId: string;
     projectCode: string;
     roles: number[];
@@ -27,6 +28,7 @@ export class User extends Base {
         this.email = '';
         this.password = '';
         this.contactNo = '';
+        this.secContactNo = '';
         this.employeeId = '';
         this.projectCode = '';
         this.roles = [];

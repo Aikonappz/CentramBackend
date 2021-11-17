@@ -30,19 +30,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
 public class OrganisationService {
 
     private static final Logger log = LoggerFactory.getLogger(OrganisationService.class);
-
-    private final String defaultPassword = "sample";
 
     @Autowired
     private UserService userService;
@@ -64,6 +64,9 @@ public class OrganisationService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private EntityManager entityManager;
 
     /**
      * Create/Update new Organisation
@@ -168,8 +171,38 @@ public class OrganisationService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Organisation> getOrganisations(Pageable pageable) {
+    public PaginatedList<Organisation> getOrganisations(String name, Status status, Pageable pageable) {
+        if (!name.equals("") && status != Status.ALL) {
+            log.info("Name => {}, Status => {}", name, status);
+            return new PaginatedList<Organisation>(organisationRepository.findByNameAndStatus(name.toUpperCase(), status, pageable));
+        } else if (!name.equals("") && status == Status.ALL) {
+            log.info("Name => {}, Status => {}", name, status);
+            return new PaginatedList<Organisation>(organisationRepository.findByName(name.toUpperCase(Locale.ROOT), pageable));
+        } else if (name.equals("") && status != Status.ALL) {
+            log.info("Name => {}, Status => {}", name, status);
+            return new PaginatedList<Organisation>(organisationRepository.findByStatus(status, pageable));
+        }
         return new PaginatedList<Organisation>(organisationRepository.findAll(pageable));
+
+        /*CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Organisation> criteriaQuery = criteriaBuilder.createQuery(Organisation.class);
+        Root<Organisation> root = criteriaQuery.from(Organisation.class);
+        criteriaQuery.select(root);
+        List<Organisation> result = new ArrayList<Organisation>();
+        if (name != null) {
+            log.info("Name => {}", name);
+            criteriaQuery.where(criteriaBuilder.like(root.get("name"), "%".concat(name).concat("%")));
+        }
+        if (status != Status.ALL) {
+            log.info("Status => {}", status);
+            criteriaQuery.where(criteriaBuilder.equal(root.get("status"), status));
+        }
+        result = entityManager
+                .createQuery(criteriaQuery)
+                .setMaxResults(pageable.getPageSize())
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+                .getResultList();
+        return new PaginatedList<Organisation>(new PageImpl<Organisation>(result, pageable, result.size()));*/
     }
 
     /**

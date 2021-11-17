@@ -62,6 +62,7 @@ export class EditOrganisationComponent implements OnInit {
       .map((value) => (value as string));
     this.licenseTypes = licenseTypeList;
     this.org = new Organisation();
+    this.org.status = this.defaultStatus;
   }
 
   getTitle(state, parent) {
@@ -121,7 +122,7 @@ export class EditOrganisationComponent implements OnInit {
         licenseEnd: new FormControl('', [
           Validators.required
         ]),
-        status: new FormControl(true, [
+        status: new FormControl('ACTIVE', [
 
         ]),
         firstName: new FormControl('', [
@@ -139,6 +140,9 @@ export class EditOrganisationComponent implements OnInit {
         ]),
         contactNo: new FormControl('', [
           Validators.required,
+          Validators.pattern(this.phoneRegex),
+        ]),
+        secContactNo: new FormControl('', [
           Validators.pattern(this.phoneRegex),
         ]),
         employeeId: new FormControl('NA', [
@@ -215,7 +219,7 @@ export class EditOrganisationComponent implements OnInit {
         licenseEnd: new FormControl('', [
           Validators.required
         ]),
-        status: new FormControl(false, [
+        status: new FormControl('ACTIVE', [
 
         ]),
         firstName: new FormControl('', [
@@ -225,6 +229,9 @@ export class EditOrganisationComponent implements OnInit {
         email: new FormControl('', [
         ]),
         contactNo: new FormControl('', [
+        ]),
+        secContactNo: new FormControl('', [
+          Validators.pattern(this.phoneRegex),
         ]),
         employeeId: new FormControl('NA', [
         ]),
@@ -288,6 +295,7 @@ export class EditOrganisationComponent implements OnInit {
         this.user.email = this.angForm.controls['email'].value;
         this.user.roles = [3];
         this.user.contactNo = this.angForm.controls['contactNo'].value;
+        this.user.secContactNo = this.angForm.controls['secContactNo'].value;
         this.user.employeeId = this.angForm.controls['employeeId'].value;
         this.user.projectCode = this.angForm.controls['projectCode'].value;
         this.user.employeeId = this.user.employeeId == null ? null : this.user.employeeId.replace(/\s/g, "");
@@ -397,8 +405,7 @@ export class EditOrganisationComponent implements OnInit {
   }
 
   @ViewChild("status") status;
-  isChecked() {
-    this.statusFlag = this.status.nativeElement.checked;
-    //console.log("Check status = >" + this.status.nativeElement.checked);
+  onChange(status: boolean, inp: string) {
+    this.statusFlag = status;
   }
 }

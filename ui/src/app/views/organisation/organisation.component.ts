@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
@@ -21,8 +22,12 @@ export class OrganisationComponent implements OnInit {
   displayedColumns = ['name', 'addressDtl', 'licence', 'status', 'action'];
   private datasource: OrganisationDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
+  angForm: FormGroup;
+  org: Organisation;
+  defaultStatus: any = 'ALL';
+  statusFlag: boolean = true;
   constructor(
+    private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
     private service: OrganisationService
@@ -33,6 +38,16 @@ export class OrganisationComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.angForm = this.fb.group({
+      orgName: new FormControl('', [
+        Validators.maxLength(255)
+      ]),
+      status: new FormControl('ALL', [
+
+      ]),
+    });
+    this.org = new Organisation();
+    this.org.status = this.defaultStatus;
   }
 
   getTitle(state, parent) {
@@ -62,13 +77,13 @@ export class OrganisationComponent implements OnInit {
 
     this.paginator.page
       .pipe(
-        tap(() => this.loadData())
+        tap(() => this.loadData({}))
       )
       .subscribe();
   }
 
-  loadData() {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize);
+  loadData(req = {}) {
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
 
   updateStatus(org: Organisation) {
@@ -90,9 +105,31 @@ export class OrganisationComponent implements OnInit {
   add() {
     this.router.navigate(['/organisation/add']);
   }
-
+  loadPage() {
+    this.angForm.reset();
+    this.loadData({});
+    this.org.status = this.defaultStatus;
+  }
   formatDate(d: string) {
     return moment(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
   }
 
+  get f() { return this.angForm.controls; }
+
+  formSubmit() {
+    if (this.angForm.valid) {
+      //console.log(this.angForm);
+      this.org.name = this.angForm.controls['orgName'].value;
+      this.loadData({ "name": this.org.name, "status": this.org.status });
+      //console.log(JSON.stringify(this.org));
+    } else {
+      console.log("Invalid Form!");
+    }
+  }
+
+  @ViewChild("status") status;
+  onChange(inp: string) {
+    let val: any = inp;
+    this.org.status = val;
+  }
 }
