@@ -9,9 +9,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { Organisation } from '../../model/Organisation';
 import { OrganisationDataSource } from '../../service/datasource/OrganisationDataSource';
-import { UserDataSource } from '../../service/datasource/UserDataSource';
 import { OrganisationService } from '../../service/OrganisationService';
-import { UserService } from '../../service/UserService';
 
 @Component({
   selector: 'app-organisation',
@@ -120,7 +118,7 @@ export class OrganisationComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.org.name = this.angForm.controls['orgName'].value;
-      this.loadData({ "name": this.org.name, "status": this.org.status });
+      this.loadData({ "name": this.org.name == null ? '' : this.org.name, "status": this.org.status });
       //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");

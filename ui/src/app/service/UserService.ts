@@ -7,7 +7,7 @@ import { CommonResponse } from '../model/CommonResponse';
 import { AuthRequest } from '../model/AuthRequest';
 import { LoggedInUser } from '../model/LoggedInUser';
 import { Status } from '../model/enumerator/Status';
-import { UserVO } from '../model/UserVO';
+import { UserVO, UserVOListResponse } from '../model/UserVO';
 import { User } from '../model/User';
 import { UserDTO } from '../model/UserDTO';
 
@@ -35,7 +35,7 @@ export class UserService {
         return this.http.get('/v1/user/sign-out');
     }
 
-    getUsersService(request?: any): Observable<any> {
+    getUsersService(request?: any): Observable<UserVOListResponse> {
         return this.http.get('/v1/user/all', { "params": request });
     }
 

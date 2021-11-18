@@ -53,15 +53,14 @@ import { ApiHttpService } from './service/ApiHttpService';
 import { UserService } from './service/UserService';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
 import { LogoutComponent } from './views/logout/logout.component';
-
 import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { UserModule } from './views/user/user.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { OrganisationModule } from './views/organisation/organisation.module';
+
 
 @NgModule({
   imports: [
@@ -95,7 +94,6 @@ import { OrganisationModule } from './views/organisation/organisation.module';
     P404Component,
     P500Component,
     RegisterComponent,
-
     LoginComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,

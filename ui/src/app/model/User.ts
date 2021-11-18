@@ -13,6 +13,7 @@ export class User extends Base {
     contactNo: string;
     secContactNo: string;
     employeeId: string;
+    managerId: string;
     projectCode: string;
     roles: number[];
     status: Status;
@@ -30,6 +31,7 @@ export class User extends Base {
         this.contactNo = '';
         this.secContactNo = '';
         this.employeeId = '';
+        this.managerId = '';
         this.projectCode = '';
         this.roles = [];
         this.status = Status.ACTIVE;

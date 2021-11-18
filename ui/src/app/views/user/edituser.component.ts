@@ -11,6 +11,8 @@ import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
 import { AppUtility } from '../../config/AppUtility';
+import * as jquery from 'jquery';
+import 'select2';
 
 @Component({
   selector: 'app-edituser',
@@ -27,6 +29,12 @@ export class EditUserComponent implements OnInit {
   roles: Role[];
   locations: LocationVO[];
   departments: Department[];
+  users: User[];
+  roleList: any[];
+  locationList: any[];
+  departmentList: any[];
+  usrList: any[];
+  c: number = 0;
   angForm = new FormGroup({
     firstName: new FormControl('', [
       Validators.required,
@@ -42,7 +50,13 @@ export class EditUserComponent implements OnInit {
       Validators.required,
       Validators.pattern(this.phoneRegex),
     ]),
+    secContactNo: new FormControl('', [
+      Validators.pattern(this.phoneRegex),
+    ]),
     employeeId: new FormControl('NA', [
+      //Validators.required,
+    ]),
+    managerId: new FormControl('NA', [
       //Validators.required,
     ]),
     projectCode: new FormControl('NA', [
@@ -97,33 +111,64 @@ export class EditUserComponent implements OnInit {
           //console.log("load roles");
           this.roles = data.content;
           let tmpRoles: any = [];
-          let c = 0;
+          this.c = 0;
           for (let i = 0; i < this.roles.length; i++) {
             if (AppUtility.appManager()) {
               if (!this.roles[i].name.match(/ORG_.*/)) {
-                tmpRoles[c] = this.roles[i];
-                c++;
+                tmpRoles[this.c++] = this.roles[i];
               }
             } else {
               if (this.roles[i].name.match(/ORG_.*/)) {
-                tmpRoles[c] = this.roles[i];
-                c++;
+                tmpRoles[this.c++] = this.roles[i];
               }
             }
           }
           this.roles = tmpRoles;
+          this.c = 0;
+          for (let indx = 0; indx < this.roles.length; indx++) {
+            if (this.roles[indx].status == 1) {
+              this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+            }
+          }
         });
+
       this.miscService
         .locationsService()
         .subscribe((data: any) => {
           //console.log("load locations");
           this.locations = data.content;
+          this.c = 0;
+          for (let indx = 0; indx < this.locations.length; indx++) {
+            if (this.locations[indx].status == 1) {
+              this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+            }
+          }
         });
       this.miscService
         .departmentsService()
         .subscribe((data: any) => {
           //console.log("load departments");
           this.departments = data.content;
+          this.c = 0;
+          for (let indx = 0; indx < this.departments.length; indx++) {
+            if (this.departments[indx].status == 1) {
+              this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+            }
+          }
+        });
+      this.userService
+        .getUsersService()
+        .subscribe((data: any) => {
+          //console.log("load departments");
+          this.users = data.content;
+          this.c = 0;
+          this.usrList = [];
+          for (let indx = 0; indx < this.users.length; indx++) {
+            if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != null) {
+              this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
+            }
+          }
+          //console.log(JSON.stringify(this.usrList));
         });
     } else {
       this.miscService
@@ -132,31 +177,47 @@ export class EditUserComponent implements OnInit {
           //console.log("load roles");
           this.roles = data.content;
           let tmpRoles: any = [];
-          let c = 0;
+          this.c = 0;
           for (let i = 0; i < this.roles.length; i++) {
             if (AppUtility.appManager()) {
               if (!this.roles[i].name.match(/ORG_.*/)) {
-                tmpRoles[c] = this.roles[i];
-                c++;
+                tmpRoles[this.c++] = this.roles[i];
               }
             } else {
               if (this.roles[i].name.match(/ORG_.*/)) {
-                tmpRoles[c] = this.roles[i];
-                c++;
+                tmpRoles[this.c++] = this.roles[i];
               }
             }
           }
           this.roles = tmpRoles;
+          this.c = 0;
+          for (let indx = 0; indx < this.roles.length; indx++) {
+            if (this.roles[indx].status == 1) {
+              this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+            }
+          }
           this.miscService
             .locationsService()
             .subscribe((data: any) => {
               //console.log("load locations");
               this.locations = data.content;
+              this.c = 0;
+              for (let indx = 0; indx < this.locations.length; indx++) {
+                if (this.locations[indx].status == 1) {
+                  this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+                }
+              }
               this.miscService
                 .departmentsService()
                 .subscribe((data: any) => {
                   //console.log("load departments");
                   this.departments = data.content;
+                  this.c = 0;
+                  for (let indx = 0; indx < this.departments.length; indx++) {
+                    if (this.departments[indx].status == 1) {
+                      this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+                    }
+                  }
                   if (this.route.snapshot.paramMap.has('id')) {
                     if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
                       //console.log("load provided id data...");
@@ -165,10 +226,26 @@ export class EditUserComponent implements OnInit {
                       this.callGetUserService(this.entityId);
                     }
                   }
+                  this.userService
+                    .getUsersService()
+                    .subscribe((data: any) => {
+                      //console.log("load departments");
+                      this.users = data.content;
+                      this.c = 0;
+                      this.usrList = [];
+                      for (let indx = 0; indx < this.users.length; indx++) {
+                        if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != null) {
+                          this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
+                        }
+                      }
+                    });
                 });
             });
         });
     }
+    //jquery('#roles').select2();
+    //jquery('#department').select2();
+    //jquery('#location').select2();
   }
 
   ngAfterViewInit() { }
@@ -184,7 +261,9 @@ export class EditUserComponent implements OnInit {
       this.user.lastName = this.angForm.controls['lastName'].value;
       this.user.email = this.angForm.controls['email'].value;
       this.user.contactNo = this.angForm.controls['contactNo'].value;
+      this.user.secContactNo = this.angForm.controls['secContactNo'].value;
       this.user.employeeId = this.angForm.controls['employeeId'].value;
+      this.user.managerId = this.angForm.controls['managerId'].value;
       this.user.projectCode = this.angForm.controls['projectCode'].value;
       this.user.roles = this.angForm.controls['roles'].value;
       this.user.employeeId = this.user.employeeId == null ? null : this.user.employeeId.replace(/\s/g, "");
@@ -209,7 +288,7 @@ export class EditUserComponent implements OnInit {
       }
       /* process department and location */
       this.user.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
-      //console.log(this.user.status);
+      //console.log(this.user);
       if (this.newEntity) {
         this.callAddUserService();
       } else {
@@ -251,6 +330,7 @@ export class EditUserComponent implements OnInit {
         this.user.email = data.email;
         this.user.contactNo = data.contactNo;
         this.user.employeeId = data.employeeId;
+        this.user.managerId = data.managerId;
         this.user.projectCode = data.projectCode;
         this.user.roles = data.roles;
         this.user.organisation.id = data.organisationId;
@@ -259,15 +339,19 @@ export class EditUserComponent implements OnInit {
         this.user.department.id = data.departmentId;
         this.user.status = data.status;
         this.user.password = data.password;
+        this.user.managerId = data.managerId;
+        this.user.secContactNo = data.secContactNo;
         //console.log(JSON.stringify(this.user));
 
         this.angForm.get('firstName').setValue(this.user.firstName);
         this.angForm.get('lastName').setValue(this.user.lastName);
         this.angForm.get('email').setValue(this.user.email);
         this.angForm.get('contactNo').setValue(this.user.contactNo);
+        this.angForm.get('secContactNo').setValue(this.user.secContactNo);
         this.angForm.get('employeeId').setValue(this.user.employeeId);
         this.angForm.get('projectCode').setValue(this.user.projectCode);
         this.angForm.get('roles').setValue(this.user.roles.map(String));
+        this.angForm.get('managerId').setValue(this.user.managerId);
         for (var i = 0; i < this.departments.length; i++) {
           if (this.departments[i].id == this.user.department.id) {
             this.angForm.get('department').setValue(this.user.department.id + '__' + this.departments[i].version);
@@ -286,8 +370,7 @@ export class EditUserComponent implements OnInit {
   }
 
   @ViewChild("status") status;
-  isChecked() {
-    this.statusFlag = this.status.nativeElement.checked;
-    //console.log("Check status = >" + this.status.nativeElement.checked);
+  onChange(status: boolean, inp: string) {
+    this.statusFlag = status;
   }
 }

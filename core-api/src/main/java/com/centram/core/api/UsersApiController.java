@@ -218,7 +218,12 @@ public class UsersApiController {
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<UserVO>> getUsers(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<UserVO>> getUsers(
+            @ApiParam(value = "User Email", defaultValue = "", required = false) @RequestParam(value = "email", defaultValue = "", required = false) String email,
+            @ApiParam(value = "User EmployeeId", defaultValue = "", required = false) @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId,
+            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 }

@@ -7,6 +7,8 @@ import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserVO } from '../../model/UserVO';
 import { Status } from '../../model/enumerator/Status';
+import { User } from '../../model/User';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-user',
@@ -14,17 +16,37 @@ import { Status } from '../../model/enumerator/Status';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  displayedColumns = ['name', 'contact', 'department', 'status', 'action'];
+  displayedColumns = ['name', 'contact', 'employeeId', 'location', 'department', 'projectCode', 'status', 'action'];
   private userVODatasource: UserDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  constructor(titleService: Title, private router: Router, private userService: UserService) {
+  angForm: FormGroup;
+  usr: User;
+  defaultStatus: any = 'ALL';
+  statusFlag: boolean = true;
+  constructor(
+    private fb: FormBuilder,
+    private titleService: Title,
+    private router: Router,
+    private userService: UserService) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
         titleService.setTitle(title);
       }
     });
+    this.angForm = this.fb.group({
+      userEmail: new FormControl('', [
+        Validators.maxLength(255)
+      ]),
+      userEmployeeId: new FormControl('', [
+        Validators.maxLength(255)
+      ]),
+      status: new FormControl('ALL', [
+
+      ]),
+    });
+    this.usr = new User();
+    this.usr.status = this.defaultStatus;
   }
 
   getTitle(state, parent) {
@@ -54,13 +76,19 @@ export class UserComponent implements OnInit {
 
     this.paginator.page
       .pipe(
-        tap(() => this.loadUserVOs())
+        tap(() => this.loadData())
       )
       .subscribe();
   }
 
-  loadUserVOs() {
-    this.userVODatasource.loadUserVOs(this.paginator.pageIndex, this.paginator.pageSize);
+  loadData(req = {}) {
+    this.userVODatasource.loadUserVOs(this.paginator.pageIndex, this.paginator.pageSize, req);
+  }
+
+  loadPage() {
+    this.angForm.reset();
+    this.loadData({});
+    this.usr.status = this.defaultStatus;
   }
 
   updateStatus(user: UserVO) {
@@ -77,10 +105,44 @@ export class UserComponent implements OnInit {
     }
   }
 
-  editUser(user: UserVO) {
+  edit(user: UserVO) {
     this.router.navigate(['/user/edit/' + user.id]);
   }
-  addUser() {
+
+  add() {
     this.router.navigate(['/user/add']);
   }
+
+  upload() {
+    window.alert("upload");
+  }
+
+  download() {
+    window.alert("download");
+  }
+
+  get f() { return this.angForm.controls; }
+
+  formSubmit() {
+    if (this.angForm.valid) {
+      //console.log(this.angForm);
+      this.usr.email = this.angForm.controls['userEmail'].value;
+      this.usr.employeeId = this.angForm.controls['userEmployeeId'].value;
+      this.loadData({
+        "email": this.usr.email == null ? '' : this.usr.email,
+        "employeeId": this.usr.employeeId == null ? '' : this.usr.employeeId,
+        "status": this.usr.status
+      });
+      //console.log(JSON.stringify(this.org));
+    } else {
+      console.log("Invalid Form!");
+    }
+  }
+
+  @ViewChild("status") status;
+  onChange(inp: string) {
+    let val: any = inp;
+    this.usr.status = val;
+  }
+
 }

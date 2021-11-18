@@ -29,9 +29,15 @@ export class UserDataSource implements DataSource<UserVO>{
         this.countSubject.complete();
     }
 
-    loadUserVOs(pageNumber = 0, pageSize = 10) {
+    loadUserVOs(pageNumber = 0, pageSize = 10, req = {}) {
         this.loadingSubject.next(true);
-        this.userService.getUsersService({ page: pageNumber, size: pageSize })
+        let defaultParam = { page: pageNumber, size: pageSize };
+        let params = Object.assign(
+            req,
+            defaultParam
+        );
+        //console.log(params);
+        this.userService.getUsersService(params)
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))

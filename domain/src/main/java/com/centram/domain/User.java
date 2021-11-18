@@ -71,13 +71,16 @@ public class User extends BaseEntity implements Serializable {
     private String contactNo;
 
     @ApiModelProperty(value = "")
-    @NotNull
     @Column(name = "sec_contact_no", columnDefinition = "varchar(255) not null")
     private String secContactNo;
 
     @ApiModelProperty(value = "")
     @Column(name = "employee_id", columnDefinition = "varchar(255)")
     private String employeeId;
+
+    @ApiModelProperty(value = "")
+    @Column(name = "manager_id", columnDefinition = "varchar(255)")
+    private BigInteger managerId;
 
     @ApiModelProperty(value = "")
     @Column(name = "project_code", columnDefinition = "varchar(255)")

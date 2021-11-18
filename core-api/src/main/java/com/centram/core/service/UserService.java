@@ -296,14 +296,17 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<UserVO> getUsers(Pageable pageable) {
+    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Page<User> page = null;
-        if (loggedInUser.getOrganisationId() == null) {
-            page = userRepository.getAppUsers(pageable);
-        } else {
-            page = userRepository.getUsers(loggedInUser.getOrganisationId(), pageable);
-        }
+        email = (!email.equals("")) ? "%" + email.toUpperCase() + "%" : null;
+        employeeId = (!employeeId.equals("")) ? "%" + employeeId.toUpperCase() + "%" : null;
+        Page<User> page = userRepository.getUsers(
+                loggedInUser.getOrganisationId(),
+                email,
+                employeeId,
+                status.ordinal(),
+                pageable
+        );
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         List<String> roleNames = null;

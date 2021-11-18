@@ -41,10 +41,40 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query("select u from User u where u.id = (:id)")
     User getUserById(@Param("id") BigInteger id);
 
-    @Query("select u from User u where u.organisation.id = (:organisationId)")
-    Page<User> getUsers(@Param("organisationId") BigInteger organisationId, Pageable pageable);
+    @Query("select u from User u where 1 = 1 and " +
+            " ( " +
+            "   ((:organisationId) is not null and u.organisation.id = (:organisationId)) " +
+            "   OR " +
+            "   ((:organisationId) is null and u.organisation.id is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:status) <> 2 and u.status = (:status)) " +
+            "   OR " +
+            "   ((:status) = 2) " +
+            " ) and " +
+            " ( " +
+            "   ((:email) is not null and upper(u.email) like (:email)) " +
+            "   OR " +
+            "   ((:email) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:employeeId) is not null and upper(u.employeeId) like (:employeeId)) " +
+            "   OR " +
+            "   ((:employeeId) is null)" +
+            " )"
+    )
+    Page<User> getUsers(
+            @Param("organisationId") BigInteger organisationId,
+            @Param("email") String email,
+            @Param("employeeId") String employeeId,
+            @Param("status") Integer status,
+            Pageable pageable
+    );
 
-    @Query("select u from User u where u.organisation.id is null")
-    Page<User> getAppUsers(Pageable pageable);
+    //@Query("select u from User u where u.organisation.id = (:organisationId)")
+    //Page<User> getUsers(@Param("organisationId") BigInteger organisationId, Pageable pageable);
+
+    //@Query("select u from User u where u.organisation.id is null")
+    //Page<User> getAppUsers(Pageable pageable);
 
 }

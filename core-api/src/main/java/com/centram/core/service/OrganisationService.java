@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -172,17 +171,10 @@ public class OrganisationService {
      */
     @Transactional(readOnly = true)
     public PaginatedList<Organisation> getOrganisations(String name, Status status, Pageable pageable) {
-        if (!name.equals("") && status != Status.ALL) {
-            log.info("Name => {}, Status => {}", name, status);
-            return new PaginatedList<Organisation>(organisationRepository.findByNameAndStatus(name.toUpperCase(), status, pageable));
-        } else if (!name.equals("") && status == Status.ALL) {
-            log.info("Name => {}, Status => {}", name, status);
-            return new PaginatedList<Organisation>(organisationRepository.findByName(name.toUpperCase(Locale.ROOT), pageable));
-        } else if (name.equals("") && status != Status.ALL) {
-            log.info("Name => {}, Status => {}", name, status);
-            return new PaginatedList<Organisation>(organisationRepository.findByStatus(status, pageable));
-        }
-        return new PaginatedList<Organisation>(organisationRepository.findAll(pageable));
+        name = (!name.equals("")) ? "%" + name.toUpperCase() + "%" : null;
+        log.info("Name => {}, Status => {}", name, status);
+        return new PaginatedList<Organisation>(organisationRepository.findAll(name, status.ordinal(), pageable));
+
 
         /*CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Organisation> criteriaQuery = criteriaBuilder.createQuery(Organisation.class);
