@@ -25,10 +25,10 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "organisation",
-        indexes = {
-                @Index(name = "org_name_idx", columnList = "name", unique = false)
-        }
+@Table(name = "organisation"
+        //indexes = {
+        //        @Index(name = "org_name_idx", columnList = "name", unique = false)
+        //}
 )
 @Audited
 public class Organisation extends BaseEntity implements Serializable {
@@ -41,38 +41,63 @@ public class Organisation extends BaseEntity implements Serializable {
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "name", columnDefinition = "varchar(255) not null")
+    @Column(name = "name", nullable = false, columnDefinition = "varchar(255) not null")
     private String name;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "add1", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "add1", nullable = false, columnDefinition = "varchar(255) not null")
     private String add1;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "add2", columnDefinition = "varchar(255) not null")
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "add2", nullable = true, columnDefinition = "varchar(255) default null")
     private String add2;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "city", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "city", nullable = false, columnDefinition = "varchar(255) not null")
     private String city;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "pincode", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "pincode", nullable = false, columnDefinition = "varchar(255) not null")
     private String pincode;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "pan", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "pan", nullable = false, columnDefinition = "varchar(255) not null")
     private String pan;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "tan", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "tan", nullable = false, columnDefinition = "varchar(255) not null")
     private String tan;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "gstin", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "gstin", nullable = false, columnDefinition = "varchar(255) not null")
     private String gstin;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "license_Type")
+    @Enumerated(EnumType.ORDINAL)
+    private LicenseType licenseType;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "license_start", nullable = false)
+    private LocalDateTime licenseStart;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "license_end", nullable = false)
+    private LocalDateTime licenseEnd;
 
     @ApiModelProperty(value = "")
     @NotNull
@@ -80,25 +105,6 @@ public class Organisation extends BaseEntity implements Serializable {
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
-
-    @ApiModelProperty(value = "")
-    @NotNull
-    @Valid
-    @Column(name = "license_Type")
-    @Enumerated(EnumType.ORDINAL)
-    private LicenseType licenseType;
-
-    @ApiModelProperty(value = "")
-    @NotNull
-    @Valid
-    @Column(name = "license_start", nullable = true)
-    private LocalDateTime licenseStart;
-
-    @ApiModelProperty(value = "")
-    @NotNull
-    @Valid
-    @Column(name = "license_end", nullable = true)
-    private LocalDateTime licenseEnd;
 
     public Organisation(@NotNull BigInteger id) {
         this.id = id;

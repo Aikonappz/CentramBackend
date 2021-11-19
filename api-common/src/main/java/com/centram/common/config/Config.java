@@ -112,6 +112,7 @@ public class Config {
         return new Jackson2ObjectMapperBuilder()
                 .indentOutput(true)
                 .simpleDateFormat(dateFormat)
+                //.failOnEmptyBeans(false)
                 .serializerByType(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)))
                 .deserializerByType(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(dateFormat)))
                 .serializerByType(LocalDateTime.class, new JsonSerializer<LocalDateTime>() {

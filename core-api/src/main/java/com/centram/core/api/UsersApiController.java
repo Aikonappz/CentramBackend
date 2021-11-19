@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -231,9 +230,9 @@ public class UsersApiController {
         return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = ByteArrayInputStream.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = Resource.class, tags = {"user",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = ByteArrayInputStream.class),
+            @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/download", method = RequestMethod.GET)

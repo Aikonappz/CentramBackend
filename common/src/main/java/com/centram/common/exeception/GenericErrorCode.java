@@ -13,7 +13,8 @@ public enum GenericErrorCode implements ErrorCode {
     DATA_NOT_FOUND("Data not found!"),
     JSON_PROCESS_EXCEPTION("Json process exception!"),
     SERIALIZATION_ISSUE("Serialization issue!"),
-    DESERIALIZATION_ISSUE("Deserialization issue!");
+    DESERIALIZATION_ISSUE("Deserialization issue!"),
+    CSV_GENERATION_ISSUE("CSV generation issue!");
 
     private final String template;
 

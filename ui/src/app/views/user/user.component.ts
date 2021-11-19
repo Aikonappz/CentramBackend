@@ -118,7 +118,17 @@ export class UserComponent implements OnInit {
   }
 
   download() {
-    window.alert("download");
+    this.userService
+      .downloadUsersService({})
+      .subscribe((data: any) => {
+        //console.log(data);
+        let blob = new Blob([data], { type: "text/csv" });
+        let url = window.URL.createObjectURL(blob);
+        let pwa = window.open(url);
+        if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+          //alert('Please disable your Pop-up blocker and try again.');
+        }
+      });
   }
 
   get f() { return this.angForm.controls; }

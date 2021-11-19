@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
-import { RequestDemoDTO } from '../model/RequestDemoDTO';
 import { ApiHttpService } from './ApiHttpService';
 import { CommonResponse } from '../model/CommonResponse';
 import { AuthRequest } from '../model/AuthRequest';
-import { LoggedInUser } from '../model/LoggedInUser';
 import { Status } from '../model/enumerator/Status';
 import { UserVO, UserVOListResponse } from '../model/UserVO';
 import { User } from '../model/User';
@@ -57,6 +54,10 @@ export class UserService {
 
     changePasswordService(user: UserDTO, request?: any): Observable<any> {
         return this.http.put('/v1/user/change-password', user, { "params": request });
+    }
+
+    downloadUsersService(request?: any): Observable<any> {
+        return this.http.get('/v1/user/download/', {responseType: 'blob'});
     }
 
     //   getAllCompany(): Observable<Company[]> {

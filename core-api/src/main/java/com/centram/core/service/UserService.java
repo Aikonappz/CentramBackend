@@ -16,6 +16,9 @@ import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.MediaType;
 import com.centram.domain.enumarator.Status;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -37,8 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.*;
@@ -320,6 +322,74 @@ public class UserService implements UserDetailsService {
             userVOS.add(userVO);
         }
         return new PaginatedList<UserVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), userVOS);
+    }
+
+    /**
+     * Download Users as CSV
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ByteArrayInputStream downloadUsers() {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+        List<String> data = new ArrayList<String>();
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        UserVO userVO = null;
+        List<String> roleNames = null;
+        Page<User> page = userRepository.getUsers(
+                loggedInUser.getOrganisationId(),
+                null,
+                null,
+                Status.ALL.ordinal(),
+                Pageable.unpaged()
+        );
+        for (User user : page.getContent()) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
+        }
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList(
+                    "First Name",
+                    "Last Name",
+                    "Email",
+                    "Contact No",
+                    "Sec. ContactNo",
+                    "Employee Id.",
+                    "Project Code",
+                    "Roles",
+                    "Location",
+                    "Department",
+                    "Status"
+            );
+            csvPrinter.printRecord(data);
+            for (UserVO uv : userVOS) {
+                data = Arrays.asList(
+                        uv.getFirstName(),
+                        uv.getLastName(),
+                        uv.getEmail(),
+                        uv.getContactNo(),
+                        uv.getSecContactNo(),
+                        uv.getEmployeeId(),
+                        uv.getProjectCode(),
+                        String.join(",", uv.getRoleNames()),
+                        uv.getLocation(),
+                        uv.getDepartment(),
+                        uv.getStatus().toString()
+                );
+                csvPrinter.printRecord(data);
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
     }
 
     /**

@@ -29,6 +29,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(name = "user_org_constraint", columnNames = {"email", "organisation_id"}),
         indexes = {
                 @Index(name = "email_indx", columnList = "email", unique = true),
                 @Index(name = "org_id_idx", columnList = "organisation_id", unique = false),
@@ -45,45 +46,47 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "first_name", columnDefinition = "varchar(255) not null")
+    @Column(name = "first_name", nullable = false, columnDefinition = "varchar(255) not null")
     private String firstName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "last_name", columnDefinition = "varchar(255) not null")
+    @Column(name = "last_name", nullable = false, columnDefinition = "varchar(255) not null")
     private String lastName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "email", columnDefinition = "varchar(255) not null")
+    @Column(name = "email", nullable = false, columnDefinition = "varchar(255) not null")
     private String email;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "password", columnDefinition = "varchar(255) not null")
+    @Column(name = "password", nullable = false, columnDefinition = "varchar(255) not null")
     private String password;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "contact_no", columnDefinition = "varchar(255) not null")
+    @Column(name = "contact_no", nullable = false, columnDefinition = "varchar(255) not null")
     private String contactNo;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "sec_contact_no", columnDefinition = "varchar(255) not null")
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255) not null")
     private String secContactNo;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "employee_id", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "employee_id", nullable = true, columnDefinition = "varchar(255)")
     private String employeeId;
 
-    @ApiModelProperty(value = "")
-    @Column(name = "manager_id", columnDefinition = "varchar(255)")
+    @ApiModelProperty(required = false, value = "")
+    //@OneToOne(optional = true, fetch = FetchType.LAZY)
+    //@JoinColumn(name = "manager_id", referencedColumnName = "id")
+    @Column(name = "manager_id", nullable = true, columnDefinition = "BIGINT default null")
     private BigInteger managerId;
 
     @ApiModelProperty(value = "")
-    @Column(name = "project_code", columnDefinition = "varchar(255)")
+    @Column(name = "project_code", nullable = true, columnDefinition = "varchar(255) default null")
     private String projectCode;
 
     @ApiModelProperty(required = true, value = "")
@@ -94,29 +97,29 @@ public class User extends BaseEntity implements Serializable {
     @Convert(converter = RoleConverter.class)
     private List<BigInteger> roles;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(required = true, value = "")
     @NotNull
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne
-    @JoinColumn(name = "organisation_id", referencedColumnName = "id")
+    @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     private Organisation organisation;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne
-    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
     private Location location;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne
-    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    @JoinColumn(name = "department_id", nullable = true, referencedColumnName = "id")
     private Department department;
 
     public User(@NotNull BigInteger id) {
