@@ -4,6 +4,7 @@ import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppUtility } from '../config/AppUtility';
 import { Router } from '@angular/router';
+import { SpinnerService } from './SpinnerService';
 @Injectable({
     providedIn: 'root'
 })
@@ -11,7 +12,10 @@ export class ApiHttpService {
 
     private REST_API_SERVER = AppUtility.API_ENDPOINT;
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+    ) { }
 
     public get(url: string, options?: any): Observable<any> {
         return this.http

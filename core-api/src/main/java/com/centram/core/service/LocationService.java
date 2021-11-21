@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class LocationService {
 

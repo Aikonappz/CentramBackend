@@ -1,5 +1,6 @@
 package com.centram.domain;
 
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -23,8 +24,8 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "module"
-        //uniqueConstraints = @UniqueConstraint(name = "mod_submod_constraint", columnNames = {"name", "parent_module_id"})
+@Table(name = "module",
+        uniqueConstraints = @UniqueConstraint(name = "mod_submod_constraint", columnNames = {"name", "parent_module_id"})
 )
 public class Module implements Serializable {
 
@@ -52,4 +53,13 @@ public class Module implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "app_module")
+    private Boolean appModule;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "licence_type")
+    @Enumerated(EnumType.ORDINAL)
+    private LicenseType licenseType;
 }

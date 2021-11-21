@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
-@Transactional
 @Service
 public class ActivityLogService {
     private static final Logger log = LoggerFactory.getLogger(ActivityLogService.class);
@@ -22,11 +21,13 @@ public class ActivityLogService {
     @Autowired
     private ActivityLogRepository activityLogRepository;
 
+    @Transactional
     @Async("asyncExecutor")
     public ActivityLog save(ActivityLog activityLog) {
         return activityLogRepository.save(activityLog);
     }
 
+    @Transactional(readOnly = true)
     public Page<ActivityLog> getActivities(BigInteger userId, Pageable pageable) {
         return activityLogRepository.getActivities(userId, pageable);
     }

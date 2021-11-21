@@ -9,13 +9,12 @@ import com.centram.common.utility.JwtTokenUtil;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
+import com.centram.common.vo.PermissionVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.UserRepository;
 import com.centram.domain.*;
-import com.centram.domain.enumarator.ActivityType;
-import com.centram.domain.enumarator.EntityType;
-import com.centram.domain.enumarator.MediaType;
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.*;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -90,8 +89,20 @@ public class UserService implements UserDetailsService {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private AppConfigService appConfigService;
+
+    @Autowired
+    private FirebaseMessagingService firebaseMessagingService;
+
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
+
+    @Value("${app.firebase.topic}")
+    private String appFirebaseTopic;
 
     /**
      * Sign In
@@ -106,13 +117,26 @@ public class UserService implements UserDetailsService {
         User user = userRepository.getUserByEmail(email);
         if (user != null) {
             UserVO userVO = new UserVO(user);
-            List<String> roleNames = new ArrayList<>();
-            for (BigInteger roleId : userVO.getRoles()) {
-                roleNames.add(roleService.getById(roleId).getName());
-            }
-            userVO.setRoleNames(roleNames);
+            userVO.setRoleNames(roleService.getByIds(userVO.getRoles()));
             List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles(), PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id"))).getContent();
-            HashMap<String, String> modulePermissions = new HashMap<String, String>();
+            List<PermissionVO> modulePermissions = new ArrayList<PermissionVO>();
+            for (Permission permission : permissions) {
+                Boolean alreadyExist = modulePermissions.stream()
+                        .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
+                        .findFirst().isPresent();
+                if (alreadyExist) {
+                    modulePermissions.stream()
+                            .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
+                            .findFirst()
+                            .ifPresent(i -> {
+                                String actionNames = i.getActionNames().concat(",").concat(permission.getAction().getName());
+                                i.setActionNames(actionNames);
+                            });
+                } else {
+                    modulePermissions.add(new PermissionVO(permission));
+                }
+            }
+            /*HashMap<String, String> modulePermissions = new HashMap<String, String>();
             String prm = null;
             for (Permission permission : permissions) {
                 prm = null;
@@ -123,7 +147,7 @@ public class UserService implements UserDetailsService {
                     prm = permission.getAction().getName();
                 }
                 modulePermissions.put(permission.getModule().getName(), prm);
-            }
+            }*/
             LoggedInUser loggedInUser = new LoggedInUser(userVO, modulePermissions);
             //save data in redis
             redisTemplate.opsForValue().set(email, loggedInUser);
@@ -250,6 +274,23 @@ public class UserService implements UserDetailsService {
             Map<String, String> mailValues = new HashMap<>();
             mailValues.put("password", password);
             appEmailService.sendOnboardMail(userVO, mailValues);
+            /* fetch onboard related notification config */
+            List<AppConfiguration> appConfigs = appConfigService.getAppConfigurations(Arrays.asList("ONBOARD_NOTIFICATION"));
+            /* save notification to db*/
+            Notification notification = new Notification();
+            notification.setStatus(Status.PUSHED);
+            notification.setNotificationTitle(appConfigs.get(0).getConfigurationProperties().get("title").toString());
+            notification.setNotificationBody(appConfigs.get(0).getConfigurationProperties().get("body").toString());
+            notification.setNotificationType(NotificationType.INFO);
+            notification.setUser(new User(userVO.getVersion(), userVO.getId()));
+            notification = notificationService.save(notification);
+            /* push firebase notification */
+            try {
+                firebaseMessagingService.sendNotification(notification, appFirebaseTopic);
+            } catch (FirebaseMessagingException e) {
+                e.printStackTrace();
+                throw new AppException(GenericErrorCode.FIREBASE_INTEGRATION_ISSUE);
+            }
         }
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return userVO;

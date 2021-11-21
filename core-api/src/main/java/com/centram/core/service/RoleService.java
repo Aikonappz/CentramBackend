@@ -8,13 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,7 +27,7 @@ public class RoleService {
     private RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "roles", key = "#roleId")
+    @Cacheable(value = "role", key = "#roleId")
     public Role getById(BigInteger roleId) {
         Optional<Role> role = roleRepository.findById(roleId);
         if (role.isPresent()) {
@@ -34,6 +35,14 @@ public class RoleService {
         }
         return null;
     }
+
+    @Transactional(readOnly = true)
+    public List<String> getByIds(List<BigInteger> roleIds) {
+        return roleRepository.findAllById(roleIds).stream()
+                .map(Role::getName)
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional(readOnly = true)
     public PaginatedList<Role> getRoles(Pageable pageable) {

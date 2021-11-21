@@ -60,6 +60,7 @@ import { UserModule } from './views/user/user.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { OrganisationModule } from './views/organisation/organisation.module';
+import { SpinnerComponent } from './views/spinner/spinner.component';
 
 
 @NgModule({
@@ -99,6 +100,7 @@ import { OrganisationModule } from './views/organisation/organisation.module';
     ResetPasswordComponent,
     RequestDemoComponent,
     LogoutComponent,
+    SpinnerComponent,
   ],
   providers: [
     CheckLoggedInOuter,

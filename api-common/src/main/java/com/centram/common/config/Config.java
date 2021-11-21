@@ -9,6 +9,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -20,6 +24,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -92,6 +97,21 @@ public class Config {
 
     @Value("${spring.application.name}")
     private String appName;
+
+    @Value("${app.firebase-config-file}")
+    private String appFireBaseConfigFile;
+
+    @Bean
+    FirebaseMessaging firebaseMessaging() throws IOException {
+        GoogleCredentials googleCredentials = GoogleCredentials
+                .fromStream(new ClassPathResource(appFireBaseConfigFile).getInputStream());
+        FirebaseOptions firebaseOptions = FirebaseOptions
+                .builder()
+                .setCredentials(googleCredentials)
+                .build();
+        FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions, "Centram");
+        return FirebaseMessaging.getInstance(app);
+    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {

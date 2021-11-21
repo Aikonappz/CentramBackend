@@ -24,7 +24,7 @@ import java.util.*;
 public class AppEmailService {
     private static final Logger log = LoggerFactory.getLogger(AppEmailService.class);
 
-    @Value("${app.base.url:http://localhost/erp-ui/app}")
+    @Value("${app.base.url:http://localhost:4200/#/}")
     private String appBaseUrl;
 
     @Autowired
@@ -66,8 +66,8 @@ public class AppEmailService {
         context.setVariable("mail_body", forgotPasswordEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", new String[] {userVO.getEmail()} );
-        mailMap.put("cc", new String[] {userVO.getEmail()});
+        mailMap.put("to", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -109,8 +109,8 @@ public class AppEmailService {
         context.setVariable("mail_body", onboardEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", new String[] {userVO.getEmail()});
-        mailMap.put("cc", new String[] {userVO.getEmail()});
+        mailMap.put("to", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
@@ -146,8 +146,8 @@ public class AppEmailService {
         context.setVariable("mail_body", resetPasswordEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", new String[] {userVO.getEmail()});
-        mailMap.put("cc", new String[] {userVO.getEmail()});
+        mailMap.put("to", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);

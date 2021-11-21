@@ -65,13 +65,13 @@ export class LoginComponent {
 
   callSignInService() {
     this.userService
-      .signInService(
-        this.authRequest
-      )
+      .signInService(this.authRequest)
       .subscribe((data: LoggedInUser) => {
         localStorage.setItem(AppUtility.LOGED_IN_PROFILE_JWT, data.jwtToken);
         data.jwtToken = null;
+        AppUtility.APP_DEFAULT_TIMEZONE = data.timeZone;
         localStorage.setItem(AppUtility.LOGED_IN_PROFILE, JSON.stringify(data));
+        console.log(AppUtility.APP_DEFAULT_TIMEZONE);
         //console.log(data);
         let lastVisitedPage = localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT);
         // if (lastVisitedPage != null) {

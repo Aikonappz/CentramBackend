@@ -26,7 +26,8 @@ import java.math.BigInteger;
 @Table(name = "permission",
         indexes = {
                 @Index(name = "perm_role_idx", columnList = "role_id", unique = false),
-        }
+        },
+        uniqueConstraints = @UniqueConstraint(name = "role_module_action_constraint", columnNames = {"role_id", "module_id", "action_id"})
 )
 public class Permission implements Serializable {
     private static final long serialVersionUID = -2590688718125313577L;
@@ -51,13 +52,6 @@ public class Permission implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "module_id", referencedColumnName = "id")
     private Module module;
-
-    /*@ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Valid
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "submodule_id", referencedColumnName = "id")
-    private SubModule submodule;*/
 
     @ApiModelProperty(required = true, value = "")
     @NotNull

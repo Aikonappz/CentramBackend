@@ -25,6 +25,7 @@ public class UserVO extends BaseEntity implements Serializable {
     private String contactNo;
     private String secContactNo;
     private String employeeId;
+    private String timeZone;
     private BigInteger managerId;
     private String projectCode;
     private List<BigInteger> roles;
@@ -58,6 +59,7 @@ public class UserVO extends BaseEntity implements Serializable {
         this.organisation = (user.getOrganisation() != null) ? user.getOrganisation().getName() : null;
         this.department = (user.getDepartment() != null) ? user.getDepartment().getName() : null;
         this.managerId = (user.getManagerId() != null) ? user.getManagerId() : null;
+        this.timeZone = (user.getLocation() != null) ? user.getLocation().getTimezone() : "Asia/Kolkata";
     }
 }
 

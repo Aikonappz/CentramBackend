@@ -1,7 +1,6 @@
 package com.centram.core.service;
 
 
-
 import com.centram.core.repository.ActionRepository;
 import com.centram.domain.Action;
 import org.modelmapper.ModelMapper;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @Service
 public class ActionService {
     private static final Logger log = LoggerFactory.getLogger(ActionService.class);
@@ -24,11 +22,9 @@ public class ActionService {
     @Autowired
     private ModelMapper modelMapper;
 
-    //@Cacheable(cacheNames = "all_actions", key = "'list'")
+    @Transactional(readOnly = true)
     public Page<Action> getActions(Pageable pageable) {
-        //return modelMapper.map(actionRepository.findAll(pageable).getContent(), new TypeToken<List<ActionVO>>() {}.getType());
         return actionRepository.findAll(pageable);
     }
-
 
 }

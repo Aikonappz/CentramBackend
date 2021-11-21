@@ -1,6 +1,7 @@
 package com.centram.common.dto;
 
 
+import com.centram.common.vo.PermissionVO;
 import com.centram.common.vo.UserVO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -24,33 +25,34 @@ public class LoggedInUser implements UserDetails, Serializable {
     private BigInteger locationId;
     private BigInteger departmentId;
     private Boolean appManager;
-    @JsonIgnore
+    private String name;
+    private String orgName;
+    private String timeZone;
+    private String location;
+    private String department;
     private String email;
-    @JsonIgnore
     private String authToken;
-    @JsonIgnore
     private String password;
     @JsonProperty("authorities")
     private Collection<? extends GrantedAuthority> authorities;
-
-
-    //@JsonSerialize(using= CustomMapSerializer.class)
-    //@JsonDeserialize(using= CustomMapDeserializer.class)
-    @JsonProperty("modulePermissions")
-    private HashMap<String, String> modulePermissions;
+    private List<PermissionVO> modulePermissions;
 
     public LoggedInUser() {
     }
 
-    public LoggedInUser(UserVO userVO, HashMap<String, String> modulePermissions) {
+    public LoggedInUser(UserVO userVO, List<PermissionVO> modulePermissions) {
         this.userId = userVO.getId();
         this.organisationId = (userVO.getOrganisationId() == null) ? null : userVO.getOrganisationId();
         this.locationId = (userVO.getLocationId() == null) ? null : userVO.getLocationId();
         this.departmentId = (userVO.getDepartmentId() == null) ? null : userVO.getDepartmentId();
+        this.name = userVO.getFirstName() + " " + userVO.getLastName();
+        this.orgName = (userVO.getDepartmentId() == null) ? null : userVO.getOrganisation();
         this.email = userVO.getEmail();
         this.password = userVO.getPassword();
         this.modulePermissions = modulePermissions;
-        //this.authorities = Collections.singletonList(new SimpleGrantedAuthority(userVO.getRoleNames()));
+        this.timeZone = userVO.getTimeZone();
+        this.location = userVO.getLocation();
+        this.department = userVO.getDepartment();
         this.authorities = userVO.getRoleNames()
                 .stream()
                 .map(r -> new SimpleGrantedAuthority(r))
@@ -58,6 +60,52 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.appManager = userVO.getOrganisationId() == null;
     }
 
+    @JsonIgnore
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    @JsonIgnore
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonIgnore
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    @JsonIgnore
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    @JsonIgnore
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    @JsonIgnore
     public Boolean getAppManager() {
         return appManager;
     }
@@ -66,6 +114,7 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.appManager = appManager;
     }
 
+    @JsonIgnore
     public BigInteger getUserId() {
         return userId;
     }
@@ -74,6 +123,7 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.userId = userId;
     }
 
+    @JsonIgnore
     public BigInteger getOrganisationId() {
         return organisationId;
     }
@@ -82,6 +132,7 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.organisationId = organisationId;
     }
 
+    @JsonIgnore
     public String getEmail() {
         return email;
     }
@@ -139,14 +190,16 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.authorities = authorities;
     }
 
-    public HashMap<String, String> getModulePermissions() {
+    @JsonIgnore
+    public List<PermissionVO> getModulePermissions() {
         return modulePermissions;
     }
 
-    public void setModulePermissions(HashMap<String, String> modulePermissions) {
+    public void setModulePermissions(List<PermissionVO> modulePermissions) {
         this.modulePermissions = modulePermissions;
     }
 
+    @JsonIgnore
     public String getAuthToken() {
         return authToken;
     }
@@ -155,6 +208,7 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.authToken = authToken;
     }
 
+    @JsonIgnore
     public BigInteger getLocationId() {
         return locationId;
     }
@@ -163,6 +217,7 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.locationId = locationId;
     }
 
+    @JsonIgnore
     public BigInteger getDepartmentId() {
         return departmentId;
     }
