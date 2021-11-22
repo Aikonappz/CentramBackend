@@ -285,12 +285,12 @@ public class UserService implements UserDetailsService {
             notification.setUser(new User(userVO.getVersion(), userVO.getId()));
             notification = notificationService.save(notification);
             /* push firebase notification */
-            try {
+            /*try {
                 firebaseMessagingService.sendNotification(notification, appFirebaseTopic);
             } catch (FirebaseMessagingException e) {
                 e.printStackTrace();
                 throw new AppException(GenericErrorCode.FIREBASE_INTEGRATION_ISSUE);
-            }
+            }*/
         }
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return userVO;

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, } from '@angular/core';
 
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Location } from '@angular/common';
 import { LocationVO } from '../../model/LocationVO';
 
@@ -12,6 +12,9 @@ import { Status } from '../../model/enumerator/Status';
 
 import { countryWithTimeZones } from '../../model/_countryWithTimeZones';
 import { CountryWithTimeZone } from '../../model/CountryWithTimeZone';
+import * as moment from 'moment';
+import { AppUtility } from '../../config/AppUtility';
+import { StartEndTimeValidation } from '../../validator/StartEndTimeValidation';
 
 @Component({
   selector: 'app-editlocation',
@@ -27,27 +30,11 @@ export class EditLocationComponent implements OnInit {
   loc: LocationVO;
   countries = countryWithTimeZones;
   filterdCountry: CountryWithTimeZone[];
-  angForm = new FormGroup({
-    country: new FormControl('', [
-      Validators.required,
-    ]),
-    timezone: new FormControl('', [
-      Validators.required,
-    ]),
-    state: new FormControl('', [
-      Validators.maxLength(255),
-    ]),
-    city: new FormControl('', [
-      Validators.maxLength(255),
-    ]),
-    name: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(255),
-    ]),
-    status: new FormControl('ACTIVE', [
-    ]),
-  });
+  timeList: string[];
+  angForm: FormGroup;
+
   constructor(
+    private fb: FormBuilder,
     private route: ActivatedRoute,
     private _location: Location,
     private titleService: Title,
@@ -59,8 +46,37 @@ export class EditLocationComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.angForm = this.fb.group({
+      country: new FormControl('', [
+        Validators.required,
+      ]),
+      timezone: new FormControl('', [
+        Validators.required,
+      ]),
+      state: new FormControl('', [
+        Validators.maxLength(255),
+      ]),
+      city: new FormControl('', [
+        Validators.maxLength(255),
+      ]),
+      name: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(255),
+      ]),
+      opsStartTime: new FormControl('', [
+        Validators.required,
+      ]),
+      opsEndTime: new FormControl('', [
+        Validators.required,
+      ]),
+      status: new FormControl('ACTIVE', [
+      ]),
+    }, {
+      validators: StartEndTimeValidation('opsStartTime', 'opsEndTime')
+    });
     this.loc = new LocationVO();
     this.loc.status = this.defaultStatus;
+    this.timeList = AppUtility.getDayHourList(30);
   }
 
   getTitle(state, parent) {
@@ -98,6 +114,8 @@ export class EditLocationComponent implements OnInit {
       this.loc.state = this.angForm.controls['state'].value;
       this.loc.city = this.angForm.controls['city'].value;
       this.loc.name = this.angForm.controls['name'].value;
+      this.loc.opsStartTime = this.angForm.controls['opsStartTime'].value;
+      this.loc.opsEndTime = this.angForm.controls['opsEndTime'].value;
 
       /* process department and location */
       this.loc.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
@@ -126,6 +144,8 @@ export class EditLocationComponent implements OnInit {
         //console.log(JSON.stringify(data));
         this.loc.id = data.id;
         this.loc.name = data.name;
+        this.loc.opsStartTime = data.opsStartTime;
+        this.loc.opsEndTime = data.opsEndTime;
         this.loc.country = data.country;
         this.loc.timezone = data.timezone;
         this.loc.state = data.state;
@@ -136,6 +156,8 @@ export class EditLocationComponent implements OnInit {
 
         this.populateTimezone(this.loc.country);
         this.angForm.get('name').setValue(this.loc.name);
+        this.angForm.get('opsStartTime').setValue(this.loc.opsStartTime);
+        this.angForm.get('opsEndTime').setValue(this.loc.opsEndTime);
         this.angForm.get('timezone').setValue(this.loc.timezone);
         this.angForm.get('state').setValue(this.loc.state);
         this.angForm.get('city').setValue(this.loc.city);

@@ -16,7 +16,8 @@ export class AppUtility {
     public static APP_VIEW_DATEPICKER_INP_DATE_FORMAT = 'DD/MM/YYYY';
     public static APP_VIEW_DATEPICKER_OP_DATE_FORMAT = "YYYY-MM-DD";
     public static APP_DEFAULT_TIMEZONE = 'Asia/Kolkata';
-    
+    public static APP_TIME_FORMAT = 'HH:mm:ss';
+
     static prepareDateToString(date: Date): string {
         return String(moment(date).format('YYYY-MM-DD') + 'T00:00:00.000Z');
     }
@@ -27,6 +28,12 @@ export class AppUtility {
         return loggedInUser.appManager;
     }
 
+    static getDayHourList(diff: number) {
+        return [].concat(...Array.from(Array(24), (_, hour) => ([
+            moment({ hour }).format(AppUtility.APP_TIME_FORMAT),
+            moment({ hour, minute: diff }).format(AppUtility.APP_TIME_FORMAT)
+        ])));
+    }
 
 }
 

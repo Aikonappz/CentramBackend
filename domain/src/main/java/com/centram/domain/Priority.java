@@ -12,12 +12,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.time.LocalTime;
 
 /**
- * Location
+ * Department
  */
-@ApiModel(description = "Location")
+@ApiModel(description = "Priority")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
@@ -28,14 +27,14 @@ import java.time.LocalTime;
 @Entity
 @Audited
 @Table(
-        name = "location",
-        uniqueConstraints = @UniqueConstraint(name = "location_org_constraint", columnNames = {"name", "organisation_id"}),
+        name = "priority",
+        uniqueConstraints = @UniqueConstraint(name = "priority_org_constraint", columnNames = {"name", "organisation_id"}),
         indexes = {
-                @Index(name = "loc_org_idx", columnList = "organisation_id", unique = false),
+                @Index(name = "prty_org_idx", columnList = "organisation_id", unique = false),
         }
 )
-public class Location extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -8580165582808522922L;
+public class Priority extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = 7161816376698505219L;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
@@ -45,35 +44,14 @@ public class Location extends BaseEntity implements Serializable {
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "country", columnDefinition = "varchar(255) default null")
-    private String country;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "state", columnDefinition = "varchar(255) default null")
-    private String state;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "city", columnDefinition = "varchar(255) default null")
-    private String city;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "timezone", columnDefinition = "varchar(255) default null")
-    private String timezone;
-
-    @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "name", columnDefinition = "varchar(255) not null")
     private String name;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "ops_start_time", nullable = false)
-    private LocalTime opsStartTime;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "ops_end_time", nullable = false)
-    private LocalTime opsEndTime;
+    @Column(name = "sla", columnDefinition = "varchar(255) not null")
+    private String sla;
 
     @ApiModelProperty(value = "")
     @NotNull

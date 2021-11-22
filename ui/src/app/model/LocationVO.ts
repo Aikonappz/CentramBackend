@@ -9,6 +9,8 @@ export class LocationVO extends Base {
     city: string;
     timezone: string;
     name: string;
+    opsStartTime: string;
+    opsEndTime: string;
     status: Status;
     organisation: Organisation;
     constructor() {
@@ -19,6 +21,8 @@ export class LocationVO extends Base {
         this.city = '';
         this.timezone = '';
         this.name = '';
+        this.opsStartTime = '';
+        this.opsEndTime = '';
         this.status = Status.ACTIVE;
         this.organisation = new Organisation();
     }

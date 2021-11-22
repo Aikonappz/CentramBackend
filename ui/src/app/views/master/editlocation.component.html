@@ -74,6 +74,38 @@
                   </div>
                 </div>
               </div>
+              <div class="col"></div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label control-label" for="opsStartTime">Ops. Start Time</label>
+                <select class="form-control"
+                  formControlName="opsStartTime" ngModel id="opsStartTime" name="opsStartTime">
+                  <option value="">-- Ops. Start Time --</option>
+                  <option *ngFor="let e of timeList" value="{{e}}">{{e}}</option>
+                </select>
+                <div *ngIf="f.opsStartTime.touched && f.opsStartTime.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.opsStartTime.errors?.required">
+                    Ops. Start Time is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label control-label" for="opsEndTime">Ops. End Time</label>
+                <select class="form-control"
+                  formControlName="opsEndTime" ngModel id="opsEndTime" name="opsEndTime">
+                  <option value="">-- Ops. End Time --</option>
+                  <option *ngFor="let e of timeList" value="{{e}}">{{e}}</option>
+                </select>
+                <div *ngIf="f.opsEndTime.touched && f.opsEndTime.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.opsEndTime.errors?.required">
+                    Ops. End Time is required.
+                  </div>
+                  <div *ngIf="f.opsEndTime.errors?.mustGreaterThanStartTime">
+                    End time should be greater than Start time!
+                  </div>
+                </div>
+              </div>
               <div class="col">
                 <label class="col-md-3 col-form-label" for="status">Status</label>
                 <div class="col-md-9 col-form-label">
