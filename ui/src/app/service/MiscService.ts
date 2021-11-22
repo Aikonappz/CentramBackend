@@ -7,6 +7,7 @@ import { CommonResponse } from '../model/CommonResponse';
 import { LocationList, LocationVO } from '../model/LocationVO';
 import { Department, DepartmentList } from '../model/Department';
 import { Status } from '../model/enumerator/Status';
+import { Priority, PriorityList } from '../model/Priority';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -28,13 +29,7 @@ export class MiscService {
         return this.http.get('/v1/misc/role/' + id, { "params": request });
     }
 
-    locationsService(request?: any): Observable<LocationList> {
-        return this.http.get('/v1/misc/all-locations', { "params": request });
-    }
 
-    locationService(id: number, request?: any): Observable<any> {
-        return this.http.get('/v1/misc/location/' + id, { "params": request });
-    }
 
     departmentsService(request?: any): Observable<DepartmentList> {
         return this.http.get('/v1/misc/all-departments', { "params": request });
@@ -58,6 +53,30 @@ export class MiscService {
 
     saveLocationService(loc: LocationVO): Observable<LocationVO> {
         return this.http.post('/v1/misc/location', loc);
+    }
+
+    locationsService(request?: any): Observable<LocationList> {
+        return this.http.get('/v1/misc/all-locations', { "params": request });
+    }
+
+    locationService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/location/' + id, { "params": request });
+    }
+
+    updatePrioritiesStatusService(ids: number[], status: Status, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/priority/' + ids.join(",") + '/' + Status[status], { "params": request });
+    }
+
+    savePriorityService(prty: Priority): Observable<LocationVO> {
+        return this.http.post('/v1/misc/priority', prty);
+    }
+
+    prioritiesService(request?: any): Observable<PriorityList> {
+        return this.http.get('/v1/misc/all-priorities', { "params": request });
+    }
+
+    priorityService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/priority/' + id, { "params": request });
     }
 
 

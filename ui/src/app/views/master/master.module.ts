@@ -9,11 +9,15 @@ import { DepartmentComponent } from './department.component';
 import { EditDepartmentComponent } from './editdepartment.component';
 import { LocationComponent } from './location.component';
 import { EditLocationComponent } from './editlocation.component';
+import { PriorityComponent } from './priority.component';
+import { EditPriorityComponent } from './editpriority.component';
 
 
 
 @NgModule({
   declarations: [
+    PriorityComponent,   
+    EditPriorityComponent, 
     DepartmentComponent,
     EditDepartmentComponent,
     LocationComponent,

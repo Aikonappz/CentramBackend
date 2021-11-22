@@ -14,7 +14,9 @@ import com.centram.common.vo.UserVO;
 import com.centram.core.repository.UserRepository;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
-import com.google.firebase.messaging.FirebaseMessagingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -94,6 +96,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private AppConfigService appConfigService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private FirebaseMessagingService firebaseMessagingService;
@@ -552,5 +557,52 @@ public class UserService implements UserDetailsService {
     public Page<ActivityLog> getActivityLogs(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return activityLogService.getActivities(loggedInUser.getUserId(), pageable);
+    }
+
+    /**
+     * upload users data
+     *
+     * @param request
+     */
+    public void uploadUsersData(HttpServletRequest request) {
+        LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!ServletFileUpload.isMultipartContent(request)) {
+            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+        }
+        try {
+            ServletFileUpload upload = new ServletFileUpload();
+            FileItemIterator itemIterator = upload.getItemIterator(request);
+            FileItemStream item = null;
+            InputStream stream = null;
+            List<Map<?, ?>> recordsMap = null;
+            CsvSchema csvSchema = CsvSchema.builder().setUseHeader(true).build();
+            CsvMapper csvMapper = new CsvMapper();
+            List<Object> values = new ArrayList<Object>();
+            List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID");
+            while (itemIterator.hasNext()) {
+                item = itemIterator.next();
+                if (!item.isFormField()) {
+                    stream = item.openStream();
+                    values = csvMapper.readerFor(Map.class)
+                            .with(csvSchema)
+                            .readValues(stream)
+                            .readAll();
+                }
+                stream.close();
+            }
+            List<User> users = new ArrayList<User>();
+            User user = new User();
+            Map<String, String> map = null;
+            if (values.size() > 0) {
+                for (Object obj : values) {
+                    map = (Map<String, String>) obj;
+                    System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map));
+                }
+            }
+        } catch (FileUploadException e) {
+            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
+        }
     }
 }

@@ -9,7 +9,7 @@ export const navItems: INavData[] = [
   {
     name: 'Organisation',
     url: '/organisation',
-    icon: 'icon-target',    
+    icon: 'icon-target',
   },
   {
     name: 'User',
@@ -30,6 +30,16 @@ export const navItems: INavData[] = [
         name: 'Location',
         url: '/masters/location',
         icon: 'icon-location-pin'
+      },
+      {
+        name: 'Priority',
+        url: '/masters/priority',
+        icon: 'icon-star'
+      },
+      {
+        name: 'Callender',
+        url: '/masters/callender',
+        icon: 'icon-calendar'
       },
     ]
   }

@@ -50,6 +50,11 @@ public class Priority extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
+    @Column(name = "description", columnDefinition = "varchar(2000) not null")
+    private String description;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
     @Column(name = "sla", columnDefinition = "varchar(255) not null")
     private String sla;
 

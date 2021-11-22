@@ -35,5 +35,14 @@ export class AppUtility {
         ])));
     }
 
+    static getSlaList(end: number) {
+        let noList = Array.from(Array(end).keys());
+        let timeList;
+        noList.forEach(function (part, index) {
+            this[index] = String(part).padStart(2, '0') + ":00";;
+        }, noList);
+        timeList = noList;
+        return timeList;
+    }
 }
 

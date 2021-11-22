@@ -3,7 +3,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { DepartmentComponent } from './department.component';
 import { EditDepartmentComponent } from './editdepartment.component';
 import { EditLocationComponent } from './editlocation.component';
+import { EditPriorityComponent } from './editpriority.component';
 import { LocationComponent } from './location.component';
+import { PriorityComponent } from './priority.component';
 
 const routes: Routes = [
   {
@@ -62,6 +64,30 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Edit Location'
+        }
+      },
+      {
+        path: 'priority',
+        component: PriorityComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Priority'
+        },
+      },
+      {
+        path: 'priority/add',
+        component: EditPriorityComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Priority'
+        }
+      },
+      {
+        path: 'priority/edit/:id',
+        component: EditPriorityComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Priority'
         }
       },
     ]

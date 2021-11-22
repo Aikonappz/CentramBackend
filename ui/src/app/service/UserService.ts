@@ -57,7 +57,11 @@ export class UserService {
     }
 
     downloadUsersService(request?: any): Observable<any> {
-        return this.http.get('/v1/user/download/', {responseType: 'blob'});
+        return this.http.get('/v1/user/download', { responseType: 'blob' });
+    }
+
+    uploadUsersService(formData: FormData, request?: any): Observable<any> {
+        return this.http.post('/v1/user/upload-users', formData, { responseType: 'blob' });
     }
 
     //   getAllCompany(): Observable<Company[]> {

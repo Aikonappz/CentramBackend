@@ -4,12 +4,10 @@ package com.centram.core.api;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CommonResponse;
-import com.centram.core.service.DepartmentService;
-import com.centram.core.service.LocationService;
-import com.centram.core.service.MiscService;
-import com.centram.core.service.RoleService;
+import com.centram.core.service.*;
 import com.centram.domain.Department;
 import com.centram.domain.Location;
+import com.centram.domain.Priority;
 import com.centram.domain.Role;
 import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.*;
@@ -50,6 +48,9 @@ public class MiscApiController {
     private DepartmentService departmentService;
 
     @Autowired
+    private PriorityService priorityService;
+
+    @Autowired
     private MiscService miscService;
 
     @ApiOperation(value = "Demo Request Api", nickname = "requestDemo", notes = "Demo Request Api", tags = {"misc",})
@@ -80,27 +81,6 @@ public class MiscApiController {
     @RequestMapping(value = "/all-roles", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Role>> getRoles(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Role>>(roleService.getRoles(pageable), HttpStatus.OK);
-    }
-
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "Location not found")
-    })
-    @RequestMapping(value = "/location/{locationId}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Location> getLocationById(@ApiParam(value = "id of location", required = true) @PathVariable("locationId") BigInteger locationId) {
-        return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.OK);
-    }
-
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
-    })
-    @RequestMapping(value = "/all-locations", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Location>> getLocations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find department by id", nickname = "getDepartentById", notes = "Find department by id", response = Department.class, tags = {"misc",})
@@ -162,5 +142,67 @@ public class MiscApiController {
     public ResponseEntity<Void> updateLocationsStatus(@NotNull @ApiParam(value = "Location id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
         locationService.updateLocationsStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "Location not found")
+    })
+    @RequestMapping(value = "/location/{locationId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Location> getLocationById(@ApiParam(value = "id of location", required = true) @PathVariable("locationId") BigInteger locationId) {
+        return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-locations", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Location>> getLocations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a Priority", nickname = "savePriority", notes = "Add a Priority", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/priority", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<Priority> savePriority(@ApiParam(value = "Priority object", required = true) @Valid @RequestBody Priority body) {
+        return new ResponseEntity<Priority>(priorityService.save(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of priorityies", nickname = "updatePrioritiesStatus", notes = "Update status of priorityies", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "priority not found")
+    })
+    @RequestMapping(value = "/priority/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Void> updatePrioritiesStatus(@NotNull @ApiParam(value = "Priority id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+        priorityService.updatePrioritiesStatus(status, ids);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find priority by id", nickname = "getPriorityById", notes = "Find priority by id", response = Location.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "Location not found")
+    })
+    @RequestMapping(value = "/priority/{priorityId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Priority> getPriorityById(@ApiParam(value = "id of priority", required = true) @PathVariable("priorityId") BigInteger priorityId) {
+        return new ResponseEntity<Priority>(priorityService.getById(priorityId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all priorities", nickname = "getPriorities", notes = "Get all priorities", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-priorities", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Priority>> getPriorities(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(pageable), HttpStatus.OK);
     }
 }

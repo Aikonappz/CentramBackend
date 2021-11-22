@@ -61,6 +61,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { OrganisationModule } from './views/organisation/organisation.module';
 import { SpinnerComponent } from './views/spinner/spinner.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 
 @NgModule({
@@ -88,6 +89,7 @@ import { SpinnerComponent } from './views/spinner/spinner.component';
     UserModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
+    ModalModule.forRoot(),
   ],
   declarations: [
     AppComponent,

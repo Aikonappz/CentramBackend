@@ -245,4 +245,15 @@ public class UsersApiController {
 
     }
 
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload users data csv", nickname = "uploadUsersData", notes = "Upload users data", tags = {"user",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Validation exception")
+    })
+    @RequestMapping(value = "/upload-users", method = RequestMethod.POST)
+    //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
+    public ResponseEntity uploadUsersData(HttpServletRequest request) {
+        userService.uploadUsersData(request);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 }
