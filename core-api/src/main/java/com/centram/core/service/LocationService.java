@@ -54,6 +54,17 @@ public class LocationService {
     }
 
     /**
+     * @param locationName
+     * @return
+     */
+    @Transactional(readOnly = true)
+    //@Cacheable(value = "locations", key = "#locationId")
+    public Location getByLocationName(String locationName) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return locationRepository.getByLocationName(locationName, loggedInUser.getOrganisationId());
+    }
+
+    /**
      * get all locations
      *
      * @param pageable

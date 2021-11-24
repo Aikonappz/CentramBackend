@@ -45,6 +45,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -102,6 +103,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private FirebaseMessagingService firebaseMessagingService;
+
+    @Autowired
+    private MiscService miscService;
 
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
@@ -474,6 +478,31 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * @param email
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public User getUserByEmail(String email) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.getUserByEmail(email, loggedInUser.getOrganisationId());
+    }
+
+    /**
+     * @param employeeId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public User getUserByEmployeeId(String employeeId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.getUserByEmployeeId(employeeId, loggedInUser.getOrganisationId());
+    }
+
+    @Transactional
+    public Iterable<User> saveUsers(List<User> users) {
+        return userRepository.saveAll(users);
+    }
+
+    /**
      * Get User Profile Image
      *
      * @param userId
@@ -581,23 +610,28 @@ public class UserService implements UserDetailsService {
             List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID");
             while (itemIterator.hasNext()) {
                 item = itemIterator.next();
-                if (!item.isFormField()) {
-                    stream = item.openStream();
-                    values = csvMapper.readerFor(Map.class)
-                            .with(csvSchema)
-                            .readValues(stream)
-                            .readAll();
-                }
+                //if (item.isFormField()) {
+                stream = item.openStream();
+                values = csvMapper.readerFor(Map.class)
+                        .with(csvSchema)
+                        .readValues(stream)
+                        .readAll();
+                //}
                 stream.close();
             }
             List<User> users = new ArrayList<User>();
             User user = new User();
             Map<String, String> map = null;
+            List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
             if (values.size() > 0) {
                 for (Object obj : values) {
                     map = (Map<String, String>) obj;
-                    System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(map));
+                    map = map.entrySet().stream()
+                            .filter(i -> commonHeaders.contains(i.getKey()))
+                            .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()));
+                    dataList.add(map);
                 }
+                miscService.saveBulkUploadedData(dataList);
             }
         } catch (FileUploadException e) {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);

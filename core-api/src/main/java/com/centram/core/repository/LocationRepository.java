@@ -16,8 +16,12 @@ import java.util.List;
 
 @Repository
 public interface LocationRepository extends PagingAndSortingRepository<Location, BigInteger> {
+    @Query("select l from Location l where upper(l.name) = upper((:locationName)) and l.organisation.id = (:organisationId)")
+    Location getByLocationName(@Param("locationName") String locationName, @Param("organisationId") BigInteger organisationId);
+
     @Query("select l from Location l where l.organisation.id = (:organisationId)")
     Page getLocationByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+
     @Modifying
     @Query("update Location set status = (:status) where id in (:locationIds)")
     Integer updateStatus(@Param("status") Status status, @Param("locationIds") List<BigInteger> locationIds);

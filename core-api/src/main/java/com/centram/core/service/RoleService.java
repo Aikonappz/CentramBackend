@@ -43,6 +43,14 @@ public class RoleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param roles
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Role> getByRoleNames(List<String> roles) {
+        return roleRepository.getByRoleNames(roles);
+    }
 
     @Transactional(readOnly = true)
     public PaginatedList<Role> getRoles(Pageable pageable) {

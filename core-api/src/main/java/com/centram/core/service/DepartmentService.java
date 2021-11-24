@@ -54,6 +54,17 @@ public class DepartmentService {
     }
 
     /**
+     * @param departmentName
+     * @return
+     */
+    @Transactional(readOnly = true)
+    //@Cacheable(value = "departments", key = "#departmentId")
+    public Department getByDepartmentName(String departmentName) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return departmentRepository.getDepartmentByName(departmentName, loggedInUser.getOrganisationId());
+    }
+
+    /**
      * get all departments
      *
      * @param pageable

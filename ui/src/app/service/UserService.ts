@@ -61,7 +61,7 @@ export class UserService {
     }
 
     uploadUsersService(formData: FormData, request?: any): Observable<any> {
-        return this.http.post('/v1/user/upload-users', formData, { responseType: 'blob' });
+        return this.http.post('/v1/user/upload-users', formData);
     }
 
     //   getAllCompany(): Observable<Company[]> {

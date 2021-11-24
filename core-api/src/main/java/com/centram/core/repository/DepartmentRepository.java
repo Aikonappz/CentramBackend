@@ -16,8 +16,12 @@ import java.util.List;
 
 @Repository
 public interface DepartmentRepository extends PagingAndSortingRepository<Department, BigInteger> {
+    @Query("select d from Department d where upper(d.name) = upper((:departmentName)) and d.organisation.id = (:organisationId)")
+    Department getDepartmentByName(@Param("departmentName") String departmentName, @Param("organisationId") BigInteger organisationId);
+
     @Query("select d from Department d where d.organisation.id = (:organisationId)")
     Page getDepartmentByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+
     @Modifying
     @Query("update Department set status = (:status) where id in (:departmentIds)")
     Integer updateStatus(@Param("status") Status status, @Param("departmentIds") List<BigInteger> departmentIds);

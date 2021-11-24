@@ -117,7 +117,6 @@ export class UserComponent implements OnInit {
   }
 
   upload() {
-    //window.alert("upload");
     const config: ModalOptions = {
       backdrop: 'static',
       keyboard: false,
@@ -217,6 +216,7 @@ export class UserComponent implements OnInit {
 })
 export class UserUploadComponent implements OnInit {
   angFormUpload: FormGroup;
+  selectedFiles?: FileList;
   constructor(
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
@@ -255,6 +255,7 @@ export class UserUploadComponent implements OnInit {
         file.setErrors({ mustBeCSVFile: true, mustBeLessThan2MB: false });
       } else if (type == "text/csv" && size <= (3145728)) {
         file.setErrors(null);
+        this.selectedFiles = event.target.files;
       }
       console.log('Name: ' + name + "\n" +
         'Type: ' + type + "\n" +
@@ -263,19 +264,16 @@ export class UserUploadComponent implements OnInit {
     }
   }
 
-  hasTypeError(type) {
-
-  }
-
   uploadFile() {
     if (this.angFormUpload.valid) {
-      const formData = new FormData();
-      formData.append('file', this.angFormUpload.get('fileInput').value);
-      console.log(this.angFormUpload);
+      const file: File | null = this.selectedFiles.item(0);
+      const formData: FormData = new FormData();
+      formData.append('file', file);
+      //console.log(formData);
       this.userService
         .uploadUsersService(formData)
         .subscribe((data: any) => {
-
+          this.bsModalRef.hide();
         });
     } else {
       console.log("Invalid Form!");

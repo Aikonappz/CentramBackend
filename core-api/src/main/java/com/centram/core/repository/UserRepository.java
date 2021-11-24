@@ -17,6 +17,12 @@ import java.util.List;
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, BigInteger> {
 
+    @Query("select u from User u where upper(u.employeeId) = upper((:employeeId)) and u.organisation.id = (:organisationId)")
+    User getUserByEmployeeId(@Param("employeeId") String employeeId, @Param("organisationId") BigInteger organisationId);
+
+    @Query("select u from User u where upper(u.email) = upper((:email)) and u.organisation.id = (:organisationId)")
+    User getUserByEmail(@Param("email") String email, @Param("organisationId") BigInteger organisationId);
+
     @Modifying
     @Query("update User set status = (:status) where id in (:userIds)")
     Integer updateStatus(@Param("status") Status status, @Param("userIds") List<BigInteger> userIds);

@@ -43,16 +43,6 @@ public class Role implements Serializable {
     @Column(name = "name", columnDefinition = "varchar(255) not null")
     private String name;
 
-    /*@ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "user_group", columnDefinition = "varchar(255) not null")
-    private String userGroup;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "level", columnDefinition = "int(2) not null")
-    private Integer level;*/
-
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "status")

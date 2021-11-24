@@ -25,7 +25,9 @@ import java.math.BigInteger;
 @EqualsAndHashCode
 @Entity
 @Table(name = "module",
-        uniqueConstraints = @UniqueConstraint(name = "mod_submod_constraint", columnNames = {"name", "parent_module_id"})
+        uniqueConstraints = {
+                @UniqueConstraint(name = "mod_submod_constraint", columnNames = {"name", "parent_module_id"})
+        }
 )
 public class Module implements Serializable {
 

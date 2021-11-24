@@ -29,9 +29,16 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @Table(name = "user",
-        uniqueConstraints = @UniqueConstraint(name = "user_org_constraint", columnNames = {"email", "organisation_id"}),
+        uniqueConstraints = {
+                @UniqueConstraint(name = "user_email_org_constraint", columnNames = {"email", "organisation_id"}),
+                @UniqueConstraint(name = "user_empid_org_constraint", columnNames = {"employee_id", "organisation_id"})
+        },
         indexes = {
                 @Index(name = "email_indx", columnList = "email", unique = true),
+                @Index(name = "employeeId_indx", columnList = "employee_id", unique = false),
+                @Index(name = "managerId_indx", columnList = "manager_id", unique = false),
+                @Index(name = "employeeId_org_indx", columnList = "employee_id,organisation_id", unique = false),
+                @Index(name = "managerId__org_indx", columnList = "manager_id,organisation_id", unique = false),
                 @Index(name = "org_id_idx", columnList = "organisation_id", unique = false),
         }
 )
