@@ -15,6 +15,7 @@ public enum GenericErrorCode implements ErrorCode {
     SERIALIZATION_ISSUE("Serialization issue!"),
     DESERIALIZATION_ISSUE("Deserialization issue!"),
     CSV_GENERATION_ISSUE("CSV generation issue!"),
+    CSV_PROCESSING_ISSUE("CSV processing issue!"),
     FIREBASE_INTEGRATION_ISSUE("Firebase Integration issue!");
 
     private final String template;

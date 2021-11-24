@@ -25,6 +25,7 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Audited
 @Table(
         name = "priority",

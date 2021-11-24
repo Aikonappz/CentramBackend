@@ -1,0 +1,56 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add Holiday Calender</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit Holiday Calender</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label control-label" for="year">Calender Year</label>
+                <select class="form-control" formControlName="year" ngModel id="year"
+                  name="year">
+                  <option value="">-- Select Calender Year --</option>
+                  <option *ngFor="let e of yearList" value="{{e}}">{{e}}
+                  </option>
+                </select>
+                <div *ngIf="f.year.touched && f.year.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.year.errors?.required">
+                    Calender Year is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label control-label" for="fileInput">Upload File</label>
+                <input (change)="getFileDetails($event)" type="file" id="fileInput" formControlName="fileInput"
+                  name="fileInput">
+                <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.fileInput.errors?.required">
+                    File is required.
+                  </div>
+                  <div *ngIf="f.fileInput.errors?.mustBeCSVFile">
+                    File should be CSV.
+                  </div>
+                  <div *ngIf="f.fileInput.errors?.mustBeLessThan2MB">
+                    File should be less than 3 MB.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button [disabled]="!angForm.valid" type="submit" class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

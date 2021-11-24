@@ -33,10 +33,12 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -249,10 +251,10 @@ public class UsersApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Validation exception")
     })
-    @RequestMapping(value = "/upload-users", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload-users", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity uploadUsersData(HttpServletRequest request) {
-        userService.uploadUsersData(request);
+    public ResponseEntity uploadUsersData(@ApiParam(value = "Users CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
+        userService.uploadUsersData(multipartFile);
         return new ResponseEntity(HttpStatus.OK);
     }
 

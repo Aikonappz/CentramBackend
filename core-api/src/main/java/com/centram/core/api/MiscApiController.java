@@ -5,28 +5,28 @@ import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CommonResponse;
 import com.centram.core.service.*;
-import com.centram.domain.Department;
-import com.centram.domain.Location;
-import com.centram.domain.Priority;
-import com.centram.domain.Role;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -49,6 +49,9 @@ public class MiscApiController {
 
     @Autowired
     private PriorityService priorityService;
+
+    @Autowired
+    private HolidayCalenderService holidayCalenderService;
 
     @Autowired
     private MiscService miscService;
@@ -204,5 +207,56 @@ public class MiscApiController {
     @RequestMapping(value = "/all-priorities", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Priority>> getPriorities(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all holiday calenders", nickname = "getHolidayCalenders", notes = "Get holiday calenders", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-holiday-callenders", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<HolidayCalender>> getHolidayCalenders(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.ASC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<HolidayCalender>>(holidayCalenderService.getHolidayCalenders(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find holiday calender id", nickname = "getHolidayCalenderById", notes = "Find holiday calender id", response = Location.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "holiday calender not found")
+    })
+    @RequestMapping(value = "/holiday-callender/{holidayCallenderId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<HolidayCalender> getHolidayCalenderById(@ApiParam(value = "id of holiday-callender", required = true) @PathVariable("holidayCallenderId") BigInteger holidayCallenderId) {
+        return new ResponseEntity<HolidayCalender>(holidayCalenderService.getById(holidayCallenderId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload holiday calender data csv", nickname = "uploadHolidayCalenderData", notes = "Upload holiday calender data", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Validation exception")
+    })
+    @RequestMapping(value = "/upload-holiday-calender", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
+    //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
+    public ResponseEntity<HolidayCalender> uploadHolidayCalenderData(
+            @ApiParam(value = "Holiday Calender CSV file", required = true) @RequestPart(name = "file", required = true) MultipartFile multipartFile,
+            @ApiParam(value = "Holiday Calender object", required = true) @RequestPart("holidayCalender") HolidayCalender holidayCalender
+    ) throws IOException {
+        return new ResponseEntity<HolidayCalender>(holidayCalenderService.uploadHolidayCalenderData(multipartFile, holidayCalender), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad holiday celender", nickname = "downloadHolidayCalender", notes = "Download holiday celender", response = Resource.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/holiday-callender/{holidayCallenderId}/download", method = RequestMethod.GET)
+    public ResponseEntity<Resource> downloadHolidayCalender(
+            @ApiParam(value = "id of holiday-callender", required = true) @PathVariable("holidayCallenderId") BigInteger holidayCallenderId
+    ) {
+        final InputStreamResource resource = new InputStreamResource(holidayCalenderService.downloadHolidayCalender(holidayCallenderId));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "holiday-calender-" + System.currentTimeMillis() + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
+
     }
 }

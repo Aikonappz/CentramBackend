@@ -11,11 +11,15 @@ import { LocationComponent } from './location.component';
 import { EditLocationComponent } from './editlocation.component';
 import { PriorityComponent } from './priority.component';
 import { EditPriorityComponent } from './editpriority.component';
+import { HolidayCalenderComponent } from './holidaycalender.component';
+import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 
 
 
 @NgModule({
   declarations: [
+    HolidayCalenderComponent,
+    EditHolidayCalenderComponent,
     PriorityComponent,   
     EditPriorityComponent, 
     DepartmentComponent,

@@ -15,11 +15,7 @@ import com.centram.core.repository.UserRepository;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.csv.*;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -38,11 +34,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -591,52 +589,34 @@ public class UserService implements UserDetailsService {
     /**
      * upload users data
      *
-     * @param request
+     * @param multipartFile
+     * @throws IOException
      */
-    public void uploadUsersData(HttpServletRequest request) {
+    public void uploadUsersData(MultipartFile multipartFile) throws IOException {
         LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!ServletFileUpload.isMultipartContent(request)) {
+        if (multipartFile.getBytes().length == 0) {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
-        try {
-            ServletFileUpload upload = new ServletFileUpload();
-            FileItemIterator itemIterator = upload.getItemIterator(request);
-            FileItemStream item = null;
-            InputStream stream = null;
-            List<Map<?, ?>> recordsMap = null;
-            CsvSchema csvSchema = CsvSchema.builder().setUseHeader(true).build();
-            CsvMapper csvMapper = new CsvMapper();
-            List<Object> values = new ArrayList<Object>();
-            List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID");
-            while (itemIterator.hasNext()) {
-                item = itemIterator.next();
-                //if (item.isFormField()) {
-                stream = item.openStream();
-                values = csvMapper.readerFor(Map.class)
-                        .with(csvSchema)
-                        .readValues(stream)
-                        .readAll();
-                //}
-                stream.close();
+        List<Map<String, String>> values = new ArrayList<Map<String, String>>();
+        List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID");
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
+             CSVParser csvParser = new CSVParser(fileReader,
+                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())
+        ) {
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            for (CSVRecord csvRecord : csvRecords) {
+                values.add(
+                        csvRecord.toMap()
+                                .entrySet().stream()
+                                .filter(i -> commonHeaders.contains(i.getKey()))
+                                .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()))
+                );
             }
-            List<User> users = new ArrayList<User>();
-            User user = new User();
-            Map<String, String> map = null;
-            List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
-            if (values.size() > 0) {
-                for (Object obj : values) {
-                    map = (Map<String, String>) obj;
-                    map = map.entrySet().stream()
-                            .filter(i -> commonHeaders.contains(i.getKey()))
-                            .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()));
-                    dataList.add(map);
-                }
-                miscService.saveBulkUploadedData(dataList);
-            }
-        } catch (FileUploadException e) {
-            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+            //System.out.println(values);
+            miscService.saveBulkUploadedData(values);
+            activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, ActivityType.BULK_UPLOAD_USER));
         } catch (IOException e) {
-            throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
+            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
     }
 }

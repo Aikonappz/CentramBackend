@@ -2,8 +2,10 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DepartmentComponent } from './department.component';
 import { EditDepartmentComponent } from './editdepartment.component';
+import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 import { EditLocationComponent } from './editlocation.component';
 import { EditPriorityComponent } from './editpriority.component';
+import { HolidayCalenderComponent } from './holidaycalender.component';
 import { LocationComponent } from './location.component';
 import { PriorityComponent } from './priority.component';
 
@@ -88,6 +90,30 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Edit Priority'
+        }
+      },
+      {
+        path: 'calender',
+        component: HolidayCalenderComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Holiday Calender'
+        },
+      },
+      {
+        path: 'calender/add',
+        component: EditHolidayCalenderComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Holiday Calender'
+        }
+      },
+      {
+        path: 'calender/edit/:id',
+        component: EditHolidayCalenderComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Holiday Calender'
         }
       },
     ]

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
 import { RequestDemoDTO } from '../model/RequestDemoDTO';
 import { ApiHttpService } from './ApiHttpService';
@@ -8,6 +7,7 @@ import { LocationList, LocationVO } from '../model/LocationVO';
 import { Department, DepartmentList } from '../model/Department';
 import { Status } from '../model/enumerator/Status';
 import { Priority, PriorityList } from '../model/Priority';
+import { HolidayCalenderList } from '../model/HolidayCalender';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -79,39 +79,19 @@ export class MiscService {
         return this.http.get('/v1/misc/priority/' + id, { "params": request });
     }
 
+    holidayCalendersService(request?: any): Observable<HolidayCalenderList> {
+        return this.http.get('/v1/misc/all-holiday-callenders', { "params": request });
+    }
 
-    //   getAllCompany(): Observable<Company[]> {
-    //     return this.http.get(this.getAllCompanyList);
-    //   }
-    //   registerCompany(company: Company): Observable<Company> {
-    //     return this.http.post(this.companyRegister, company);
-    //   }
-    //   deleteCompany(companyCode: string): Observable<any> {
-    //     return this.http.delete(this.companyDelete + companyCode);
-    //   }
-    //   getCompanyInfo(companyCode: string): Observable<Company> {
-    //     return this.http.get(this.companyInfo + companyCode);
-    //   }
-    //   // Stock Services
-    //   getStockByCompanyAndDate(
-    //     companyCode: string,
-    //     startDate: string,
-    //     endDate: string
-    //   ): Observable<StockDetail> {
-    //     return this.http.get(
-    //       this.stockByCompany + companyCode + '/' + startDate + '/' + endDate
-    //     );
-    //   }
-    //   getStockByCompanyCode(companyCode: string): Observable<Stock[]> {
-    //     return this.http.get(this.stockByCompany + companyCode + '/latest');
-    //   }
-    //   addStockToCompany(companyCode: string, s: Stock): Observable<Stock> {
-    //     return this.http.post(this.addStock + companyCode, s);
-    //   }
-    //   setCompanyCodeForFetchingStock(company: Company) {
-    //     return (this.companyToFetchStock = company);
-    //   }
-    //   getCompanyCodeForFetchingStock() {
-    //     return this.companyToFetchStock;
-    //   }
+    holidayCalenderService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/holiday-callender/' + id, { "params": request });
+    }
+
+    saveHolidayCalenderService(formData: FormData, request?: any): Observable<Department> {
+        return this.http.post('/v1/misc/upload-holiday-calender', formData, request);
+    }
+
+    downloadholidayCalenderService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/holiday-callender/' + id + '/download', { responseType: 'blob' });
+    }
 }

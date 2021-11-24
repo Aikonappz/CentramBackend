@@ -1,6 +1,6 @@
 package com.centram.domain;
 
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.converter.HolidayConverter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -12,11 +12,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
- * Department
+ * HolidayCalender
  */
-@ApiModel(description = "Department")
+@ApiModel(description = "HolidayCalender")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
@@ -24,18 +25,11 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Entity
 @Audited
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(
-        name = "department",
-        uniqueConstraints = @UniqueConstraint(name = "department_org_constraint", columnNames = {"name", "organisation_id"}),
-        indexes = {
-                @Index(name = "dept_org_idx", columnList = "organisation_id", unique = false),
-        }
-)
-public class Department extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 7161526376698505219L;
+@Entity
+@Table(name = "holiday_calender", indexes = {@Index(name = "year_idx", columnList = "year", unique = true)})
+public class HolidayCalender extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = -1039150309367452581L;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
@@ -46,20 +40,19 @@ public class Department extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "name", columnDefinition = "varchar(255) not null")
-    private String name;
-
-    @ApiModelProperty(value = "")
-    @NotNull
-    @Valid
-    @Column(name = "status")
-    @Enumerated(EnumType.ORDINAL)
-    private Status status;
+    @Column(name = "year")
+    private String year;
 
     @ApiModelProperty(required = true, value = "")
     @Valid
-    @NotNull
+    @Lob
+    @Column(name = "holidays", nullable = false, columnDefinition = "TEXT not null")
+    @Convert(converter = HolidayConverter.class)
+    private List<Holiday> holidays;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
     @OneToOne
-    @JoinColumn(name = "organisation_id", referencedColumnName = "id")
+    @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
     private Organisation organisation;
 }

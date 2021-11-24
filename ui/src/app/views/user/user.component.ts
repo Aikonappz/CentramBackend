@@ -268,10 +268,13 @@ export class UserUploadComponent implements OnInit {
     if (this.angFormUpload.valid) {
       const file: File | null = this.selectedFiles.item(0);
       const formData: FormData = new FormData();
-      formData.append('file', file);
+      formData.append('file', file, file.name);
+      let headers = new Headers();
+      headers.append('Content-Type', 'multipart/form-data');
+      headers.set('Accept', 'application/json');
       //console.log(formData);
       this.userService
-        .uploadUsersService(formData)
+        .uploadUsersService(formData, { 'headers': headers })
         .subscribe((data: any) => {
           this.bsModalRef.hide();
         });

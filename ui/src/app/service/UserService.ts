@@ -61,7 +61,7 @@ export class UserService {
     }
 
     uploadUsersService(formData: FormData, request?: any): Observable<any> {
-        return this.http.post('/v1/user/upload-users', formData);
+        return this.http.post('/v1/user/upload-users', formData, request);
     }
 
     //   getAllCompany(): Observable<Company[]> {

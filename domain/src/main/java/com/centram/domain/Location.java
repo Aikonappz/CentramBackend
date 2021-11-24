@@ -27,6 +27,7 @@ import java.time.LocalTime;
 @EqualsAndHashCode
 @Entity
 @Audited
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(
         name = "location",
         uniqueConstraints = @UniqueConstraint(name = "location_org_constraint", columnNames = {"name", "organisation_id"}),
