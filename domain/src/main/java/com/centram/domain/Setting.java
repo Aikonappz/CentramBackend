@@ -1,9 +1,11 @@
 package com.centram.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.centram.domain.enumarator.IncidentTicketAllocationType;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.io.Serializable;
 
 @Validated
@@ -15,15 +17,12 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class Setting implements Serializable {
     private static final long serialVersionUID = 2149040960400918629L;
-    private String itemPrefix;
-    private String orderPrefix;
-    private String salePrefix;
-    private String returnPrefix;
-    private String billPrefix;
-    private String tin;
-    private String gstn;
-    @JsonIgnore
-    private Integer leadigNoOfCharacter = 10;
-    @JsonIgnore
-    private String leadigCharacter = "0";
+    @Enumerated(EnumType.ORDINAL)
+    private IncidentTicketAllocationType ticketAllocationType;
+    private String incidentPrefix;
+    private String assetPrefix;
+
+    public Setting(IncidentTicketAllocationType ticketAllocationType) {
+        this.ticketAllocationType = ticketAllocationType;
+    }
 }

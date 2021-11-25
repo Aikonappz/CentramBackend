@@ -9,6 +9,7 @@ import { AuthRequest } from '../model/AuthRequest';
 import { Status } from '../model/enumerator/Status';
 
 import { Organisation } from '../model/Organisation';
+import { Setting } from '../model/Setting';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -36,6 +37,14 @@ export class OrganisationService {
 
     getOrganisationService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/organisation/' + id, { "params": request });
+    }
+
+    getOrganisationSettingService(request?: any): Observable<Setting> {
+        return this.http.get('/v1/organisation/get-settings', { "params": request });
+    }
+
+    setOrganisationSettingService(org: Setting, request?: any): Observable<Setting> {
+        return this.http.put('/v1/organisation/set-settings', org, request);
     }
 
 }

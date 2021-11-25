@@ -1,5 +1,6 @@
 package com.centram.domain;
 
+import com.centram.domain.converter.SettingConverter;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.ApiModel;
@@ -105,6 +106,13 @@ public class Organisation extends BaseEntity implements Serializable {
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @Lob
+    @Column(name = "setting", nullable = false, columnDefinition = "TEXT not null")
+    @Convert(converter = SettingConverter.class)
+    private Setting setting;
 
     public Organisation(@NotNull BigInteger id) {
         this.id = id;

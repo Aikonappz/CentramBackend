@@ -79,8 +79,8 @@
             <div class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label control-label" for="opsStartTime">Ops. Start Time</label>
-                <select class="form-control"
-                  formControlName="opsStartTime" ngModel id="opsStartTime" name="opsStartTime">
+                <select class="form-control" formControlName="opsStartTime" ngModel id="opsStartTime"
+                  name="opsStartTime">
                   <option value="">-- Ops. Start Time --</option>
                   <option *ngFor="let e of timeList" value="{{e}}">{{e}}</option>
                 </select>
@@ -92,8 +92,7 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label control-label" for="opsEndTime">Ops. End Time</label>
-                <select class="form-control"
-                  formControlName="opsEndTime" ngModel id="opsEndTime" name="opsEndTime">
+                <select class="form-control" formControlName="opsEndTime" ngModel id="opsEndTime" name="opsEndTime">
                   <option value="">-- Ops. End Time --</option>
                   <option *ngFor="let e of timeList" value="{{e}}">{{e}}</option>
                 </select>

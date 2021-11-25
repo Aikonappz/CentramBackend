@@ -9,10 +9,8 @@ import com.centram.core.repository.OrganisationRepository;
 import com.centram.domain.ActivityLog;
 import com.centram.domain.MediaFile;
 import com.centram.domain.Organisation;
-import com.centram.domain.enumarator.ActivityType;
-import com.centram.domain.enumarator.EntityType;
-import com.centram.domain.enumarator.MediaType;
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.Setting;
+import com.centram.domain.enumarator.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -79,6 +77,7 @@ public class OrganisationService {
         Organisation newOrganisation = null;
         if (organisation.getId() == null) {
             organisation.setStatus(Status.ACTIVE);
+            organisation.setSetting(new Setting(IncidentTicketAllocationType.GENERIC));
             newOrganisation = organisationRepository.save(organisation);
             activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.ORGANISATION_ONBOARD));
         } else {
@@ -202,21 +201,24 @@ public class OrganisationService {
      *
      * @return
      */
-    /*public OrganisationDTO getOrganisationSettings() {
+    @Transactional(readOnly = true)
+    public Setting getOrganisationSettings() {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        OrganisationDTO organisationDTO = new OrganisationDTO();
         Organisation organisation = this.getOrganisationById(loggedInUser.getOrganisationId());
-        organisationDTO.setMediaFile(mediaService.getMediaFile(EntityType.ORGANISATION, MediaType.ORGANISATION_LOGO_IMAGE, loggedInUser.getOrganisationId()));
-        return organisationDTO;
-    }*/
+        if (organisation == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        return organisation.getSetting();
+    }
 
-    /*public void updateOrganisationSettings(OrganisationDTO organisationDTO) {
+    /**
+     * @param setting
+     */
+    @Transactional
+    public Setting updateOrganisationSettings(Setting setting) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Organisation organisation = redisService.getCachedOrganisation(loggedInUser.getOrganisationId());
-        organisationDao.updateSetting(organisationDTO.getSetting(), loggedInUser.getOrganisationId());
-        redisService.redisOperation(organisation.getId(), Utility.initializeAndUnproxy(organisation));
+        organisationRepository.updateSetting(setting, loggedInUser.getOrganisationId());
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
-    }*/
-
-
+        return setting;
+    }
 }

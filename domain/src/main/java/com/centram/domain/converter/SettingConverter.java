@@ -5,6 +5,8 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.domain.Setting;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
@@ -12,16 +14,22 @@ import javax.persistence.Converter;
 import java.io.IOException;
 
 @Converter(autoApply = true)
+@Component
 public class SettingConverter implements AttributeConverter<Setting, String> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper;
+
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        SettingConverter.objectMapper = objectMapper;
+    }
 
     @Override
     public String convertToDatabaseColumn(Setting setting) {
         String jsonString = null;
         if (setting != null) {
             try {
-                jsonString = objectMapper.writeValueAsString(setting);
+                jsonString = SettingConverter.objectMapper.writeValueAsString(setting);
             } catch (JsonProcessingException e) {
                 throw new AppException(GenericErrorCode.JSON_PROCESS_EXCEPTION);
             }
@@ -34,7 +42,7 @@ public class SettingConverter implements AttributeConverter<Setting, String> {
         Setting setting = null;
         if (s != null && !StringUtils.isEmpty(s)) {
             try {
-                setting = objectMapper.readValue(s, Setting.class);
+                setting = SettingConverter.objectMapper.readValue(s, Setting.class);
             } catch (IOException e) {
                 throw new AppException(GenericErrorCode.JSON_PROCESS_EXCEPTION);
             }

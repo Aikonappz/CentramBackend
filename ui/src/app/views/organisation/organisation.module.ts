@@ -7,9 +7,11 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { EditOrganisationComponent } from './editorganisation.component';
+import { OrgSettingsComponent } from './orgsettings.component';
 
 @NgModule({
   declarations: [
+    OrgSettingsComponent,
     OrganisationComponent,
     EditOrganisationComponent
   ],

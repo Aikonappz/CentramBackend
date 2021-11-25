@@ -5,6 +5,7 @@ import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.OrganisationService;
 import com.centram.domain.Organisation;
+import com.centram.domain.Setting;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.*;
@@ -113,7 +114,7 @@ public class OrganisationApiController {
         return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(name, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
-    /*@ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get organisation settings", nickname = "getOrganisationSettings", notes = "Get organisation settings", response = OrganisationDTO.class, tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get organisation settings", nickname = "getOrganisationSettings", notes = "Get organisation settings", response = Setting.class, tags = {"organisation",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -121,8 +122,8 @@ public class OrganisationApiController {
     })
     @RequestMapping(value = "/get-settings", produces = {"application/json"}, method = RequestMethod.GET)
     //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<OrganisationDTO> getOrganisationSettings() {
-        return new ResponseEntity<OrganisationDTO>(organisationService.getOrganisationSettings(), HttpStatus.OK);
+    public ResponseEntity<Setting> getOrganisationSettings() {
+        return new ResponseEntity<Setting>(organisationService.getOrganisationSettings(), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update organisation settings", nickname = "updateOrganisationSettings", notes = "Update organisation settings", tags = {"organisation",})
@@ -133,8 +134,7 @@ public class OrganisationApiController {
     })
     @RequestMapping(value = "/set-settings", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
     //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<Void> updateOrganisationSettings(@ApiParam(value = "OrganisationDTO object", required = true) @Valid @RequestBody OrganisationDTO body) {
-        organisationService.updateOrganisationSettings(body);
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }*/
+    public ResponseEntity<Setting> updateOrganisationSettings(@ApiParam(value = "Setting object", required = true) @Valid @RequestBody Setting body) {
+        return new ResponseEntity<Setting>(organisationService.updateOrganisationSettings(body), HttpStatus.OK);
+    }
 }

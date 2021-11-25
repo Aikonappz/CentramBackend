@@ -1,0 +1,68 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <!-- Nav tabs -->
+      <tabset>
+        <tab heading="Organisation Settings">
+          <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="saved">
+            <h6>Settings saved successfully!</h6>
+          </div>
+          <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label" for="incidentPrefix">Incident Ticket Prefix</label>
+                  <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="incidentPrefix"
+                    ngModel id="incidentPrefix" name="incidentPrefix" class="form-control"
+                    placeholder="Incident Ticket Prefix" aria-label="Incident Ticket Prefix">
+                  <div *ngIf="f.incidentPrefix.touched && f.incidentPrefix.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.incidentPrefix.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                    <div *ngIf="f.incidentPrefix.errors?.pattern">
+                      Invalid prefix, alphanumeric allowed only.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="assetPrefix">Incident Ticket Prefix</label>
+                  <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="assetPrefix"
+                    ngModel id="assetPrefix" name="assetPrefix" class="form-control"
+                    placeholder="Incident Ticket Prefix" aria-label="Incident Ticket Prefix">
+                  <div *ngIf="f.assetPrefix.touched && f.assetPrefix.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.assetPrefix.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                    <div *ngIf="f.assetPrefix.errors?.pattern">
+                      Invalid prefix, alphanumeric allowed only.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="ticketAllocationType">Incident Ticket Allocation
+                    Type</label>
+                  <select class="form-control" formControlName="ticketAllocationType" ngModel id="ticketAllocationType"
+                    name="ticketAllocationType">
+                    <option value="">-- Select Incident Ticket Allocation Type --</option>
+                    <option *ngFor="let e of ticketAllocationTypes" [value]="e" [label]="e"></option>
+                  </select>
+                  <div *ngIf="f.ticketAllocationType.touched && f.ticketAllocationType.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.ticketAllocationType.errors?.required">
+                      Incident Ticket Allocation is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button [disabled]="!angForm.valid" type="submit" class="btn btn-primary">Save</button>
+              <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+            </div>
+          </form>
+        </tab>
+      </tabset>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

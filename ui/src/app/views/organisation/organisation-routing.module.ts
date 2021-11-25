@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { EditOrganisationComponent, } from './editorganisation.component';
 import { OrganisationComponent } from './organisation.component';
+import { OrgSettingsComponent } from './orgsettings.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Edit Organisation'
+        }
+      },
+      {
+        path: 'settings',
+        component: OrgSettingsComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Organisation Settings'
         }
       },
     ]
