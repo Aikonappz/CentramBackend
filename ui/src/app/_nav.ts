@@ -37,7 +37,7 @@ export const navItems: INavData[] = [
         icon: 'icon-star'
       },
       {
-        name: 'Holiday Callender',
+        name: 'Holiday Calender',
         url: '/masters/calender',
         icon: 'icon-calendar'
       },

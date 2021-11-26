@@ -137,6 +137,7 @@ public class UserService implements UserDetailsService {
                             .findFirst()
                             .ifPresent(i -> {
                                 String actionNames = i.getActionNames().concat(",").concat(permission.getAction().getName());
+                                actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
                                 i.setActionNames(actionNames);
                             });
                 } else {

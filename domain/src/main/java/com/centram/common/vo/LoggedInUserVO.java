@@ -3,12 +3,12 @@ package com.centram.common.vo;
 
 import com.centram.common.dto.LoggedInUser;
 import com.centram.domain.MediaFile;
-import com.centram.domain.Permission;
 import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -30,6 +30,7 @@ public class LoggedInUserVO implements Serializable {
     private String department;
     private MediaFile profileImage;
     private MediaFile organisationLogo;
+    private List<String> roles;
     private List<PermissionVO> modulePermissions;
 
     public LoggedInUserVO(MediaFile profileImage, LoggedInUser loggedInUser) {
@@ -45,5 +46,8 @@ public class LoggedInUserVO implements Serializable {
         this.department = loggedInUser.getDepartment();
         this.location = loggedInUser.getLocation();
         this.timeZone = loggedInUser.getTimeZone();
+        this.roles = loggedInUser.getAuthorities().stream()
+                .map(i -> i.getAuthority())
+                .collect(Collectors.toList());
     }
 }

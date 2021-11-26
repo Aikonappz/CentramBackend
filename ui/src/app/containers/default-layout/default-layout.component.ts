@@ -32,8 +32,7 @@ export class DefaultLayoutComponent {
       itm.actions = itm.actionNames.split(',');
     });
     localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, JSON.stringify(this.permissions));
-    //console.log(JSON.stringify(this.permissions));
-
+    //console.log(JSON.stringify(this.navItems));
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       for (let j in this.permissions) {
@@ -44,11 +43,35 @@ export class DefaultLayoutComponent {
         ) {
           //console.log(JSON.stringify(this.navItems[i]));
           this.newNavItems[c] = this.navItems[i];
+          if (this.navItems[i].hasOwnProperty("children")) {
+            if (
+              this.permissions[j].appModule == true &&
+              this.navItems[i].name.toUpperCase() === this.permissions[j].moduleName &&
+              this.permissions[j].actions.includes('READ')
+            ) {
+              let parentId = this.permissions[j].moduleId;
+              //console.log(this.newNavItems[c].children);
+              let childMenus = [];
+              for (let sm in this.newNavItems[c].children) {
+                for (let k in this.permissions) {
+                  if (
+                    this.permissions[k].appModule == true &&
+                    this.newNavItems[c].children[sm].name.toUpperCase() === this.permissions[k].moduleName &&
+                    this.permissions[k].actions.includes('READ') &&
+                    parentId === this.permissions[k].moduleParentId
+                  ) {
+                    childMenus.push(this.newNavItems[c].children[sm]);
+                  }
+                }
+              }
+              this.newNavItems[c].children = childMenus;
+            }
+          }
           c++;
         }
       }
     }
-    //this.navItems = this.newNavItems;
+    this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
   }
 
