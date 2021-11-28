@@ -100,9 +100,6 @@ public class UserService implements UserDetailsService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private FirebaseMessagingService firebaseMessagingService;
-
-    @Autowired
     private MiscService miscService;
 
     @Value("${jwt.token.prefix}")
@@ -292,13 +289,6 @@ public class UserService implements UserDetailsService {
             notification.setNotificationType(NotificationType.INFO);
             notification.setUser(new User(userVO.getVersion(), userVO.getId()));
             notification = notificationService.save(notification);
-            /* push firebase notification */
-            /*try {
-                firebaseMessagingService.sendNotification(notification, appFirebaseTopic);
-            } catch (FirebaseMessagingException e) {
-                e.printStackTrace();
-                throw new AppException(GenericErrorCode.FIREBASE_INTEGRATION_ISSUE);
-            }*/
         }
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return userVO;

@@ -90,6 +90,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     ModalModule.forRoot(),
+    
+
   ],
   declarations: [
     AppComponent,
@@ -126,3 +128,4 @@ import { ModalModule } from 'ngx-bootstrap/modal';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+

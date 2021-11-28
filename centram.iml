@@ -5,6 +5,13 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/ui" />
+      <excludeFolder url="file://$MODULE_DIR$/auth-api" />
+      <excludeFolder url="file://$MODULE_DIR$/config" />
+      <excludeFolder url="file://$MODULE_DIR$/gateway" />
+      <excludeFolder url="file://$MODULE_DIR$/registry" />
+      <excludeFolder url="file://$MODULE_DIR$/report-api" />
+      <excludeFolder url="file://$MODULE_DIR$/api-client" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

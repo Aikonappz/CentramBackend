@@ -254,3 +254,8 @@
 .w-50{
     width: 50%;
 }
+
+.dropdown-menu {         
+  max-height: 200px;
+  overflow-y: auto;
+}

@@ -99,6 +99,11 @@ export const routes: Routes = [
         loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
       },
       {
+        path: 'notification',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/notification/notification.module').then(m => m.NotificationModule),
+      },
+      {
         path: 'masters',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/master/master.module').then(m => m.MasterModule),

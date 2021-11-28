@@ -42,7 +42,12 @@ export const navItems: INavData[] = [
         icon: 'icon-calendar'
       },
     ]
-  }
+  },
+  {
+    name: 'Notification',
+    url: '/notification',
+    icon: 'icon-info',
+  },
 ];
 
 /*export const navItems: INavData[] = [

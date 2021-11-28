@@ -59,6 +59,7 @@
     "ng2-select2": "^1.0.0-beta.16",
     "ngx-bootstrap": "^6.2.0",
     "ngx-perfect-scrollbar": "^10.1.0",
+    "rxfire": "^6.0.0",
     "rxjs": "^6.6.6",
     "select2": "^4.1.0-rc.0",
     "select2-bootstrap-css": "^1.4.6",
@@ -69,7 +70,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.1102.15",
+    "@angular-devkit/build-angular": "^0.1102.4",
     "@angular/cli": "^11.2.4",
     "@angular/compiler-cli": "^11.2.5",
     "@angular/language-service": "^11.2.5",

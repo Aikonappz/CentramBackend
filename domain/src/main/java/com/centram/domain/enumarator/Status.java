@@ -4,16 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Status {
-
+    //ENTITY STATUS
     INACTIVE("INACTIVE"),
     ACTIVE("ACTIVE"),
     ALL("ALL"),
+    //ENTITY STATUS
+    //NOTIFICATION STATUS
     PUSHED("PUSHED"),
     PULLED("PULLED"),
-    UNREAD("UNREAD"),
-    READ("READ"),
     VISITED("VISITED"),
-    ALREADY_ACTION_TAKEN("ALREADY_ACTION_TAKEN");
+    ALREADY_ACTION_TAKEN("ALREADY_ACTION_TAKEN")
+    //NOTIFICATION STATUS
+    ;
 
     private final String value;
 

@@ -29,7 +29,7 @@ import java.math.BigInteger;
 @Entity
 @Table(name = "notification",
         indexes = {
-                @Index(name = "usr_notf_indx", columnList = "user_id", unique = true)
+                @Index(name = "usr_notf_indx", columnList = "user_id", unique = false)
         }
 )
 @Audited
