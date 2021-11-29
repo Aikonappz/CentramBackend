@@ -17,16 +17,14 @@
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
             "assets": [
-              "src/assets"              
+              "src/assets"
             ],
             "styles": [
               "node_modules/@coreui/icons/css/free.css",
               "node_modules/flag-icon-css/css/flag-icon.css",
               "node_modules/font-awesome/css/font-awesome.css",
               "node_modules/simple-line-icons/dist/styles/simple-line-icons.css",
-              "src/scss/style.scss",
-              "node_modules/select2/dist/css/select2.min.css",
-              "node_modules/select2-bootstrap-css/select2-bootstrap.min.css"
+              "src/scss/style.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -34,8 +32,6 @@
               ]
             },
             "scripts": [
-              "node_modules/jquery/dist/jquery.js",
-              "node_modules/select2/dist/js/select2.full.min.js"
             ],
             "allowedCommonJsDependencies": [
               "chart.js",

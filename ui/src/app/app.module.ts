@@ -62,6 +62,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { OrganisationModule } from './views/organisation/organisation.module';
 import { SpinnerComponent } from './views/spinner/spinner.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { ErrormessageComponent } from './views/errormessage/errormessage.component';
 
 
 @NgModule({
@@ -90,7 +91,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     ModalModule.forRoot(),
-    
+
 
   ],
   declarations: [
@@ -105,6 +106,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     RequestDemoComponent,
     LogoutComponent,
     SpinnerComponent,
+    ErrormessageComponent,
   ],
   providers: [
     CheckLoggedInOuter,

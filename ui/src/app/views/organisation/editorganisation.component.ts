@@ -265,6 +265,7 @@ export class EditOrganisationComponent implements OnInit {
             });
         });
     }
+    this.initSelectBoxes();
   }
 
   ngAfterViewInit() { }
@@ -272,6 +273,12 @@ export class EditOrganisationComponent implements OnInit {
   ngAfterContentInit() { }
 
   get f() { return this.angForm.controls; }
+
+  initSelectBoxes() {
+    // $('#licenseType').select2();
+    // $('#department').select2();
+    // $('#location').select2();
+  }
 
   formSubmit() {
     if (this.angForm.valid) {
@@ -401,6 +408,7 @@ export class EditOrganisationComponent implements OnInit {
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         this.angForm.markAllAsTouched();
+        this.initSelectBoxes();
       });
   }
 

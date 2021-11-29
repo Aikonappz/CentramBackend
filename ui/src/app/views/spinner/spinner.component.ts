@@ -12,7 +12,8 @@ export class SpinnerComponent implements OnInit {
 
   constructor(
     private spinnerService: SpinnerService,
-    private cvRef: ChangeDetectorRef) {
+    private cvRef: ChangeDetectorRef
+  ) {
   }
 
   ngOnInit(): void {

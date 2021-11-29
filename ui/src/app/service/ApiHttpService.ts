@@ -5,16 +5,19 @@ import { catchError } from 'rxjs/operators';
 import { AppUtility } from '../config/AppUtility';
 import { Router } from '@angular/router';
 import { SpinnerService } from './SpinnerService';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { ErrormessageComponent } from '../views/errormessage/errormessage.component';
 @Injectable({
     providedIn: 'root'
 })
 export class ApiHttpService {
-
+    public bsModalRef: BsModalRef;
     private REST_API_SERVER = AppUtility.API_ENDPOINT;
 
     constructor(
         private http: HttpClient,
         private router: Router,
+        private modalService: BsModalService,
     ) { }
 
     public get(url: string, options?: any): Observable<any> {
@@ -49,13 +52,33 @@ export class ApiHttpService {
         if (error.status === 401) {
             this.router.navigate(['/sign-in']);
         }
+        //console.log(JSON.stringify(error));
         if (error.error instanceof ErrorEvent) {
             errorMessage = `Error: ${error.error.message}`;
+            const initialState = {
+                title: "Something Went Wrong!",
+                message: "Please try aftersometime!",
+            };
+            this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
+            this.bsModalRef.content.closeBtnName = 'Close';
         } else {
-            // Server-side errors
-            errorMessage = `Error Code: ${error.error.code}\nMessage: ${error.error.message}`;
+            if (typeof error.error.code !== 'undefined') {
+                const initialState = {
+                    title: error.error.code,
+                    message: error.error.message
+                };
+                this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
+                this.bsModalRef.content.closeBtnName = 'Close';
+            } else {
+                const initialState = {
+                    title: "Something Went Wrong!",
+                    message: "Please try aftersometime!",
+                };
+                this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
+                this.bsModalRef.content.closeBtnName = 'Close';
+            }
         }
-        window.alert(errorMessage);
+        //window.alert(errorMessage);
         return throwError(errorMessage);
     }
 }

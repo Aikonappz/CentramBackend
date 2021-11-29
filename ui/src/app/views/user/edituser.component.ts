@@ -11,8 +11,8 @@ import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
 import { AppUtility } from '../../config/AppUtility';
-import * as jquery from 'jquery';
-import 'select2';
+//import * as jQuery from "jquery";
+declare var $: any;
 
 @Component({
   selector: 'app-edituser',
@@ -54,10 +54,10 @@ export class EditUserComponent implements OnInit {
       Validators.pattern(this.phoneRegex),
     ]),
     employeeId: new FormControl('NA', [
-      //Validators.required,
+      Validators.required,
     ]),
     managerId: new FormControl('NA', [
-      //Validators.required,
+      Validators.required,
     ]),
     projectCode: new FormControl('NA', [
       //Validators.required
@@ -243,18 +243,26 @@ export class EditUserComponent implements OnInit {
             });
         });
     }
-    //jquery('#roles').select2();
-    //jquery('#department').select2();
-    //jquery('#location').select2();
   }
+
 
   ngAfterViewInit() { }
 
-  ngAfterContentInit() { }
+  ngAfterContentInit() {
+    this.initSelectBoxes();
+  }
+
+  initSelectBoxes() {
+    //$('#managerId').editableSelect();
+    // $('#roles').editableSelect();
+    // $('#department').editableSelect();
+
+  }
 
   get f() { return this.angForm.controls; }
 
   formSubmit() {
+    console.log(this.angForm);
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.user.firstName = this.angForm.controls['firstName'].value;
@@ -366,6 +374,7 @@ export class EditUserComponent implements OnInit {
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         this.angForm.markAllAsTouched();
+        this.initSelectBoxes();
       });
   }
 

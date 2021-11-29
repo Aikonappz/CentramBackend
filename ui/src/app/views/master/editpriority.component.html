@@ -12,15 +12,28 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <label class="form-col-form-label control-label" for="name">Location</label>
+                <label class="form-col-form-label control-label" for="name">Priority Type</label>
                 <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
-                  placeholder="Name" aria-label="Name">
+                  placeholder="Priority Type" aria-label="Priority Type">
                 <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.name.errors?.required">
-                    Location Name is required.
+                    Priority is required.
                   </div>
                   <div *ngIf="f.name.errors?.maxlength">
                     Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col">
+                <label class="form-col-form-label control-label" for="sla">Priority SLA.</label>
+                <select class="form-control" formControlName="sla" ngModel id="sla" name="sla">
+                  <option value="">-- Select Priority SLA. --</option>
+                  <option *ngFor="let e of timeList" value="{{e}}">{{e}} hrs</option>
+                </select>
+                <div *ngIf="f.sla.touched && f.sla.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.sla.errors?.required">
+                    Priority SLA. is required.
                   </div>
                 </div>
               </div>
@@ -34,18 +47,6 @@
                   </div>
                   <div *ngIf="f.description.errors?.maxlength">
                     Allowed maxlength exceeds.
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <label class="form-col-form-label control-label" for="sla">Priority SLA.</label>
-                <select class="form-control" formControlName="sla" ngModel id="sla" name="sla">
-                  <option value="">-- Select Priority SLA. --</option>
-                  <option *ngFor="let e of timeList" value="{{e}}">{{e}} hrs</option>
-                </select>
-                <div *ngIf="f.sla.touched && f.sla.invalid" class="alert alert-danger-custom">
-                  <div *ngIf="f.sla.errors?.required">
-                    Priority SLA. is required.
                   </div>
                 </div>
               </div>

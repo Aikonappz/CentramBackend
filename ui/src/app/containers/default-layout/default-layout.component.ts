@@ -18,7 +18,6 @@ import { navItems } from '../../_nav';
   templateUrl: './default-layout.component.html'
 })
 export class DefaultLayoutComponent implements OnInit {
-  private notification: Notification;
   private notifications: Notification[] = [];
   private scrollCount: number;
   private lastFetched: number = null;

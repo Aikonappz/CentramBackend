@@ -11,7 +11,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <label class="form-col-form-label" for="incidentPrefix">Incident Ticket Prefix</label>
+                  <label class="form-col-form-label" for="incidentPrefix">Incident Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="incidentPrefix"
                     ngModel id="incidentPrefix" name="incidentPrefix" class="form-control"
                     placeholder="Incident Ticket Prefix" aria-label="Incident Ticket Prefix">
@@ -25,7 +25,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="assetPrefix">Incident Ticket Prefix</label>
+                  <label class="form-col-form-label" for="assetPrefix">Asset Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="assetPrefix"
                     ngModel id="assetPrefix" name="assetPrefix" class="form-control"
                     placeholder="Incident Ticket Prefix" aria-label="Incident Ticket Prefix">
@@ -43,7 +43,7 @@
                     Type</label>
                   <select class="form-control" formControlName="ticketAllocationType" ngModel id="ticketAllocationType"
                     name="ticketAllocationType">
-                    <option value="">-- Select Incident Ticket Allocation Type --</option>
+                    <option value="">-- Select Incident Allocation Type --</option>
                     <option *ngFor="let e of ticketAllocationTypes" [value]="e" [label]="e"></option>
                   </select>
                   <div *ngIf="f.ticketAllocationType.touched && f.ticketAllocationType.invalid"

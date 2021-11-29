@@ -120,10 +120,10 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label control-label" for="licenseType">License Type</label>
-                  <select class="form-control" formControlName="licenseType" ngModel id="licenseType"
+                  <select class="form-control select2-single" formControlName="licenseType" ngModel id="licenseType"
                     name="licenseType">
                     <option value="">-- Select License Type --</option>
-                    <option *ngFor="let e of licenseTypes" [value]="e" [label]="e"></option>
+                    <option *ngFor="let e of licenseTypes" value="{{e}}">{{e}}</option>
                   </select>
                   <div *ngIf="f.licenseType.touched && f.licenseType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseType.errors?.required">
@@ -248,7 +248,7 @@
               </div>
               <div class="row row-margin-05 d-none">
                 <div class="col">
-                  <label class="form-col-form-label" for="employeeId">Employee Id.</label>
+                  <label class="form-col-form-label control-label" for="employeeId">Employee Id.</label>
                   <input type="text" formControlName="employeeId" ngModel id="employeeId" name="employeeId"
                     class="form-control" placeholder="Employee Id." aria-label="Employee Id.">
                   <div *ngIf="f.employeeId.touched && f.employeeId.invalid" class="alert alert-danger-custom">
@@ -275,7 +275,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="department">Department</label>
-                  <select class="form-control" formControlName="department" ngModel id="department" name="department">
+                  <select class="form-control select2-single" formControlName="department" ngModel id="department"
+                    name="department">
                     <option value="">-- Select Department --</option>
                     <option *ngFor="let e of departments" value="{{e.id}}__{{e.version}}">{{e.name}}</option>
                   </select>
@@ -287,7 +288,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="location">Location</label>
-                  <select class="form-control" formControlName="location" ngModel id="location" name="location">
+                  <select class="form-control select2-single" formControlName="location" ngModel id="location"
+                    name="location">
                     <option value="">-- Select Location --</option>
                     <option *ngFor="let e of locations" value="{{e.id}}__{{e.version}}">{{e.name}}</option>
                   </select>
