@@ -2,17 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, } from '@angular/common/http';
 import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AppUtility } from '../config/AppUtility';
 import { Router } from '@angular/router';
-import { SpinnerService } from './SpinnerService';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { ErrormessageComponent } from '../views/errormessage/errormessage.component';
+import { environment } from '../../environments/environment';
 @Injectable({
     providedIn: 'root'
 })
 export class ApiHttpService {
     public bsModalRef: BsModalRef;
-    private REST_API_SERVER = AppUtility.API_ENDPOINT;
+    private REST_API_SERVER = environment.appServiceEndpoint;
 
     constructor(
         private http: HttpClient,

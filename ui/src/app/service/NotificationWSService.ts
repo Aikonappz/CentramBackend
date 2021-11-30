@@ -27,13 +27,15 @@ export class NotificationWSService {
         let topicName = environment.appWSNotificationTopic + "/" + loggedInUser.userId;
         this.stompClient = Stomp.over(ws);
         const _this = this;
-        _this.stompClient.connect({}, function (frame) {
-            _this.stompClient.subscribe(topicName,
-                function (sdkEvent) {
-                    _this.onMessageReceived(sdkEvent);
-                }
-            );
-        }, this.errorCallBack);
+        _this.stompClient.connect(
+            environment.appWSCred,
+            function (frame) {
+                _this.stompClient.subscribe(topicName,
+                    function (sdkEvent) {
+                        _this.onMessageReceived(sdkEvent);
+                    }
+                );
+            }, this.errorCallBack);
     }
 
     disconnect(): void {

@@ -51,6 +51,7 @@
     "core-js": "^3.9.1",
     "flag-icon-css": "^3.5.0",
     "font-awesome": "^4.7.0",
+    "jasypt": "^1.0.5",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.34",
     "net": "^1.0.2",

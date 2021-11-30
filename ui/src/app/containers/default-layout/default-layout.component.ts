@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { PushNotificationsService } from 'ng-push-ivy';
+import { environment } from '../../../environments/environment';
 import { AppUtility } from '../../config/AppUtility';
 import { NotificationType } from '../../model/enumerator/NotificationType';
 import { Status } from '../../model/enumerator/Status';
@@ -38,9 +39,9 @@ export class DefaultLayoutComponent implements OnInit {
     private websocketService: NotificationWSService
   ) {
     let m = moment();
-    this.appUrl = AppUtility.APP_URL;
-    this.appBrandName = AppUtility.APP_BRAND_NAME;
-    this.appDevName = AppUtility.APP_DEV_NAME;
+    this.appUrl = environment.appUrl;
+    this.appBrandName = environment.appBrandName;
+    this.appDevName = environment.appDevName;
     this.currentYear = m.format('YYYY');
     this.loggedInUser = JSON.parse(localStorage.getItem(AppUtility.LOGED_IN_PROFILE));
     this.permissions = this.loggedInUser.modulePermissions;

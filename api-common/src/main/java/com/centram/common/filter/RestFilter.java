@@ -1,31 +1,36 @@
 package com.centram.common.filter;
 
-import com.centram.common.utility.Utility;
-import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class RestFilter implements Filter {
+
+    @Value("${app.allowed.origins}")
+    private String[] appAllowedOrigins;
+
+    private final List<String> allowedOrigins = Arrays.asList(appAllowedOrigins);
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         RequestWrapper requestWrapper = new RequestWrapper(req);
-        //requestWrapper.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
-        MDC.put("correlation-id", Utility.getCorrelationId());
+        //MDC.put("correlation-id", Utility.getCorrelationId());
 
-        //res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-        //res.setHeader("Access-Control-Allow-Credentials", "false");
+        res.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
         res.setHeader("Access-Control-Allow-Credentials", "true");
+        //res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        //res.setHeader("Access-Control-Allow-Credentials", "false");
         res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
         res.setHeader("Access-Control-Max-Age", "3600");
-        res.setHeader("Access-Control-Expose-Headers","Authorization");
+        res.setHeader("Access-Control-Expose-Headers", "Authorization");
         res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, X-Requested-With, remember-me");
-
         filterChain.doFilter(requestWrapper, servletResponse);
     }
 }

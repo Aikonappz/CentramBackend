@@ -35,7 +35,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -230,10 +229,16 @@ public class Config implements AsyncConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<RestFilter> restFilter() {
+    public RestFilter restFilter() {
+        return new RestFilter();
+    }
+
+    @Bean
+    public FilterRegistrationBean<RestFilter> restFilterFilterRegistrationBean(RestFilter restFilter) {
         FilterRegistrationBean<RestFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new RestFilter());
+        registrationBean.setFilter(restFilter);
         registrationBean.addUrlPatterns("/*");
+        //registrationBean.addUrlPatterns("/*");
         return registrationBean;
     }
 

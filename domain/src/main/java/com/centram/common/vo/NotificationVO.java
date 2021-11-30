@@ -1,6 +1,7 @@
 package com.centram.common.vo;
 
 
+import com.centram.domain.Notification;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
 import lombok.*;
@@ -21,4 +22,13 @@ public class NotificationVO implements Serializable {
     private Status status;
     private NotificationType notificationType;
     private BigInteger userId;
+
+    public NotificationVO(Notification notification) {
+        id = notification.getId();
+        title = notification.getNotificationTitle();
+        body = notification.getNotificationBody();
+        status = notification.getStatus();
+        notificationType = notification.getNotificationType();
+        userId = notification.getUser().getId();
+    }
 }

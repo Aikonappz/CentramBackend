@@ -1,7 +1,6 @@
 package com.centram.common.exeception;
 
 import org.slf4j.MDC;
-
 import java.time.Instant;
 
 public class ClientError {

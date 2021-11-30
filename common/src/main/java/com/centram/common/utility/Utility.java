@@ -1,10 +1,5 @@
 package com.centram.common.utility;
 
-import org.hibernate.Hibernate;
-import org.hibernate.proxy.HibernateProxy;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -39,7 +34,7 @@ public class Utility {
 
     public static String generateCode(String prefix) {
         StringBuilder code = new StringBuilder();
-        if (!StringUtils.isEmpty(prefix)) {
+        if (prefix != null && !prefix.equals("")) {
             code.append(prefix);
         }
         Random random = new Random();
@@ -58,63 +53,5 @@ public class Utility {
         return sb.toString();
     }
 
-    public static String getCorrelationId() {
-        return getUniqueString(10);
-    }
 
-    public static Pageable getAllData() {
-        return new Pageable() {
-            @Override
-            public int getPageNumber() {
-                return 0;
-            }
-            @Override
-            public int getPageSize() {
-                return Integer.MAX_VALUE;
-            }
-            @Override
-            public long getOffset() {
-                return 0;
-            }
-
-            @Override
-            public Sort getSort() {
-                return null;
-            }
-
-            @Override
-            public Pageable next() {
-                return null;
-            }
-
-            @Override
-            public Pageable previousOrFirst() {
-                return null;
-            }
-
-            @Override
-            public Pageable first() {
-                return null;
-            }
-
-            @Override
-            public boolean hasPrevious() {
-                return false;
-            }
-        };
-    }
-
-    public static <T> T initializeAndUnproxy(T entity) {
-        if (entity == null) {
-            throw new
-                    NullPointerException("Entity passed for initialization is null");
-        }
-
-        Hibernate.initialize(entity);
-        if (entity instanceof HibernateProxy) {
-            entity = (T) ((HibernateProxy) entity).getHibernateLazyInitializer()
-                    .getImplementation();
-        }
-        return entity;
-    }
 }
