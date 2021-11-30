@@ -31,8 +31,7 @@
                 "./node_modules"
               ]
             },
-            "scripts": [
-            ],
+            "scripts": [],
             "allowedCommonJsDependencies": [
               "chart.js",
               "classnames"
@@ -102,7 +101,9 @@
             },
             "assets": [
               "src/assets",
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "manifest.json",
+              "cloud-messaging-sw.js"
             ]
           }
         },

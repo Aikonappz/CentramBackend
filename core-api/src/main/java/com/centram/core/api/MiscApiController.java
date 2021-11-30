@@ -4,9 +4,12 @@ package com.centram.core.api;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CommonResponse;
+import com.centram.common.vo.NotificationVO;
 import com.centram.core.service.*;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +41,12 @@ import java.util.List;
 public class MiscApiController {
 
     private static final Logger log = LoggerFactory.getLogger(MiscApiController.class);
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private RoleService roleService;
@@ -125,7 +135,10 @@ public class MiscApiController {
             @ApiResponse(code = 404, message = "Department not found")
     })
     @RequestMapping(value = "/department/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Void> updateDepartmentsStatus(@NotNull @ApiParam(value = "Departent id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+    public ResponseEntity<Void> updateDepartmentsStatus(
+            @NotNull @ApiParam(value = "Departent id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
+            @ApiParam(value = "Status", required = true) @PathVariable("status") Status status
+    ) {
         departmentService.updateDepartmentsStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -269,11 +282,10 @@ public class MiscApiController {
     })
     @RequestMapping(value = "/all-notifications", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Notification>> getNotifications(
-            @ApiParam(value = "Last Fetched Id", defaultValue = "", required = false) @RequestParam(value = "lastFetched", defaultValue = "", required = false) BigInteger lastFetched,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Notification>>(notificationService.getNotifications(lastFetched, Status.valueOf(status), pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Notification>>(notificationService.getNotifications(Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find notification id", nickname = "getNotificationById", notes = "Find notification id", response = Notification.class, tags = {"misc",})
@@ -287,7 +299,20 @@ public class MiscApiController {
         return new ResponseEntity<Notification>(notificationService.getById(notificationId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update notification", nickname = "saveNotification", notes = "Add notification", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update notification status", nickname = "updateNotificationStatus", notes = "Update notification status", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/notification/{ids}/{status}", method = RequestMethod.GET)
+    public ResponseEntity updateNotificationStatus(
+            @NotNull @ApiParam(value = "Notification id's to update", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
+            @ApiParam(value = "Status", required = true) @PathVariable("status") Status status
+    ) {
+        notificationService.updateNotificationStatus(ids, status);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add notification", nickname = "saveNotification", notes = "Add notification", tags = {"misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -297,5 +322,14 @@ public class MiscApiController {
     ) {
         notificationService.save(body);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/notification/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity generateDummyNotification(
+            @ApiParam(value = "NotificationVO list object", required = true) @Valid @RequestBody NotificationVO body
+    ) throws JsonProcessingException {
+        log.info("Consumed message: " + objectMapper.writeValueAsString(body));
+        simpMessagingTemplate.convertAndSend("/topic/notification/" + body.getUserId(), objectMapper.writeValueAsString(body));
+        return new ResponseEntity(body, HttpStatus.OK);
     }
 }

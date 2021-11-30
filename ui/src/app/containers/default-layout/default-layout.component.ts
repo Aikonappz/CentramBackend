@@ -1,16 +1,16 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
 import * as moment from 'moment';
-import { interval } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { PushNotificationsService } from 'ng-push-ivy';
 import { AppUtility } from '../../config/AppUtility';
 import { NotificationType } from '../../model/enumerator/NotificationType';
 import { Status } from '../../model/enumerator/Status';
 import { NotificationList, Notification } from '../../model/Notification';
+import { NotificationVO } from '../../model/NotificationVO';
 import { Permission } from '../../model/Permssion';
 import { User } from '../../model/User';
-import { NotificationDataSource } from '../../service/datasource/NotificationSource';
 import { MiscService } from '../../service/MiscService';
+import { NotificationService } from '../../service/NotificationService';
+import { NotificationWSService } from '../../service/NotificationWSService';
 import { navItems } from '../../_nav';
 
 @Component({
@@ -19,8 +19,6 @@ import { navItems } from '../../_nav';
 })
 export class DefaultLayoutComponent implements OnInit {
   private notifications: Notification[] = [];
-  private scrollCount: number;
-  private lastFetched: number = null;
   private notificationMenuOpened: boolean = false;
 
   public sidebarMinimized = false;
@@ -35,6 +33,9 @@ export class DefaultLayoutComponent implements OnInit {
   unreadNotifications: number;
   constructor(
     private service: MiscService,
+    private pushNotifications: PushNotificationsService,
+    private notificationService: NotificationService,
+    private websocketService: NotificationWSService
   ) {
     let m = moment();
     this.appUrl = AppUtility.APP_URL;
@@ -89,22 +90,21 @@ export class DefaultLayoutComponent implements OnInit {
     this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
 
-    this.unreadNotifications = 0;
-    this.scrollCount = 0;
+    //ask to allow automatic notification
+    this.pushNotifications.requestPermission();
 
-    interval(10 * 60 * 1000)
-      .pipe(
-        mergeMap(() => this.service.notificationsService({ status: "PULLED", page: this.scrollCount, size: 10, lastFetched: this.lastFetched != null ? this.lastFetched : '' }))
-      )
+    this.unreadNotifications = 0;
+
+    this.service.notificationsService(
+      {
+        status: "PULLED"
+      }
+    )
       .subscribe((data: NotificationList) => {
         if (data.content.length > 0) {
           data.content = data.content.concat(this.notifications);
           this.notifications = data.content;
           this.unreadNotifications = this.notifications.length;
-        }
-        if (this.notifications.length > 0) {
-          this.lastFetched = this.notifications[0].id;
-          //this.scrollCount = Math.ceil(this.notifications.length / 10);
         }
       });
   }
@@ -113,34 +113,49 @@ export class DefaultLayoutComponent implements OnInit {
     this.sidebarMinimized = e;
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { this.connect(); }
 
   ngAfterViewInit() {
+  }
+
+  connect(): void {
+    this.websocketService.connect();
+    // subscribe receives the value.
+    this.notificationService.notificationMessage
+      .subscribe((data: NotificationVO) => {
+        //console.log('receive message', data);
+        let n = new Notification();
+        let u = new User();
+        n.id = data.id;
+        n.notificationTitle = data.title;
+        n.notificationBody = data.body;
+        n.status = data.status;
+        n.notificationType = data.notificationType;
+        u.id = data.userId;
+        n.user = u;
+        this.notifications.push(n);
+        this.unreadNotifications = this.notifications.length;
+      });
+  }
+
+  disconnect(): void {
+    this.websocketService.disconnect();
   }
 
   notificationCheck() {
     this.notificationMenuOpened = !this.notificationMenuOpened;
     console.log("update pulled");
     let updatedNotifications = [];
-    let user: User;
     for (let k in this.notifications) {
-      user = new User()
-      updatedNotifications[k] = new Notification();
-      updatedNotifications[k].id = this.notifications[k].id;
-      updatedNotifications[k].version = this.notifications[k].version;
-      updatedNotifications[k].status = Status.PULLED;
-      updatedNotifications[k].notificationBody = this.notifications[k].notificationBody;
-      updatedNotifications[k].notificationTitle = this.notifications[k].notificationTitle;
-      updatedNotifications[k].notificationType = NotificationType[this.notifications[k].notificationType];
-      user.id = this.notifications[k].user.id;
-      user.version = this.notifications[k].user.version;
-      updatedNotifications[k].user = user;
+      updatedNotifications.push(this.notifications[k].id);
     }
-    this.service
-      .saveNotificationService(updatedNotifications, { status: "PULLED" })
-      .subscribe((data: any) => {
-        this.unreadNotifications = null;
-      });
+    if (updatedNotifications.length > 0) {
+      this.service
+        .updateNotificationsStatusService(updatedNotifications, Status.PULLED)
+        .subscribe((data: any) => {
+          this.unreadNotifications = null;
+        });
+    }
     return false;
   }
 

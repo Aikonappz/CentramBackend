@@ -63,7 +63,7 @@ import { OrganisationModule } from './views/organisation/organisation.module';
 import { SpinnerComponent } from './views/spinner/spinner.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ErrormessageComponent } from './views/errormessage/errormessage.component';
-
+import { PushNotificationsModule } from 'ng-push-ivy';
 
 @NgModule({
   imports: [
@@ -91,8 +91,7 @@ import { ErrormessageComponent } from './views/errormessage/errormessage.compone
     MatProgressSpinnerModule,
     MatProgressBarModule,
     ModalModule.forRoot(),
-
-
+    PushNotificationsModule,
   ],
   declarations: [
     AppComponent,

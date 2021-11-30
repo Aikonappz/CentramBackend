@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,16 +40,20 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Notification> getNotifications(BigInteger lastFetched, Status status, Pageable pageable) {
+    public PaginatedList<Notification> getNotifications(Status status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        lastFetched = lastFetched == null ? BigInteger.ZERO : lastFetched;
-        return new PaginatedList<Notification>(notificationRepository.getNotifications(loggedInUser.getUserId(), lastFetched, status.ordinal(), pageable));
+        return new PaginatedList<Notification>(notificationRepository.getNotifications(loggedInUser.getUserId(), status.ordinal(), pageable));
     }
 
     @Transactional(readOnly = true)
     public List<Notification> getNotificationsByUserAndStatus(Status status) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return notificationRepository.getNotificationsByUserAndStatus(loggedInUser.getUserId(), status);
+    }
+
+    @Transactional
+    public void updateNotificationStatus(List<BigInteger> ids, Status status) {
+        notificationRepository.updateNotificationStatus(ids, status, LocalDateTime.now());
     }
 
     @Transactional

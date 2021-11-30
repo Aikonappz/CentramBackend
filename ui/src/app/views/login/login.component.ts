@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
@@ -7,12 +7,13 @@ import { AuthRequest } from '../../model/AuthRequest';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { UserService } from '../../service/UserService';
 
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: 'login.component.html',
   styleUrls: ['login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   authRequest: AuthRequest;
   angForm = new FormGroup({
     email: new FormControl('', [
@@ -25,7 +26,12 @@ export class LoginComponent {
       //Validators.pattern(this.dateRegx),
     ])
   });
-  constructor(titleService: Title, private router: Router, private userService: UserService) {
+
+  constructor(
+    private titleService: Title,
+    private router: Router,
+    private userService: UserService
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -34,6 +40,9 @@ export class LoginComponent {
       }
     });
     this.authRequest = new AuthRequest();
+  }
+
+  ngOnInit() {
   }
 
   getTitle(state, parent) {

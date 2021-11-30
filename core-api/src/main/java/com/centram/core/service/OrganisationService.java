@@ -77,7 +77,7 @@ public class OrganisationService {
         Organisation newOrganisation = null;
         if (organisation.getId() == null) {
             organisation.setStatus(Status.ACTIVE);
-            organisation.setSetting(new Setting(IncidentTicketAllocationType.GENERIC));
+            organisation.setSetting(new Setting(IncidentAllocationType.GENERIC));
             newOrganisation = organisationRepository.save(organisation);
             activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.ORGANISATION_ONBOARD));
         } else {

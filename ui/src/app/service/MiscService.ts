@@ -30,8 +30,6 @@ export class MiscService {
         return this.http.get('/v1/misc/role/' + id, { "params": request });
     }
 
-
-
     departmentsService(request?: any): Observable<DepartmentList> {
         return this.http.get('/v1/misc/all-departments', { "params": request });
     }
@@ -106,5 +104,9 @@ export class MiscService {
 
     saveNotificationService(notifications: Notification[], request?: any): Observable<any> {
         return this.http.post('/v1/misc/notification', notifications, { "params": request });
+    }
+
+    updateNotificationsStatusService(ids: number[], status: Status, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/notification/' + ids.join(",") + '/' + Status[status], { "params": request });
     }
 }

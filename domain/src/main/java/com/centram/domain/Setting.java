@@ -1,6 +1,6 @@
 package com.centram.domain;
 
-import com.centram.domain.enumarator.IncidentTicketAllocationType;
+import com.centram.domain.enumarator.IncidentAllocationType;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,11 +18,11 @@ import java.io.Serializable;
 public class Setting implements Serializable {
     private static final long serialVersionUID = 2149040960400918629L;
     @Enumerated(EnumType.ORDINAL)
-    private IncidentTicketAllocationType ticketAllocationType;
+    private IncidentAllocationType ticketAllocationType;
     private String incidentPrefix;
     private String assetPrefix;
 
-    public Setting(IncidentTicketAllocationType ticketAllocationType) {
+    public Setting(IncidentAllocationType ticketAllocationType) {
         this.ticketAllocationType = ticketAllocationType;
     }
 }

@@ -17,8 +17,10 @@ public class RestFilter implements Filter {
         //requestWrapper.addHeader("Accept", MediaType.APPLICATION_JSON_VALUE);
         MDC.put("correlation-id", Utility.getCorrelationId());
 
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Allow-Credentials", "false");
+        //res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        //res.setHeader("Access-Control-Allow-Credentials", "false");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
         res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
         res.setHeader("Access-Control-Max-Age", "3600");
         res.setHeader("Access-Control-Expose-Headers","Authorization");
