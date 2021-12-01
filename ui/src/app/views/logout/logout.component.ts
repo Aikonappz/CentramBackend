@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { AppUtility } from '../../config/AppUtility';
+import { NotificationWSService } from '../../service/NotificationWSService';
 import { UserService } from '../../service/UserService';
 
 @Component({
@@ -11,7 +12,12 @@ import { UserService } from '../../service/UserService';
 })
 export class LogoutComponent implements OnInit {
 
-  constructor(titleService: Title, private router: Router, private userService: UserService,) {
+  constructor(
+    private titleService: Title,
+    private router: Router,
+    private userService: UserService,
+    private websocketService: NotificationWSService
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -32,11 +38,11 @@ export class LogoutComponent implements OnInit {
     return data;
   }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     this.callSignOutService();
   }
 
-  callSignOutService(){
+  callSignOutService() {
     this.userService
       .signOutService()
       .subscribe((data: any) => {
@@ -46,6 +52,7 @@ export class LogoutComponent implements OnInit {
         //this.angForm.reset();
         //this.toggleStockAddMode();
         //window.location.reload();
+        this.websocketService.disconnect();
         this.router.navigate(['/']);
       });
   }

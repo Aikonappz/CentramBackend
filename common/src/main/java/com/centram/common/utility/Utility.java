@@ -1,7 +1,10 @@
 package com.centram.common.utility;
 
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -53,5 +56,12 @@ public class Utility {
         return sb.toString();
     }
 
+    public static String encode(String data) {
+        return new String(Base64.encodeBase64(data.getBytes()), StandardCharsets.UTF_8);
+    }
+
+    public static String decode(String encodedData) {
+        return new String(Base64.decodeBase64(encodedData), StandardCharsets.UTF_8);
+    }
 
 }

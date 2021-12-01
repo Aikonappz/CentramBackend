@@ -6,6 +6,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.UserDTO;
 import com.centram.common.utility.JwtTokenUtil;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.LoggedInUserVO;
 import com.centram.common.vo.UserVO;
@@ -66,7 +67,7 @@ public class UsersApiController {
     @RequestMapping(value = "/sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<LoggedInUserVO> login(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
         try {
-            LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword())).getPrincipal();
+            LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), Utility.decode(body.getPassword()))).getPrincipal();
             loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
             LoggedInUserVO loggedInUserVO = new LoggedInUserVO(userService.getProfilePhoto(loggedInUser.getUserId()), loggedInUser);
             HttpHeaders responseHeaders = new HttpHeaders() {{

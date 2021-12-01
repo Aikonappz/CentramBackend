@@ -46,7 +46,8 @@
           <h6><u>{{loggedInUser.timeZone}}</u></h6>
         </a>
         <div class="dropdown-header text-center"><strong>Settings</strong></div>
-        <a class="dropdown-item" href="#/organisation/settings"><i class="fa fa-wrench"></i> Organisation Setting</a>
+        <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item" href="#/organisation/settings"><i
+            class="fa fa-wrench"></i> Organisation Setting</a>
         <div class="divider"></div>
         <a class="dropdown-item" href="#/user/settings"><i class="fa fa-wrench"></i> User Setting</a>
         <!-- <a class="dropdown-item" href="#"><i class="fa fa-usd"></i> Payments<span class="badge badge-dark">42</span></a>
@@ -74,7 +75,9 @@
         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
           <!-- <a class="btn" href="#"><i class="icon-speech"></i></a> -->
           <a class="btn" [routerLink]="['/dashboard']"><i class="icon-graph"></i> &nbsp;Dashboard</a>
-          <a class="btn" href="#/user/settings"><i class="icon-settings"></i> &nbsp;Settings</a>
+          <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="['/organisation/settings']">
+            <i class="icon-settings"></i>&nbsp;Organisation Setting</a>
+          <a class="btn" [routerLink]="['/user/settings']"><i class="icon-settings"></i> &nbsp;User Settings</a>
         </div>
       </li>
     </cui-breadcrumb>

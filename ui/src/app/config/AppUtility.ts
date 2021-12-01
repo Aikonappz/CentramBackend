@@ -2,7 +2,6 @@ import * as moment from "moment-timezone";
 
 export class AppUtility {
     public static LOGED_IN_PROFILE = 'LoggedInProfile';
-    public static LOGED_IN_USER_PERMISSIONS = 'LoggedInUserPermissions';
     public static LOGED_IN_PROFILE_JWT = 'LoggedInProfileToken';
     public static LOGED_IN_LAST_VISIT = 'LastVisit';
     public static APP_VIEW_DATE_FORMAT = 'DD/MM/YYYY';
@@ -12,12 +11,14 @@ export class AppUtility {
     public static APP_DEFAULT_TIMEZONE = 'Asia/Kolkata';
     public static APP_TIME_FORMAT = 'HH:mm:ss';
 
+    constructor() {}
+
     static prepareDateToString(date: Date): string {
         return String(moment(date).format('YYYY-MM-DD') + 'T00:00:00.000Z');
     }
 
     static appManager(): boolean {
-        let loggedInUser: any = JSON.parse(localStorage.getItem(AppUtility.LOGED_IN_PROFILE));
+        let loggedInUser: any = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
         //console.log(loggedInUser.appManager);
         return loggedInUser.appManager;
     }

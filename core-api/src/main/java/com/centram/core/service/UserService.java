@@ -105,9 +105,6 @@ public class UserService implements UserDetailsService {
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
-    @Value("${app.firebase.topic}")
-    private String appFirebaseTopic;
-
     /**
      * Sign In
      *
@@ -227,7 +224,7 @@ public class UserService implements UserDetailsService {
         UserVO userVO = (UserVO) redisTemplate.opsForValue().get(authRequestDTO.getUsername());
         if (userVO != null) {
             redisTemplate.delete(authRequestDTO.getUsername());
-            String encodedPassword = passwordEncoder.encode(authRequestDTO.getPassword());
+            String encodedPassword = passwordEncoder.encode(Utility.decode(authRequestDTO.getPassword()));
             userRepository.updatePassword(encodedPassword, userVO.getId());
             Map<String, String> mailValues = new HashMap<>();
             appEmailService.sendResetPasswordMail(userVO, mailValues);
@@ -522,7 +519,7 @@ public class UserService implements UserDetailsService {
     public void changePassword(UserDTO userDTO) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserVO userVO = this.getUserById(loggedInUser.getUserId());
-        userRepository.changePassword(passwordEncoder.encode(userDTO.getNewPassword()), loggedInUser.getUserId());
+        userRepository.changePassword(passwordEncoder.encode(Utility.decode(userDTO.getNewPassword())), loggedInUser.getUserId());
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
     }
 

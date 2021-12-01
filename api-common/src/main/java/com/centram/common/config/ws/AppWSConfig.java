@@ -1,5 +1,6 @@
 package com.centram.common.config.ws;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -25,6 +26,12 @@ public class AppWSConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${app.ws.endpoint}")
     private String appWSEndPoint;
 
+    @Autowired
+    private AppWSChannelInterceptor appWSChannelInterceptor;
+
+    @Autowired
+    private AppWSHandshakeInterceptor appWSHandshakeInterceptor;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker(appWSBrokerPrefix);
@@ -36,12 +43,12 @@ public class AppWSConfig implements WebSocketMessageBrokerConfigurer {
         // ui client will use this to connect to the server
         registry.addEndpoint(appWSEndPoint)
                 .setAllowedOrigins(appBaseOriginUrl)
-                .addInterceptors(new AppWSHandshakeInterceptor())
+                .addInterceptors(appWSHandshakeInterceptor)
                 .withSockJS();
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new AppWSChannelInterceptor());
+        registration.interceptors(appWSChannelInterceptor);
     }
 }

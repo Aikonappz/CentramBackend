@@ -23,7 +23,7 @@ export class NotificationWSService {
             null,
             {}
         );
-        let loggedInUser = JSON.parse(localStorage.getItem(AppUtility.LOGED_IN_PROFILE));
+        let loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
         let topicName = environment.appWSNotificationTopic + "/" + loggedInUser.userId;
         this.stompClient = Stomp.over(ws);
         const _this = this;
@@ -41,6 +41,7 @@ export class NotificationWSService {
     disconnect(): void {
         if (this.stompClient !== null) {
             this.stompClient.disconnect();
+            this.notificationService.notificationMessage.emit({});
         }
         console.log('Disconnected');
     }

@@ -14,7 +14,7 @@ export class AuthHtppInterceptorService implements HttpInterceptor {
     if (localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)) {
       req = req.clone({
         setHeaders: {
-          Authorization: 'Bearer ' + localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT),
+          Authorization: 'Bearer ' + atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)),
           //Accept: 'application/json',
           //'Content-Type': 'application/json'
         },

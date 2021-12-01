@@ -74,7 +74,7 @@ export class UserSettingsComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.user.oldPassword = '';
-      this.user.newPassword = this.angForm.controls['newPassword'].value;
+      this.user.newPassword = btoa(this.angForm.controls['newPassword'].value);
       this.callChangePasswordService();
     } else {
       console.log("Invalid Form!");

@@ -71,6 +71,12 @@ public class Config implements AsyncConfigurer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
+    @Value("${jasypt.encryptor.algorithm}")
+    public String jasyptEncryptorAlgorithm;
+
+    @Value("${jasypt.encryptor.password}")
+    public String jasyptEncryptorPassword;
+
     @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
     private String dateTimeFormat;
 
@@ -83,14 +89,14 @@ public class Config implements AsyncConfigurer {
     @Value("${spring.redis.port}")
     private Integer redisPort;
 
+    @Value("${app.allowed.origins}")
+    private String[] appAllowedOrigins;
+
     /*@Value("${spring.redis.password}")
     private String redisPassword;*/
 
     @Value("${spring.application.name}")
     private String appName;
-
-    @Value("${app.firebase-config-file}")
-    private String appFireBaseConfigFile;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -225,18 +231,16 @@ public class Config implements AsyncConfigurer {
 
     @Bean
     public StandardPBEStringEncryptor standardPBEStringEncryptor() {
-        return new StandardPBEStringEncryptor();
+        StandardPBEStringEncryptor standardPBEStringEncryptor = new StandardPBEStringEncryptor();
+        standardPBEStringEncryptor.setAlgorithm(jasyptEncryptorAlgorithm);
+        standardPBEStringEncryptor.setPassword(jasyptEncryptorPassword);
+        return standardPBEStringEncryptor;
     }
 
     @Bean
-    public RestFilter restFilter() {
-        return new RestFilter();
-    }
-
-    @Bean
-    public FilterRegistrationBean<RestFilter> restFilterFilterRegistrationBean(RestFilter restFilter) {
+    public FilterRegistrationBean<RestFilter> restFilter() {
         FilterRegistrationBean<RestFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(restFilter);
+        registrationBean.setFilter(new RestFilter(appAllowedOrigins));
         registrationBean.addUrlPatterns("/*");
         //registrationBean.addUrlPatterns("/*");
         return registrationBean;

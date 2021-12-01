@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.authRequest.username = this.angForm.controls['email'].value;
-      this.authRequest.password = this.angForm.controls['password'].value;
+      this.authRequest.password = btoa(this.angForm.controls['password'].value);
       //console.log(this.authRequest);
       this.callSignInService();
     } else {
@@ -76,13 +76,12 @@ export class LoginComponent implements OnInit {
     this.userService
       .signInService(this.authRequest)
       .subscribe((data: LoggedInUser) => {
-        localStorage.setItem(AppUtility.LOGED_IN_PROFILE_JWT, data.jwtToken);
-        data.jwtToken = null;
         AppUtility.APP_DEFAULT_TIMEZONE = data.timeZone;
-        localStorage.setItem(AppUtility.LOGED_IN_PROFILE, JSON.stringify(data));
-        console.log(AppUtility.APP_DEFAULT_TIMEZONE);
+        localStorage.setItem(AppUtility.LOGED_IN_PROFILE_JWT, btoa(data.jwtToken));
+        data.jwtToken = null;
+        localStorage.setItem(AppUtility.LOGED_IN_PROFILE, btoa(JSON.stringify(data)));
         //console.log(data);
-        let lastVisitedPage = localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT);
+        let lastVisitedPage = atob(localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT));
         // if (lastVisitedPage != null) {
         //   console.log(lastVisitedPage);
         //   this.router.navigate(["#" + lastVisitedPage]);

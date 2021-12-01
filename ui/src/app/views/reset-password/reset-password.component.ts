@@ -61,7 +61,7 @@ export class ResetPasswordComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.authRequest.username = this.resetId;
-      this.authRequest.password = this.angForm.controls['password'].value;
+      this.authRequest.password = btoa(this.angForm.controls['password'].value);
       console.log(this.authRequest);
       this.callResetPasswordService();
     } else {

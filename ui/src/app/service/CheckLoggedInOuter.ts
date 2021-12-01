@@ -10,7 +10,7 @@ export class CheckLoggedInOuter implements Resolve<any> {
     constructor(private router: Router) { }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT) && localStorage.getItem(AppUtility.LOGED_IN_PROFILE)) {
+        if ((localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)) && (localStorage.getItem(AppUtility.LOGED_IN_PROFILE))) {
             //window.alert("aleady logged in");
             //let lastVisitedPage = localStorage.getItem(AppSettings.LOGED_IN_LAST_VISIT);
             // if (lastVisitedPage != null) {

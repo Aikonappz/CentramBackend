@@ -1,20 +1,29 @@
 package com.centram.common.filter;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class RestFilter implements Filter {
 
-    @Value("${app.allowed.origins}")
-    private String[] appAllowedOrigins;
+    private List<String> allowedOrigins = new ArrayList<String>();
 
-    private final List<String> allowedOrigins = Arrays.asList(appAllowedOrigins);
+    public RestFilter() {
+        
+    }
+
+    public RestFilter(String[] appAllowedOrigins) {
+        allowedOrigins = Arrays.asList(appAllowedOrigins);
+    }
+
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

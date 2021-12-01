@@ -13,8 +13,10 @@
             <div class="row">
               <div class="col">
                 <label class="form-col-form-label control-label" for="name">Priority Type</label>
-                <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
-                  placeholder="Priority Type" aria-label="Priority Type">
+                <select class="form-control" formControlName="name" ngModel id="name" name="name">
+                  <option value="">-- Select Priority Type --</option>
+                  <option *ngFor="let e of nameList" value="{{e}}">{{e}}</option>
+                </select>
                 <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.name.errors?.required">
                     Priority is required.
@@ -24,7 +26,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="col">
                 <label class="form-col-form-label control-label" for="sla">Priority SLA.</label>
                 <select class="form-control" formControlName="sla" ngModel id="sla" name="sla">

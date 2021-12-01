@@ -4,14 +4,9 @@ import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Location } from '@angular/common';
-import { LocationVO } from '../../model/LocationVO';
-
 import { MiscService } from '../../service/MiscService';
-
 import { Status } from '../../model/enumerator/Status';
-
 import { AppUtility } from '../../config/AppUtility';
-
 import { Priority } from '../../model/Priority';
 
 @Component({
@@ -25,7 +20,8 @@ export class EditPriorityComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   prty: Priority;
-  timeList: string[];
+  timeList: string[] = [];
+  nameList: string[] = [];
   angForm: FormGroup;
   constructor(
     private fb: FormBuilder,
@@ -33,7 +29,8 @@ export class EditPriorityComponent implements OnInit {
     private _location: Location,
     private titleService: Title,
     private router: Router,
-    private service: MiscService) {
+    private service: MiscService
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -57,7 +54,10 @@ export class EditPriorityComponent implements OnInit {
     });
     this.prty = new Priority();
     this.prty.status = this.defaultStatus;
-    this.timeList = AppUtility.getSlaList(120);
+    this.timeList = AppUtility.getSlaList(500);
+    for (let k = 1; k <= 10; k++) {
+      this.nameList.push("P" + k);
+    }
   }
 
   getTitle(state, parent) {

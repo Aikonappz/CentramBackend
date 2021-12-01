@@ -15,7 +15,7 @@ export const environment = {
   appWSServiceEndpoint: 'http://localhost:7001/app-ws-notification',
   appWSNotificationTopic: '/topic/notification',
   appWSCred: {
-    "app_ws_client_shared_user": "user",
-    "app_ws_client_shared_pass": "password"
+    "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
+    "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
   }
 };

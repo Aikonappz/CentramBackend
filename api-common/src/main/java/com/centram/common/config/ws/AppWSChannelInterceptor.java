@@ -1,8 +1,11 @@
 package com.centram.common.config.ws;
 
+import com.centram.common.service.JasyptService;
+import com.centram.common.utility.Utility;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -12,30 +15,40 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.util.MultiValueMap;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
+@Component
 public class AppWSChannelInterceptor implements ChannelInterceptor {
+
+    @Value("${app.ws.username.key}")
+    private String appWsUsernameKey;
+
+    @Value("${app.ws.password.key}")
+    private String appWsPasswordKey;
+
+    @Value("${app.ws.username}")
+    private String appWsUsername;
+
+    @Value("${app.ws.password}")
+    private String appWsPassword;
+
+    @Autowired
+    private JasyptService jasyptService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        System.out.println("Channel Interceptor");
-        MessageHeaders headers = message.getHeaders();
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        /*MessageHeaders headers = message.getHeaders();
         MultiValueMap<String, String> multiValueMap = headers.get(StompHeaderAccessor.NATIVE_HEADERS, MultiValueMap.class);
         for (Map.Entry<String, List<String>> head : multiValueMap.entrySet()) {
             System.out.println(head.getKey() + "#" + head.getValue());
-        }
-        /*return message;*/
-
+        }*/
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            final String username = accessor.getFirstNativeHeader("app_ws_client_shared_user");
-            final String password = accessor.getFirstNativeHeader("app_ws_client_shared_pass");
+            final String username = Utility.decode(accessor.getFirstNativeHeader(appWsUsernameKey));
+            final String password = Utility.decode(accessor.getFirstNativeHeader(appWsPasswordKey));
             final UsernamePasswordAuthenticationToken user = getAuthenticatedOrFail(username, password);
             accessor.setUser(user);
         }
@@ -50,14 +63,10 @@ public class AppWSChannelInterceptor implements ChannelInterceptor {
             throw new AuthenticationCredentialsNotFoundException("Password was null or empty.");
         }
         // Add your own logic for retrieving user in fetchUserFromDb()
-        if (!username.equals("user") || !password.equals("password")) {
+        if (!username.equals(jasyptService.decrypt(appWsUsername)) || !password.equals(jasyptService.decrypt(appWsPassword))) {
             throw new BadCredentialsException("Bad credentials for user " + username);
         }
         // null credentials, we do not pass the password along
-        return new UsernamePasswordAuthenticationToken(
-                username,
-                null,
-                Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
-        );
+        return new UsernamePasswordAuthenticationToken(username, null, Collections.singleton((GrantedAuthority) () -> "USER"));
     }
 }

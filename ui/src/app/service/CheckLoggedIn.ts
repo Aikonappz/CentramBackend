@@ -8,10 +8,10 @@ import { AppUtility } from "../config/AppUtility";
 export class CheckLoggedIn implements Resolve<any> {
     constructor(private router: Router) { }
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT) && localStorage.getItem(AppUtility.LOGED_IN_PROFILE)) {
+        if ((localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)) && (localStorage.getItem(AppUtility.LOGED_IN_PROFILE))) {
             return true;
         } else {
-            localStorage.setItem(AppUtility.LOGED_IN_LAST_VISIT, this.router.url);
+            localStorage.setItem(AppUtility.LOGED_IN_LAST_VISIT, btoa(this.router.url));
             this.router.navigate(['/sign-in']);
             return false;
         }

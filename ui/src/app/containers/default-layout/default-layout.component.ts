@@ -1,9 +1,8 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, } from '@angular/core';
 import * as moment from 'moment';
 import { PushNotificationsService } from 'ng-push-ivy';
 import { environment } from '../../../environments/environment';
 import { AppUtility } from '../../config/AppUtility';
-import { NotificationType } from '../../model/enumerator/NotificationType';
 import { Status } from '../../model/enumerator/Status';
 import { NotificationList, Notification } from '../../model/Notification';
 import { NotificationVO } from '../../model/NotificationVO';
@@ -12,6 +11,7 @@ import { User } from '../../model/User';
 import { MiscService } from '../../service/MiscService';
 import { NotificationService } from '../../service/NotificationService';
 import { NotificationWSService } from '../../service/NotificationWSService';
+import { PermissionService } from '../../service/PermissionService';
 import { navItems } from '../../_nav';
 
 @Component({
@@ -21,7 +21,6 @@ import { navItems } from '../../_nav';
 export class DefaultLayoutComponent implements OnInit {
   private notifications: Notification[] = [];
   private notificationMenuOpened: boolean = false;
-
   public sidebarMinimized = false;
   public navItems = navItems;
   public newNavItems = [];
@@ -29,27 +28,30 @@ export class DefaultLayoutComponent implements OnInit {
   public appBrandName;
   public appDevName;
   public currentYear;
-  permissions: Permission[];
-  loggedInUser: any;
-  unreadNotifications: number;
+  private permissions: Permission[];
+  private loggedInUser: any;
+  private unreadNotifications: number;
   constructor(
     private service: MiscService,
     private pushNotifications: PushNotificationsService,
     private notificationService: NotificationService,
-    private websocketService: NotificationWSService
+    private websocketService: NotificationWSService,
+    private permissionService: PermissionService,
   ) {
     let m = moment();
     this.appUrl = environment.appUrl;
     this.appBrandName = environment.appBrandName;
     this.appDevName = environment.appDevName;
     this.currentYear = m.format('YYYY');
-    this.loggedInUser = JSON.parse(localStorage.getItem(AppUtility.LOGED_IN_PROFILE));
+    this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+    this.loggedInUser.orgAdmin = this.permissionService.hasRole("ORG_ADMIN");
+    //console.log(JSON.stringify(this.loggedInUser));
     this.permissions = this.loggedInUser.modulePermissions;
     this.permissions.forEach(function (itm) {
       itm.actions = itm.actionNames.split(',');
     });
-    localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, JSON.stringify(this.permissions));
-    //console.log(JSON.stringify(this.navItems));
+    //localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, btoa(JSON.stringify(this.permissions)));
+    //console.log(JSON.stringify(this.permissions));
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       for (let j in this.permissions) {
@@ -90,24 +92,18 @@ export class DefaultLayoutComponent implements OnInit {
     }
     this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
-
     //ask to allow automatic notification
     this.pushNotifications.requestPermission();
-
     this.unreadNotifications = 0;
-
-    this.service.notificationsService(
-      {
-        status: "PULLED"
+    this.service.notificationsService({
+      status: "PULLED"
+    }).subscribe((data: NotificationList) => {
+      if (data.content.length > 0) {
+        data.content = data.content.concat(this.notifications);
+        this.notifications = data.content;
+        this.unreadNotifications = this.notifications.length;
       }
-    )
-      .subscribe((data: NotificationList) => {
-        if (data.content.length > 0) {
-          data.content = data.content.concat(this.notifications);
-          this.notifications = data.content;
-          this.unreadNotifications = this.notifications.length;
-        }
-      });
+    });
   }
 
   toggleMinimize(e) {
