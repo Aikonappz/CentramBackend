@@ -564,7 +564,7 @@ public class UserService implements UserDetailsService {
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
         }
-        userDTO.setMediaFile(mediaService.save(mediaFile));
+        //userDTO.setMediaFile(mediaService.save(mediaFile));
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.USER_PROFILE_PHOTO_UPLOAD));
         return userDTO;
     }

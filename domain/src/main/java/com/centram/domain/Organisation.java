@@ -1,8 +1,10 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
 import com.centram.domain.converter.SettingConverter;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -40,6 +42,7 @@ public class Organisation extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
+    @JsonView(Views.DetailView.class)
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
@@ -105,6 +108,7 @@ public class Organisation extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.DetailView.class)
     private Status status;
 
     @ApiModelProperty(required = false, value = "")

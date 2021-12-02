@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import javax.print.attribute.standard.Media;
 
 public enum MediaType {
+    INCIDENT_COMMUNICATION("INCIDENT COMMUNICATION"),
     ORGANISATION_LOGO_IMAGE("ORGANISATION LOGO IMAGE"),
     USER_PROFILE_IMAGE("USER PROFILE IMAGE"),
     ITEM_IMAGE("ITEM IMAGE"),

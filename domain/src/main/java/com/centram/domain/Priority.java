@@ -1,6 +1,8 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -42,21 +44,25 @@ public class Priority extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
+    @JsonView(Views.DetailView.class)
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "name", columnDefinition = "varchar(255) not null")
+    @JsonView(Views.DetailView.class)
     private String name;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "description", columnDefinition = "varchar(2000) not null")
+    @JsonView(Views.DetailView.class)
     private String description;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "sla", columnDefinition = "varchar(255) not null")
+    @JsonView(Views.DetailView.class)
     private String sla;
 
     @ApiModelProperty(value = "")
@@ -64,6 +70,7 @@ public class Priority extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.DetailView.class)
     private Status status;
 
     @ApiModelProperty(required = true, value = "")

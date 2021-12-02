@@ -8,23 +8,20 @@ import com.centram.core.repository.MediaFileRepository;
 import com.centram.domain.MediaFile;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.MediaType;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MediaService {
@@ -36,11 +33,11 @@ public class MediaService {
 
     @Transactional(readOnly = true)
     public MediaFile getById(BigInteger mediaId) {
-        MediaFile mediaFile = mediaFileRepository.getOne(mediaId);
-        if (mediaFile == null) {
+        Optional<MediaFile> mediaFile = mediaFileRepository.findById(mediaId);
+        if (!mediaFile.isPresent()) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
-        return mediaFile;
+        return mediaFile.get();
     }
 
     @Transactional(readOnly = true)
@@ -52,53 +49,38 @@ public class MediaService {
         return mediaFile;
     }
 
-    @Transactional
-    public MediaFile save(MediaFile mediaFile) {
-        return mediaFileRepository.save(mediaFile);
-    }
-
-    @Transactional
+    @Transactional(readOnly = false)
     public void delete(BigInteger mediaId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         mediaFileRepository.deleteById(mediaId);
     }
 
-    /*public List<MediaFile> getMediasByProductName(String productName) {
-        LoggedInUserDTO loggedInUserDTO = (LoggedInUserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return mediaFileRepository.getMediasByProductName(loggedInUserDTO.getOrganisationId(), productName);
-    }*/
-
-    public MediaFile uploadMediaFile(HttpServletRequest request) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!ServletFileUpload.isMultipartContent(request)) {
-            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
-        }
-        MediaFile mediaFile = new MediaFile();
-        mediaFile.setEntityId(null);
-        mediaFile.setEntityType(null);
-        mediaFile.setMediaType(null);
-        try {
-            ServletFileUpload upload = new ServletFileUpload();
-            FileItemIterator itemIterator = upload.getItemIterator(request);
-            while (itemIterator.hasNext()) {
-                FileItemStream item = itemIterator.next();
-                String name = item.getFieldName();
-                InputStream stream = item.openStream();
-                if (!item.isFormField()) {
-                    String filename = item.getName();
-                    mediaFile.setFileName(filename);
-                    mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(filename));
-                    mediaFile.setContent(IOUtils.toByteArray(stream));
-                    /*OutputStream out = new FileOutputStream(filename);
-                    IOUtils.copy(stream, out);
-                    out.close();*/
-                    stream.close();
+    @Transactional(readOnly = false)
+    public void uploadMediaFile(BigInteger mediaId, MediaType mediaType, EntityType entityType, MultipartFile[] multipartFiles) {
+        LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (multipartFiles.length > 0) {
+            try {
+                List<MediaFile> mediaFileList = new ArrayList<MediaFile>();
+                MediaFile mediaFile = new MediaFile();
+                for (MultipartFile multipartFile : multipartFiles) {
+                    if (multipartFile.getSize() == 0) {
+                        continue;
+                    }
+                    mediaFile = new MediaFile();
+                    mediaFile.setEntityId(mediaId);
+                    mediaFile.setEntityType(entityType);
+                    mediaFile.setFileName(multipartFile.getOriginalFilename());
+                    mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(multipartFile.getOriginalFilename()));
+                    mediaFile.setContent(multipartFile.getBytes());
+                    mediaFile.setMediaType(mediaType);
+                    mediaFileList.add(mediaFile);
                 }
+                mediaFileRepository.saveAll(mediaFileList);
+            } catch (IOException e) {
+                throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
             }
-        } catch (FileUploadException e) {
+        } else {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
-        } catch (IOException e) {
-            throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
         }
-        return this.save(mediaFile);
     }
 }

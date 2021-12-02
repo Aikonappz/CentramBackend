@@ -1,12 +1,15 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
-import com.centram.domain.converter.RoleConverter;
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.converter.WatchListConverter;
+import com.centram.domain.enumarator.IncidentStatus;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
@@ -15,22 +18,25 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
- * User
+ * Incident
  */
-@ApiModel(description = "User")
+@ApiModel(description = "Incident")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+//@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "user",
+@Table(name = "incident"
+        /*,
         uniqueConstraints = {
                 @UniqueConstraint(name = "user_email_org_constraint", columnNames = {"email", "organisation_id"}),
                 @UniqueConstraint(name = "user_empid_org_constraint", columnNames = {"employee_id", "organisation_id"})
@@ -42,10 +48,10 @@ import java.util.List;
                 @Index(name = "employeeId_org_indx", columnList = "employee_id,organisation_id", unique = false),
                 @Index(name = "managerId__org_indx", columnList = "manager_id,organisation_id", unique = false),
                 @Index(name = "org_id_idx", columnList = "organisation_id", unique = false),
-        }
+        }*/
 )
 @Audited
-public class User extends BaseEntity implements Serializable {
+public class Incident extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337834473432054L;
 
     @ApiModelProperty(value = "")
@@ -58,85 +64,85 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "first_name", nullable = false, columnDefinition = "varchar(255) not null")
-    private String firstName;
+    @Column(name = "module_id", nullable = false)
+    @JsonView(Views.DetailView.class)
+    private BigInteger moduleId;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "last_name", nullable = false, columnDefinition = "varchar(255) not null")
-    private String lastName;
+    @Column(name = "sub_module_id", nullable = false)
+    @JsonView(Views.DetailView.class)
+    private BigInteger subModuleId;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "email", nullable = false, columnDefinition = "varchar(255) not null")
-    private String email;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "password", nullable = false, columnDefinition = "varchar(255) not null")
-    private String password;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "contact_no", nullable = false, columnDefinition = "varchar(255) not null")
-    private String contactNo;
+    @Column(name = "title", nullable = false, columnDefinition = "varchar(1000) not null")
+    @JsonView(Views.DetailView.class)
+    private String title;
 
     @ApiModelProperty(required = false, value = "")
-    @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255) not null")
-    private String secContactNo;
-
-    @ApiModelProperty(required = false, value = "")
-    @Column(name = "employee_id", nullable = true, columnDefinition = "varchar(255)")
-    private String employeeId;
-
-    @ApiModelProperty(required = false, value = "")
-    //@OneToOne(optional = true, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "manager_id", referencedColumnName = "id")
-    @Column(name = "manager_id", nullable = true, columnDefinition = "BIGINT default null")
-    private BigInteger managerId;
-
-    @ApiModelProperty(value = "")
-    @Column(name = "project_code", nullable = true, columnDefinition = "varchar(255) default null")
-    private String projectCode;
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "priority_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.DetailView.class)
+    private Priority priority;
 
     @ApiModelProperty(required = true, value = "")
     @Valid
-    @NotNull
     @Lob
-    @Column(name = "roles", nullable = false, columnDefinition = "TEXT")
-    @Convert(converter = RoleConverter.class)
-    private List<BigInteger> roles;
+    @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
+    @Convert(converter = WatchListConverter.class)
+    @JsonView(Views.DetailView.class)
+    private List<String> watchList;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
-    private Status status;
+    @JsonView(Views.DetailView.class)
+    private IncidentStatus status;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "raised_user_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.DetailView.class)
+    private User raisedUserId;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
+    @NotNull
     @OneToOne
-    @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
-    private Organisation organisation;
+    @JoinColumn(name = "assigned_user_id", nullable = true, referencedColumnName = "id")
+    @JsonView(Views.DetailView.class)
+    private User assignedUserId;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
-    @OneToOne
-    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
-    private Location location;
+    //@NotNull
+    @OneToMany(mappedBy = "incident", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonView(Views.DetailView.class)
+    private Set<IncidentCommunication> communications;
 
-    @ApiModelProperty(required = false, value = "")
-    @Valid
-    @OneToOne
-    @JoinColumn(name = "department_id", nullable = true, referencedColumnName = "id")
-    private Department department;
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "raisedAt", nullable = false)
+    @JsonView(Views.DetailView.class)
+    private LocalDateTime raisedAt;
 
-    public User(@NotNull BigInteger id) {
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "slaAt", nullable = true)
+    @JsonView(Views.DetailView.class)
+    private LocalDateTime slaAt;
+
+    public Incident(@NotNull BigInteger id) {
         this.id = id;
     }
 
-    public User(Long version, BigInteger id) {
+    public Incident(Long version, BigInteger id) {
         super(version);
         this.id = id;
     }

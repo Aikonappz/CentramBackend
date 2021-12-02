@@ -1,5 +1,7 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -26,7 +28,7 @@ public class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 539663081459952070L;
 
-    @Column(name = "created_date", nullable = true)
+    @Column(name = "created_date", nullable = true, updatable = false)
     @CreatedDate
     private LocalDateTime createdDate;
 
@@ -36,13 +38,14 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "version", nullable = true)
     @Version
+    @JsonView(Views.DetailView.class)
     private Long version;
 
     @Column(name = "modified_by", nullable = true)
     @LastModifiedBy
     private BigInteger modifiedBy;
 
-    @Column(name = "created_by", nullable = true)
+    @Column(name = "created_by", nullable = true, updatable = false)
     @CreatedBy
     private BigInteger createdBy;
 

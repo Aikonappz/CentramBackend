@@ -157,7 +157,7 @@ public class OrganisationService {
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
         }
-        organisationDTO.setMediaFile(mediaService.save(mediaFile));
+        //organisationDTO.setMediaFile(mediaService.save(mediaFile));
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.ORGANISATION_LOGO_UPLOAD));
         return organisationDTO;
     }

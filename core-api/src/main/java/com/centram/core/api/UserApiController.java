@@ -44,12 +44,12 @@ import java.math.BigInteger;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "users", description = "User Api")
+@Api(value = "user", description = "User Api")
 @RequestMapping(value = "/api/v1/user")
 @Controller
-public class UsersApiController {
+public class UserApiController {
 
-    private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
