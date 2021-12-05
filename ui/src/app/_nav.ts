@@ -17,28 +17,28 @@ export const navItems: INavData[] = [
     icon: 'icon-people',
   },
   {
-    name: 'Masters',
-    url: '/masters',
+    name: 'Master',
+    url: '/master',
     icon: 'icon-layers',
     children: [
       {
         name: 'Department',
-        url: '/masters/department',
+        url: '/master/department',
         icon: 'icon-puzzle'
       },
       {
         name: 'Location',
-        url: '/masters/location',
+        url: '/master/location',
         icon: 'icon-location-pin'
       },
       {
         name: 'Priority',
-        url: '/masters/priority',
+        url: '/master/priority',
         icon: 'icon-star'
       },
       {
         name: 'Holiday Calender',
-        url: '/masters/calender',
+        url: '/master/calender',
         icon: 'icon-calendar'
       },
     ]
@@ -47,6 +47,23 @@ export const navItems: INavData[] = [
     name: 'Notification',
     url: '/notification',
     icon: 'icon-info',
+  },
+  {
+    name: 'Incident',
+    url: '/incident',
+    icon: 'fa fa-ticket',
+    children: [
+      {
+        name: 'Raised Incident',
+        url: '/incident/raised',
+        icon: 'fa fa-paper-plane-o'
+      },
+      {
+        name: 'Incomming Incident',
+        url: '/incident/incomming',
+        icon: 'fa fa-exchange'
+      },
+    ]
   },
 ];
 

@@ -9,7 +9,7 @@ export class Notification extends Base {
     notificationBody: string;
     user: User;
     notificationType: NotificationType;
-    status: Status;
+    status: any;
     constructor() {
         super();
         this.id = null;

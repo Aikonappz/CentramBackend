@@ -1,4 +1,5 @@
 export enum MediaType {
+    INCIDENT_COMMUNICATION,
     ORGANISATION_LOGO_IMAGE,
     USER_PROFILE_IMAGE,
 }

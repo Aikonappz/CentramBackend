@@ -47,6 +47,7 @@
     "@types/file-saver": "^2.0.4",
     "bootstrap": "^4.6.0",
     "chart.js": "^2.9.4",
+    "ckeditor4-angular": "^2.3.0",
     "classlist.js": "^1.1.20150312",
     "core-js": "^3.9.1",
     "flag-icon-css": "^3.5.0",

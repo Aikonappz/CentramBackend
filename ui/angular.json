@@ -31,7 +31,8 @@
                 "./node_modules"
               ]
             },
-            "scripts": [],
+            "scripts": [              
+            ],
             "allowedCommonJsDependencies": [
               "chart.js",
               "classnames"

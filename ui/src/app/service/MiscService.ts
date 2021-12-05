@@ -14,7 +14,6 @@ import { Notification, NotificationList } from '../model/Notification';
     providedIn: 'root' // just before your class
 })
 export class MiscService {
-    private requestDemo: RequestDemoDTO;
 
     constructor(private http: ApiHttpService) { }
 

@@ -43,14 +43,14 @@ public class MediaApiController {
             @ApiResponse(code = 404, message = "Media not found"),
             @ApiResponse(code = 405, message = "Validation exception")
     })
-    @RequestMapping(value = "/upload-media/{mediaId}/{entityType}/{mediaType}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
+    @RequestMapping(value = "/upload-media/{entityId}/{entityType}/{mediaType}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     public ResponseEntity uploadMedia(
-            @ApiParam(value = "Media id", required = true) @PathVariable("mediaId") BigInteger mediaId,
+            @ApiParam(value = "Media id", required = true) @PathVariable("entityId") BigInteger entityId,
             @ApiParam(value = "Entity type", required = true) @PathVariable("entityType") EntityType entityType,
             @ApiParam(value = "Media type", required = true) @PathVariable("mediaType") com.centram.domain.enumarator.MediaType mediaType,
             @ApiParam(value = "Users CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile[] multipartFiles
     ) {
-        mediaService.uploadMediaFile(mediaId, mediaType, entityType, multipartFiles);
+        mediaService.uploadMediaFile(entityId, entityType, mediaType, multipartFiles);
         return new ResponseEntity<MediaFile>(HttpStatus.OK);
     }
 
@@ -71,7 +71,7 @@ public class MediaApiController {
             @ApiResponse(code = 404, message = "Media not found")
     })
     @RequestMapping(value = "/{mediaId}", method = RequestMethod.GET)
-    @JsonView({Views.UniqueElementView.class})
+    @JsonView({Views.BasicView.class})
     public ResponseEntity<MediaFile> getMediaById(@ApiParam(value = "Media id", required = true) @PathVariable("mediaId") BigInteger mediaId) {
         return new ResponseEntity<MediaFile>(mediaService.getById(mediaId), HttpStatus.OK);
     }
@@ -81,7 +81,7 @@ public class MediaApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Media not found")
     })
-    @RequestMapping(value = "/{mediaId}/dpwnload", method = RequestMethod.GET)
+    @RequestMapping(value = "/{mediaId}/download", method = RequestMethod.GET)
     public ResponseEntity<Resource> downloadMedia(@ApiParam(value = "Media id", required = true) @PathVariable("mediaId") BigInteger mediaId) {
         MediaFile mediaFile = mediaService.getById(mediaId);
         final InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(mediaFile.getContent()));

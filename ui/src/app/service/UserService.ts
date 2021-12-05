@@ -63,39 +63,4 @@ export class UserService {
     uploadUsersService(formData: FormData, request?: any): Observable<any> {
         return this.http.post('/v1/user/upload-users', formData, request);
     }
-
-    //   getAllCompany(): Observable<Company[]> {
-    //     return this.http.get(this.getAllCompanyList);
-    //   }
-    //   registerCompany(company: Company): Observable<Company> {
-    //     return this.http.post(this.companyRegister, company);
-    //   }
-    //   deleteCompany(companyCode: string): Observable<any> {
-    //     return this.http.delete(this.companyDelete + companyCode);
-    //   }
-    //   getCompanyInfo(companyCode: string): Observable<Company> {
-    //     return this.http.get(this.companyInfo + companyCode);
-    //   }
-    //   // Stock Services
-    //   getStockByCompanyAndDate(
-    //     companyCode: string,
-    //     startDate: string,
-    //     endDate: string
-    //   ): Observable<StockDetail> {
-    //     return this.http.get(
-    //       this.stockByCompany + companyCode + '/' + startDate + '/' + endDate
-    //     );
-    //   }
-    //   getStockByCompanyCode(companyCode: string): Observable<Stock[]> {
-    //     return this.http.get(this.stockByCompany + companyCode + '/latest');
-    //   }
-    //   addStockToCompany(companyCode: string, s: Stock): Observable<Stock> {
-    //     return this.http.post(this.addStock + companyCode, s);
-    //   }
-    //   setCompanyCodeForFetchingStock(company: Company) {
-    //     return (this.companyToFetchStock = company);
-    //   }
-    //   getCompanyCodeForFetchingStock() {
-    //     return this.companyToFetchStock;
-    //   }
 }

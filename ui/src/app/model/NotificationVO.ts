@@ -6,7 +6,7 @@ export class NotificationVO {
     title: string;
     body: string;
     notificationType: NotificationType;
-    status: Status;
+    status: any;
     userId: number;
     constructor() {
         this.id = null;

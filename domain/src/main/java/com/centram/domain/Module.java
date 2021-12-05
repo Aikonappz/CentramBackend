@@ -64,4 +64,8 @@ public class Module implements Serializable {
     @Column(name = "licence_type")
     @Enumerated(EnumType.ORDINAL)
     private LicenseType licenseType;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "customer_module_name")
+    private String customerModuleName;
 }

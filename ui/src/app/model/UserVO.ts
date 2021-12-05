@@ -12,7 +12,7 @@ export class UserVO {
     projectCode: string;
     roles: number[];
     roleNames: string[];
-    status: Status;
+    status: any;
     organisationId: number;
     locationId: number;
     departmentId: number;

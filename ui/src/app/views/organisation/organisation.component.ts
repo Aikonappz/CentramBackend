@@ -109,7 +109,10 @@ export class OrganisationComponent implements OnInit {
     this.org.status = this.defaultStatus;
   }
   formatDate(d: string) {
-    return moment(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
+    if (d != null && d != "") {
+      return moment(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
+    }
+    return null;
   }
 
   get f() { return this.angForm.controls; }

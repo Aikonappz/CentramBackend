@@ -49,16 +49,18 @@ public class IncidentApiController {
             @ApiResponse(code = 400, message = "Invalid name supplied"),
             @ApiResponse(code = 404, message = "incident not found")
     })
+    @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{incidentId}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Incident> getIncidentById(@ApiParam(value = "id of incident to return", required = true) @PathVariable("userId") BigInteger incidentId) {
+    public ResponseEntity<Incident> getIncidentById(@ApiParam(value = "id of incident to return", required = true) @PathVariable("incidentId") BigInteger incidentId) {
         return new ResponseEntity<Incident>(incidentService.getIncidentById(incidentId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Users", nickname = "getUsers", notes = "Get all Users", response = PaginatedList.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all incidents", nickname = "getIncidents", notes = "Get all incidents", response = PaginatedList.class, tags = {"incident",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
+    @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Incident>> getUsers(
             @ApiParam(value = "User Email", defaultValue = "", required = false) @RequestParam(value = "email", defaultValue = "", required = false) String email,
@@ -68,21 +70,4 @@ public class IncidentApiController {
     ) {
         return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncidents(pageable), HttpStatus.OK);
     }
-
-    /*@ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = Resource.class, tags = {"user",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
-    })
-    @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public ResponseEntity<Resource> downloadUsers() {
-        final InputStreamResource resource = new InputStreamResource(userService.downloadUsers());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "users-" + System.currentTimeMillis() + ".csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(resource);
-
-    }*/
-
-
 }

@@ -14,7 +14,7 @@ import java.math.BigInteger;
 @Repository
 public interface IncidentRepository extends PagingAndSortingRepository<Incident, BigInteger> {
 
-    @Query("select i from Incident i where i.raisedUserId.id = (:raisedUserId)")
+    @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId)")
     Page<Incident> getIncidents(@Param("raisedUserId") BigInteger raisedUserId, Pageable pageable);
 
     /*@Query("select u from User u where upper(u.employeeId) = upper((:employeeId)) and u.organisation.id = (:organisationId)")

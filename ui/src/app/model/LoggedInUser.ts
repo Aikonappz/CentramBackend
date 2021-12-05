@@ -1,4 +1,5 @@
 import { MediaFile } from "./MediaFile";
+import { Permission } from "./Permssion";
 
 export class LoggedInUser {
     userId: number;
@@ -11,5 +12,8 @@ export class LoggedInUser {
     department: string;
     organisationLogo: MediaFile;
     profileImage: MediaFile;
-    modulePermissions: Record<string, string>
+    orgName: string;
+    name: string;
+    roles: string[];
+    modulePermissions: Permission[]
 }

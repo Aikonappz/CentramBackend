@@ -16,7 +16,7 @@ export class Organisation extends Base {
     gstin: string;
     licenseStart: any;
     licenseEnd: any;
-    status: Status;
+    status: any;
     licenseType: LicenseType;
 
     constructor() {

@@ -2,7 +2,7 @@ export class Module {
     id: number;
     name: string;
     parentModuleId?: any;
-    status: string;
+    status: any;
     appModule: boolean;
     licenseType: string;
 

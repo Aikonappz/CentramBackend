@@ -1,23 +1,20 @@
 import { Injectable } from "@angular/core";
 import { AppUtility } from "../config/AppUtility";
+import { LoggedInUser } from "../model/LoggedInUser";
 import { Permission } from "../model/Permssion";
 
 @Injectable({
     providedIn: 'root'
 })
-export class PermissionService {
-    private loggedInUser: any;
-    private permissions: Permission[];
-    constructor() {
-
-    }
+export class LoggedInUserService {
+    private loggedInUser: LoggedInUser;
+    constructor() { }
 
     public hasPermission(module: string, permission: string): boolean {
         this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
-        this.permissions = this.loggedInUser.modulePermissions;
-        for (let j in this.permissions) {
-            if (module.toUpperCase() === this.permissions[j].moduleName.toUpperCase()
-                && this.permissions[j].actions.includes(permission)) {
+        for (let j in this.loggedInUser.modulePermissions) {
+            if (module.toUpperCase() === this.loggedInUser.modulePermissions[j].moduleName.toUpperCase()
+                && this.loggedInUser.modulePermissions[j].actions.includes(permission)) {
                 return true;
             }
         }
@@ -26,8 +23,17 @@ export class PermissionService {
 
     public hasRole(role: string): boolean {
         this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
-        this.permissions = this.loggedInUser.modulePermissions;
         return this.loggedInUser.roles.includes(role);
+    }
+
+    public getRoles(): string[] {
+        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+        return this.loggedInUser.roles;
+    }
+
+    public getModulePermissions(): Permission[] {
+        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+        return this.loggedInUser.modulePermissions;
     }
 
 }

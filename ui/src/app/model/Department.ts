@@ -5,7 +5,7 @@ import { Organisation } from "./Organisation";
 export class Department extends Base {
     id: number;
     name: string;
-    status: Status;
+    status: any;
     organisation: Organisation;
     constructor() {
         super();

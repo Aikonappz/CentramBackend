@@ -59,25 +59,25 @@ public class Incident extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "module_id", nullable = false)
-    @JsonView(Views.DetailView.class)
+    @JsonView({Views.DetailView.class, Views.InternalView.class})
     private BigInteger moduleId;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "sub_module_id", nullable = false)
-    @JsonView(Views.DetailView.class)
+    @JsonView({Views.DetailView.class, Views.InternalView.class})
     private BigInteger subModuleId;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "title", nullable = false, columnDefinition = "varchar(1000) not null")
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private String title;
 
     @ApiModelProperty(required = false, value = "")
@@ -85,7 +85,7 @@ public class Incident extends BaseEntity implements Serializable {
     @NotNull
     @OneToOne
     @JoinColumn(name = "priority_id", nullable = false, referencedColumnName = "id")
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private Priority priority;
 
     @ApiModelProperty(required = true, value = "")
@@ -93,7 +93,7 @@ public class Incident extends BaseEntity implements Serializable {
     @Lob
     @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = WatchListConverter.class)
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private List<String> watchList;
 
     @ApiModelProperty(required = true, value = "")
@@ -101,7 +101,7 @@ public class Incident extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private IncidentStatus status;
 
     @ApiModelProperty(required = true, value = "")
@@ -109,33 +109,33 @@ public class Incident extends BaseEntity implements Serializable {
     @NotNull
     @OneToOne
     @JoinColumn(name = "raised_user_id", nullable = false, referencedColumnName = "id")
-    @JsonView(Views.DetailView.class)
-    private User raisedUserId;
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
+    private User raisedUser;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
     @NotNull
     @OneToOne
     @JoinColumn(name = "assigned_user_id", nullable = true, referencedColumnName = "id")
-    @JsonView(Views.DetailView.class)
-    private User assignedUserId;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class,})
+    private User assignedUser;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
     //@NotNull
     @OneToMany(mappedBy = "incident", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonView(Views.DetailView.class)
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private Set<IncidentCommunication> communications;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "raisedAt", nullable = false)
-    @JsonView(Views.DetailView.class)
+    @Column(name = "raisedAt", nullable = false, updatable = false)
+    @JsonView(Views.BasicView.class)
     private LocalDateTime raisedAt;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "slaAt", nullable = true)
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private LocalDateTime slaAt;
 
     public Incident(@NotNull BigInteger id) {

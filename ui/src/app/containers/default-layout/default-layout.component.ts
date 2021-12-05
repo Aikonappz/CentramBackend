@@ -11,7 +11,7 @@ import { User } from '../../model/User';
 import { MiscService } from '../../service/MiscService';
 import { NotificationService } from '../../service/NotificationService';
 import { NotificationWSService } from '../../service/NotificationWSService';
-import { PermissionService } from '../../service/PermissionService';
+import { LoggedInUserService } from '../../service/PermissionService';
 import { navItems } from '../../_nav';
 
 @Component({
@@ -36,7 +36,7 @@ export class DefaultLayoutComponent implements OnInit {
     private pushNotifications: PushNotificationsService,
     private notificationService: NotificationService,
     private websocketService: NotificationWSService,
-    private permissionService: PermissionService,
+    private loggedInUserService: LoggedInUserService,
   ) {
     let m = moment();
     this.appUrl = environment.appUrl;
@@ -44,14 +44,14 @@ export class DefaultLayoutComponent implements OnInit {
     this.appDevName = environment.appDevName;
     this.currentYear = m.format('YYYY');
     this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
-    this.loggedInUser.orgAdmin = this.permissionService.hasRole("ORG_ADMIN");
+    this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
     //console.log(JSON.stringify(this.loggedInUser));
     this.permissions = this.loggedInUser.modulePermissions;
     this.permissions.forEach(function (itm) {
       itm.actions = itm.actionNames.split(',');
     });
     //localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, btoa(JSON.stringify(this.permissions)));
-    //console.log(JSON.stringify(this.permissions));
+    console.log(JSON.stringify(this.permissions));
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       for (let j in this.permissions) {
@@ -90,7 +90,7 @@ export class DefaultLayoutComponent implements OnInit {
         }
       }
     }
-    this.navItems = this.newNavItems;
+    //this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
     //ask to allow automatic notification
     this.pushNotifications.requestPermission();

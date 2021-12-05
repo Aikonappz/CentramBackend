@@ -16,7 +16,7 @@ export class User extends Base {
     managerId: string;
     projectCode: string;
     roles: number[];
-    status: Status;
+    status: any;
     location: LocationVO;
     department: Department;
     organisation: Organisation;

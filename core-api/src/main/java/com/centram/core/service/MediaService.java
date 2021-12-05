@@ -49,6 +49,11 @@ public class MediaService {
         return mediaFile;
     }
 
+    @Transactional(readOnly = true)
+    public List<MediaFile> getMediaFiles(BigInteger entityId, EntityType entityType, MediaType mediaType) {
+        return mediaFileRepository.getMediaFiles(entityId, entityType, mediaType);
+    }
+
     @Transactional(readOnly = false)
     public void delete(BigInteger mediaId) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -56,7 +61,7 @@ public class MediaService {
     }
 
     @Transactional(readOnly = false)
-    public void uploadMediaFile(BigInteger mediaId, MediaType mediaType, EntityType entityType, MultipartFile[] multipartFiles) {
+    public void uploadMediaFile(BigInteger entityId, EntityType entityType, MediaType mediaType, MultipartFile[] multipartFiles) {
         LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (multipartFiles.length > 0) {
             try {
@@ -67,7 +72,7 @@ public class MediaService {
                         continue;
                     }
                     mediaFile = new MediaFile();
-                    mediaFile.setEntityId(mediaId);
+                    mediaFile.setEntityId(entityId);
                     mediaFile.setEntityType(entityType);
                     mediaFile.setFileName(multipartFile.getOriginalFilename());
                     mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(multipartFile.getOriginalFilename()));

@@ -3,7 +3,7 @@ import { Status } from "./enumerator/Status";
 export class Role {
     id: number;
     name: string;
-    status: Status;
+    status: any;
     constructor() {
         this.id = null;
         this.name = '';

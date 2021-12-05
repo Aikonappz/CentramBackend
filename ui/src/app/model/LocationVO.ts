@@ -11,7 +11,7 @@ export class LocationVO extends Base {
     name: string;
     opsStartTime: string;
     opsEndTime: string;
-    status: Status;
+    status: any;
     organisation: Organisation;
     constructor() {
         super();

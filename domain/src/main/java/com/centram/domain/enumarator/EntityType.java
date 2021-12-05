@@ -1,44 +1,7 @@
 package com.centram.domain.enumarator;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum EntityType {
-    ORGANISATION("ORGANISATION"),
-    USER("USER"),
-    ITEM("ITEM"),
-    SALE("SALE"),
-    ODER("ODER");
-
-    private final String value;
-
-    EntityType(String value) {
-        this.value = value;
-    }
-
-    @JsonCreator
-    public static EntityType fromValue(String text) {
-        for (EntityType b : EntityType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        return null;
-    }
-
-    @JsonCreator
-    public static EntityType fromKey(Integer ordinal) {
-        for (EntityType b : EntityType.values()) {
-            if (b.ordinal() == ordinal) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException(ordinal + " is not a valid PropValue");
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-        return String.valueOf(value);
-    }
+    ORGANISATION,
+    USER,
+    INCIDENT
 }

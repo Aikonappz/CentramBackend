@@ -20,6 +20,7 @@ public class PermissionVO implements Serializable {
     private LicenseType licenseType;
     private Boolean appModule;
     private String actionNames;
+    private String customerModuleName;
 
     public PermissionVO(Permission permission) {
         this.moduleId = permission.getModule().getId();
@@ -28,5 +29,6 @@ public class PermissionVO implements Serializable {
         this.appModule = permission.getModule().getAppModule();
         this.licenseType = permission.getModule().getLicenseType();
         this.actionNames = permission.getAction().getName();
+        this.customerModuleName = permission.getModule().getCustomerModuleName();
     }
 }

@@ -7,7 +7,7 @@ export class Priority extends Base {
     name: string;
     description: string;
     sla: string;
-    status: Status;
+    status: any;
     organisation: Organisation;
     constructor() {
         super();

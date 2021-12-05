@@ -10,6 +10,8 @@ import com.centram.core.repository.IncidentRepository;
 import com.centram.domain.Incident;
 import com.centram.domain.IncidentCommunication;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.EntityType;
+import com.centram.domain.enumarator.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class IncidentService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MediaService mediaService;
+
     @Transactional(readOnly = true)
     public PaginatedList<Incident> getIncidents(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -47,6 +52,12 @@ public class IncidentService {
         if (!incident.isPresent()) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
+        Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();
+        for (IncidentCommunication incidentCommunication : incident.get().getCommunications()) {
+            incidentCommunication.setAttachments(mediaService.getMediaFiles(incidentCommunication.getId(), EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION));
+            communicationSet.add(incidentCommunication);
+        }
+        incident.get().setCommunications(communicationSet);
         return incident.get();
     }
 
@@ -55,7 +66,7 @@ public class IncidentService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserVO userVO = userService.getUserById(loggedInUser.getUserId());
         if (incident.getId() == null) {
-            incident.setRaisedUserId(new User(userVO.getVersion(), userVO.getId()));
+            incident.setRaisedUser(new User(userVO.getVersion(), userVO.getId()));
             incident.setRaisedAt(LocalDateTime.now());
         }
         Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();

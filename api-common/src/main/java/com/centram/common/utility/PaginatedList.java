@@ -1,18 +1,30 @@
 package com.centram.common.utility;
 
+import com.centram.common.view.Views;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.data.domain.Page;
 
 import java.io.Serializable;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PaginatedList<T> implements Serializable {
     private static final long serialVersionUID = 1509919069915516041L;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private long totalElements;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private int numberOfElements;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private int totalPages;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private long offset;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private int pageNumber;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private int pageSize;
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class})
     private List<T> content;
 
     public PaginatedList() {

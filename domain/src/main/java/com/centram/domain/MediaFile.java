@@ -37,38 +37,38 @@ public class MediaFile implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
-    @JsonView({Views.UniqueElementView.class, Views.DetailView.class})
+    @JsonView({Views.BasicView.class, Views.DetailView.class})
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "file_name", nullable = false)
-    @JsonView({Views.UniqueElementView.class, Views.DetailView.class})
+    @JsonView({Views.BasicView.class, Views.DetailView.class})
     private String fileName;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "file_type", nullable = false)
-    @JsonView({Views.DetailView.class})
+    @JsonView({Views.InternalView.class})
     private String fileType;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "entity_type")
     @Enumerated(EnumType.ORDINAL)
-    @JsonView({Views.DetailView.class})
+    @JsonView({Views.InternalView.class})
     private EntityType entityType;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "media_type")
     @Enumerated(EnumType.ORDINAL)
-    @JsonView({Views.DetailView.class})
+    @JsonView({Views.InternalView.class})
     private MediaType mediaType;
 
     @Lob
     @Column(name = "content", nullable = false)
-    @JsonView({Views.DetailView.class})
+    @JsonView({Views.InternalView.class})
     private byte[] content;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "entity_id", columnDefinition = "BIGINT")
-    @JsonView({Views.DetailView.class})
+    @JsonView({Views.BasicView.class, Views.DetailView.class})
     private BigInteger entityId;
 }

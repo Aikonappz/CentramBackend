@@ -7,6 +7,7 @@ export class Permission {
     public appModule: boolean;
     public actionNames: string;
     public actions: string[];
+    customerModuleName: string;
 
     private constructor(d: any) {
         this.moduleId = d.moduleId;
@@ -16,5 +17,6 @@ export class Permission {
         this.appModule = d.appModule;
         this.actionNames = d.actionNames;
         this.actions = [];
+        this.customerModuleName = '';
     }
 }

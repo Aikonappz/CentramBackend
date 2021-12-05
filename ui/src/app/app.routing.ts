@@ -104,10 +104,18 @@ export const routes: Routes = [
         loadChildren: () => import('./views/notification/notification.module').then(m => m.NotificationModule),
       },
       {
-        path: 'masters',
+        path: 'master',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/master/master.module').then(m => m.MasterModule),
       },
+      {
+        path: 'incident',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/incident/incident.module').then(m => m.IncidentModule),
+      },
+
+
+
       {
         path: 'base',
         loadChildren: () => import('./views/base/base.module').then(m => m.BaseModule)

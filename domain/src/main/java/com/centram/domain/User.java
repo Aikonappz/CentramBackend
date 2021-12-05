@@ -53,22 +53,25 @@ public class User extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "first_name", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String firstName;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "last_name", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String lastName;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "email", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String email;
 
     @ApiModelProperty(required = true, value = "")
@@ -79,24 +82,29 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "contact_no", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String contactNo;
 
     @ApiModelProperty(required = false, value = "")
     @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String secContactNo;
 
     @ApiModelProperty(required = false, value = "")
     @Column(name = "employee_id", nullable = true, columnDefinition = "varchar(255)")
+    @JsonView(Views.BasicView.class)
     private String employeeId;
 
     @ApiModelProperty(required = false, value = "")
     //@OneToOne(optional = true, fetch = FetchType.LAZY)
     //@JoinColumn(name = "manager_id", referencedColumnName = "id")
     @Column(name = "manager_id", nullable = true, columnDefinition = "BIGINT default null")
+    @JsonView(Views.BasicView.class)
     private BigInteger managerId;
 
     @ApiModelProperty(value = "")
     @Column(name = "project_code", nullable = true, columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
     private String projectCode;
 
     @ApiModelProperty(required = true, value = "")
@@ -105,6 +113,7 @@ public class User extends BaseEntity implements Serializable {
     @Lob
     @Column(name = "roles", nullable = false, columnDefinition = "TEXT")
     @Convert(converter = RoleConverter.class)
+    @JsonView(Views.BasicView.class)
     private List<BigInteger> roles;
 
     @ApiModelProperty(required = true, value = "")
@@ -112,6 +121,7 @@ public class User extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
     private Status status;
 
     @ApiModelProperty(required = false, value = "")

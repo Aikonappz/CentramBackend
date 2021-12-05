@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Incident Communication
@@ -39,20 +40,21 @@ public class IncidentCommunication extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
-    @JsonView(Views.DetailView.class)
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Lob
     @Column(name = "message", columnDefinition = "TEXT not null")
-    @JsonView(Views.DetailView.class)
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private String message;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "incident_id", nullable = false)
+    @JsonView({Views.InternalView.class,})
     private Incident incident;
 
     @ApiModelProperty(required = false, value = "")
@@ -60,6 +62,12 @@ public class IncidentCommunication extends BaseEntity implements Serializable {
     @NotNull
     @OneToOne
     @JoinColumn(name = "communicated_by", nullable = true, referencedColumnName = "id")
-    @JsonView(Views.DetailView.class)
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private User communicatedBy;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
+    @Transient
+    private List<MediaFile> attachments;
 }

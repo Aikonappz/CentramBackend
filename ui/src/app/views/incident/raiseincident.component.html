@@ -1,0 +1,178 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Raise a New Incident</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Update an Incident</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <fieldset *ngIf="!newEntity" class="border p-2">
+              <legend class="w-auto">Incident</legend>
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="priorityId">Priority</label>
+                  <select class="form-control" formControlName="priorityId" ngModel id="priorityId" name="priorityId">
+                    <option value="">-- Select Priority --</option>
+                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
+                    </option>
+                  </select>
+                  <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.priorityId.errors?.required">
+                      Priority is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="status">Status</label>
+                  <select class="form-control" formControlName="status" ngModel id="status" name="status">
+                    <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
+                  </select>
+                </div>
+                <div class="col"></div>
+              </div>
+            </fieldset>
+            <fieldset *ngIf="newEntity" class="border p-2">
+              <legend class="w-auto">Incident</legend>
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="moduleId">Module</label>
+                  <select [disabled]="!newEntity" #moduleId (change)="populateSubmodule($event.target.value)"
+                    class="form-control" formControlName="moduleId" ngModel id="moduleId" name="moduleId">
+                    <option value="">-- Select Module --</option>
+                    <option *ngFor="let e of moduleList" value="{{e.moduleId}}">{{e.customerModuleName}}</option>
+                  </select>
+                  <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.moduleId.errors?.required">
+                      Module is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="subModuleId">Sub Module</label>
+                  <select [disabled]="!newEntity" class="form-control" formControlName="subModuleId" ngModel
+                    id="subModuleId" name="subModuleId">
+                    <option value="">-- Select Sub Module --</option>
+                    <option *ngFor="let e of subModuleList" value="{{e.moduleId}}">{{e.customerModuleName}}
+                    </option>
+                  </select>
+                  <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.subModuleId.errors?.required">
+                      Sub Module is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="priorityId">Priority</label>
+                  <select [disabled]="!newEntity" class="form-control" formControlName="priorityId" ngModel
+                    id="priorityId" name="priorityId">
+                    <option value="">-- Select Priority --</option>
+                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
+                    </option>
+                  </select>
+                  <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.priorityId.errors?.required">
+                      Priority is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="title">Title</label>
+                  <textarea [readonly]="!newEntity" [disabled]="!newEntity" formControlName="title" ngModel id="title"
+                    name="title" rows="4" class="form-control" placeholder="Priority Description"></textarea>
+                  <div *ngIf="f.title.touched && f.title.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.title.errors?.required">
+                      Title is required.
+                    </div>
+                    <div *ngIf="f.title.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="watchList">Watsh List</label>
+                  <select [disabled]="!newEntity" multiple class="form-control" formControlName="watchList" ngModel
+                    id="watchList" name="watchList">
+                    <option *ngFor="let e of users" value="{{e.email}}">{{e.email}}</option>
+                  </select>
+                </div>
+                <div class="col" [ngClass]="newEntity === true ? '' : 'd-none'"></div>
+              </div>
+            </fieldset>
+            <div *ngIf="!newEntity" id="accordion" class="row-margin-05">
+              <h3><b>{{incident.title}}</b></h3>
+              <div>
+                <div *ngFor="let item of incidentCommunications">
+                  <div class="col-sm-12 highlight-grid">
+                    <div *ngIf="item.attachments.length > 0" class="btn-group" role="group" aria-label="Basic example">
+                      <b>Attachements : </b>
+                      <div *ngFor="let e of item.attachments">
+                        <button type="button" (click)="downloadFile(e.id)" class="btn btn-link">
+                          {{e.fileName}}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <div [innerHTML]="item.message"></div>
+                      <div>
+                        <b>
+                          Date/Time : {{formatDateTime(item.createdDate)}}
+                          |
+                          Email :{{item.communicatedBy.email}}
+                          |
+                          Contact No. :{{item.communicatedBy.contactNo}}
+                        </b>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <fieldset class="border p-2">
+              <legend class="w-auto">Incident Details</legend>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label " for="fileInput">Attachments</label>
+                  <input multiple="multiple" (change)="getFileDetails($event)" type="file" id="fileInput"
+                    formControlName="fileInput" name="fileInput">
+                  <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.fileInput.errors?.mustBeCSVFile">
+                      File should be CSV.
+                    </div>
+                    <div *ngIf="f.fileInput.errors?.mustBeLessThan2MB">
+                      File should be less than 3 MB.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+                <div class="col"></div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label control-label" for="message">Issue Details</label>
+                  <ckeditor [config]="{readOnly:false}" formControlName="message" name="message" id="message">
+                  </ckeditor>
+                  <div *ngIf="f.message.touched && f.message.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.message.errors?.required">
+                      Message is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="card-footer">
+            <button [disabled]="!angForm.valid" type="submit" class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>
