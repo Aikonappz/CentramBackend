@@ -15,11 +15,14 @@
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label control-label" for="priorityId">Priority</label>
-                  <select class="form-control" formControlName="priorityId" ngModel id="priorityId" name="priorityId">
+                  <select *ngIf="hasAgentPermission" class="form-control" formControlName="priorityId" ngModel
+                    id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
                     <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
                     </option>
                   </select>
+                  <input type="text" *ngIf="!hasAgentPermission" readonly value="{{incident.priority.name}}"
+                    class="form-control">
                   <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.priorityId.errors?.required">
                       Priority is required.
@@ -28,9 +31,12 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="status">Status</label>
-                  <select class="form-control" formControlName="status" ngModel id="status" name="status">
+                  <select *ngIf="hasAgentPermission" class="form-control" formControlName="status" ngModel id="status"
+                    name="status">
                     <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
                   </select>
+                  <input type="text" *ngIf="!hasAgentPermission" readonly value="{{incident.status}}"
+                    class="form-control">
                 </div>
                 <div class="col"></div>
               </div>

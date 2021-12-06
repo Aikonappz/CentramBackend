@@ -14,8 +14,24 @@ import java.math.BigInteger;
 @Repository
 public interface IncidentRepository extends PagingAndSortingRepository<Incident, BigInteger> {
 
-    @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId)")
-    Page<Incident> getIncidents(@Param("raisedUserId") BigInteger raisedUserId, Pageable pageable);
+    @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and " +
+            " ( " +
+            "   ((:status) <> 12 and i.status = (:status)) " +
+            "   OR " +
+            "   ((:status) = 12) " +
+            " ) and " +
+            " ( " +
+            "   ((:title) is not null and upper(i.title) like (:title)) " +
+            "   OR " +
+            "   ((:title) is null) " +
+            " ) "
+    )
+    Page<Incident> getIncidents(
+            @Param("raisedUserId") BigInteger raisedUserId,
+            @Param("title") String title,
+            @Param("status") Integer status,
+            Pageable pageable
+    );
 
     /*@Query("select u from User u where upper(u.employeeId) = upper((:employeeId)) and u.organisation.id = (:organisationId)")
     User getUserByEmployeeId(@Param("employeeId") String employeeId, @Param("organisationId") BigInteger organisationId);

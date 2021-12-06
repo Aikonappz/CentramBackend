@@ -11,6 +11,7 @@ import com.centram.domain.Incident;
 import com.centram.domain.IncidentCommunication;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.EntityType;
+import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,11 @@ public class IncidentService {
     private MediaService mediaService;
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getIncidents(Pageable pageable) {
+    public PaginatedList<Incident> getIncidents(String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<Incident>(incidentRepository.getIncidents(loggedInUser.getUserId(), pageable));
+        title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
+        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+        return new PaginatedList<Incident>(incidentRepository.getIncidents(loggedInUser.getUserId(), title, intStatus, pageable));
     }
 
     @Transactional(readOnly = true)

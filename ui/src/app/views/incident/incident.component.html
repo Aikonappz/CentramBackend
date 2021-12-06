@@ -19,6 +19,45 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="card ">
+                        <div class="card-header">
+                            <i class="fa fa-search"></i>Search Incident
+                        </div>
+                        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="title">Issue Title</label>
+                                        <input type="text" formControlName="title" ngModel id="title" name="title"
+                                            class="form-control" placeholder="Issue Title" aria-label="Issue Title">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="status">Status</label>
+                                        <select class="form-control" formControlName="status" ngModel id="status"
+                                            name="status">
+                                            <option>-- Select Incident Status--</option>
+                                            <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                    </div>
+                                    <div class="col w-10 justify-content-around d-flex flex-column">
+                                        <div>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-search"></i> Search
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
+                                                <i class="fa fa-close"></i> Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <hr />
                     <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="title">
                             <th class="w-20" mat-header-cell *matHeaderCellDef> Title </th>

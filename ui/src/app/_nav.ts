@@ -54,13 +54,13 @@ export const navItems: INavData[] = [
     icon: 'fa fa-ticket',
     children: [
       {
-        name: 'Raised Incident',
+        name: 'Raise Incident',
         url: '/incident/raised',
         icon: 'fa fa-paper-plane-o'
       },
       {
-        name: 'Incomming Incident',
-        url: '/incident/incomming',
+        name: 'Incoming Incident',
+        url: '/incident/incoming',
         icon: 'fa fa-exchange'
       },
     ]

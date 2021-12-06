@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum LicenseType {
 
     ALL("ALL"),
-    EVENT("EVENT"),
+    INCIDENT("INCIDENT"),
     ASSET("ASSET");
 
     private final String value;

@@ -56,7 +56,7 @@ export class ApiHttpService {
             errorMessage = `Error: ${error.error.message}`;
             const initialState = {
                 title: "Something Went Wrong!",
-                message: "Please try aftersometime!",
+                message: "Please try after sometime!",
             };
             this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
             this.bsModalRef.content.closeBtnName = 'Close';

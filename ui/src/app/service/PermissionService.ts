@@ -10,11 +10,22 @@ export class LoggedInUserService {
     private loggedInUser: LoggedInUser;
     constructor() { }
 
-    public hasPermission(module: string, permission: string): boolean {
+    public hasPermissionByName(name: string, action: string): boolean {
         this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
         for (let j in this.loggedInUser.modulePermissions) {
-            if (module.toUpperCase() === this.loggedInUser.modulePermissions[j].moduleName.toUpperCase()
-                && this.loggedInUser.modulePermissions[j].actions.includes(permission)) {
+            if (name.toUpperCase() === this.loggedInUser.modulePermissions[j].moduleName.toUpperCase()
+                && this.loggedInUser.modulePermissions[j].actions.includes(action)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public hasPermissionById(moduleId: number, action: string): boolean {
+        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+        for (let j in this.loggedInUser.modulePermissions) {
+            if (moduleId === this.loggedInUser.modulePermissions[j].moduleId
+                && this.loggedInUser.modulePermissions[j].actions.includes(action)) {
                 return true;
             }
         }
@@ -35,5 +46,4 @@ export class LoggedInUserService {
         this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
         return this.loggedInUser.modulePermissions;
     }
-
 }

@@ -12,5 +12,6 @@ public enum IncidentStatus {
     ASSIGNED_REOPENED,
     ON_HOLD,
     PENDING_FROM_VENDOR,
-    PENDING_FROM_REQUESTER
+    PENDING_FROM_REQUESTER,
+    ALL
 }

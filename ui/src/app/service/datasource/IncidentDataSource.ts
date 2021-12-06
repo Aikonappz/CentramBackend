@@ -25,9 +25,14 @@ export class IncidentDataSource implements DataSource<Incident>{
         this.countSubject.complete();
     }
 
-    loadData(pageNumber = 0, pageSize = 10) {
+    loadData(pageNumber = 0, pageSize = 10, req = {}) {
         this.loadingSubject.next(true);
-        this.service.incidentsService({ page: pageNumber, size: pageSize })
+        let defaultParam = { page: pageNumber, size: pageSize };
+        let params = Object.assign(
+            req,
+            defaultParam
+        );
+        this.service.incidentsService(params)
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))

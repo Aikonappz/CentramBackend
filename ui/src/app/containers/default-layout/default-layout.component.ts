@@ -51,7 +51,7 @@ export class DefaultLayoutComponent implements OnInit {
       itm.actions = itm.actionNames.split(',');
     });
     //localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, btoa(JSON.stringify(this.permissions)));
-    console.log(JSON.stringify(this.permissions));
+    //console.log(JSON.stringify(this.permissions));
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       for (let j in this.permissions) {
@@ -63,34 +63,33 @@ export class DefaultLayoutComponent implements OnInit {
           //console.log(JSON.stringify(this.navItems[i]));
           this.newNavItems[c] = this.navItems[i];
           if (this.navItems[i].hasOwnProperty("children")) {
-            if (
-              this.permissions[j].appModule == true &&
-              this.navItems[i].name.toUpperCase() === this.permissions[j].moduleName &&
-              this.permissions[j].actions.includes('READ')
-            ) {
-              let parentId = this.permissions[j].moduleId;
-              //console.log(this.newNavItems[c].children);
-              let childMenus = [];
-              for (let sm in this.newNavItems[c].children) {
-                for (let k in this.permissions) {
-                  if (
-                    this.permissions[k].appModule == true &&
-                    this.newNavItems[c].children[sm].name.toUpperCase() === this.permissions[k].moduleName &&
-                    this.permissions[k].actions.includes('READ') &&
-                    parentId === this.permissions[k].moduleParentId
-                  ) {
-                    childMenus.push(this.newNavItems[c].children[sm]);
-                  }
+            // if (
+            //   this.permissions[j].appModule == true &&
+            //   this.navItems[i].name.toUpperCase() === this.permissions[j].moduleName &&
+            //   this.permissions[j].actions.includes('READ')
+            // ) { }
+            let parentId = this.permissions[j].moduleId;
+            //console.log(this.newNavItems[c].children);
+            let childMenus = [];
+            for (let sm in this.newNavItems[c].children) {
+              for (let k in this.permissions) {
+                if (
+                  this.permissions[k].appModule == true &&
+                  this.newNavItems[c].children[sm].name.toUpperCase() === this.permissions[k].moduleName &&
+                  this.permissions[k].actions.includes('READ') &&
+                  parentId === this.permissions[k].moduleParentId
+                ) {
+                  childMenus.push(this.newNavItems[c].children[sm]);
                 }
               }
-              this.newNavItems[c].children = childMenus;
             }
+            this.newNavItems[c].children = childMenus;
           }
           c++;
         }
       }
     }
-    //this.navItems = this.newNavItems;
+    this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
     //ask to allow automatic notification
     this.pushNotifications.requestPermission();
@@ -98,7 +97,7 @@ export class DefaultLayoutComponent implements OnInit {
     this.service.notificationsService({
       status: "PULLED"
     }).subscribe((data: NotificationList) => {
-      if (data.content.length > 0) {
+      if (typeof data.content != "undefined" && data.content.length > 0) {
         data.content = data.content.concat(this.notifications);
         this.notifications = data.content;
         this.unreadNotifications = this.notifications.length;

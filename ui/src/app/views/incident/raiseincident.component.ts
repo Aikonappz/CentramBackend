@@ -48,6 +48,7 @@ export class RaiseIncidentComponent implements OnInit {
   angForm: FormGroup;
   ckeditorToolbarConfig: any;
   readOnlyckeditorToolbarConfig: any;
+  hasAgentPermission: boolean;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -69,6 +70,7 @@ export class RaiseIncidentComponent implements OnInit {
 
     this.incident = new Incident();
     this.incident.status = this.defaultStatus;
+    this.hasAgentPermission = false;
     //this.ckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
     //this.readOnlyckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
     //this.readOnlyckeditorToolbarConfig.readOnly = true;
@@ -159,6 +161,10 @@ export class RaiseIncidentComponent implements OnInit {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callIncidentService(this.entityId);
+
+
+
+
     }
     this.angForm.get('status').setValue(this.defaultStatus);
   }
@@ -196,6 +202,7 @@ export class RaiseIncidentComponent implements OnInit {
         this.incident.watchList = this.angForm.controls['watchList'].value;
         this.incident.assignedUser = null;
         this.incident.raisedUser = null;
+        this.incident.priority = priority;
       } else {
         this.incident.priority = priority;
         this.incident.status = IncidentStatus[this.angForm.controls['status'].value];
@@ -321,6 +328,18 @@ export class RaiseIncidentComponent implements OnInit {
         this.angForm.get('priorityId').setValue(this.incident.priority.id);
         this.angForm.get('status').setValue(this.incident.status);
 
+        //permission section
+        if (
+          this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE')
+          &&
+          this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')
+        ) {
+          this.hasAgentPermission = true;
+        } else {
+          this.hasAgentPermission = false;
+        }
+
+
         //console.log(JSON.stringify(this.incident));
         //this.angForm.markAllAsTouched();
       });
@@ -362,8 +381,6 @@ export class RaiseIncidentComponent implements OnInit {
         }
       });
   }
-
-
 
   formatDateTime(d: string) {
     if (d != null && d != "") {

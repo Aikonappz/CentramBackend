@@ -1,13 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
+import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 import { Incident } from '../../model/Incident';
+import { Permission } from '../../model/Permssion';
 import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
+import { LoggedInUserService } from '../../service/PermissionService';
 
 @Component({
   selector: 'app-incident',
@@ -18,10 +22,17 @@ export class IncidentComponent implements OnInit {
   displayedColumns = ['title', 'priority', 'watchList', 'raisedAt', 'slaAt', 'status', 'action'];
   private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  statusList: string[];
+  permissions: Permission[] = [];
+  moduleList: Permission[] = [];
+  subModuleList: Permission[];
+  angForm: FormGroup;
   constructor(
+    private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
-    private service: IncidentService
+    private service: IncidentService,
+    private loggedInUserService: LoggedInUserService
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -29,6 +40,21 @@ export class IncidentComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.statusList = Object.values(IncidentStatus)
+      .filter((value) => typeof value === "string")
+      .map((value) => (value as string));
+    this.angForm = this.fb.group({
+      title: new FormControl('', [
+      ]),
+      status: new FormControl(null, [
+      ]),
+    });
+    this.permissions = this.loggedInUserService.getModulePermissions();
+    for (let i in this.permissions) {
+      if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null) {
+        this.moduleList.push(this.permissions[i]);
+      }
+    }
   }
 
   getTitle(state, parent) {
@@ -70,8 +96,8 @@ export class IncidentComponent implements OnInit {
     this.router.navigate(['/incident/raise']);
   }
 
-  loadData() {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize);
+  loadData(req = {}) {
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
   formatDateTime(d: string) {
     if (d != null && d != "") {
@@ -79,4 +105,40 @@ export class IncidentComponent implements OnInit {
     }
     return null;
   }
+
+  loadPage() {
+    this.angForm.reset();
+    this.loadData({});
+  }
+
+
+  formSubmit() {
+    if (this.angForm.valid) {
+      //console.log(this.angForm);
+      let title = this.angForm.controls['title'].value;
+      let status = this.angForm.controls['status'].value;
+      this.loadData({
+        "title": title == null ? '' : title,
+        "status": status == null ? '' : status,
+      });
+      //console.log(JSON.stringify(this.org));
+    } else {
+      console.log("Invalid Form!");
+    }
+  }
+
+  @ViewChild("moduleId") moduleId;
+  populateSubmodule(moduleId) {
+    let c = 0;
+    if (moduleId != "") {
+      this.subModuleList = [];
+      for (let i = 0; i < this.permissions.length; i++) {
+        if (this.permissions[i].moduleParentId == moduleId) {
+          this.subModuleList[c] = this.permissions[i];
+          c++;
+        }
+      }
+    }
+  }
+
 }
