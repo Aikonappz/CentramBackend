@@ -12,7 +12,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <label class="form-col-form-label control-label" for="name">First Name</label>
+                <label class="form-col-form-label required-control-label" for="name">First Name</label>
                 <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
                   placeholder="Department name" aria-label="Department name">
                 <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">

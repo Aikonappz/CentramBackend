@@ -12,7 +12,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <label class="form-col-form-label control-label" for="name">Priority Type</label>
+                <label class="form-col-form-label required-control-label" for="name">Priority Type</label>
                 <select class="form-control" formControlName="name" ngModel id="name" name="name">
                   <option value="">-- Select Priority Type --</option>
                   <option *ngFor="let e of nameList" value="{{e}}">{{e}}</option>
@@ -28,7 +28,7 @@
               </div>
 
               <div class="col">
-                <label class="form-col-form-label control-label" for="sla">Priority SLA.</label>
+                <label class="form-col-form-label required-control-label" for="sla">Priority SLA.</label>
                 <select class="form-control" formControlName="sla" ngModel id="sla" name="sla">
                   <option value="">-- Select Priority SLA. --</option>
                   <option *ngFor="let e of timeList" value="{{e}}">{{e}} hrs</option>
@@ -40,7 +40,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="description">Priority Description</label>
+                <label class="form-col-form-label required-control-label" for="description">Priority Description</label>
                 <textarea formControlName="description" ngModel id="description" name="description" rows="4"
                   class="form-control" placeholder="Priority Description"></textarea>
                 <div *ngIf="f.description.touched && f.description.invalid" class="alert alert-danger-custom">

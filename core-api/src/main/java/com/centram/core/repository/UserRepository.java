@@ -44,6 +44,13 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query("select u from User u where u.id in (:ids)")
     Page getUserByIds(@Param("ids") List<BigInteger> ids, Pageable pageable);
 
+    /*select roles from `user` u where organisation_id = 1
+    and CONCAT(",", `roles`, ",") REGEXP ",(6|10),"
+    and find_in_set('15',roles) <> 0*/
+
+    @Query(value = "select * from user u where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
+    List<User> getUsersByModuleAndAction(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
+
     @Query("select u from User u where u.id = (:id)")
     User getUserById(@Param("id") BigInteger id);
 

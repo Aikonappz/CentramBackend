@@ -10,6 +10,7 @@ import { MasterRoutingModule } from '../master/master-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { RaiseIncidentComponent } from './raiseincident.component';
 import { CKEditorModule } from 'ckeditor4-angular';
+import { IncomingIncidentComponent } from './incomingincident.component';
 
 
 
@@ -17,6 +18,7 @@ import { CKEditorModule } from 'ckeditor4-angular';
   declarations: [
     IncidentComponent,
     RaiseIncidentComponent,
+    IncomingIncidentComponent
   ],
   imports: [
     CommonModule,

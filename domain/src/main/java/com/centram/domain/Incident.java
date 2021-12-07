@@ -109,7 +109,7 @@ public class Incident extends BaseEntity implements Serializable {
     @NotNull
     @OneToOne
     @JoinColumn(name = "raised_user_id", nullable = false, referencedColumnName = "id")
-    @JsonView({Views.DetailView.class, Views.InternalView.class,})
+    @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private User raisedUser;
 
     @ApiModelProperty(required = false, value = "")

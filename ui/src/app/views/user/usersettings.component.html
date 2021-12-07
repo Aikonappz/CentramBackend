@@ -11,7 +11,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="newPassword">New Password</label>
+                  <label class="form-col-form-label required-control-label" for="newPassword">New Password</label>
                   <input type="password" formControlName="newPassword" ngModel id="newPassword" name="newPassword"
                     class="form-control" placeholder="New Password" aria-label="New Password">
                   <div *ngIf="f.newPassword.touched && f.newPassword.invalid" class="alert alert-danger-custom">
@@ -26,7 +26,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="confirmPassword">Confirm Password</label>
+                  <label class="form-col-form-label required-control-label" for="confirmPassword">Confirm Password</label>
                   <input type="password" formControlName="confirmPassword" ngModel id="confirmPassword"
                     name="confirmPassword" class="form-control" placeholder="Confirm Password"
                     aria-label="Confirm Password">

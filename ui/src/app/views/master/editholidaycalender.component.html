@@ -12,7 +12,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <label class="form-col-form-label control-label" for="year">Calender Year</label>
+                <label class="form-col-form-label required-control-label" for="year">Calender Year</label>
                 <select class="form-control" formControlName="year" ngModel id="year"
                   name="year">
                   <option value="">-- Select Calender Year --</option>
@@ -26,7 +26,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="fileInput">Upload File</label>
+                <label class="form-col-form-label required-control-label" for="fileInput">Upload File</label>
                 <input (change)="getFileDetails($event)" type="file" id="fileInput" formControlName="fileInput"
                   name="fileInput">
                 <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">

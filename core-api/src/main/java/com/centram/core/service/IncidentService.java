@@ -9,6 +9,7 @@ import com.centram.common.vo.UserVO;
 import com.centram.core.repository.IncidentRepository;
 import com.centram.domain.Incident;
 import com.centram.domain.IncidentCommunication;
+import com.centram.domain.Permission;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.IncidentStatus;
@@ -24,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class IncidentService {
@@ -39,6 +42,31 @@ public class IncidentService {
 
     @Autowired
     private MediaService mediaService;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> getIncomingIncidents(String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> roles = loggedInUser.getAuthorities().stream()
+                .map(i -> i.getAuthority())
+                .collect(Collectors.toList());
+        List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
+        List<BigInteger> modSubModIds = permissions.stream()
+                .filter(i -> !i.getModule().getAppModule())
+                .map(i -> i.getModule().getId())
+                .collect(Collectors.toList());
+        BigInteger uId = (!assignedUserId.equals("")) ? BigInteger.valueOf(Long.valueOf(assignedUserId)) : null;
+        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
+        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
+        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
+        title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
+        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(
+                mId, smId, pId, uId, modSubModIds, title, intStatus, pageable
+        ));
+    }
 
     @Transactional(readOnly = true)
     public PaginatedList<Incident> getIncidents(String title, String status, Pageable pageable) {

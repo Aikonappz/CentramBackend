@@ -213,7 +213,7 @@ public class UserApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "List")
     })
-    @RequestMapping(value = "/users/findByIds", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/findByIds", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Page<UserVO>> getUserByIds(@NotNull @ApiParam(value = "Ids to filter by", required = true) @Valid @RequestParam(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<Page<UserVO>>(userService.getUserByIds(ids, pageable), HttpStatus.OK);
     }
@@ -257,6 +257,18 @@ public class UserApiController {
     public ResponseEntity uploadUsersData(@ApiParam(value = "Users CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
         userService.uploadUsersData(multipartFile);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by module/submodule permission", nickname = "getUsersByModuleAndAction", notes = "Find user by module/submodule permission", response = UserVO.class, responseContainer = "List", tags = {"user",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = UserVO.class, responseContainer = "List")
+    })
+    @RequestMapping(value = "/find-by-modules-permissions", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<List<UserVO>> getUsersByModuleAndAction(
+            @NotNull @ApiParam(value = "Module Ids to filter by", required = true) @Valid @RequestParam(value = "moduleIds", required = true) List<BigInteger> moduleIds,
+            @NotNull @ApiParam(value = "Action Name", required = true) @Valid @RequestParam(value = "actionName", required = true) String actionName
+    ) {
+        return new ResponseEntity<List<UserVO>>(userService.getUsersByModuleAndAction(moduleIds, actionName), HttpStatus.OK);
     }
 
 }

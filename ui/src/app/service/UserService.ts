@@ -36,6 +36,10 @@ export class UserService {
         return this.http.get('/v1/user/all', { "params": request });
     }
 
+    getUsersByModuleAndAction(request?: any): Observable<UserVO[]> {
+        return this.http.get('/v1/user/find-by-modules-permissions', { "params": request });
+    }
+
     updateStatusService(ids: number[], status: Status, request?: any): Observable<any> {
         return this.http.get('/v1/user/' + ids.join(",") + '/' + Status[status], { "params": request });
     }

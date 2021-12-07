@@ -21,4 +21,10 @@ public interface PermissionRepository extends JpaRepository<Permission, BigInteg
     @Query("select p from Permission p where p.role.id in (:roleIds)")
     Page getPermissionByRoleIds(@Param("roleIds") List<BigInteger> roleIds, Pageable pageable);
 
+    @Query("select p.role.id from Permission p where p.module.id in (:moduleIds) and p.action.name = (:actionName)")
+    List<BigInteger> getRoleIdsByModuleAndAction(@Param("moduleIds") List<BigInteger> moduleIds, @Param("actionName") String actionName);
+
+    @Query("select p from Permission p where p.role.name in (:roleNames)")
+    List<Permission> getPermissionByRoleNames(@Param("roleNames") List<String> roleNames);
+
 }

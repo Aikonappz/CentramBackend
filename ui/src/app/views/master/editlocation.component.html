@@ -12,7 +12,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <label class="form-col-form-label control-label" for="country">Country</label>
+                <label class="form-col-form-label required-control-label" for="country">Country</label>
                 <select #country (change)="populateTimezone($event.target.value)" class="form-control"
                   formControlName="country" ngModel id="country" name="country">
                   <option value="">-- Select Country --</option>
@@ -27,7 +27,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="timezone">Timezone</label>
+                <label class="form-col-form-label required-control-label" for="timezone">Timezone</label>
                 <select class="form-control" formControlName="timezone" ngModel id="timezone" name="timezone">
                   <option value="">-- Select Timezone --</option>
                   <option *ngFor="let e of filterdCountry" value="{{e.zone_name}}">{{e.zone_name}}
@@ -62,7 +62,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="name">Location</label>
+                <label class="form-col-form-label required-control-label" for="name">Location</label>
                 <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
                   placeholder="Name" aria-label="Name">
                 <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
@@ -78,7 +78,7 @@
             </div>
             <div class="row row-margin-05">
               <div class="col">
-                <label class="form-col-form-label control-label" for="opsStartTime">Ops. Start Time</label>
+                <label class="form-col-form-label required-control-label" for="opsStartTime">Ops. Start Time</label>
                 <select class="form-control" formControlName="opsStartTime" ngModel id="opsStartTime"
                   name="opsStartTime">
                   <option value="">-- Ops. Start Time --</option>
@@ -91,7 +91,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="opsEndTime">Ops. End Time</label>
+                <label class="form-col-form-label required-control-label" for="opsEndTime">Ops. End Time</label>
                 <select class="form-control" formControlName="opsEndTime" ngModel id="opsEndTime" name="opsEndTime">
                   <option value="">-- Ops. End Time --</option>
                   <option *ngFor="let e of timeList" value="{{e}}">{{e}}</option>

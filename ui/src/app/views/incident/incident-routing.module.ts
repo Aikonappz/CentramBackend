@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { IncidentComponent } from './incident.component';
+import { IncomingIncidentComponent } from './incomingincident.component';
 import { RaiseIncidentComponent } from './raiseincident.component';
 
 const routes: Routes = [
@@ -21,6 +22,14 @@ const routes: Routes = [
         data: {
           title: 'Incident'
         },
+      },
+      {
+        path: 'incoming',
+        component: IncomingIncidentComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incoming Incident'
+        }
       },
       {
         path: 'raise',

@@ -46,6 +46,16 @@ public class PermissionService {
     }
 
     @Transactional(readOnly = true)
+    public List<BigInteger> getRoleIdsByModuleAndAction(List<BigInteger> moduleIds, String actionName) {
+        return permissionRepository.getRoleIdsByModuleAndAction(moduleIds, actionName);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Permission> getPermissionByRoleNames(List<String> roleIds) {
+        return permissionRepository.getPermissionByRoleNames(roleIds);
+    }
+
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "permission", key = "'role_'.concat(#roleId)")
     public Page<Permission> getPermissionByRoleId(BigInteger roleId, Pageable pageable) {
         return permissionRepository.getPermissionByRoleId(roleId, pageable);

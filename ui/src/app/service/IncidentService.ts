@@ -10,6 +10,10 @@ export class IncidentService {
 
     constructor(private http: ApiHttpService) { }
 
+    incomingIncidentsService(request?: any): Observable<IncidentList> {
+        return this.http.get('/v1/incident/incoming-all', { "params": request });
+    }
+
     incidentsService(request?: any): Observable<IncidentList> {
         return this.http.get('/v1/incident/all', { "params": request });
     }
@@ -20,5 +24,5 @@ export class IncidentService {
 
     saveIncidentService(inc: Incident): Observable<Incident> {
         return this.http.post('/v1/incident/', inc);
-    }    
+    }
 }

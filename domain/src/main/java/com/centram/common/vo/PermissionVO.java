@@ -14,12 +14,15 @@ import java.math.BigInteger;
 @EqualsAndHashCode
 public class PermissionVO implements Serializable {
     private static final long serialVersionUID = 2203272088452468360L;
+    private BigInteger roleId;
+    private String roleName;
+    private BigInteger actionId;
+    private String actionName;
     private BigInteger moduleId;
     private String moduleName;
     private BigInteger moduleParentId;
     private LicenseType licenseType;
     private Boolean appModule;
-    private String actionNames;
     private String customerModuleName;
 
     public PermissionVO(Permission permission) {
@@ -28,7 +31,10 @@ public class PermissionVO implements Serializable {
         this.moduleName = permission.getModule().getName();
         this.appModule = permission.getModule().getAppModule();
         this.licenseType = permission.getModule().getLicenseType();
-        this.actionNames = permission.getAction().getName();
         this.customerModuleName = permission.getModule().getCustomerModuleName();
+        this.actionId = permission.getAction().getId();
+        this.actionName = permission.getAction().getName();
+        this.roleId = permission.getRole().getId();
+        this.roleName = permission.getRole().getName();
     }
 }

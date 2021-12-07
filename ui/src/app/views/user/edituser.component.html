@@ -12,7 +12,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <label class="form-col-form-label control-label" for="firstName">First Name</label>
+                <label class="form-col-form-label required-control-label" for="firstName">First Name</label>
                 <input type="text" formControlName="firstName" ngModel id="firstName" name="firstName"
                   class="form-control" placeholder="First name" aria-label="First name">
                 <div *ngIf="f.firstName.touched && f.firstName.invalid" class="alert alert-danger-custom">
@@ -22,7 +22,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="lastName">Last Name</label>
+                <label class="form-col-form-label required-control-label" for="lastName">Last Name</label>
                 <input type="text" formControlName="lastName" ngModel id="lastName" name="lastName" class="form-control"
                   placeholder="Last name" aria-label="Last name">
                 <div *ngIf="f.lastName.touched && f.lastName.invalid" class="alert alert-danger-custom">
@@ -32,7 +32,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="email">Email</label>
+                <label class="form-col-form-label required-control-label" for="email">Email</label>
                 <input type="text" formControlName="email" ngModel id="email" name="email" class="form-control"
                   placeholder="Last name" aria-label="Last name">
                 <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger-custom">
@@ -47,7 +47,7 @@
             </div>
             <div class="row row-margin-05">
               <div class="col">
-                <label class="form-col-form-label control-label" for="contactNo">Contact No.</label>
+                <label class="form-col-form-label required-control-label" for="contactNo">Contact No.</label>
                 <input type="text" formControlName="contactNo" ngModel id="contactNo" name="contactNo"
                   class="form-control" placeholder="Contact No." aria-label="Contact No.">
                 <div *ngIf="f.contactNo.touched && f.contactNo.invalid" class="alert alert-danger-custom">
@@ -70,7 +70,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="employeeId">Employee Id.</label>
+                <label class="form-col-form-label required-control-label" for="employeeId">Employee Id.</label>
                 <input type="text" formControlName="employeeId" ngModel id="employeeId" name="employeeId"
                   class="form-control" placeholder="Employee Id." aria-label="Employee Id.">
                 <div *ngIf="f.employeeId.touched && f.employeeId.invalid" class="alert alert-danger-custom">
@@ -92,7 +92,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="roles">Roles</label>
+                <label class="form-col-form-label required-control-label" for="roles">Roles</label>
                 <select multiple class="form-control" formControlName="roles" ngModel id="roles"
                   name="roles">
                   <option *ngFor="let e of roles" value="{{e.id}}">{{e.name}}</option>
@@ -133,7 +133,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label control-label" for="managerId">Mngr. Id.</label>
+                <label class="form-col-form-label required-control-label" for="managerId">Mngr. Id.</label>
                 <select class="form-control" formControlName="managerId" ngModel id="managerId"
                   name="managerId">
                   <option value="">-- Select Manager Id. --</option>

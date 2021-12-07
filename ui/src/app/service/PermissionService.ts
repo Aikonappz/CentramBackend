@@ -10,6 +10,11 @@ export class LoggedInUserService {
     private loggedInUser: LoggedInUser;
     constructor() { }
 
+    public getLoggedInUser(): LoggedInUser {
+        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+        return this.loggedInUser;
+    }
+
     public hasPermissionByName(name: string, action: string): boolean {
         this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
         for (let j in this.loggedInUser.modulePermissions) {

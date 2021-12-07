@@ -14,7 +14,7 @@
               <legend class="w-auto">Incident</legend>
               <div class="row">
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="priorityId">Priority</label>
+                  <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <select *ngIf="hasAgentPermission" class="form-control" formControlName="priorityId" ngModel
                     id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
@@ -45,7 +45,7 @@
               <legend class="w-auto">Incident</legend>
               <div class="row">
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="moduleId">Module</label>
+                  <label class="form-col-form-label required-control-label" for="moduleId">Module</label>
                   <select [disabled]="!newEntity" #moduleId (change)="populateSubmodule($event.target.value)"
                     class="form-control" formControlName="moduleId" ngModel id="moduleId" name="moduleId">
                     <option value="">-- Select Module --</option>
@@ -58,7 +58,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="subModuleId">Sub Module</label>
+                  <label class="form-col-form-label required-control-label" for="subModuleId">Sub Module</label>
                   <select [disabled]="!newEntity" class="form-control" formControlName="subModuleId" ngModel
                     id="subModuleId" name="subModuleId">
                     <option value="">-- Select Sub Module --</option>
@@ -72,7 +72,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="priorityId">Priority</label>
+                  <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <select [disabled]="!newEntity" class="form-control" formControlName="priorityId" ngModel
                     id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
@@ -88,7 +88,7 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="title">Title</label>
+                  <label class="form-col-form-label required-control-label" for="title">Title</label>
                   <textarea [readonly]="!newEntity" [disabled]="!newEntity" formControlName="title" ngModel id="title"
                     name="title" rows="4" class="form-control" placeholder="Priority Description"></textarea>
                   <div *ngIf="f.title.touched && f.title.invalid" class="alert alert-danger-custom">
@@ -160,7 +160,7 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label control-label" for="message">Issue Details</label>
+                  <label class="form-col-form-label required-control-label" for="message">Issue Details</label>
                   <ckeditor [config]="{readOnly:false}" formControlName="message" name="message" id="message">
                   </ckeditor>
                   <div *ngIf="f.message.touched && f.message.invalid" class="alert alert-danger-custom">

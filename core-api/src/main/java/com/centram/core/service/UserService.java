@@ -130,9 +130,9 @@ public class UserService implements UserDetailsService {
                             .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
                             .findFirst()
                             .ifPresent(i -> {
-                                String actionNames = i.getActionNames().concat(",").concat(permission.getAction().getName());
+                                String actionNames = i.getActionName().concat(",").concat(permission.getAction().getName());
                                 actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
-                                i.setActionNames(actionNames);
+                                i.setActionName(actionNames);
                             });
                 } else {
                     modulePermissions.add(new PermissionVO(permission));
@@ -443,6 +443,27 @@ public class UserService implements UserDetailsService {
             userVOS.add(new UserVO(user));
         }
         return new PageImpl<>(userVOS);
+    }
+
+    /**
+     * Get filtered users by module and acton
+     *
+     * @param moduleIds
+     * @param actionName
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsersByModuleAndAction(List<BigInteger> moduleIds, String actionName) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<BigInteger> roleIds = permissionService.getRoleIdsByModuleAndAction(moduleIds, actionName);
+        String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
+        roles = ",(".concat(roles).concat("),");
+        List<User> users = userRepository.getUsersByModuleAndAction(roles, loggedInUser.getOrganisationId());
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        for (User user : users) {
+            userVOS.add(new UserVO(user));
+        }
+        return userVOS;
     }
 
     /**

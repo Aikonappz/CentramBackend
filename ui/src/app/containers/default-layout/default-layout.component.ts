@@ -48,7 +48,7 @@ export class DefaultLayoutComponent implements OnInit {
     //console.log(JSON.stringify(this.loggedInUser));
     this.permissions = this.loggedInUser.modulePermissions;
     this.permissions.forEach(function (itm) {
-      itm.actions = itm.actionNames.split(',');
+      itm.actions = itm.actionName.split(',');
     });
     //localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, btoa(JSON.stringify(this.permissions)));
     //console.log(JSON.stringify(this.permissions));
