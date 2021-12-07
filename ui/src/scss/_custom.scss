@@ -226,7 +226,7 @@
 .row-margin-10 { margin-top: 1.0em; }
 .row-margin-20 { margin-top: 2.0em; }
 .row-margin-30 { margin-top: 3.0em; }
-.control-label::after{
+.required-control-label::after{
     content: " *";
     color: red;
 }
