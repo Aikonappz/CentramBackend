@@ -12,14 +12,14 @@ export class Permission {
     public actionId: number;
     public actionName: string;
 
-    private constructor(d: any) {
+    public constructor(d: any) {
         this.moduleId = d.moduleId;
         this.moduleName = d.moduleName;
         this.moduleParentId = d.moduleParentId;
         this.licenseType = d.licenseType;
         this.appModule = d.appModule;
-        this.actions = [];
-        this.customerModuleName = '';
+        this.actions = d.actionName.split(',');
+        this.customerModuleName = d.customerModuleName;
         this.actionName = d.actionName;
         this.actionId = d.actionId;
         this.roleId = d.roleId;

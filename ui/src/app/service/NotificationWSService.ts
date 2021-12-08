@@ -5,6 +5,7 @@ import * as SockJS from 'sockjs-client';
 import { NotificationService } from './NotificationService';
 import { environment } from '../../environments/environment';
 import { AppUtility } from '../config/AppUtility';
+import { LoggedInUserService } from './LoggedInUserService';
 
 
 @Injectable({
@@ -14,7 +15,10 @@ export class NotificationWSService {
 
     stompClient: any;
 
-    constructor(private notificationService: NotificationService) { }
+    constructor(
+        private notificationService: NotificationService,
+        private loggedInUserService: LoggedInUserService
+    ) { }
 
     connect(): void {
         console.log('webSocket Connection');
@@ -23,9 +27,11 @@ export class NotificationWSService {
             null,
             {}
         );
-        let loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+        let loggedInUser = this.loggedInUserService.getLoggedInUser();
         let topicName = environment.appWSNotificationTopic + "/" + loggedInUser.userId;
         this.stompClient = Stomp.over(ws);
+        //TODO : need to check
+        this.stompClient.debug = null;
         const _this = this;
         _this.stompClient.connect(
             environment.appWSCred,

@@ -11,6 +11,7 @@ import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
 import { AppUtility } from '../../config/AppUtility';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 //import * as jQuery from "jquery";
 declare var $: any;
 
@@ -81,7 +82,9 @@ export class EditUserComponent implements OnInit {
     private titleService: Title,
     private router: Router,
     private userService: UserService,
-    private miscService: MiscService) {
+    private miscService: MiscService,
+    private loggedInUserService: LoggedInUserService,
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -113,7 +116,7 @@ export class EditUserComponent implements OnInit {
           let tmpRoles: any = [];
           this.c = 0;
           for (let i = 0; i < this.roles.length; i++) {
-            if (AppUtility.appManager()) {
+            if (this.loggedInUserService.appManager()) {
               if (!this.roles[i].name.match(/ORG_.*/)) {
                 tmpRoles[this.c++] = this.roles[i];
               }
@@ -179,7 +182,7 @@ export class EditUserComponent implements OnInit {
           let tmpRoles: any = [];
           this.c = 0;
           for (let i = 0; i < this.roles.length; i++) {
-            if (AppUtility.appManager()) {
+            if (this.loggedInUserService.appManager()) {
               if (!this.roles[i].name.match(/ORG_.*/)) {
                 tmpRoles[this.c++] = this.roles[i];
               }

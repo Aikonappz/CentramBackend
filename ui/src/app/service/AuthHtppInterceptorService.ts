@@ -3,18 +3,23 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpResponse, HttpErrorRespo
 import { AppUtility } from '../config/AppUtility';
 import { SpinnerService } from './SpinnerService';
 import { tap } from 'rxjs/operators';
+import { LoggedInUserService } from './LoggedInUserService';
+import { LoggedInUser } from '../model/LoggedInUser';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthHtppInterceptorService implements HttpInterceptor {
+  private loggedInUser: LoggedInUser;
   constructor(
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private loggedInUserService: LoggedInUserService,
   ) { }
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    if (localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)) {
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    if (this.loggedInUser != null && this.loggedInUser.jwtToken != null && this.loggedInUser.jwtToken.replace(/\s/g, "") != "") {
       req = req.clone({
         setHeaders: {
-          Authorization: 'Bearer ' + atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE_JWT)),
+          Authorization: 'Bearer ' + atob(this.loggedInUser.jwtToken),
           //Accept: 'application/json',
           //'Content-Type': 'application/json'
         },

@@ -11,7 +11,7 @@ import { User } from '../../model/User';
 import { MiscService } from '../../service/MiscService';
 import { NotificationService } from '../../service/NotificationService';
 import { NotificationWSService } from '../../service/NotificationWSService';
-import { LoggedInUserService } from '../../service/PermissionService';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { navItems } from '../../_nav';
 
 @Component({
@@ -43,14 +43,13 @@ export class DefaultLayoutComponent implements OnInit {
     this.appBrandName = environment.appBrandName;
     this.appDevName = environment.appDevName;
     this.currentYear = m.format('YYYY');
-    this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGED_IN_PROFILE)));
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
     //console.log(JSON.stringify(this.loggedInUser));
     this.permissions = this.loggedInUser.modulePermissions;
     this.permissions.forEach(function (itm) {
       itm.actions = itm.actionName.split(',');
     });
-    //localStorage.setItem(AppUtility.LOGED_IN_USER_PERMISSIONS, btoa(JSON.stringify(this.permissions)));
     //console.log(JSON.stringify(this.permissions));
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {

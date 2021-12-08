@@ -107,5 +107,4 @@ public class IncidentApiController {
         incidentService.assignIncidents(ids, userId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-    
 }

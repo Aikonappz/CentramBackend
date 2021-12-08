@@ -11,7 +11,7 @@ import { Incident } from '../../model/Incident';
 import { Permission } from '../../model/Permssion';
 import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
-import { LoggedInUserService } from '../../service/PermissionService';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-incident',

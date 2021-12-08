@@ -5,6 +5,8 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AppUtility } from '../../config/AppUtility';
 import { AuthRequest } from '../../model/AuthRequest';
 import { LoggedInUser } from '../../model/LoggedInUser';
+import { Permission } from '../../model/Permssion';
+import { LocalStorageService } from '../../service/LocalStorageService';
 import { UserService } from '../../service/UserService';
 
 
@@ -76,19 +78,22 @@ export class LoginComponent implements OnInit {
     this.userService
       .signInService(this.authRequest)
       .subscribe((data: LoggedInUser) => {
-        AppUtility.APP_DEFAULT_TIMEZONE = data.timeZone;
-        localStorage.setItem(AppUtility.LOGED_IN_PROFILE_JWT, btoa(data.jwtToken));
-        data.jwtToken = null;
-        localStorage.setItem(AppUtility.LOGED_IN_PROFILE, btoa(JSON.stringify(data)));
-        //console.log(data);
-        let lastVisitedPage = atob(localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT));
+        data.jwtToken = btoa(data.jwtToken);
+        for (let i = 0; i < data.modulePermissions.length; i++) {
+          data.modulePermissions[i] = new Permission(data.modulePermissions[i]);
+        }
+        LocalStorageService.set(AppUtility.LOGGED_IN_PROFILE, btoa(JSON.stringify(data)));
+        this.router.navigate(['/dashboard']);
+        //console.log(JSON.stringify(data));
+        //localStorage.setItem(AppUtility.LOGGED_IN_PROFILE_JWT, btoa(data.jwtToken));
+        //data.jwtToken = null;
+        //let lastVisitedPage = atob(localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT));
         // if (lastVisitedPage != null) {
         //   console.log(lastVisitedPage);
         //   this.router.navigate(["#" + lastVisitedPage]);
         // } else {
         //   this.router.navigate(['/dashboard']);
         // }
-        this.router.navigate(['/dashboard']);
       });
   }
 }

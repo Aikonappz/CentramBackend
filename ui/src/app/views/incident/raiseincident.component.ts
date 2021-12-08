@@ -8,7 +8,7 @@ import { Role } from '../../model/Role';
 import { MiscService } from '../../service/MiscService';
 import { Priority, PriorityList } from '../../model/Priority';
 import { Incident } from '../../model/Incident';
-import { LoggedInUserService } from '../../service/PermissionService';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { Permission } from '../../model/Permssion';
 import { UserVO, UserVOListResponse } from '../../model/UserVO';
 import { IncidentCommunication } from '../../model/IncidentCommunication';
@@ -74,7 +74,6 @@ export class RaiseIncidentComponent implements OnInit {
     //this.ckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
     //this.readOnlyckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
     //this.readOnlyckeditorToolbarConfig.readOnly = true;
-
     //console.log(this.ckeditorToolbarConfig);
     //console.log(this.readOnlyckeditorToolbarConfig);
   }
@@ -117,9 +116,6 @@ export class RaiseIncidentComponent implements OnInit {
         ]),
         watchList: new FormControl('', [
         ]),
-        status: new FormControl('', [
-          Validators.required,
-        ]),
         fileInput: new FormControl(null, [
           //Validators.required,
         ]),
@@ -161,12 +157,7 @@ export class RaiseIncidentComponent implements OnInit {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callIncidentService(this.entityId);
-
-
-
-
     }
-    this.angForm.get('status').setValue(this.defaultStatus);
   }
 
   ngAfterViewInit() { }
@@ -203,6 +194,7 @@ export class RaiseIncidentComponent implements OnInit {
         this.incident.assignedUser = null;
         this.incident.raisedUser = null;
         this.incident.priority = priority;
+        this.incident.status = this.defaultStatus;
       } else {
         this.incident.priority = priority;
         this.incident.status = IncidentStatus[this.angForm.controls['status'].value];
@@ -261,6 +253,10 @@ export class RaiseIncidentComponent implements OnInit {
   goBack() { this._location.back(); }
 
   callSaveIncidentService() {
+    let returnPath = '/incident/raised';
+    if (this.hasAgentPermission) {
+      returnPath = '/incident/incoming';
+    }
     this.incidentService
       .saveIncidentService(this.incident)
       .subscribe((data: Incident) => {
@@ -278,13 +274,13 @@ export class RaiseIncidentComponent implements OnInit {
             this.mediaService
               .saveMediaService(commId, EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION, formData, { 'headers': headers })
               .subscribe((data: any) => {
-                this.router.navigate(['/incident/raised']);
+                this.router.navigate([returnPath]);
               });
           } else {
-            this.router.navigate(['/incident/raised']);
+            this.router.navigate([returnPath]);
           }
         } else {
-          this.router.navigate(['/incident/raised']);
+          this.router.navigate([returnPath]);
         }
       });
   }
@@ -319,14 +315,10 @@ export class RaiseIncidentComponent implements OnInit {
         if (this.incident.raisedUser != null) {
           this.incident.raisedUser.status = Status[this.incident.raisedUser.status];
         }
-
         // this.angForm.get('moduleId').setValue(this.incident.moduleId);
         // this.angForm.get('subModuleId').setValue(this.incident.subModuleId);
         // this.angForm.get('title').setValue(this.incident.title);
         // this.angForm.get('watchList').setValue(this.incident.watchList.map(String));
-
-        this.angForm.get('priorityId').setValue(this.incident.priority.id);
-        this.angForm.get('status').setValue(this.incident.status);
 
         //permission section
         if (
@@ -338,8 +330,8 @@ export class RaiseIncidentComponent implements OnInit {
         } else {
           this.hasAgentPermission = false;
         }
-
-
+        this.angForm.get('priorityId').setValue(this.incident.priority.id);
+        this.angForm.get('status').setValue(this.incident.status);
         //console.log(JSON.stringify(this.incident));
         //this.angForm.markAllAsTouched();
       });

@@ -13,30 +13,37 @@
             <fieldset *ngIf="!newEntity" class="border p-2">
               <legend class="w-auto">Incident</legend>
               <div class="row">
-                <div class="col">
+                <div class="col" *ngIf="hasAgentPermission">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
-                  <select *ngIf="hasAgentPermission" class="form-control" formControlName="priorityId" ngModel
-                    id="priorityId" name="priorityId">
+                  <select class="form-control" formControlName="priorityId" id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
                     <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
                     </option>
                   </select>
-                  <input type="text" *ngIf="!hasAgentPermission" readonly value="{{incident.priority.name}}"
-                    class="form-control">
                   <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.priorityId.errors?.required">
                       Priority is required.
                     </div>
                   </div>
                 </div>
-                <div class="col">
+                <div class="col" *ngIf="!hasAgentPermission">
+                  <input type="text" readonly value="{{incident.priority.name}}" formControlName="priorityId"
+                    id="priorityId" name="priorityId" class="form-control">
+                </div>
+                <div class="col" *ngIf="hasAgentPermission">
                   <label class="form-col-form-label" for="status">Status</label>
-                  <select *ngIf="hasAgentPermission" class="form-control" formControlName="status" ngModel id="status"
-                    name="status">
+                  <select class="form-control" formControlName="status" id="status" name="status">
                     <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
                   </select>
-                  <input type="text" *ngIf="!hasAgentPermission" readonly value="{{incident.status}}"
-                    class="form-control">
+                  <div *ngIf="f.status.touched && f.status.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.status.errors?.required">
+                      Priority is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col" *ngIf="!hasAgentPermission">
+                  <input type="text" readonly value="{{incident.status}}" formControlName="status" id="status"
+                    name="status" class="form-control">
                 </div>
                 <div class="col"></div>
               </div>
@@ -46,8 +53,8 @@
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="moduleId">Module</label>
-                  <select [disabled]="!newEntity" #moduleId (change)="populateSubmodule($event.target.value)"
-                    class="form-control" formControlName="moduleId" ngModel id="moduleId" name="moduleId">
+                  <select #moduleId (change)="populateSubmodule($event.target.value)" class="form-control"
+                    formControlName="moduleId" ngModel id="moduleId" name="moduleId">
                     <option value="">-- Select Module --</option>
                     <option *ngFor="let e of moduleList" value="{{e.moduleId}}">{{e.customerModuleName}}</option>
                   </select>
@@ -59,8 +66,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="subModuleId">Sub Module</label>
-                  <select [disabled]="!newEntity" class="form-control" formControlName="subModuleId" ngModel
-                    id="subModuleId" name="subModuleId">
+                  <select class="form-control" formControlName="subModuleId" ngModel id="subModuleId"
+                    name="subModuleId">
                     <option value="">-- Select Sub Module --</option>
                     <option *ngFor="let e of subModuleList" value="{{e.moduleId}}">{{e.customerModuleName}}
                     </option>
@@ -73,8 +80,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
-                  <select [disabled]="!newEntity" class="form-control" formControlName="priorityId" ngModel
-                    id="priorityId" name="priorityId">
+                  <select class="form-control" formControlName="priorityId" ngModel id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
                     <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
                     </option>
@@ -89,8 +95,8 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="title">Title</label>
-                  <textarea [readonly]="!newEntity" [disabled]="!newEntity" formControlName="title" ngModel id="title"
-                    name="title" rows="4" class="form-control" placeholder="Priority Description"></textarea>
+                  <textarea [readonly]="!newEntity" formControlName="title" ngModel id="title" name="title" rows="4"
+                    class="form-control" placeholder="Priority Description"></textarea>
                   <div *ngIf="f.title.touched && f.title.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.title.errors?.required">
                       Title is required.
@@ -102,8 +108,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="watchList">Watsh List</label>
-                  <select [disabled]="!newEntity" multiple class="form-control" formControlName="watchList" ngModel
-                    id="watchList" name="watchList">
+                  <select multiple class="form-control" formControlName="watchList" ngModel id="watchList"
+                    name="watchList">
                     <option *ngFor="let e of users" value="{{e.email}}">{{e.email}}</option>
                   </select>
                 </div>
