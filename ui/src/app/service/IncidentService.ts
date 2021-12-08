@@ -25,4 +25,8 @@ export class IncidentService {
     saveIncidentService(inc: Incident): Observable<Incident> {
         return this.http.post('/v1/incident/', inc);
     }
+
+    assignIncidentService(ids: number[], userId: number, request?: any): Observable<any> {
+        return this.http.get('/v1/incident/assign/' + ids.join(",") + '/' + userId, { "params": request });
+    }
 }

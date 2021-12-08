@@ -1,15 +1,15 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
 import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
-import { Incident, IncidentList } from '../../model/Incident';
+import { Incident } from '../../model/Incident';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { Permission } from '../../model/Permssion';
 import { Priority, PriorityList } from '../../model/Priority';
@@ -17,7 +17,7 @@ import { UserVO, UserVOListResponse } from '../../model/UserVO';
 import { IncomingIncidentDataSource } from '../../service/datasource/IncomingIncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
 import { MiscService } from '../../service/MiscService';
-import { LoggedInUserService } from '../../service/PermissionService';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { UserService } from '../../service/UserService';
 declare var $: any;
 
@@ -43,6 +43,7 @@ export class IncomingIncidentComponent implements OnInit {
   moduleIds: number[] = [];
   canAssignNow: boolean = false;
   selectedValues: number[] = [];
+  modalRef: BsModalRef;
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -50,7 +51,8 @@ export class IncomingIncidentComponent implements OnInit {
     private service: IncidentService,
     private userService: UserService,
     private loggedInUserService: LoggedInUserService,
-    private miscService: MiscService
+    private miscService: MiscService,
+    private modalService: BsModalService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -146,7 +148,6 @@ export class IncomingIncidentComponent implements OnInit {
   ngOnInit(): void {
     this.datasource = new IncomingIncidentDataSource(this.service);
     this.datasource.loadData();
-    this.loadData();
   }
 
   ngAfterViewInit() {
@@ -157,7 +158,6 @@ export class IncomingIncidentComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
@@ -239,7 +239,6 @@ export class IncomingIncidentComponent implements OnInit {
     this.loadData({});
   }
 
-
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
@@ -265,7 +264,15 @@ export class IncomingIncidentComponent implements OnInit {
       //   "subModuleId": subModuleId == null ? '' : subModuleId,
       //   "moduleId": moduleId == null ? '' : moduleId,
       // });
-      this.canAssignNow = true;
+      this.selection.clear();
+      //console.log(moduleId);
+      //console.log(subModuleId);
+      if (subModuleId != null && subModuleId.replace(/\s/g, "") != ""
+        && moduleId != null && moduleId.replace(/\s/g, "") != "") {
+        this.canAssignNow = true;
+      } else {
+        this.canAssignNow = false;
+      }
     } else {
       console.log("Invalid Form!");
     }
@@ -292,7 +299,19 @@ export class IncomingIncidentComponent implements OnInit {
         .getUsersByModuleAndAction(params)
         .subscribe((data: UserVO[]) => {
           for (let i = 0; i < data.length; i++) {
-            this.agentList.push(data[i]);
+            if (
+              this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD')
+              ||
+              this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')
+            ) {
+              if (this.confirmAgentRole(data[i].roleNames))
+                this.agentList.push(data[i]);
+            } else {
+              this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+              if (this.loggedInUser.userId == data[i].id)
+                this.agentList.push(data[i]);
+            }
+            //this.agentList.push(data[i]);
           }
           //console.log(data);
         });
@@ -313,7 +332,19 @@ export class IncomingIncidentComponent implements OnInit {
         .getUsersByModuleAndAction(params)
         .subscribe((data: UserVO[]) => {
           for (let i = 0; i < data.length; i++) {
-            this.agentList.push(data[i]);
+            if (
+              this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD')
+              ||
+              this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')
+            ) {
+              if (this.confirmAgentRole(data[i].roleNames))
+                this.agentList.push(data[i]);
+            } else {
+              this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+              if (this.loggedInUser.userId == data[i].id)
+                this.agentList.push(data[i]);
+            }
+            //this.agentList.push(data[i]);
           }
           //console.log(data);
         });
@@ -332,14 +363,145 @@ export class IncomingIncidentComponent implements OnInit {
     this.isAllSelected() ?
       this.selection.clear() :
       this.datasource.data.forEach(row => {
-        console.log(row);
+        //console.log(row);
         this.selection.select(row);
       });
   }
 
   logSelection() {
-
     this.selection.selected.forEach(s => console.log(s.id));
   }
 
+  openAssignModal() {
+    //console.log(this.canAssignNow);
+    //console.log(this.selection.isEmpty());
+    //this.canAssignNow = (this.canAssignNow && !this.selection.isEmpty()) ? true : false;
+    const initialState = {
+      agentList: this.agentList,
+      canAssign: (this.canAssignNow && !this.selection.isEmpty()) ? true : false,
+      selection: this.selection
+    };
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      initialState: {
+
+      }
+    };
+    this.modalRef = this.modalService.show(AssignIncidentComponent, { initialState });
+    this.modalRef.content.closeBtnName = 'Close';
+  }
+
+}
+
+@Component({
+  selector: 'modal-content',
+  template: `<div class="modal-header">
+  <h6 class="modal-title pull-left"><i class="fa fa-male"></i> Assign Incident To User {{canAssign}}</h6>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card ">     
+          <div [ngClass]="{'d-none': canAssign === true, 'card-body' : true }">
+            <div class="row">   
+              <h6>Please search with module, submodule and select incident to assign an user!</h6>
+            </div>
+          </div>
+          <form [ngClass]="{'d-none': canAssign === false}" [formGroup]="angFormAssign" (ngSubmit)="assignIncident()" novalidate>
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col">
+                          <label class="form-col-form-label" for="assignUser">User</label>
+                          <select class="form-control" formControlName="assignUser" ngModel
+                              id="assignUser" name="assignUser">
+                              <option value="">-- Select User--</option>
+                              <option *ngFor="let e of agentList" value="{{e.id}}">{{e.email}}</option>
+                          </select>     
+                          <div *ngIf="uf.assignUser.touched && uf.assignUser.invalid" class="alert alert-danger-custom">
+                            <div *ngIf="uf.assignUser.errors?.required">
+                              Please select user to Assign Incident.
+                            </div>
+                          </div>
+                      </div>
+                      <div class="col">
+                          <label class="form-col-form-label" for="incidents">Incident</label>
+                          <select multiple readonly="readonly" class="form-control" formControlName="incidents" ngModel
+                              id="incidents" name="incidents">
+                              <option selected="selected" *ngFor="let e of selection.selected" value="{{e.id}}">{{e.id}}</option>
+                          </select>     
+                          <div *ngIf="uf.incidents.touched && uf.incidents.invalid" class="alert alert-danger-custom">
+                            <div *ngIf="uf.incidents.errors?.required">
+                              Please select incident.
+                            </div>
+                          </div>
+                      </div>                      
+                      <div class="col w-10 justify-content-around d-flex flex-column">
+                      <label class="form-col-form-label" for="assignUser">&nbsp;</label>
+                          <div>
+                              <button [disabled]="!angFormAssign.valid" type="submit" class="btn btn-primary btn-sm">
+                                  <i class="fa fa-male"></i> Assign
+                              </button>
+                          </div>                          
+                      </div>
+                  </div>
+              </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>`
+})
+export class AssignIncidentComponent implements OnInit {
+  angFormAssign: FormGroup;
+  agentList: UserVO[];
+  canAssign: boolean;
+  selection = new SelectionModel<Incident>(true, []);
+  constructor(
+    private fb: FormBuilder,
+    public bsModalRef: BsModalRef,
+    private service: IncidentService
+  ) {
+    this.angFormAssign = this.fb.group({
+      assignUser: new FormControl(null, [
+        Validators.required,
+      ]),
+      incidents: new FormControl(null, [
+        Validators.required,
+      ]),
+    });
+    //this.selection.selected.forEach(s => console.log(s.id));
+    //console.log("here I am" + this.canAssign);
+  }
+  ngOnInit() { }
+
+  ngAfterViewInit() { }
+
+  ngAfterContentInit() { }
+
+  get uf() { return this.angFormAssign.controls; }
+
+  callAssignUser(req: any) {
+    this.service.assignIncidentService(req.ids, req.userId, {})
+      .subscribe((data: any) => {
+        console.log("completed....");
+        this.bsModalRef.hide();
+      });
+  }
+
+  assignIncident() {
+    if (this.angFormAssign.valid) {
+      //console.log(formData);
+      let assignUser = this.angFormAssign.controls['assignUser'].value;
+      let incidents = this.angFormAssign.controls['incidents'].value;
+      this.callAssignUser({ userId: assignUser, ids: incidents });
+    } else {
+      console.log("Invalid Form!");
+    }
+  }
 }
