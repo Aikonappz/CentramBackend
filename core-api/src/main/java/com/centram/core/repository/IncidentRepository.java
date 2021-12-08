@@ -2,18 +2,25 @@ package com.centram.core.repository;
 
 
 import com.centram.domain.Incident;
+import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface IncidentRepository extends PagingAndSortingRepository<Incident, BigInteger> {
+
+    @Modifying
+    @Query("update Incident set assignedUser.id = (:userId), modifiedDate = (:modifiedDate) where id in (:ids)")
+    Integer assignIncidents(@Param("userId") BigInteger userId, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("ids") List<BigInteger> ids);
 
     @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and " +
             " ( " +

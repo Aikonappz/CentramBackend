@@ -6,6 +6,7 @@ import com.centram.common.view.Views;
 import com.centram.core.service.IncidentService;
 import com.centram.domain.Incident;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
+import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "incident", description = "Incident Api")
@@ -89,5 +92,19 @@ public class IncidentApiController {
         return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncomingIncidents(
                 moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
         ), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Assign user to an Incident", nickname = "assignIncidents", notes = "Assign user to an Incident", tags = {"incident",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "Incident not found")
+    })
+    @RequestMapping(value = "/assign/{ids}/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Void> assignIncidents(
+            @NotNull @ApiParam(value = "Incident id's to assign", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
+            @ApiParam(value = "User Id", required = true) @PathVariable("userId") BigInteger userId
+    ) {
+        incidentService.assignIncidents(ids, userId);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

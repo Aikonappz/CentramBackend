@@ -93,6 +93,11 @@ public class IncidentService {
     }
 
     @Transactional(readOnly = false)
+    public void assignIncidents(List<BigInteger> ids, BigInteger userId) {
+        incidentRepository.assignIncidents(userId, LocalDateTime.now(), ids);
+    }
+
+    @Transactional(readOnly = false)
     public Incident save(Incident incident) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserVO userVO = userService.getUserById(loggedInUser.getUserId());
