@@ -2,25 +2,28 @@ import { Injectable } from "@angular/core";
 import { AppUtility } from "../config/AppUtility";
 import { LoggedInUser } from "../model/LoggedInUser";
 import { Permission } from "../model/Permssion";
+import { ClientStorageService } from "./ClientStorageService";
 
 @Injectable({
     providedIn: 'root'
 })
 export class LoggedInUserService {
     private loggedInUser: LoggedInUser;
-    constructor() { }
+    constructor(
+        private clientStorageService: ClientStorageService,
+    ) { }
     public appManager(): boolean {
         this.loggedInUser = this.getLoggedInUser();
         return this.loggedInUser.appManager;
     }
     public getLoggedInUser(): LoggedInUser {
-        if (localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)) {
-            this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)));
+        if (this.clientStorageService.get(AppUtility.LOGGED_IN_PROFILE)) {
+            this.loggedInUser = JSON.parse(this.clientStorageService.get(AppUtility.LOGGED_IN_PROFILE));
             return this.loggedInUser;
         }
     }
     public hasPermissionByName(name: string, action: string): boolean {
-        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)));
+        this.loggedInUser = this.getLoggedInUser();
         for (let j in this.loggedInUser.modulePermissions) {
             if (name.toUpperCase() === this.loggedInUser.modulePermissions[j].moduleName.toUpperCase()
                 && this.loggedInUser.modulePermissions[j].actions.includes(action)) {
@@ -30,7 +33,7 @@ export class LoggedInUserService {
         return false;
     }
     public hasPermissionById(moduleId: number, action: string): boolean {
-        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)));
+        this.loggedInUser = this.getLoggedInUser();
         for (let j in this.loggedInUser.modulePermissions) {
             //console.log(JSON.stringify(this.loggedInUser.modulePermissions[j]));
             if (moduleId === this.loggedInUser.modulePermissions[j].moduleId
@@ -41,15 +44,15 @@ export class LoggedInUserService {
         return false;
     }
     public hasRole(role: string): boolean {
-        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)));
+        this.loggedInUser = this.getLoggedInUser();
         return this.loggedInUser.roles.includes(role);
     }
     public getRoles(): string[] {
-        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)));
+        this.loggedInUser = this.getLoggedInUser();
         return this.loggedInUser.roles;
     }
     public getModulePermissions(): Permission[] {
-        this.loggedInUser = JSON.parse(atob(localStorage.getItem(AppUtility.LOGGED_IN_PROFILE)));
+        this.loggedInUser = this.getLoggedInUser();
         return this.loggedInUser.modulePermissions;
     }
 }

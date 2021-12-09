@@ -2,14 +2,14 @@ import * as moment from "moment-timezone";
 
 export class AppUtility {
     public static LOGGED_IN_PROFILE = btoa('prfl');
-    public static LOGED_IN_LAST_VISIT = atob('lvst');
+    public static LOGED_IN_LAST_VISIT = btoa('lvst');
     public static APP_VIEW_DATE_FORMAT = 'DD/MM/YYYY';
     public static APP_VIEW_DATE_TIME_FORMAT = 'DD/MM/YYYY HH:mm:ss';
     public static APP_VIEW_DATEPICKER_INP_DATE_FORMAT = 'DD/MM/YYYY';
     public static APP_VIEW_DATEPICKER_OP_DATE_FORMAT = "YYYY-MM-DD";
     public static APP_DEFAULT_TIMEZONE = 'Asia/Kolkata';
     public static APP_TIME_FORMAT = 'HH:mm:ss';
-    public static APP_LOCAL_STORAGE_TYPE = 'LOCAL';
+    public static APP_CLIENT_STORAGE_TYPE = 'SESSION';
 
     public static EDITOR_CONFIG = {
         readOnly: false,

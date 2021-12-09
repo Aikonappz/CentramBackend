@@ -64,6 +64,7 @@ import { SpinnerComponent } from './views/spinner/spinner.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ErrormessageComponent } from './views/errormessage/errormessage.component';
 import { PushNotificationsModule } from 'ng-push-ivy';
+import { ClientStorageService } from './service/ClientStorageService';
 
 @NgModule({
   imports: [
@@ -124,7 +125,7 @@ import { PushNotificationsModule } from 'ng-push-ivy';
     },
     DatePipe,
     IconSetService,
-
+    ClientStorageService,
   ],
   bootstrap: [AppComponent]
 })

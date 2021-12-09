@@ -6,7 +6,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { AuthRequest } from '../../model/AuthRequest';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { Permission } from '../../model/Permssion';
-import { LocalStorageService } from '../../service/LocalStorageService';
+import { ClientStorageService } from '../../service/ClientStorageService';
 import { UserService } from '../../service/UserService';
 
 
@@ -32,7 +32,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private titleService: Title,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private clientStorageService: ClientStorageService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -82,7 +83,7 @@ export class LoginComponent implements OnInit {
         for (let i = 0; i < data.modulePermissions.length; i++) {
           data.modulePermissions[i] = new Permission(data.modulePermissions[i]);
         }
-        LocalStorageService.set(AppUtility.LOGGED_IN_PROFILE, btoa(JSON.stringify(data)));
+        this.clientStorageService.set(AppUtility.LOGGED_IN_PROFILE, JSON.stringify(data));
         this.router.navigate(['/dashboard']);
         //console.log(JSON.stringify(data));
         //localStorage.setItem(AppUtility.LOGGED_IN_PROFILE_JWT, btoa(data.jwtToken));

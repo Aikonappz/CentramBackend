@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <camel.spring.boot-version>3.2.0</camel.spring.boot-version>
+        <camel.spring.boot-version>3.13.0</camel.spring.boot-version>
         <camel.version>3.2.0</camel.version>
     </properties>
     <dependencies>
@@ -63,6 +63,16 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jackson</artifactId>
             <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-quartz</artifactId>
+            <version>3.13.0</version>
         </dependency>
         <!--camel-->
     </dependencies>

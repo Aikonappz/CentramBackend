@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import { AppUtility } from '../../config/AppUtility';
-import { LocalStorageService } from '../../service/LocalStorageService';
+import { ClientStorageService } from '../../service/ClientStorageService';
 import { NotificationWSService } from '../../service/NotificationWSService';
 import { UserService } from '../../service/UserService';
 
@@ -17,7 +17,8 @@ export class LogoutComponent implements OnInit {
     private titleService: Title,
     private router: Router,
     private userService: UserService,
-    private websocketService: NotificationWSService
+    private websocketService: NotificationWSService,
+    private clientStorageService: ClientStorageService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -47,8 +48,8 @@ export class LogoutComponent implements OnInit {
     this.userService
       .signOutService()
       .subscribe((data: any) => {
-        LocalStorageService.remove(AppUtility.LOGGED_IN_PROFILE);
-        LocalStorageService.clear();
+        this.clientStorageService.remove(AppUtility.LOGGED_IN_PROFILE);
+        this.clientStorageService.clear();
         //console.log(data);
         //this.angForm.reset();
         //this.toggleStockAddMode();

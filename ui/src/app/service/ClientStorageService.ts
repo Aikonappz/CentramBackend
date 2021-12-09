@@ -1,28 +1,28 @@
 import { Injectable } from "@angular/core";
+import { AppUtility } from "../config/AppUtility";
 
 @Injectable({
     providedIn: 'root'
 })
-export class SessionStorageService {
-    private type: string;
+export class ClientStorageService {
     private storage: any;
-
-    public constructor(type: string) {
-        this.type = type;
-        if (this.type == "LOCAL") {
+    public constructor() {
+        if (AppUtility.APP_CLIENT_STORAGE_TYPE == "LOCAL") {
             this.storage = localStorage;
-        } else if (this.type == "SESSION") {
+        } else if (AppUtility.APP_CLIENT_STORAGE_TYPE == "SESSION") {
             this.storage = sessionStorage;
+        } else {
+            this.storage = localStorage;
         }
     }
     public set(key: string, value: any): void {
-        this.storage.setItem(key, btoa(value));
+        this.storage.setItem(btoa(key), btoa(value));
     }
     public get(key: string): string {
-        return atob(this.storage.getItem(key));
+        return atob(this.storage.getItem(btoa(key)));
     }
     public remove(key: string): void {
-        this.storage.removeItem(key);
+        this.storage.removeItem(btoa(key));
     }
     public clear(): void {
         this.storage.clear();
