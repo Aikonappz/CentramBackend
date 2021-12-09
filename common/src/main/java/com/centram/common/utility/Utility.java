@@ -16,8 +16,12 @@ import java.util.Random;
  * App utility
  */
 public class Utility {
+    private final static String requestIdPrefix = "REQ";
+    public static String requestId(){
+        return uniqueId(requestIdPrefix);
+    }
 
-    public static String prepareUniqueId(final String prefix) {
+    public static String uniqueId(final String prefix) {
         final String DATE_FORMATTER = "yyMMddHHmmss";
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMATTER);

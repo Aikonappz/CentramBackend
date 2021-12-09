@@ -2,6 +2,7 @@ package com.centram.common.config;
 
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.filter.RestFilter;
+import com.centram.common.interceptor.MdcInterceptor;
 import com.centram.common.interceptor.RestEndPointInterceptor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -46,6 +47,7 @@ import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecu
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PreDestroy;
@@ -108,6 +110,10 @@ public class Config implements AsyncConfigurer {
                         .allowedHeaders("*")
                         .maxAge(3600)
                         .allowedOrigins("*");
+            }
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(new MdcInterceptor());
             }
         };
     }

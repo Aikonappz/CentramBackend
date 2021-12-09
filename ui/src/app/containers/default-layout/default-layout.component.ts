@@ -47,9 +47,9 @@ export class DefaultLayoutComponent implements OnInit {
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
     //console.log(JSON.stringify(this.loggedInUser));
     this.permissions = this.loggedInUser.modulePermissions;
-    this.permissions.forEach(function (itm) {
-      itm.actions = itm.actionName.split(',');
-    });
+    // this.permissions.forEach(function (itm) {
+    //   itm.actions = itm.actionName.split(',');
+    // });
     //console.log(JSON.stringify(this.permissions));
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
@@ -68,7 +68,7 @@ export class DefaultLayoutComponent implements OnInit {
             //   this.permissions[j].actions.includes('READ')
             // ) { }
             let parentId = this.permissions[j].moduleId;
-            //console.log(this.newNavItems[c].children);
+            console.log(this.newNavItems[c].children);
             let childMenus = [];
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {

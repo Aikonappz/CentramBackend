@@ -19,7 +19,7 @@ export class ClientStorageService {
         this.storage.setItem(btoa(key), btoa(value));
     }
     public get(key: string): string {
-        return atob(this.storage.getItem(btoa(key)));
+        return this.storage.getItem(btoa(key)) != null ? atob(this.storage.getItem(btoa(key))) : null;
     }
     public remove(key: string): void {
         this.storage.removeItem(btoa(key));

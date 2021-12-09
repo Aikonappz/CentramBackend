@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy, DatePipe } from '@angular/common';
+import { LocationStrategy, HashLocationStrategy, DatePipe, PathLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -121,7 +121,7 @@ import { ClientStorageService } from './service/ClientStorageService';
     CheckLoggedIn,
     {
       provide: LocationStrategy,
-      useClass: HashLocationStrategy
+      useClass: PathLocationStrategy
     },
     DatePipe,
     IconSetService,
@@ -131,3 +131,8 @@ import { ClientStorageService } from './service/ClientStorageService';
 })
 export class AppModule { }
 
+
+// {
+//   provide: LocationStrategy,
+//   useClass: HashLocationStrategy
+// },

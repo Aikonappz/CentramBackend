@@ -1,0 +1,38 @@
+Ramesh - tasks
+--------------
+Module label change to category
+submodule change to sub category
+attachment shold below desc
+Incident Details - > Incident Description
+Save as draft require
+subit and cancel
+Update an Incident -> Update Incident
+
+View/Update
+
+reopen required from user end
+
+Notification -> My Notfications
+
+Incident -> My group Incident
+
+Incomming incident-> my assigned incident
+
+individual incident allocation
+
+My tasks
+-------
+1. after assignment notification mail
+2. after incident add/update notification mail
+3. count sla
+4. assign round robin to user
+
+
+
+
+
+
+
+
+
+
