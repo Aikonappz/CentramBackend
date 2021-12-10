@@ -68,7 +68,7 @@ export class DefaultLayoutComponent implements OnInit {
             //   this.permissions[j].actions.includes('READ')
             // ) { }
             let parentId = this.permissions[j].moduleId;
-            console.log(this.newNavItems[c].children);
+            //console.log(this.newNavItems[c].children);
             let childMenus = [];
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {

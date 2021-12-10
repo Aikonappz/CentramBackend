@@ -12,6 +12,7 @@ import { Permission } from '../../model/Permssion';
 import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+declare var $: any;
 
 @Component({
   selector: 'app-incident',
@@ -19,7 +20,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
   styleUrls: ['./incident.component.scss']
 })
 export class IncidentComponent implements OnInit {
-  displayedColumns = ['title', 'priority', 'watchList', 'raisedAt', 'slaAt', 'status', 'action'];
+  displayedColumns = ['inc', 'slaAt', 'status', 'action'];
   private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: string[];
@@ -27,6 +28,7 @@ export class IncidentComponent implements OnInit {
   moduleList: Permission[] = [];
   subModuleList: Permission[];
   angForm: FormGroup;
+  searchedData: Object = {};
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -41,9 +43,11 @@ export class IncidentComponent implements OnInit {
       }
     });
     this.statusList = Object.values(IncidentStatus)
-      .filter((value) => typeof value === "string")
+      .filter((value) => typeof value === "string" && value != 'ALL')
       .map((value) => (value as string));
     this.angForm = this.fb.group({
+      incidentNo: new FormControl('', [
+      ]),
       title: new FormControl('', [
       ]),
       status: new FormControl(null, [
@@ -92,11 +96,30 @@ export class IncidentComponent implements OnInit {
   edit(inc: Incident) {
     this.router.navigate(['/incident/edit/' + inc.id]);
   }
+
+  reopen(inc: Incident) {
+    let res = window.confirm("Are you sure?")
+    if (res) {
+      let ids = [];
+      ids.push(inc.id);
+      this.service.changeIncidentStatusService([inc.id], 'OPEN')
+        .subscribe((data: any) => {
+          $("#id-reopen-" + inc.id).addClass('d-none');
+          $("#id-note-" + inc.id).removeClass('d-none');
+          $("#id-status-" + inc.id).text('OPEN');
+        });
+    }
+  }
+
   add() {
     this.router.navigate(['/incident/raise']);
   }
 
-  loadData(req = {}) {
+  loadData(req?: Object) {
+    //console.log(req);
+    if (this.searchedData.hasOwnProperty('incidentNo')) {
+      req = this.searchedData;
+    }
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
   formatDateTime(d: string) {
@@ -111,16 +134,18 @@ export class IncidentComponent implements OnInit {
     this.loadData({});
   }
 
-
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       let title = this.angForm.controls['title'].value;
       let status = this.angForm.controls['status'].value;
-      this.loadData({
+      let incidentNo = this.angForm.controls['incidentNo'].value;
+      this.searchedData = {
         "title": title == null ? '' : title,
         "status": status == null ? '' : status,
-      });
+        "incidentNo": incidentNo == null ? '' : incidentNo,
+      };
+      this.loadData(this.searchedData);
       //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");

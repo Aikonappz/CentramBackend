@@ -29,4 +29,8 @@ export class IncidentService {
     assignIncidentService(ids: number[], userId: number, request?: any): Observable<any> {
         return this.http.get('/v1/incident/assign/' + ids.join(",") + '/' + userId, { "params": request });
     }
+
+    changeIncidentStatusService(ids: number[], status: string, request?: any): Observable<any> {
+        return this.http.get('/v1/incident/change-status/' + ids.join(",") + '/' + status, { "params": request });
+    }
 }

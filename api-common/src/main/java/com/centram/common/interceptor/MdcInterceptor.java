@@ -6,7 +6,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.centram.common.utility.Utility.requestId;
+import static com.centram.common.utility.Utility.requestNo;
 
 public class MdcInterceptor implements HandlerInterceptor {
 
@@ -22,7 +22,7 @@ public class MdcInterceptor implements HandlerInterceptor {
     }
 
     private String getCorrelationId() {
-        return requestId();
+        return requestNo();
     }
 }
 

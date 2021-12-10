@@ -13,5 +13,6 @@ public enum IncidentStatus {
     ON_HOLD,
     PENDING_FROM_VENDOR,
     PENDING_FROM_REQUESTER,
-    ALL
+    ALL,
+    DRAFT
 }

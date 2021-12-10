@@ -9,6 +9,7 @@ export class Incident extends Base {
     moduleId: number;
     subModuleId: number;
     title: string;
+    incidentNo: string;
     priority: Priority;
     watchList: string[];
     status: any;
@@ -23,6 +24,7 @@ export class Incident extends Base {
         this.moduleId = null;
         this.subModuleId = null;
         this.title = '';
+        this.incidentNo = '';
         this.priority = new Priority();
         this.watchList = [];
         this.status = IncidentStatus.OPEN;

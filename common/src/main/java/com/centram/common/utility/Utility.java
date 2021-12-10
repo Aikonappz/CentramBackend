@@ -17,8 +17,11 @@ import java.util.Random;
  */
 public class Utility {
     private final static String requestIdPrefix = "REQ";
-    public static String requestId(){
+    public static String requestNo(){
         return uniqueId(requestIdPrefix);
+    }
+    public static String incidentNo(String incidentNoPrefix){
+        return uniqueId(incidentNoPrefix);
     }
 
     public static String uniqueId(final String prefix) {

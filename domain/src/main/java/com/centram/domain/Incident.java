@@ -35,20 +35,13 @@ import java.util.Set;
 //@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "incident"
-        /*,
+@Table(name = "incident",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_org_constraint", columnNames = {"email", "organisation_id"}),
-                @UniqueConstraint(name = "user_empid_org_constraint", columnNames = {"employee_id", "organisation_id"})
+                @UniqueConstraint(name = "inc_no_usr_constraint", columnNames = {"incident_no", "assigned_user_id"})
         },
         indexes = {
-                @Index(name = "email_indx", columnList = "email", unique = true),
-                @Index(name = "employeeId_indx", columnList = "employee_id", unique = false),
-                @Index(name = "managerId_indx", columnList = "manager_id", unique = false),
-                @Index(name = "employeeId_org_indx", columnList = "employee_id,organisation_id", unique = false),
-                @Index(name = "managerId__org_indx", columnList = "manager_id,organisation_id", unique = false),
-                @Index(name = "org_id_idx", columnList = "organisation_id", unique = false),
-        }*/
+                @Index(name = "incident_no_indx", columnList = "incident_no", unique = false)
+        }
 )
 @Audited
 public class Incident extends BaseEntity implements Serializable {
@@ -76,9 +69,15 @@ public class Incident extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "title", nullable = false, columnDefinition = "varchar(1000) not null")
+    @Column(name = "title", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String title;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "incident_no", nullable = false, updatable = false, insertable = true, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String incidentNo;
 
     @ApiModelProperty(required = false, value = "")
     @Valid

@@ -6,7 +6,6 @@ import com.centram.common.view.Views;
 import com.centram.core.service.IncidentService;
 import com.centram.domain.Incident;
 import com.centram.domain.User;
-import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -66,11 +65,12 @@ public class IncidentApiController {
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Incident>> getIncidents(
+            @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncidents(title, status, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncidents(incidentNo, title, status, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all incoming incidents", nickname = "getIncomingIncidents", notes = "Get all incoming incidents", response = PaginatedList.class, tags = {"incident",})
@@ -105,6 +105,20 @@ public class IncidentApiController {
             @ApiParam(value = "User Id", required = true) @PathVariable("userId") BigInteger userId
     ) {
         incidentService.assignIncidents(ids, userId);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Change status of an Incident", nickname = "changeStatus", notes = "Change status of an Incident", tags = {"incident",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 404, message = "Incident not found")
+    })
+    @RequestMapping(value = "/change-status/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Void> changeStatus(
+            @NotNull @ApiParam(value = "Incident id's to change", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
+            @ApiParam(value = "status", required = true) @PathVariable("status") String status
+    ) {
+        incidentService.changeStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

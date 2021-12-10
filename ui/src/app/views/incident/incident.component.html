@@ -13,7 +13,7 @@
                             <!-- <button type="button" class="btn btn-sm btn-minimize"><i
                                     class="icon-cloud-download"></i></button> -->
                             <button type="button" class="btn btn-sm btn-primary" (click)="add()"><i
-                                    class="icon-plus"></i> Raise an Incident
+                                    class="icon-plus"></i> Raise Incident
                             </button>
                         </div>
                     </div>
@@ -27,6 +27,12 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
+                                        <label class="form-col-form-label" for="incidentNo">Incident No</label>
+                                        <input type="text" formControlName="incidentNo" ngModel id="incidentNo"
+                                            name="incidentNo" class="form-control" placeholder="Incident No"
+                                            aria-label="Incident No">
+                                    </div>
+                                    <div class="col">
                                         <label class="form-col-form-label" for="title">Issue Title</label>
                                         <input type="text" formControlName="title" ngModel id="title" name="title"
                                             class="form-control" placeholder="Issue Title" aria-label="Issue Title">
@@ -35,52 +41,34 @@
                                         <label class="form-col-form-label" for="status">Status</label>
                                         <select class="form-control" formControlName="status" ngModel id="status"
                                             name="status">
-                                            <option>-- Select Incident Status--</option>
+                                            <option value="">-- Select Incident Status--</option>
                                             <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
                                         </select>
                                     </div>
                                     <div class="col">
                                     </div>
-                                    <div class="col w-10 justify-content-around d-flex flex-column">
-                                        <div>
-                                            <button type="submit" class="btn btn-primary btn-sm">
-                                                <i class="fa fa-search"></i> Search
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
-                                                <i class="fa fa-close"></i> Cancel
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i> Search
+                                </button>
+                                <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
+                                    <i class="fa fa-close"></i> Cancel
+                                </button>
                             </div>
                         </form>
                     </div>
                     <hr />
                     <table mat-table [dataSource]="datasource">
-                        <ng-container matColumnDef="title">
-                            <th class="w-20" mat-header-cell *matHeaderCellDef> Title </th>
+                        <ng-container matColumnDef="inc">
+                            <th class="w-20" mat-header-cell *matHeaderCellDef>Inc. Dtl.</th>
                             <td mat-cell *matCellDef="let element">
-                                {{element.title}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="priority">
-                            <th class="w-5" mat-header-cell *matHeaderCellDef> Priority </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{element.priority.name}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="watchList">
-                            <th class="w-20" mat-header-cell *matHeaderCellDef> Watch List </th>
-                            <td [attr.data-label]="element.status" mat-cell *matCellDef="let element">
-                                {{element.watchList.join(', ')}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="raisedAt">
-                            <th class="w-15" mat-header-cell *matHeaderCellDef> Raised At </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{formatDateTime(element.raisedAt)}}
+                                {{element.incidentNo}}<br />
+                                {{element.title}}<br />
+                                {{element.priority.name}}<br />
+                                {{element.watchList.join(', ')}}<br />
+                                {{formatDateTime(element.raisedAt)}}<br />
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="slaAt">
@@ -99,11 +87,13 @@
                         <ng-container matColumnDef="action">
                             <th class="w-10" mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <!-- <button type="button" class="btn btn-sm btn-primary" (click)="updateStatus(element)"><i
-                                        class="icon-ban"></i> Change Status
-                                </button> -->
-                                <button type="button" class="btn btn-sm btn-primary" (click)="edit(element)"><i
-                                        class="fa fa-comments-o"></i> Note
+                                <button id="id-reopen-{{element.id}}" type="button" [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
+                                 'btn btn-sm btn-warning':true}" (click)="reopen(element)"><i class="fa fa-folder-open-o
+                                        "></i> Reopen
+                                </button>
+                                <button id="id-note-{{element.id}}" type="button" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                 'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
+                                        class="fa fa-comments-o"></i> View/Update
                                 </button>
                             </td>
                         </ng-container>

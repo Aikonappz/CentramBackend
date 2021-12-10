@@ -129,7 +129,12 @@ export class RaiseIncidentComponent implements OnInit {
         });
       this.userService.getUsersService()
         .subscribe((result: UserVOListResponse) => {
-          this.users = result.content;
+          let logedinIser = this.loggedInUserService.getLoggedInUser();
+          this.users = [];
+          for (let i = 0; i < result.content.length; i++) {
+            if (logedinIser.userId != result.content[i].id)
+              this.users.push(result.content[i]);
+          }
         });
     } else {
       this.angForm = this.fb.group({
@@ -174,7 +179,7 @@ export class RaiseIncidentComponent implements OnInit {
 
   get f() { return this.angForm.controls; }
 
-  formSubmit() {
+  formSubmit(sts: any) {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       // prepare incident  object
@@ -194,16 +199,18 @@ export class RaiseIncidentComponent implements OnInit {
         this.incident.assignedUser = null;
         this.incident.raisedUser = null;
         this.incident.priority = priority;
-        this.incident.status = this.defaultStatus;
+        this.incident.status = sts;
       } else {
         this.incident.priority = priority;
-        this.incident.status = IncidentStatus[this.angForm.controls['status'].value];
+        if (this.angForm.controls['status'].value == 'DRAFT') {
+          this.incident.status = IncidentStatus[this.defaultStatus];
+        } else {
+          this.incident.status = IncidentStatus[this.angForm.controls['status'].value];
+        }
       }
-
       // prepare incidentCommunication object
       this.incidentCommunication = new IncidentCommunication();
       this.incidentCommunication.message = this.angForm.controls['message'].value;
-
       this.incident.communications.push(this.incidentCommunication);
       //console.log(this.incident);
       this.callSaveIncidentService();
@@ -300,6 +307,7 @@ export class RaiseIncidentComponent implements OnInit {
         this.incident.assignedUser = data.assignedUser;
         this.incident.raisedUser = data.raisedUser;
         this.incident.slaAt = data.slaAt;
+        this.incident.incidentNo = data.incidentNo;
         this.incident.raisedAt = data.raisedAt;
         this.incident.status = data.status;
         this.incident.communications = data.communications;
@@ -372,6 +380,7 @@ export class RaiseIncidentComponent implements OnInit {
           //alert('Please disable your Pop-up blocker and try again.');
         }
       });
+    return false;
   }
 
   formatDateTime(d: string) {

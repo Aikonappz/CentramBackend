@@ -2,7 +2,7 @@ package com.centram.core.repository;
 
 
 import com.centram.domain.Incident;
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.IncidentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,11 +22,20 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     @Query("update Incident set assignedUser.id = (:userId), modifiedDate = (:modifiedDate) where id in (:ids)")
     Integer assignIncidents(@Param("userId") BigInteger userId, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("ids") List<BigInteger> ids);
 
+    @Modifying
+    @Query("update Incident set status = (:status), modifiedDate = (:modifiedDate) where id in (:ids)")
+    Integer changeStatus(@Param("status") IncidentStatus status, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("ids") List<BigInteger> ids);
+
     @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and " +
             " ( " +
             "   ((:status) <> 12 and i.status = (:status)) " +
             "   OR " +
             "   ((:status) = 12) " +
+            " ) and " +
+            " ( " +
+            "   ((:incidentNo) is not null and upper(i.incidentNo) like (:incidentNo)) " +
+            "   OR " +
+            "   ((:incidentNo) is null) " +
             " ) and " +
             " ( " +
             "   ((:title) is not null and upper(i.title) like (:title)) " +
@@ -36,6 +45,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     )
     Page<Incident> getIncidents(
             @Param("raisedUserId") BigInteger raisedUserId,
+            @Param("incidentNo") String incidentNo,
             @Param("title") String title,
             @Param("status") Integer status,
             Pageable pageable
