@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
@@ -19,6 +19,7 @@ import { IncidentService } from '../../service/IncidentService';
 import { MiscService } from '../../service/MiscService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { UserService } from '../../service/UserService';
+import { AssignUser } from '../../model/AssignUser';
 declare var $: any;
 
 @Component({
@@ -44,6 +45,7 @@ export class IncomingIncidentComponent implements OnInit {
   canAssignNow: boolean = false;
   selectedValues: number[] = [];
   modalRef: BsModalRef;
+  searchedData: Object = {};
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -62,6 +64,8 @@ export class IncomingIncidentComponent implements OnInit {
     });
 
     this.angForm = this.fb.group({
+      incidentNo: new FormControl(null, [
+      ]),
       moduleId: new FormControl(null, [
       ]),
       subModuleId: new FormControl(null, [
@@ -168,52 +172,6 @@ export class IncomingIncidentComponent implements OnInit {
 
   ngAfterContentInit() {
     $(function () {
-      // var selectedValues = [];
-      // $("#check-all").click(function () {
-      //   if ($(this).prop("checked") == true) {
-      //     allocate();
-      //   } else if ($(this).prop("checked") == false) {
-      //     deallocate();
-      //   }
-      //   console.log(selectedValues);
-      // });
-
-      // $('.select-box').click(function () {
-      //   if ($(this).prop("checked") == true) {
-      //     selectedValues.push($(this).val());
-      //   } else if ($(this).prop("checked") == false) {
-      //     selectedValues.splice(this.selectedValues.indexOf($(this).val()), 1);
-      //   }
-      //   console.log(selectedValues);
-      // })
-
-
-      // $('#select-20').on('click', ':checkbox', function () {
-      // var checkedEl = [];
-      // $('.brand_name :checkbox').each(function () {
-      //     if ($(this).is(':checked')) {
-      //         checkedEl.push($(this).val());
-      //     }
-      // });
-
-      //console.log('Checked values');
-      //console.log(checkedEl);
-      //   console.log($(this).val());
-      // });
-
-      // function allocate() {
-      //   $('.select-box').each(function (i, obj) {
-      //     $(obj).prop('checked', true);
-      //     selectedValues.push($(obj).val());
-      //   });
-      // }
-
-      // function deallocate() {
-      //   selectedValues = [];
-      //   $('.select-box').each(function (i, obj) {
-      //     $(obj).prop('checked', false);
-      //   });
-      // }
     });
   }
 
@@ -225,6 +183,10 @@ export class IncomingIncidentComponent implements OnInit {
   }
 
   loadData(req = {}) {
+    //console.log(req);
+    if (this.searchedData.hasOwnProperty('incidentNo')) {
+      req = this.searchedData;
+    }
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
   formatDateTime(d: string) {
@@ -248,14 +210,17 @@ export class IncomingIncidentComponent implements OnInit {
       let priorityId = this.angForm.controls['priorityId'].value;
       let subModuleId = this.angForm.controls['subModuleId'].value;
       let moduleId = this.angForm.controls['moduleId'].value;
-      this.loadData({
+      let incidentNo = this.angForm.controls['incidentNo'].value;
+      this.searchedData = {
+        "incidentNo": incidentNo == null ? '' : incidentNo,
         "title": title == null ? '' : title,
         "status": status == null ? '' : status,
         "assignedUserId": status == null ? '' : assignedUserId,
         "priorityId": status == null ? '' : priorityId,
         "subModuleId": subModuleId == null ? '' : subModuleId,
         "moduleId": moduleId == null ? '' : moduleId,
-      });
+      };
+      this.loadData(this.searchedData);
       // console.log({
       //   "title": title == null ? '' : title,
       //   "status": status == null ? '' : status,
@@ -372,28 +337,60 @@ export class IncomingIncidentComponent implements OnInit {
     this.selection.selected.forEach(s => console.log(s.id));
   }
 
+  assign(inc: Incident) {
+    let moduleIds = [];
+    moduleIds.push(inc.moduleId);
+    moduleIds.push(inc.subModuleId);
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    let params = {
+      "moduleIds": moduleIds,
+      "actionName": 'SOLVE',
+    };
+    this.agentList = [];
+    this.userService
+      .getUsersByModuleAndAction(params)
+      .subscribe((data: UserVO[]) => {
+        for (let i = 0; i < data.length; i++) {
+          if (
+            this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD')
+            ||
+            this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')
+          ) {
+            if (this.confirmAgentRole(data[i].roleNames))
+              this.agentList.push(data[i]);
+          } else {
+            if (this.loggedInUser.userId == data[i].id)
+              this.agentList.push(data[i]);
+          }
+          //this.agentList.push(data[i]);
+          this.selection.select(inc);
+          this.canAssignNow = true;
+          this.openAssignModal();
+        }
+        //console.log(data);
+      });
+  }
+
   openAssignModal() {
     //console.log(this.canAssignNow);
     //console.log(this.selection.isEmpty());
-    //this.canAssignNow = (this.canAssignNow && !this.selection.isEmpty()) ? true : false;
-    const initialState = {
-      agentList: this.agentList,
-      canAssign: (this.canAssignNow && !this.selection.isEmpty()) ? true : false,
-      selection: this.selection
-    };
     const config: ModalOptions = {
       backdrop: 'static',
       keyboard: false,
       animated: true,
       ignoreBackdropClick: true,
-      initialState: {
-
-      }
     };
-    this.modalRef = this.modalService.show(AssignIncidentComponent, { initialState });
-    this.modalRef.content.closeBtnName = 'Close';
+    const initialState = {
+      agentList: this.agentList,
+      canAssign: (this.canAssignNow && !this.selection.isEmpty()) ? true : false,
+      selection: this.selection
+    };
+    this.modalRef = this.modalService.show(AssignIncidentComponent,
+      Object.assign({}, config, {
+        class: 'modal-bg', initialState
+      })
+    );
   }
-
 }
 
 @Component({
@@ -406,54 +403,58 @@ export class IncomingIncidentComponent implements OnInit {
 </div>
 <div class="modal-body">
   <div class="row">
-    <div class="col-sm-12">
-      <div class="card ">     
-          <div [ngClass]="{'d-none': canAssign === true, 'card-body' : true }">
-            <div class="row">   
-              <h6>Please search with module, submodule and select incident to assign an user!</h6>
-            </div>
-          </div>
-          <form [ngClass]="{'d-none': canAssign === false}" [formGroup]="angFormAssign" (ngSubmit)="assignIncident()" novalidate>
-              <div class="card-body">
+      <div class="col-sm-12">
+          <div class="card ">
+              <div [ngClass]="{'d-none': canAssign === true, 'card-body' : true }">
                   <div class="row">
-                      <div class="col">
-                          <label class="form-col-form-label" for="assignUser">User</label>
-                          <select class="form-control" formControlName="assignUser" ngModel
-                              id="assignUser" name="assignUser">
-                              <option value="">-- Select User--</option>
-                              <option *ngFor="let e of agentList" value="{{e.id}}">{{e.email}}</option>
-                          </select>     
-                          <div *ngIf="uf.assignUser.touched && uf.assignUser.invalid" class="alert alert-danger-custom">
-                            <div *ngIf="uf.assignUser.errors?.required">
-                              Please select user to Assign Incident.
-                            </div>
-                          </div>
-                      </div>
-                      <div class="col">
-                          <label class="form-col-form-label" for="incidents">Incident</label>
-                          <select multiple readonly="readonly" class="form-control" formControlName="incidents" ngModel
-                              id="incidents" name="incidents">
-                              <option selected="selected" *ngFor="let e of selection.selected" value="{{e.id}}">{{e.id}}</option>
-                          </select>     
-                          <div *ngIf="uf.incidents.touched && uf.incidents.invalid" class="alert alert-danger-custom">
-                            <div *ngIf="uf.incidents.errors?.required">
-                              Please select incident.
-                            </div>
-                          </div>
-                      </div>                      
-                      <div class="col w-10 justify-content-around d-flex flex-column">
-                      <label class="form-col-form-label" for="assignUser">&nbsp;</label>
-                          <div>
-                              <button [disabled]="!angFormAssign.valid" type="submit" class="btn btn-primary btn-sm">
-                                  <i class="fa fa-male"></i> Assign
-                              </button>
-                          </div>                          
-                      </div>
+                      <h6>Please search with module, submodule and select incident to assign an user!</h6>
                   </div>
               </div>
-          </form>
+              <form [ngClass]="{'d-none': canAssign === false}" [formGroup]="angFormAssign"
+                  (ngSubmit)="assignIncident()" novalidate>
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col">
+                              <label class="form-col-form-label required-control-label" for="assignUser">Agent</label>
+                              <select class="form-control" formControlName="assignUser" [(ngModel)]="selectedUser" id="assignUser"
+                                  name="assignUser">
+                                  <option value="">-- Select Agent--</option>
+                                  <option *ngFor="let e of agentList" value="{{e.id}}">{{e.email}}</option>
+                              </select>
+                              <div *ngIf="uf.assignUser.touched && uf.assignUser.invalid"
+                                  class="alert alert-danger-custom">
+                                  <div *ngIf="uf.assignUser.errors?.required">
+                                      Please select agent to assign.
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col">
+                              <label class="form-col-form-label required-control-label" for="incidents">Incident</label>
+                              <select multiple class="form-control" formControlName="incidents"
+                                  ngModel id="incidents" name="incidents" [(ngModel)]="selectedIncident">
+                                  <option *ngFor="let e of incidents" value="{{e.id}}">
+                                      {{e.incidentNo}}</option>
+                              </select>
+                              <div *ngIf="uf.incidents.touched && uf.incidents.invalid"
+                                  class="alert alert-danger-custom">
+                                  <div *ngIf="uf.incidents.errors?.required">
+                                      Please select incident.
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="card-footer">
+                      <button [disabled]="!angFormAssign.valid" type="submit" class="btn btn-primary btn-sm">
+                          <i class="fa fa-male"></i> Assign
+                      </button>
+                      <button type="button" (click)="bsModalRef.hide()" class="btn btn-danger btn-sm">
+                          <i class="fa fa-close"></i> Cancel
+                      </button>
+                  </div>
+              </form>
+          </div>
       </div>
-    </div>
   </div>
 </div>`
 })
@@ -462,10 +463,16 @@ export class AssignIncidentComponent implements OnInit {
   agentList: UserVO[];
   canAssign: boolean;
   selection = new SelectionModel<Incident>(true, []);
+  assignUser: Partial<Object>;
+  selObj: any;
+  incidents: any;
+  selectedUser = '';
+  selectedIncident = [];
   constructor(
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
-    private service: IncidentService
+    private service: IncidentService,
+    public options: ModalOptions,
   ) {
     this.angFormAssign = this.fb.group({
       assignUser: new FormControl(null, [
@@ -475,14 +482,42 @@ export class AssignIncidentComponent implements OnInit {
         Validators.required,
       ]),
     });
-    //this.selection.selected.forEach(s => console.log(s.id));
-    //console.log("here I am" + this.canAssign);
+    this.assignUser = this.options.initialState;
+    //TODO: need to take care properly
+    let obj = JSON.parse(JSON.stringify(this.assignUser));
+    //TODO: need to take care properly
+    this.canAssign = obj.canAssign;
+    this.agentList = obj.agentList;
+    this.selection = obj.selection;
+    //TODO: need to take care properly
+    this.selObj = JSON.parse(JSON.stringify(this.selection));
+    //TODO: need to take care properly
+    this.incidents = this.selObj._selected;
   }
-  ngOnInit() { }
+  ngOnInit() {
+    if (this.agentList.length == 1) {
+      this.selectedUser = String(this.agentList[0].id);
+      this.angFormAssign.get('assignUser').setValue(this.agentList[0].id);
+    }
+    this.selectedIncident = this.incidents.map(({ id }) => id);
+    this.angFormAssign.get('incidents').setValue(this.incidents.map(({ id }) => id));
+    this.angFormAssign.markAllAsTouched();
+  }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
 
-  ngAfterContentInit() { }
+
+  }
+
+  ngAfterContentInit() {
+    $(function () {
+      // console.log($('#assignUser').children('option').length);
+      // if ($('#assignUser').children('option').length == 2) {
+      //   $("#assignUser").val($("#assignUser option:eq(1)").val());
+      // }
+      // $('#incidents option').prop('selected', true);
+    });
+  }
 
   get uf() { return this.angFormAssign.controls; }
 

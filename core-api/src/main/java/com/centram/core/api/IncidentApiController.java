@@ -81,6 +81,7 @@ public class IncidentApiController {
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/incoming-all", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Incident>> getIncomingIncidents(
+            @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
             @ApiParam(value = "moduleId", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
@@ -90,7 +91,7 @@ public class IncidentApiController {
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncomingIncidents(
-                moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
+                incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
         ), HttpStatus.OK);
     }
 
@@ -118,7 +119,8 @@ public class IncidentApiController {
             @NotNull @ApiParam(value = "Incident id's to change", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
             @ApiParam(value = "status", required = true) @PathVariable("status") String status
     ) {
-        incidentService.changeStatus(status, ids);
+        incidentService
+                .changeStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

@@ -47,7 +47,7 @@ public class IncidentService {
     private OrganisationService organisationService;
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getIncomingIncidents(String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> getIncomingIncidents(String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
@@ -62,9 +62,10 @@ public class IncidentService {
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
+        incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(
-                mId, smId, pId, uId, modSubModIds, title, intStatus, pageable
+                incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, pageable
         ));
     }
 

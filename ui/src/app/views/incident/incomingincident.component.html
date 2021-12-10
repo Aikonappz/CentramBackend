@@ -5,7 +5,7 @@
                 <div class="card-header ">
                     <div class="row">
                         <div class="col-md-10">
-                            <i class="fa fa-align-justify"></i> Incoming Incidents
+                            <i class="fa fa-align-justify"></i> Group Incidents
                         </div>
                         <div class="col-md-2 float-right">
                             <!-- <button type="button" class="btn btn-sm btn-minimize"><i
@@ -21,11 +21,21 @@
                 <div class="card-body">
                     <div class="card ">
                         <div class="card-header">
-                            <i class="fa fa-search"></i>Search Incoming Incident
+                            <i class="fa fa-search"></i>Search Group Incident
                         </div>
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">
-                                <div class="row ">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="incidentNo">Incident No</label>
+                                        <input type="text" formControlName="incidentNo" ngModel id="incidentNo"
+                                            name="incidentNo" class="form-control" placeholder="Incident No"
+                                            aria-label="Incident No">
+                                    </div>
+                                    <div class="col"></div>
+                                    <div class="col"></div>
+                                </div>
+                                <div class="row row-margin-05">
                                     <div class="col">
                                         <label class="form-col-form-label" for="moduleId">Module</label>
                                         <select #moduleId (change)="populateSubmodule($event.target.value)"
@@ -122,6 +132,7 @@
                         <ng-container matColumnDef="incDtl">
                             <th mat-header-cell *matHeaderCellDef> Inc. Dtl. </th>
                             <td mat-cell *matCellDef="let element">
+                                {{element.incidentNo}}<br />
                                 {{element.title}}<br />
                                 {{element.priority.name}}<br />
                                 {{element.raisedUser.email}}<br />
@@ -130,7 +141,8 @@
                         </ng-container>
                         <ng-container matColumnDef="assignedUser">
                             <th mat-header-cell *matHeaderCellDef> Assigned User </th>
-                            <td [attr.data-label]="element.status" mat-cell *matCellDef="let element">
+                            <td [attr.data-label]="element.status" id="id-assigned-{{element.id}}" mat-cell
+                                *matCellDef="let element">
                                 {{element.assignedUser?.email}}
                             </td>
                         </ng-container>
@@ -150,11 +162,13 @@
                         <ng-container matColumnDef="action">
                             <th mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <!-- <button type="button" class="btn btn-sm btn-primary" (click)="updateStatus(element)"><i
-                                        class="icon-ban"></i> Change Status
-                                </button> -->
-                                <button type="button" class="btn btn-sm btn-primary" (click)="edit(element)"><i
-                                        class="fa fa-comments-o"></i> Note
+                                <button id="id-assign-{{element.id}}" type="button" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                'btn btn-sm btn-warning':true}" (click)="assign(element)"><i class="fa fa-man
+                                       "></i> Assign
+                                </button>
+                                <button id="id-note-{{element.id}}" type="button" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
+                                        class="fa fa-comments-o"></i> View/Update
                                 </button>
                             </td>
                         </ng-container>
