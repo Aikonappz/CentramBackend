@@ -44,26 +44,19 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'Notification',
+    name: 'My Notifications',
     url: '/notification',
     icon: 'icon-info',
   },
   {
-    name: 'Incident',
-    url: '/incident',
-    icon: 'fa fa-ticket',
-    children: [
-      {
-        name: 'Raise Incident',
-        url: '/incident/raised',
-        icon: 'fa fa-paper-plane-o'
-      },
-      {
-        name: 'Incoming Incident',
-        url: '/incident/incoming',
-        icon: 'fa fa-exchange'
-      },
-    ]
+    name: 'My Incident',
+    url: '/incident/raised',
+    icon: 'fa fa-ticket'
+  },
+  {
+    name: 'My Group Incident',
+    url: '/incident/incoming',
+    icon: 'fa fa-ticket'
   },
 ];
 
