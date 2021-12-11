@@ -5,5 +5,5 @@ import { UserVO } from "./UserVO";
 export interface AssignUser {
     agentList: UserVO[];
     canAssign: boolean;
-    selection: SelectionModel<Incident>;
+    selectedValues: Map<number, string>;
 }

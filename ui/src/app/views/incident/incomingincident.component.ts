@@ -43,7 +43,8 @@ export class IncomingIncidentComponent implements OnInit {
   loggedInUser: LoggedInUser;
   moduleIds: number[] = [];
   canAssignNow: boolean = false;
-  selectedValues: number[] = [];
+  //selectedValues: Set<IncidentVO> = new Set<IncidentVO>();
+  selectedValues: Map<number, string> = new Map<number, string>();
   modalRef: BsModalRef;
   searchedData: Object = {};
   constructor(
@@ -118,6 +119,18 @@ export class IncomingIncidentComponent implements OnInit {
         this.moduleList.push(this.permissions[i]);
       }
     }
+
+    this.selection.changed.subscribe(i => {
+      for (let k = 0; k < i.added.length; k++) {
+        let obj = i.added[k];
+        this.selectedValues.set(obj.id, obj.incidentNo);
+      }
+      for (let k = 0; k < i.removed.length; k++) {
+        let obj = i.removed[k];
+        this.selectedValues.delete(obj.id);
+      }
+      //console.log(this.selectedValues);
+    });
   }
 
   private confirmAgentRole(roles: string[]): boolean {
@@ -198,6 +211,7 @@ export class IncomingIncidentComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
+    this.searchedData = {};
     this.loadData({});
   }
 
@@ -362,33 +376,30 @@ export class IncomingIncidentComponent implements OnInit {
             if (this.loggedInUser.userId == data[i].id)
               this.agentList.push(data[i]);
           }
-          //this.agentList.push(data[i]);
-          this.selection.select(inc);
-          this.canAssignNow = true;
-          this.openAssignModal();
         }
+        this.selection.clear();
+        this.selection.select(inc);
+        this.canAssignNow = true;
+        this.openAssignModal();
         //console.log(data);
       });
   }
 
   openAssignModal() {
-    //console.log(this.canAssignNow);
-    //console.log(this.selection.isEmpty());
     const config: ModalOptions = {
       backdrop: 'static',
       keyboard: false,
       animated: true,
       ignoreBackdropClick: true,
+      class: 'modal-bg',
     };
-    const initialState = {
+    const initialState: Partial<AssignUser> = {
       agentList: this.agentList,
-      canAssign: (this.canAssignNow && !this.selection.isEmpty()) ? true : false,
-      selection: this.selection
+      canAssign: (this.canAssignNow && this.selectedValues.size > 0) ? true : false,
+      selectedValues: this.selectedValues
     };
     this.modalRef = this.modalService.show(AssignIncidentComponent,
-      Object.assign({}, config, {
-        class: 'modal-bg', initialState
-      })
+      Object.assign({}, config, { initialState })
     );
   }
 }
@@ -416,9 +427,8 @@ export class IncomingIncidentComponent implements OnInit {
                       <div class="row">
                           <div class="col">
                               <label class="form-col-form-label required-control-label" for="assignUser">Agent</label>
-                              <select class="form-control" formControlName="assignUser" [(ngModel)]="selectedUser" id="assignUser"
-                                  name="assignUser">
-                                  <option value="">-- Select Agent--</option>
+                              <select class="form-control" formControlName="assignUser" id="assignUser"
+                                  name="assignUser">                                  
                                   <option *ngFor="let e of agentList" value="{{e.id}}">{{e.email}}</option>
                               </select>
                               <div *ngIf="uf.assignUser.touched && uf.assignUser.invalid"
@@ -429,12 +439,11 @@ export class IncomingIncidentComponent implements OnInit {
                               </div>
                           </div>
                           <div class="col">
+                            <input type="hidden" [(ngModel)]="incidents" formControlName="incidents" ngModel id="incidents" name="incidents">
                               <label class="form-col-form-label required-control-label" for="incidents">Incident</label>
-                              <select multiple class="form-control" formControlName="incidents"
-                                  ngModel id="incidents" name="incidents" [(ngModel)]="selectedIncident">
-                                  <option *ngFor="let e of incidents" value="{{e.id}}">
-                                      {{e.incidentNo}}</option>
-                              </select>
+                              <textarea formControlName="selectedIncidents" id="selectedIncidents"
+                              name="selectedIncidents" readonly>
+                              </textarea>                              
                               <div *ngIf="uf.incidents.touched && uf.incidents.invalid"
                                   class="alert alert-danger-custom">
                                   <div *ngIf="uf.incidents.errors?.required">
@@ -459,15 +468,14 @@ export class IncomingIncidentComponent implements OnInit {
 </div>`
 })
 export class AssignIncidentComponent implements OnInit {
-  angFormAssign: FormGroup;
   agentList: UserVO[];
   canAssign: boolean;
-  selection = new SelectionModel<Incident>(true, []);
-  assignUser: Partial<Object>;
-  selObj: any;
-  incidents: any;
-  selectedUser = '';
-  selectedIncident = [];
+  selectedValues: Map<number, string>;
+  assignUser: Partial<AssignUser>;
+  angFormAssign: FormGroup;
+  incidents: number[] = [];
+  incidentNos: string[] = [];
+  selectedIncidents: string;
   constructor(
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
@@ -481,42 +489,31 @@ export class AssignIncidentComponent implements OnInit {
       incidents: new FormControl(null, [
         Validators.required,
       ]),
+      selectedIncidents: new FormControl(null, [
+        //Validators.required,
+      ]),
     });
-    this.assignUser = this.options.initialState;
-    //TODO: need to take care properly
-    let obj = JSON.parse(JSON.stringify(this.assignUser));
-    //TODO: need to take care properly
-    this.canAssign = obj.canAssign;
-    this.agentList = obj.agentList;
-    this.selection = obj.selection;
-    //TODO: need to take care properly
-    this.selObj = JSON.parse(JSON.stringify(this.selection));
-    //TODO: need to take care properly
-    this.incidents = this.selObj._selected;
+    this.assignUser = this.options.initialState.valueOf();
+    //console.log((this.assignUser));
+    this.assignUser.selectedValues.forEach((value: string, key: number) => {
+      this.incidents.push(key);
+      this.incidentNos.push(value);
+    });
+    this.selectedIncidents = this.incidentNos.join('\n');
+    //console.log(this.incidents);
   }
   ngOnInit() {
-    if (this.agentList.length == 1) {
-      this.selectedUser = String(this.agentList[0].id);
-      this.angFormAssign.get('assignUser').setValue(this.agentList[0].id);
+    if (this.assignUser.agentList.length == 1) {
+      this.angFormAssign.get('assignUser').setValue(this.assignUser.agentList[0].id);
     }
-    this.selectedIncident = this.incidents.map(({ id }) => id);
-    this.angFormAssign.get('incidents').setValue(this.incidents.map(({ id }) => id));
-    this.angFormAssign.markAllAsTouched();
+    this.angFormAssign.get('incidents').setValue(this.incidents);
+    this.angFormAssign.get('selectedIncidents').setValue(this.selectedIncidents);
   }
 
   ngAfterViewInit() {
-
-
   }
 
   ngAfterContentInit() {
-    $(function () {
-      // console.log($('#assignUser').children('option').length);
-      // if ($('#assignUser').children('option').length == 2) {
-      //   $("#assignUser").val($("#assignUser option:eq(1)").val());
-      // }
-      // $('#incidents option').prop('selected', true);
-    });
   }
 
   get uf() { return this.angFormAssign.controls; }
@@ -534,6 +531,7 @@ export class AssignIncidentComponent implements OnInit {
       //console.log(formData);
       let assignUser = this.angFormAssign.controls['assignUser'].value;
       let incidents = this.angFormAssign.controls['incidents'].value;
+      //console.log({ userId: assignUser, ids: incidents });
       this.callAssignUser({ userId: assignUser, ids: incidents });
     } else {
       console.log("Invalid Form!");

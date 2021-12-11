@@ -131,6 +131,7 @@ export class IncidentComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
+    this.searchedData = {};
     this.loadData({});
   }
 
