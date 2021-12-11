@@ -10,9 +10,7 @@ import { Department } from '../../model/Department';
 import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
-import { AppUtility } from '../../config/AppUtility';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
-//import * as jQuery from "jquery";
 declare var $: any;
 
 @Component({
@@ -135,30 +133,32 @@ export class EditUserComponent implements OnInit {
           }
         });
 
-      this.miscService
-        .locationsService()
-        .subscribe((data: any) => {
-          //console.log("load locations");
-          this.locations = data.content;
-          this.c = 0;
-          for (let indx = 0; indx < this.locations.length; indx++) {
-            if (this.locations[indx].status == 1) {
-              this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+      if (!this.loggedInUserService.appManager()) {
+        this.miscService
+          .locationsService()
+          .subscribe((data: any) => {
+            //console.log("load locations");
+            this.locations = data.content;
+            this.c = 0;
+            for (let indx = 0; indx < this.locations.length; indx++) {
+              if (this.locations[indx].status == 1) {
+                this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+              }
             }
-          }
-        });
-      this.miscService
-        .departmentsService()
-        .subscribe((data: any) => {
-          //console.log("load departments");
-          this.departments = data.content;
-          this.c = 0;
-          for (let indx = 0; indx < this.departments.length; indx++) {
-            if (this.departments[indx].status == 1) {
-              this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+          });
+        this.miscService
+          .departmentsService()
+          .subscribe((data: any) => {
+            //console.log("load departments");
+            this.departments = data.content;
+            this.c = 0;
+            for (let indx = 0; indx < this.departments.length; indx++) {
+              if (this.departments[indx].status == 1) {
+                this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+              }
             }
-          }
-        });
+          });
+      }
       this.userService
         .getUsersService()
         .subscribe((data: any) => {
@@ -174,77 +174,129 @@ export class EditUserComponent implements OnInit {
           //console.log(JSON.stringify(this.usrList));
         });
     } else {
-      this.miscService
-        .rolesService()
-        .subscribe((data: any) => {
-          //console.log("load roles");
-          this.roles = data.content;
-          let tmpRoles: any = [];
-          this.c = 0;
-          for (let i = 0; i < this.roles.length; i++) {
-            if (this.loggedInUserService.appManager()) {
-              if (!this.roles[i].name.match(/ORG_.*/)) {
-                tmpRoles[this.c++] = this.roles[i];
-              }
-            } else {
-              if (this.roles[i].name.match(/ORG_.*/)) {
-                tmpRoles[this.c++] = this.roles[i];
-              }
-            }
-          }
-          this.roles = tmpRoles;
-          this.c = 0;
-          for (let indx = 0; indx < this.roles.length; indx++) {
-            if (this.roles[indx].status == 1) {
-              this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
-            }
-          }
-          this.miscService
-            .locationsService()
-            .subscribe((data: any) => {
-              //console.log("load locations");
-              this.locations = data.content;
-              this.c = 0;
-              for (let indx = 0; indx < this.locations.length; indx++) {
-                if (this.locations[indx].status == 1) {
-                  this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+      if (this.loggedInUserService.appManager()) {
+        this.miscService
+          .rolesService()
+          .subscribe((data: any) => {
+            //console.log("load roles");
+            this.roles = data.content;
+            let tmpRoles: any = [];
+            this.c = 0;
+            for (let i = 0; i < this.roles.length; i++) {
+              if (this.loggedInUserService.appManager()) {
+                if (!this.roles[i].name.match(/ORG_.*/)) {
+                  tmpRoles[this.c++] = this.roles[i];
+                }
+              } else {
+                if (this.roles[i].name.match(/ORG_.*/)) {
+                  tmpRoles[this.c++] = this.roles[i];
                 }
               }
-              this.miscService
-                .departmentsService()
-                .subscribe((data: any) => {
-                  //console.log("load departments");
-                  this.departments = data.content;
-                  this.c = 0;
-                  for (let indx = 0; indx < this.departments.length; indx++) {
-                    if (this.departments[indx].status == 1) {
-                      this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
-                    }
+            }
+            this.roles = tmpRoles;
+            this.c = 0;
+            for (let indx = 0; indx < this.roles.length; indx++) {
+              if (this.roles[indx].status == 1) {
+                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+              }
+            }
+            this.userService
+              .getUsersService()
+              .subscribe((data: any) => {
+                //console.log("load departments");
+                this.users = data.content;
+                this.c = 0;
+                this.usrList = [];
+                for (let indx = 0; indx < this.users.length; indx++) {
+                  if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
+                    this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
                   }
-                  if (this.route.snapshot.paramMap.has('id')) {
-                    if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
-                      //console.log("load provided id data...");
-                      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-                      this.newEntity = false;
-                      this.callGetUserService(this.entityId);
-                    }
+                }
+
+                if (this.route.snapshot.paramMap.has('id')) {
+                  if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
+                    //console.log("load provided id data...");
+                    this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+                    this.newEntity = false;
+                    this.callGetUserService(this.entityId);
                   }
-                  this.userService
-                    .getUsersService()
-                    .subscribe((data: any) => {
-                      //console.log("load departments");
-                      this.users = data.content;
-                      this.c = 0;
-                      this.usrList = [];
-                      for (let indx = 0; indx < this.users.length; indx++) {
-                        if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
-                          this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
-                        }
+                }
+
+              });
+          });
+      } else {
+        this.miscService
+          .rolesService()
+          .subscribe((data: any) => {
+            //console.log("load roles");
+            this.roles = data.content;
+            let tmpRoles: any = [];
+            this.c = 0;
+            for (let i = 0; i < this.roles.length; i++) {
+              if (this.loggedInUserService.appManager()) {
+                if (!this.roles[i].name.match(/ORG_.*/)) {
+                  tmpRoles[this.c++] = this.roles[i];
+                }
+              } else {
+                if (this.roles[i].name.match(/ORG_.*/)) {
+                  tmpRoles[this.c++] = this.roles[i];
+                }
+              }
+            }
+            this.roles = tmpRoles;
+            this.c = 0;
+            for (let indx = 0; indx < this.roles.length; indx++) {
+              if (this.roles[indx].status == 1) {
+                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+              }
+            }
+            this.miscService
+              .locationsService()
+              .subscribe((data: any) => {
+                //console.log("load locations");
+                this.locations = data.content;
+                this.c = 0;
+                for (let indx = 0; indx < this.locations.length; indx++) {
+                  if (this.locations[indx].status == 1) {
+                    this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+                  }
+                }
+                this.miscService
+                  .departmentsService()
+                  .subscribe((data: any) => {
+                    //console.log("load departments");
+                    this.departments = data.content;
+                    this.c = 0;
+                    for (let indx = 0; indx < this.departments.length; indx++) {
+                      if (this.departments[indx].status == 1) {
+                        this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
                       }
-                    });
-                });
-            });
-        });
+                    }
+                    this.userService
+                      .getUsersService()
+                      .subscribe((data: any) => {
+                        //console.log("load departments");
+                        this.users = data.content;
+                        this.c = 0;
+                        this.usrList = [];
+                        for (let indx = 0; indx < this.users.length; indx++) {
+                          if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
+                            this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
+                          }
+                        }
+                        if (this.route.snapshot.paramMap.has('id')) {
+                          if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
+                            //console.log("load provided id data...");
+                            this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+                            this.newEntity = false;
+                            this.callGetUserService(this.entityId);
+                          }
+                        }
+                      });
+                  });
+              });
+          });
+      }
     }
   }
 
@@ -363,14 +415,16 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('projectCode').setValue(this.user.projectCode);
         this.angForm.get('roles').setValue(this.user.roles.map(String));
         this.angForm.get('managerId').setValue(this.user.managerId);
-        for (var i = 0; i < this.departments.length; i++) {
-          if (this.departments[i].id == this.user.department.id) {
-            this.angForm.get('department').setValue(this.user.department.id + '__' + this.departments[i].version);
+        if (!this.loggedInUserService.appManager()) {
+          for (var i = 0; i < this.departments.length; i++) {
+            if (this.departments[i].id == this.user.department.id) {
+              this.angForm.get('department').setValue(this.user.department.id + '__' + this.departments[i].version);
+            }
           }
-        }
-        for (var i = 0; i < this.locations.length; i++) {
-          if (this.locations[i].id == this.user.location.id) {
-            this.angForm.get('location').setValue(this.user.location.id + '__' + this.locations[i].version);
+          for (var i = 0; i < this.locations.length; i++) {
+            if (this.locations[i].id == this.user.location.id) {
+              this.angForm.get('location').setValue(this.user.location.id + '__' + this.locations[i].version);
+            }
           }
         }
         this.statusFlag = String(this.user.status) == 'ACTIVE' ? true : false;

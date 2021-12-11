@@ -18,7 +18,7 @@ export const navItems: INavData[] = [
     icon: 'icon-people',
   },
   {
-    name: 'Master',
+    name: 'Masters',
     url: '/master',
     icon: 'icon-layers',
     children: [
@@ -50,12 +50,12 @@ export const navItems: INavData[] = [
     icon: 'icon-info',
   },
   {
-    name: 'My Incident',
+    name: 'My Incidents',
     url: '/incident/raised',
     icon: 'fa fa-ticket'
   },
   {
-    name: 'My Group Incident',
+    name: 'My Group Incidents',
     url: '/incident/incoming',
     icon: 'fa fa-ticket'
   },
