@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,7 @@ public class OrganisationService {
 
     private static final Logger log = LoggerFactory.getLogger(OrganisationService.class);
 
+    @Lazy
     @Autowired
     private UserService userService;
 

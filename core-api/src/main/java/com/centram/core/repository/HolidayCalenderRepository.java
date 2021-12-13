@@ -15,4 +15,7 @@ import java.math.BigInteger;
 public interface HolidayCalenderRepository extends JpaRepository<HolidayCalender, BigInteger> {
     @Query("select hc from HolidayCalender hc where hc.organisation.id = (:organisationId)")
     Page getHolidayCalenderByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+
+    @Query("select hc from HolidayCalender hc where hc.year = (:year) and hc.organisation.id = (:organisationId)")
+    HolidayCalender getHolidayCalenderByYear(@Param("organisationId") BigInteger organisationId,@Param("year") String year);
 }

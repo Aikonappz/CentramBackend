@@ -14,25 +14,23 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
-//@EnableDiscoveryClient
-//@EnableFeignClients(basePackages = {"com.erp.api.client"})
 @EnableSwagger2
 @ComponentScan(basePackages = {
         "com.centram.core",
-        "com.centram.core.config",
         "com.centram.common",
-        "com.centram.common.config",
         "com.centram.domain"
 })
 @EntityScan(basePackages = {"com.centram.domain"})
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class, basePackages = {"com.centram.core.repository"})
 @SpringBootApplication(scanBasePackages = {
         "com.centram.core",
-        "com.centram.core.config",
         "com.centram.common",
-        "com.centram.common.config",
         "com.centram.domain"
 })
 @EnableTransactionManagement
@@ -42,6 +40,24 @@ import java.util.TimeZone;
 public class CoreApp {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(CoreApp.class, args);
+        /*String dateInString = "22-1-2015 10:15:55 AM";
+        LocalDateTime ldt = LocalDateTime.parse(dateInString, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        ZoneId singaporeZoneId = ZoneId.of("Asia/Singapore");
+        System.out.println("TimeZone : " + singaporeZoneId);
+        //LocalDateTime + ZoneId = ZonedDateTime
+        ZonedDateTime asiaZonedDateTime = ldt.atZone(singaporeZoneId);
+        System.out.println("Date (Singapore) : " + asiaZonedDateTime.toLocalDateTime());
+
+        ZoneId newYokZoneId = ZoneId.of("America/New_York");
+        System.out.println("TimeZone : " + newYokZoneId);
+
+        ZonedDateTime nyDateTime = asiaZonedDateTime.withZoneSameInstant(newYokZoneId);
+        System.out.println("Date (New York) : " + nyDateTime.toLocalDateTime());
+
+        DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_FORMAT);
+        System.out.println("\n---DateTimeFormatter---");
+        System.out.println("Date (Singapore) : " + format.format(asiaZonedDateTime));
+        System.out.println("Date (New York) : " + format.format(nyDateTime));*/
     }
 
     @PostConstruct

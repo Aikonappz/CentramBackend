@@ -8,14 +8,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>domain</artifactId>
-
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
-
     <dependencies>
         <!--spring-->
         <dependency>
@@ -45,7 +42,7 @@
         </dependency>
         <!--mysql-->
         <!--hibernate-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
@@ -54,7 +51,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
-        </dependency>
+        </dependency>-->
         <!--hibernate-->
         <!--SpringFox dependencies -->
         <dependency>

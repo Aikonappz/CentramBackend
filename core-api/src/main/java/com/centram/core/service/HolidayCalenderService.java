@@ -156,4 +156,14 @@ public class HolidayCalenderService {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
+
+    @Transactional(readOnly = true)
+    public HolidayCalender getByYear(String year) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(loggedInUser.getOrganisationId(), year);
+        if (holidayCalender == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        return holidayCalender;
+    }
 }
