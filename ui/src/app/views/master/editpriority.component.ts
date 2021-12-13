@@ -109,7 +109,7 @@ export class EditPriorityComponent implements OnInit {
       .savePriorityService(this.prty)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/masters/priority']);
+        this.router.navigate(['/master/priority']);
       });
   }
 

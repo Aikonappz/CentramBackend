@@ -26,6 +26,5 @@ public class WorkingDay implements Comparable<WorkingDay> {
     @Override
     public int compareTo(@NotNull WorkingDay workingDay) {
         return this.getDate().compareTo(workingDay.getDate());
-
     }
 }

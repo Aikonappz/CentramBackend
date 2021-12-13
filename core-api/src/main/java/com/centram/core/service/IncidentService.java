@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,12 @@ public class IncidentService {
     private PriorityService priorityService;
     @Autowired
     private LocationService locationService;
+
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    private String dateTimeFormat;
+
+    @Value("${date.format:yyyy-MM-dd}")
+    private String dateFormat;
 
     @Transactional(readOnly = true)
     public PaginatedList<Incident> getIncomingIncidents(String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
@@ -121,31 +126,23 @@ public class IncidentService {
             Setting setting = organisationService.getOrganisationSettings();
             String prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
             incident.setIncidentNo(incidentNo(prefix));
-
-
         }
-        /**fetch current year holiday calender**/
-        HolidayCalender currentYearHolidayCalender = holidayCalenderService.getByYear(Year.now().toString());
-        /**fetch next year holiday calender**/
-        HolidayCalender nextYearHolidayCalender = holidayCalenderService.getByYear(Year.now().plusYears(1).toString());
-        /**prepare holiday List*/
-        List<Holiday> holidays = currentYearHolidayCalender.getHolidays();
-            /*if (nextYearHolidayCalender != null) {
-                holidays.addAll(nextYearHolidayCalender.getHolidays());
-            }*/
-        /**fetch priority**/
-        Priority priority = priorityService.getById(incident.getPriority().getId());
-        /**fetch location**/
+        /*fetch location*/
         Location location = locationService.getById(loggedInUser.getLocationId());
-
-        LocalDateTime localDateTime = LocalDateTime.now(ZoneId.of(loggedInUser.getTimeZone()).getRules().getOffset(LocalDateTime.now()));
-        incident.setSlaAt(this.getSlADateTime(
-                localDateTime,
-                priority.getSla(),
-                location.getOpsStartTime(),
-                location.getOpsEndTime(),
-                holidays
-        ));
+        /*fetch priority*/
+        Priority priority = priorityService.getById(incident.getPriority().getId());
+        /*prepare holiday List*/
+        ZonedDateTime raiseDateTime = ZonedDateTime.now();
+        List<Holiday> holidays = new ArrayList<Holiday>();
+        List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+        List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
+        if (raiseDateTime.getMonth() == Month.DECEMBER) {
+            nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+        }
+        holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
+        /*prepare holiday List*/
+        raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
+        incident.setSlaAt(this.getSlADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
         Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();
         for (IncidentCommunication incidentCommunication : incident.getCommunications()) {
             if (incidentCommunication.getId() == null) {
@@ -161,52 +158,48 @@ public class IncidentService {
     /**
      * calculate sla
      *
-     * @param startDateTime
+     * @param raisedDateTime
      * @param hour
      * @param opsStartTime
      * @param opsEndTime
      * @param holidays
      * @return
      */
-    private LocalDateTime getSlADateTime(
-            LocalDateTime startDateTime,
-            String hour,
-            LocalTime opsStartTime,
-            LocalTime opsEndTime,
-            List<Holiday> holidays
-    ) {
+    private LocalDateTime getSlADateTime(ZonedDateTime raisedDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Integer hours = Integer.valueOf(hour.split((":"))[0]);
-        Integer minutes = Integer.valueOf(hour.split((":"))[1]);
+        Long hours = Long.valueOf(hour.split((":"))[0]);
+        Long minutes = Long.valueOf(hour.split((":"))[1]);
         log.info("hours => {}, minutes => {}", hours, minutes);
-        Integer minuteToAdd = (hours * 60) + minutes;
+        Long minuteToAdd = (hours * 60) + minutes;
         log.info(" converted minutes => {}", minuteToAdd);
-        List<WorkingDay> workingDays = this.getWorkingDays(
-                startDateTime,
-                holidays,
-                opsStartTime,
-                opsEndTime
-        );
+        List<WorkingDay> workingDays = this.getWorkingDays(raisedDateTime, holidays, opsStartTime, opsEndTime);
         Collections.sort(workingDays);
-        LocalDateTime sla = null;
-        if (this.isHoliday(startDateTime.toLocalDate(), holidays)) {
-            sla = startDateTime.plusDays(1).toLocalDate().atTime(LocalTime.MIN);
-            sla = sla.toLocalDate().atTime(opsStartTime).plusMinutes(minuteToAdd);
-        } else {
-            sla = startDateTime.plusMinutes(minuteToAdd);
+        ZonedDateTime slaDayDateTime = raisedDateTime;
+        ZonedDateTime slaDayEndTime = null;
+        Duration duration = null;
+        if (this.isHoliday(raisedDateTime.toLocalDate(), holidays)) {
+            Optional<WorkingDay> nextWorkingDayOptional = this.nextWorkingDay(raisedDateTime.toLocalDate(), workingDays);
+            if (nextWorkingDayOptional.isPresent()) {
+                slaDayDateTime = nextWorkingDayOptional.get()
+                        .getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+            } else {
+                throw new AppException(GenericErrorCode.HOLIDAY_CALENDER_MASTER_DATA_MISSING);
+            }
         }
-        if (!this.checkIsValidSLA(sla, workingDays)) {
-            LocalDateTime todayEnd = startDateTime.with(opsEndTime);
-            Duration duration = Duration.between(todayEnd, startDateTime);
-            Long pendingSla = minuteToAdd - duration.toMinutes();
-            sla = sla.plusDays(1).toLocalDate().atTime(LocalTime.MIN).plusMinutes(pendingSla);
+        for (WorkingDay workingDay : workingDays) {
+            if (slaDayDateTime.toLocalDate().compareTo(workingDay.getDate()) == 0) {
+                slaDayDateTime = slaDayDateTime.plusMinutes(minuteToAdd).toLocalDateTime().atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                if (!this.checkIsValidSLA(slaDayDateTime, workingDays)) {
+                    slaDayEndTime = slaDayDateTime.with(opsEndTime);
+                    duration = Duration.between(slaDayEndTime, slaDayDateTime);
+                    minuteToAdd = duration.toMinutes();
+                    slaDayDateTime = slaDayDateTime.plusDays(1).toLocalDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                }
+            }
         }
-        log.info("offset {}", sla.atZone(ZoneId.systemDefault()).toLocalDateTime());
-        log.info("offset {}", sla.atZone(ZoneId.of(loggedInUser.getTimeZone())).toLocalDateTime());
-        sla = sla.atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-
-        return sla;
+        log.info("UTC {}", slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+        log.info("LOCAL {}", slaDayDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone())).toLocalDateTime());
+        return slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     /**
@@ -216,13 +209,13 @@ public class IncidentService {
      * @param workingDays
      * @return
      */
-    private Boolean checkIsValidSLA(LocalDateTime dateTime, List<WorkingDay> workingDays) {
+    private Boolean checkIsValidSLA(ZonedDateTime dateTime, List<WorkingDay> workingDays) {
         LocalDate date = dateTime.toLocalDate();
         for (WorkingDay workingDay : workingDays) {
             if (workingDay.getDate().compareTo(date) == 0) {
-                return (dateTime.compareTo(workingDay.getStartTime()) == 0 || dateTime.isAfter(workingDay.getStartTime()))
+                return (dateTime.toLocalDateTime().compareTo(workingDay.getStartTime()) == 0 || dateTime.toLocalDateTime().isAfter(workingDay.getStartTime()))
                         &&
-                        (dateTime.compareTo(workingDay.getEndTime()) == 0 || dateTime.isBefore(workingDay.getEndTime()));
+                        (dateTime.toLocalDateTime().compareTo(workingDay.getEndTime()) == 0 || dateTime.toLocalDateTime().isBefore(workingDay.getEndTime()));
             }
         }
         return false;
@@ -253,12 +246,7 @@ public class IncidentService {
      * @param opsEndTime
      * @return
      */
-    private List<WorkingDay> getWorkingDays(
-            LocalDateTime dateTime,
-            List<Holiday> holidays,
-            LocalTime opsStartTime,
-            LocalTime opsEndTime
-    ) {
+    private List<WorkingDay> getWorkingDays(ZonedDateTime dateTime, List<Holiday> holidays, LocalTime opsStartTime, LocalTime opsEndTime) {
         List<WorkingDay> workingDays = new ArrayList<WorkingDay>();
         LocalDate startDate = dateTime.toLocalDate().with(firstDayOfYear());
         LocalDate endDate = dateTime.toLocalDate().with(lastDayOfYear());
@@ -269,5 +257,22 @@ public class IncidentService {
             startDate = startDate.plusDays(1);
         }
         return workingDays;
+    }
+
+    private Optional<WorkingDay> nextWorkingDay(LocalDate date, List<WorkingDay> workingDays) {
+        return workingDays
+                .stream().filter(
+                        i -> {
+                            return i.getDate().isAfter(date);
+                        }
+                ).findFirst();
+    }
+
+    private List<Holiday> mergeHolidays(List<Holiday> currentYearHolidays, List<Holiday> nextYearHolidays) {
+        List<Holiday> upcomingHolidays = new ArrayList<Holiday>();
+        upcomingHolidays.addAll(currentYearHolidays);
+        upcomingHolidays.addAll(nextYearHolidays);
+        Collections.sort(upcomingHolidays);
+        return upcomingHolidays;
     }
 }

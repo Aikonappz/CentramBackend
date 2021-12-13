@@ -63,10 +63,10 @@ export class DepartmentComponent implements OnInit {
   }
 
   edit(org: Department) {
-    this.router.navigate(['/masters/department/edit/' + org.id]);
+    this.router.navigate(['/master/department/edit/' + org.id]);
   }
   add() {
-    this.router.navigate(['/masters/department/add']);
+    this.router.navigate(['/master/department/add']);
   }
 
   updateStatus(org: Department) {

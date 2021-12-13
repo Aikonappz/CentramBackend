@@ -63,10 +63,10 @@ export class LocationComponent implements OnInit {
   }
 
   edit(loc: LocationVO) {
-    this.router.navigate(['/masters/location/edit/' + loc.id]);
+    this.router.navigate(['/master/location/edit/' + loc.id]);
   }
   add() {
-    this.router.navigate(['/masters/location/add']);
+    this.router.navigate(['/master/location/add']);
   }
 
   updateStatus(loc: LocationVO) {

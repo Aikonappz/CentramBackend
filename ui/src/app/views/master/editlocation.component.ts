@@ -133,7 +133,7 @@ export class EditLocationComponent implements OnInit {
       .saveLocationService(this.loc)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/masters/location']);
+        this.router.navigate(['/master/location']);
       });
   }
 

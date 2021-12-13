@@ -67,10 +67,10 @@ export class HolidayCalenderComponent implements OnInit {
   }
 
   edit(loc: LocationVO) {
-    this.router.navigate(['/masters/calender/edit/' + loc.id]);
+    this.router.navigate(['/master/calender/edit/' + loc.id]);
   }
   add() {
-    this.router.navigate(['/masters/calender/add']);
+    this.router.navigate(['/master/calender/add']);
   }
 
   updateStatus(hc: HolidayCalender) {

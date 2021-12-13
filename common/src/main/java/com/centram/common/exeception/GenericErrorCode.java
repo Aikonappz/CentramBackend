@@ -16,7 +16,7 @@ public enum GenericErrorCode implements ErrorCode {
     DESERIALIZATION_ISSUE("Deserialization issue!"),
     CSV_GENERATION_ISSUE("CSV generation issue!"),
     CSV_PROCESSING_ISSUE("CSV processing issue!"),
-    FIREBASE_INTEGRATION_ISSUE("Firebase Integration issue!");
+    HOLIDAY_CALENDER_MASTER_DATA_MISSING("Holiday calender master data missing!");
 
     private final String template;
 

@@ -133,7 +133,7 @@ export class EditHolidayCalenderComponent implements OnInit {
       .saveHolidayCalenderService(formData)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/masters/calender']);
+        this.router.navigate(['/master/calender']);
       });
   }
 

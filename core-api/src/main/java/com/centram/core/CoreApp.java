@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -17,7 +16,6 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 @EnableSwagger2
@@ -38,8 +36,17 @@ import java.util.TimeZone;
 @EnableCaching
 @EnableSpringDataWebSupport
 public class CoreApp {
+    private static final String DATE_FORMAT = "dd-M-yyyy hh:mm:ss a";
+
     public static void main(String[] args) throws Exception {
         SpringApplication.run(CoreApp.class, args);
+        /*ZonedDateTime now = ZonedDateTime.now();
+        ZoneId id = ZoneId.of("Asia/Kolkata");
+        System.out.println(now.withZoneSameInstant(id));
+        id = ZoneId.of("Asia/Singapore");
+        System.out.println(now.withZoneSameInstant(id));
+        id = ZoneId.of("UTC");
+        System.out.println(now.withZoneSameInstant(id));*/
         /*String dateInString = "22-1-2015 10:15:55 AM";
         LocalDateTime ldt = LocalDateTime.parse(dateInString, DateTimeFormatter.ofPattern(DATE_FORMAT));
         ZoneId singaporeZoneId = ZoneId.of("Asia/Singapore");

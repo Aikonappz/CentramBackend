@@ -65,10 +65,10 @@ export class PriorityComponent implements OnInit {
   }
 
   edit(loc: LocationVO) {
-    this.router.navigate(['/masters/priority/edit/' + loc.id]);
+    this.router.navigate(['/master/priority/edit/' + loc.id]);
   }
   add() {
-    this.router.navigate(['/masters/priority/add']);
+    this.router.navigate(['/master/priority/add']);
   }
 
   updateStatus(prty: Priority) {

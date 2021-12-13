@@ -94,7 +94,7 @@ export class EditDepartmentComponent implements OnInit {
       .saveDepartmentService(this.dept)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/masters/department']);
+        this.router.navigate(['/master/department']);
       });
   }
 
