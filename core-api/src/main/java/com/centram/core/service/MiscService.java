@@ -4,15 +4,15 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
+import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
-import com.centram.domain.Department;
-import com.centram.domain.Location;
-import com.centram.domain.Role;
-import com.centram.domain.User;
+import com.centram.domain.Module;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,6 +49,21 @@ public class MiscService {
     @Lazy
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ModuleService moduleService;
+
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    private String dateTimeFormat;
+
+    @Value("${date.format:yyyy-MM-dd}")
+    private String dateFormat;
+
+    @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
+    private String appLocalDateTimeFormat;
+
+    @Value("${app.reply.to.email}")
+    private String appReplyToEmail;
 
     /**
      * Onboard request mail
@@ -179,5 +194,48 @@ public class MiscService {
                 appEmailService.sendOnboardMail(userVO, mailValues);
             }
         }
+    }
+
+    @Async("asyncExecutor")
+    public void notifyIncidentUpdate(Incident incident) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        /*need data for email*/
+        List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incident.getModuleId(), incident.getSubModuleId()));
+        String category = modules.stream().filter(i -> {
+            return i.getId() == incident.getModuleId();
+        }).findFirst().get().getName();
+        String subCategory = modules.stream().filter(i -> {
+            return i.getId() == incident.getModuleId();
+        }).findFirst().get().getName();
+        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory));
+        List<String> bccList = userVOS.stream()
+                .filter(i -> {
+                    if (i.getRoleNames().size() > 0) {
+                        List<String> roles = i.getRoleNames();
+                        for (String s : roles) {
+                            if (s.contains("USER") || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                })
+                .map(UserVO::getEmail)
+                .collect(Collectors.toList());
+        bccList.addAll(incident.getWatchList());
+        Map<String, Object> mailData = new HashMap<String, Object>();
+        mailData.put("to", new String[]{loggedInUser.getEmail()});
+        mailData.put("cc", new String[]{});
+        mailData.put("bcc", bccList.toArray(new String[0]));
+        mailData.put("replyTo", appReplyToEmail);
+        mailData.put("incident", incident);
+        mailData.put("category", category);
+        mailData.put("subCategory", subCategory);
+        mailData.put("userVOS", userVOS);
+        mailData.put("dateTimeFormat", appLocalDateTimeFormat);
+        IncidentEmailVO incidentEmailVO = new IncidentEmailVO(mailData);
+        appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
+        /*need data for email*/
     }
 }

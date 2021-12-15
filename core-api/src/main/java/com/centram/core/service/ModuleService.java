@@ -1,7 +1,6 @@
 package com.centram.core.service;
 
 
-
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.redis.repository.RedisModuleRepository;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Transactional
 @Service
@@ -46,5 +46,9 @@ public class ModuleService {
         }
         //return modelMapper.map(module, new TypeToken<ModuleVO>() { }.getType());
         return module;
+    }
+
+    public List<Module> getModuleByIds(List<BigInteger> moduleIds) {
+        return moduleRepository.findAllById(moduleIds);
     }
 }

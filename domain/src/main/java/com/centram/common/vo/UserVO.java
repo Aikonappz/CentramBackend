@@ -20,6 +20,7 @@ public class UserVO extends BaseEntity implements Serializable {
     private BigInteger id;
     private String firstName;
     private String lastName;
+    private String fullName;
     private String email;
     private String password;
     private String contactNo;
@@ -44,6 +45,7 @@ public class UserVO extends BaseEntity implements Serializable {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
+        this.fullName = user.getFirstName().concat(" ").concat(user.getLastName());
         this.email = user.getEmail();
         this.contactNo = user.getContactNo();
         this.secContactNo = user.getSecContactNo();

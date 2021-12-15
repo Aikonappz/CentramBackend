@@ -42,6 +42,8 @@ public class IncidentService {
     @Autowired
     private MediaService mediaService;
     @Autowired
+    private MiscService miscService;
+    @Autowired
     private PermissionService permissionService;
     @Autowired
     private OrganisationService organisationService;
@@ -51,6 +53,10 @@ public class IncidentService {
     private PriorityService priorityService;
     @Autowired
     private LocationService locationService;
+    @Autowired
+    private ModuleService moduleService;
+    @Autowired
+    private AppEmailService appEmailService;
 
     @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
     private String dateTimeFormat;
@@ -119,6 +125,7 @@ public class IncidentService {
     @Transactional
     public Incident save(Incident incident) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Incident raisedIncident = null;
         UserVO userVO = userService.getUserById(loggedInUser.getUserId());
         if (incident.getId() == null) {
             incident.setRaisedUser(new User(userVO.getVersion(), userVO.getId()));
@@ -126,23 +133,23 @@ public class IncidentService {
             Setting setting = organisationService.getOrganisationSettings();
             String prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
             incident.setIncidentNo(incidentNo(prefix));
+            /*fetch location*/
+            Location location = locationService.getById(loggedInUser.getLocationId());
+            /*fetch priority*/
+            Priority priority = priorityService.getById(incident.getPriority().getId());
+            /*prepare holiday List*/
+            ZonedDateTime raiseDateTime = ZonedDateTime.now();
+            List<Holiday> holidays = new ArrayList<Holiday>();
+            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
+            if (raiseDateTime.getMonth() == Month.DECEMBER) {
+                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+            }
+            holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
+            /*prepare holiday List*/
+            raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
+            incident.setSlaAt(this.getSlADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
         }
-        /*fetch location*/
-        Location location = locationService.getById(loggedInUser.getLocationId());
-        /*fetch priority*/
-        Priority priority = priorityService.getById(incident.getPriority().getId());
-        /*prepare holiday List*/
-        ZonedDateTime raiseDateTime = ZonedDateTime.now();
-        List<Holiday> holidays = new ArrayList<Holiday>();
-        List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
-        List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
-        if (raiseDateTime.getMonth() == Month.DECEMBER) {
-            nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
-        }
-        holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
-        /*prepare holiday List*/
-        raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
-        incident.setSlaAt(this.getSlADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
         Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();
         for (IncidentCommunication incidentCommunication : incident.getCommunications()) {
             if (incidentCommunication.getId() == null) {
@@ -152,7 +159,10 @@ public class IncidentService {
             communicationSet.add(incidentCommunication);
         }
         incident.setCommunications(communicationSet);
-        return incidentRepository.save(incident);
+        raisedIncident = incidentRepository.save(incident);
+        //notify respected user
+        miscService.notifyIncidentUpdate(new Incident());
+        return raisedIncident;
     }
 
     /**

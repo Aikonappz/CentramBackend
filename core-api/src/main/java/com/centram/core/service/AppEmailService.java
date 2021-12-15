@@ -3,6 +3,7 @@ package com.centram.core.service;
 
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.service.EmailService;
+import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.AppConfiguration;
@@ -198,6 +199,66 @@ public class AppEmailService {
         mailMap.put("subject", adminDemoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(adminBaseEmailTemplate));
         emailService.sendMail(mailMap);
+    }
+
+    @Async("asyncExecutor")
+    public void sendIncidentUpdateEmail(IncidentEmailVO incidentEmailVO) {
+        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("INCIDENT_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+
+        context.setVariable("incident_title", incidentEmailVO.getTitle());
+        context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
+        mailSubject = templateEngine.process(mailSubject, context);
+
+        String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("incident_communication", incidentEmailVO.getDescription());
+        context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
+        context.setVariable("incident_priority", incidentEmailVO.getPriority());
+        context.setVariable("incident_sla", incidentEmailVO.getSla());
+        context.setVariable("incident_status", incidentEmailVO.getStatus());
+        context.setVariable("incident_category", incidentEmailVO.getCategory());
+        context.setVariable("incident_subcategory", incidentEmailVO.getSubCategory());
+        context.setVariable("incident_raisedby_department", incidentEmailVO.getDepartment());
+        context.setVariable("incident_raisedby_name", incidentEmailVO.getUserName());
+        context.setVariable("incident_raisedby_email", incidentEmailVO.getUserEmail());
+        context.setVariable("incident_raisedby_contact", incidentEmailVO.getUserContactNo());
+        context.setVariable("incident_assignedto_name", incidentEmailVO.getAgentName());
+        context.setVariable("incident_assignedto_email", incidentEmailVO.getAgentEmail());
+        context.setVariable("incident_assignedto_contactno", incidentEmailVO.getAgentContactNo());
+        context.setVariable("incident_raisedby_location", incidentEmailVO.getUserLocation());
+        context.setVariable("incident_watchlist", incidentEmailVO.getWatchList());
+        context.setVariable("incident_ecalation_1", incidentEmailVO.getEscalation1Email());
+        context.setVariable("incident_ecalation_2", incidentEmailVO.getEscalation2Email());
+        mailBody = templateEngine.process(mailBody, context);
+
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", incidentEmailVO.getUserName());
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", incidentEmailVO.getTo());
+        mailMap.put("cc", incidentEmailVO.getCc());
+        mailMap.put("bcc", incidentEmailVO.getBcc());
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+
+        log.info("EMAIL TITLE: {}", mailSubject);
+        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+
+        //emailService.sendMail(mailMap);
     }
 
     /*public CommonResponse confirmEmail(AuthRequestDTO authRequestDTO) {

@@ -1,3 +1,8 @@
+SET @@session.time_zone = "+00:00";
+SET @@global.time_zone = "+00:00";
+commit;
+
+
 -- MySQL dump 10.13  Distrib 5.7.36, for Linux (x86_64)
 --
 -- Host: localhost    Database: centram

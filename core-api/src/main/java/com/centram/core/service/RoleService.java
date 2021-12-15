@@ -27,7 +27,7 @@ public class RoleService {
     private RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "role", key = "#roleId")
+    //@Cacheable(value = "role", key = "#roleId")
     public Role getById(BigInteger roleId) {
         Optional<Role> role = roleRepository.findById(roleId);
         if (role.isPresent()) {

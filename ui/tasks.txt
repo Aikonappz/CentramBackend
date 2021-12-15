@@ -18,17 +18,27 @@ Incomming incident-> my assigned incident
 
 My tasks
 -------
-1. after assignment notification mail
-2. after incident add/update notification mail
+1. after assignment notification mail - wip
+2. after incident add/update notification mail -wip
 3. count sla
-4. assign round robin to user
+4. assign round robin to user - yet to start
+
+
+Raise incident -> createa an incident
+SOLUTION_PROVIDED not required
+after 15 days emp can't reopen the ticket
+remove user email from incident listing
+
+
+
+SLA ABOUT TO BREACH
+Priority 1: SLA is 4 hours
+If the SLA is nearing 2 hours, then an email notification should be triggered to the agent with a warning message.
+If the SLA is nearing 3 hours, then another email notification should be triggered to the agent with a warning message.
+If the SLA is breached after 4 hours, then the first level escalation mail should be triggered to the module lead (agent's manager).
+If the ticket is not resolved after the 1st level escalation within 2 hours, then the second level escalation mail should be triggered to the delivery lead (module lead's manager).
 
 
 
 
-
-
-
-
-
-
+support@centram.live

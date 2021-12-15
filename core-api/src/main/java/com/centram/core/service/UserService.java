@@ -458,7 +458,7 @@ public class UserService implements UserDetailsService {
         List<BigInteger> roleIds = permissionService.getRoleIdsByModuleAndAction(moduleIds, actionName);
         String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
         roles = ",(".concat(roles).concat("),");
-        List<User> users = userRepository.getUsersByModuleAndAction(roles, loggedInUser.getOrganisationId());
+        List<User> users = userRepository.getUsersByRoleIds(roles, loggedInUser.getOrganisationId());
         List<UserVO> userVOS = new ArrayList<UserVO>();
         for (User user : users) {
             userVOS.add(new UserVO(user));
@@ -627,5 +627,26 @@ public class UserService implements UserDetailsService {
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsersByRoles(List<String> roles) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        List<Role> roleList = roleService.getByRoleNames(roles);
+        List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
+        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), loggedInUser.getOrganisationId());
+        List<String> roleNames = new ArrayList<>();
+        UserVO userVO = null;
+        for (User user : users) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
+        }
+        return userVOS;
     }
 }

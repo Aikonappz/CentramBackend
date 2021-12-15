@@ -49,7 +49,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     and find_in_set('15',roles) <> 0*/
 
     @Query(value = "select * from user u where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
-    List<User> getUsersByModuleAndAction(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
+    List<User> getUsersByRoleIds(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
 
     @Query("select u from User u where u.id = (:id)")
     User getUserById(@Param("id") BigInteger id);

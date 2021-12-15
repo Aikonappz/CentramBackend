@@ -4,7 +4,7 @@ export class AppUtility {
     public static LOGGED_IN_PROFILE = 'prfl';
     public static LOGED_IN_LAST_VISIT = 'lvst';
     public static APP_VIEW_DATE_FORMAT = 'DD/MM/YYYY';
-    public static APP_VIEW_DATE_TIME_FORMAT = 'DD/MM/YYYY HH:mm:ss';
+    public static APP_VIEW_DATE_TIME_FORMAT = 'DD/MM/YYYY hh:mm A';
     public static APP_VIEW_DATEPICKER_INP_DATE_FORMAT = 'DD/MM/YYYY';
     public static APP_VIEW_DATEPICKER_OP_DATE_FORMAT = "YYYY-MM-DD";
     public static APP_DEFAULT_TIMEZONE = 'Asia/Kolkata';
