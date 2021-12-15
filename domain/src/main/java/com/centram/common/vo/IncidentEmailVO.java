@@ -5,6 +5,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -42,18 +43,14 @@ public class IncidentEmailVO implements Serializable {
     private String escalation1Email;
     private String escalation2Name;
     private String escalation2Email;
+    private BigInteger moduleId;
+    private BigInteger subModuleId;
+    private List<UserVO> userVOS;
 
-    public IncidentEmailVO(Map<String, Object> map) {
-        Incident incident = (Incident) map.get("incident");
-        String category = (String) map.get("category");
-        String subCategory = (String) map.get("subCategory");
-        List<UserVO> userVOS = (List<UserVO>) map.get("userVOS");
-        String dateTimeFormat = (String) map.get("dateTimeFormat");
-
-        this.to = (String[]) map.get("to");
-        this.cc = (String[]) map.get("cc");
-        this.bcc = (String[]) map.get("bcc");
-        this.replyTo = (String) map.get("replyTo");
+    public IncidentEmailVO(Incident incident, String dateTimeFormat) {
+        this.watchList = incident.getWatchList().stream().map(String::toString).collect(Collectors.joining(","));
+        this.moduleId = incident.getModuleId();
+        this.subModuleId = incident.getSubModuleId();
         this.incidentNo = incident.getIncidentNo();
         this.title = incident.getTitle();
         this.description = incident.getCommunications().iterator().next().getMessage();
@@ -61,8 +58,6 @@ public class IncidentEmailVO implements Serializable {
         this.priority = incident.getPriority().getName();
         this.sla = incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateTimeFormat));
         this.status = incident.getStatus().name();
-        this.category = category;
-        this.subCategory = subCategory;
         this.department = incident.getRaisedUser().getDepartment().getName();
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
@@ -73,7 +68,10 @@ public class IncidentEmailVO implements Serializable {
             this.agentEmail = incident.getAssignedUser().getEmail();
             this.agentContactNo = incident.getAssignedUser().getContactNo();
         }
-        List<UserVO> firstLevelEscalation = userVOS.stream()
+    }
+
+    public void populateEscalationMatrices() {
+        List<UserVO> firstLevelEscalation = this.userVOS.stream()
                 .filter(i -> {
                     if (i.getRoleNames().size() > 0) {
                         List<String> roles = i.getRoleNames();
@@ -86,7 +84,7 @@ public class IncidentEmailVO implements Serializable {
                     return false;
                 })
                 .collect(Collectors.toList());
-        List<UserVO> secondLevelEscalation = userVOS.stream()
+        List<UserVO> secondLevelEscalation = this.userVOS.stream()
                 .filter(i -> {
                     if (i.getRoleNames().size() > 0) {
                         List<String> roles = i.getRoleNames();

@@ -197,15 +197,22 @@ public class MiscService {
     }
 
     @Async("asyncExecutor")
-    public void notifyIncidentUpdate(Incident incident) {
+    public void notifyIncidentUpdate(IncidentEmailVO incidentEmailVO) {
+        try {
+            System.out.println("THREAD STARTED...");
+            Thread.sleep(1000);
+            System.out.println("THREAD ENDED...");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         /*need data for email*/
-        List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incident.getModuleId(), incident.getSubModuleId()));
+        List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId()));
         String category = modules.stream().filter(i -> {
-            return i.getId() == incident.getModuleId();
+            return i.getId() == incidentEmailVO.getModuleId();
         }).findFirst().get().getName();
         String subCategory = modules.stream().filter(i -> {
-            return i.getId() == incident.getModuleId();
+            return i.getId() == incidentEmailVO.getModuleId();
         }).findFirst().get().getName();
         List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory));
         List<String> bccList = userVOS.stream()
@@ -223,18 +230,15 @@ public class MiscService {
                 })
                 .map(UserVO::getEmail)
                 .collect(Collectors.toList());
-        bccList.addAll(incident.getWatchList());
-        Map<String, Object> mailData = new HashMap<String, Object>();
-        mailData.put("to", new String[]{loggedInUser.getEmail()});
-        mailData.put("cc", new String[]{});
-        mailData.put("bcc", bccList.toArray(new String[0]));
-        mailData.put("replyTo", appReplyToEmail);
-        mailData.put("incident", incident);
-        mailData.put("category", category);
-        mailData.put("subCategory", subCategory);
-        mailData.put("userVOS", userVOS);
-        mailData.put("dateTimeFormat", appLocalDateTimeFormat);
-        IncidentEmailVO incidentEmailVO = new IncidentEmailVO(mailData);
+        bccList.addAll(Arrays.asList(incidentEmailVO.getWatchList().split(",")));
+        incidentEmailVO.setTo(new String[]{loggedInUser.getEmail()});
+        incidentEmailVO.setCc(new String[]{});
+        incidentEmailVO.setBcc(bccList.toArray(new String[0]));
+        incidentEmailVO.setReplyTo(appReplyToEmail);
+        incidentEmailVO.setCategory(category);
+        incidentEmailVO.setSubCategory(subCategory);
+        incidentEmailVO.setUserVOS(userVOS);
+        incidentEmailVO.populateEscalationMatrices();
         appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
         /*need data for email*/
     }

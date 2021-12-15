@@ -30,27 +30,27 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "created_date", nullable = true, updatable = false)
     @CreatedDate
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private LocalDateTime createdDate;
 
     @Column(name = "modified_date", nullable = true)
     @LastModifiedDate
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private LocalDateTime modifiedDate;
 
     @Column(name = "version", nullable = true)
     @Version
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private Long version;
 
     @Column(name = "modified_by", nullable = true)
     @LastModifiedBy
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private BigInteger modifiedBy;
 
     @Column(name = "created_by", nullable = true, updatable = false)
     @CreatedBy
-    @JsonView(Views.DetailView.class)
+    @JsonView(Views.BasicView.class)
     private BigInteger createdBy;
 
     public BaseEntity(Long version) {

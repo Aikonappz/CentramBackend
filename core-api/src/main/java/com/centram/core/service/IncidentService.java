@@ -5,6 +5,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
 import com.centram.common.vo.WorkingDay;
 import com.centram.core.repository.IncidentRepository;
@@ -63,6 +64,9 @@ public class IncidentService {
 
     @Value("${date.format:yyyy-MM-dd}")
     private String dateFormat;
+
+    @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
+    private String appLocalDateTimeFormat;
 
     @Transactional(readOnly = true)
     public PaginatedList<Incident> getIncomingIncidents(String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
@@ -161,7 +165,7 @@ public class IncidentService {
         incident.setCommunications(communicationSet);
         raisedIncident = incidentRepository.save(incident);
         //notify respected user
-        miscService.notifyIncidentUpdate(new Incident());
+        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident,appLocalDateTimeFormat));
         return raisedIncident;
     }
 
