@@ -70,7 +70,7 @@ public class IncidentApiController {
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncidents(incidentNo, title, status, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserIncidents(incidentNo, title, status, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all incoming incidents", nickname = "getIncomingIncidents", notes = "Get all incoming incidents", response = PaginatedList.class, tags = {"incident",})
@@ -90,7 +90,7 @@ public class IncidentApiController {
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getIncomingIncidents(
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getAgentIncidents(
                 incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
         ), HttpStatus.OK);
     }
@@ -115,12 +115,11 @@ public class IncidentApiController {
             @ApiResponse(code = 404, message = "Incident not found")
     })
     @RequestMapping(value = "/change-status/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Void> changeStatus(
+    public ResponseEntity<Void> reopenIncident(
             @NotNull @ApiParam(value = "Incident id's to change", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
             @ApiParam(value = "status", required = true) @PathVariable("status") String status
     ) {
-        incidentService
-                .changeStatus(status, ids);
+        incidentService.reopenIncident(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

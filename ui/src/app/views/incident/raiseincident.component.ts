@@ -129,10 +129,10 @@ export class RaiseIncidentComponent implements OnInit {
         });
       this.userService.getUsersService()
         .subscribe((result: UserVOListResponse) => {
-          let logedinIser = this.loggedInUserService.getLoggedInUser();
+          let logedinUser = this.loggedInUserService.getLoggedInUser();
           this.users = [];
           for (let i = 0; i < result.content.length; i++) {
-            if (logedinIser.userId != result.content[i].id)
+            if (logedinUser.userId != result.content[i].id)
               this.users.push(result.content[i]);
           }
         });

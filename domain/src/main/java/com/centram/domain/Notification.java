@@ -83,4 +83,12 @@ public class Notification extends BaseEntity implements Serializable {
         super(version);
         this.id = id;
     }
+
+    public Notification(String notificationTitle, String notificationBody, User user, Status status, NotificationType notificationType) {
+        this.notificationTitle = notificationTitle;
+        this.notificationBody = notificationBody;
+        this.user = user;
+        this.status = status;
+        this.notificationType = notificationType;
+    }
 }
