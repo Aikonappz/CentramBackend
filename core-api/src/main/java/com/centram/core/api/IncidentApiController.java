@@ -35,7 +35,7 @@ public class IncidentApiController {
     @Autowired
     private IncidentService incidentService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add/Update a user", nickname = "save", notes = "Add/Update a user", tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an incident", nickname = "save", notes = "Save an incident", tags = {"incident",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -57,14 +57,14 @@ public class IncidentApiController {
         return new ResponseEntity<Incident>(incidentService.getIncidentById(incidentId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all incidents", nickname = "getIncidents", notes = "Get all incidents", response = PaginatedList.class, tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all user incidents", nickname = "getUserIncidents", notes = "Get all user incidents", response = PaginatedList.class, tags = {"incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @JsonView(Views.ListView.class)
-    @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Incident>> getIncidents(
+    @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Incident>> getUserIncidents(
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
@@ -73,14 +73,14 @@ public class IncidentApiController {
         return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserIncidents(incidentNo, title, status, pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all incoming incidents", nickname = "getIncomingIncidents", notes = "Get all incoming incidents", response = PaginatedList.class, tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all agent incidents", nickname = "getAgentIncidents", notes = "Get all agent incidents", response = PaginatedList.class, tags = {"incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @JsonView(Views.ListView.class)
-    @RequestMapping(value = "/incoming-all", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Incident>> getIncomingIncidents(
+    @RequestMapping(value = "/agent", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Incident>> getAgentIncidents(
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -95,7 +95,7 @@ public class IncidentApiController {
         ), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Assign user to an Incident", nickname = "assignIncidents", notes = "Assign user to an Incident", tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Assign user to Incidents", nickname = "assignIncidents", notes = "Assign user to Incidents", tags = {"incident",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Incident not found")
@@ -109,12 +109,12 @@ public class IncidentApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Change status of an Incident", nickname = "changeStatus", notes = "Change status of an Incident", tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Reopen an Incident", nickname = "reopenIncident", notes = "Reopen an Incident", tags = {"incident",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Incident not found")
     })
-    @RequestMapping(value = "/change-status/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/reopen/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Void> reopenIncident(
             @NotNull @ApiParam(value = "Incident id's to change", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
             @ApiParam(value = "status", required = true) @PathVariable("status") String status

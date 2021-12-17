@@ -13,23 +13,22 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
 @EnableSwagger2
 @ComponentScan(basePackages = {
         "com.centram.core",
         "com.centram.common",
-        "com.centram.domain"
+        "com.centram.domain",
+        "com.centram.batch"
 })
 @EntityScan(basePackages = {"com.centram.domain"})
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class, basePackages = {"com.centram.core.repository"})
 @SpringBootApplication(scanBasePackages = {
         "com.centram.core",
         "com.centram.common",
-        "com.centram.domain"
+        "com.centram.domain",
+        "com.centram.batch"
 })
 @EnableTransactionManagement
 @EnableAutoConfiguration

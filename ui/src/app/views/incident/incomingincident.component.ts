@@ -110,7 +110,7 @@ export class IncomingIncidentComponent implements OnInit {
         this.priorities = result.content;
       });
     this.statusList = Object.values(IncidentStatus)
-      .filter((value) => typeof value === "string")
+      .filter((value) => typeof value === "string" && (value != 'ALL' && value != 'DRAFT'))
       .map((value) => (value as string));
 
     this.permissions = this.loggedInUserService.getModulePermissions();
@@ -262,6 +262,7 @@ export class IncomingIncidentComponent implements OnInit {
     let c = 0;
     if (moduleId != "") {
       this.subModuleList = [];
+      this.moduleIds = [];
       for (let i = 0; i < this.permissions.length; i++) {
         if (this.permissions[i].moduleParentId == moduleId) {
           this.subModuleList[c] = this.permissions[i];
@@ -301,6 +302,9 @@ export class IncomingIncidentComponent implements OnInit {
   populateUser(subModuleId) {
     let c = 0;
     if (subModuleId != "") {
+      let moduleId = this.moduleIds[0];
+      this.moduleIds = [];
+      this.moduleIds.push(moduleId);
       this.moduleIds.push(subModuleId);
       let params = {
         "moduleIds": this.moduleIds.join(','),
@@ -357,7 +361,7 @@ export class IncomingIncidentComponent implements OnInit {
     moduleIds.push(inc.subModuleId);
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     let params = {
-      "moduleIds": moduleIds,
+      "moduleIds": moduleIds.join(','),
       "actionName": 'SOLVE',
     };
     this.agentList = [];

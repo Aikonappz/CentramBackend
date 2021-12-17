@@ -9,51 +9,31 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>core-api</artifactId>
+    <artifactId>core-common</artifactId>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
     <dependencies>
         <!--custom-->
         <dependency>
             <groupId>com.centram</groupId>
-            <artifactId>core-common</artifactId>
+            <artifactId>api-common</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.centram</groupId>
-            <artifactId>batch</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
         </dependency>
         <!--custom-->
     </dependencies>
     <build>
-        <finalName>core-service-api</finalName>
+        <finalName>core-common</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
-                <configuration>
-                    <mainClass>com.centram.core.CoreApp</mainClass>
-                    <addResources>true</addResources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>

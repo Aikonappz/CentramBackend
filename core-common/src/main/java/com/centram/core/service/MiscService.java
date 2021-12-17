@@ -6,8 +6,10 @@ import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
+import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
+import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,9 @@ public class MiscService {
     @Autowired
     private ModuleService moduleService;
 
+    @Autowired
+    private AppConfigRepository appConfigRepository;
+
     @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
     private String dateTimeFormat;
 
@@ -64,6 +69,9 @@ public class MiscService {
 
     @Value("${app.reply.to.email}")
     private String appReplyToEmail;
+
+    @Autowired
+    private NotificationService notificationService;
 
     /**
      * Onboard request mail
@@ -78,6 +86,11 @@ public class MiscService {
         return commonResponse;
     }
 
+    /**
+     * save bulk uploaded user
+     *
+     * @param dataList
+     */
     @Async("asyncExecutor")
     public void saveBulkUploadedData(List<Map<String, String>> dataList) {
         LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -196,15 +209,13 @@ public class MiscService {
         }
     }
 
+    /**
+     * notify user incident update via mail and notification
+     *
+     * @param incidentEmailVO
+     */
     @Async("asyncExecutor")
     public void notifyIncidentUpdate(IncidentEmailVO incidentEmailVO) {
-        try {
-            System.out.println("THREAD STARTED...");
-            Thread.sleep(1000);
-            System.out.println("THREAD ENDED...");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         /*need data for email*/
         List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId()));
@@ -214,7 +225,9 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId() == incidentEmailVO.getModuleId();
         }).findFirst().get().getName();
-        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory));
+        List<UserVO> userVOS = userService.getUsersByRoles(
+                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
+        );
         List<String> bccList = userVOS.stream()
                 .filter(i -> {
                     if (i.getRoleNames().size() > 0) {
@@ -239,7 +252,149 @@ public class MiscService {
         incidentEmailVO.setSubCategory(subCategory);
         incidentEmailVO.setUserVOS(userVOS);
         incidentEmailVO.populateEscalationMatrices();
+        //agent notifications
+        List<UserVO> agentUserVOS = userVOS.stream()
+                .filter(i -> {
+                    if (i.getRoleNames().size() > 0) {
+                        List<String> roles = i.getRoleNames();
+                        for (String s : roles) {
+                            if (s.contains("AGENT") || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+        List<Notification> userNotifications = new ArrayList<Notification>() {{
+            String title = "New Incident [".concat(incidentEmailVO.getIncidentNo()).concat("]");
+            String body = incidentEmailVO.getIncidentNo().substring(0, Math.min(incidentEmailVO.getIncidentNo().length(), 50)).concat("...");
+            for (UserVO userVO : agentUserVOS) {
+                add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+            }
+        }};
+
+        //user notification
+        List<String> userEmails = new ArrayList<String>(){{
+            add(incidentEmailVO.getUserEmail());
+        }} ;
+        userEmails.addAll(Arrays.asList(incidentEmailVO.getWatchList().split(",")));
+        List<UserVO> users = userService.getUsersByEmails(userEmails);
+        String title = "Incident - [".concat(incidentEmailVO.getIncidentNo()).concat("]");
+        String body = "Agent will contact you soon...";
+        for (UserVO userVO : users) {
+            userNotifications.add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        //save notifications
+        notificationService.save(userNotifications);
         appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
         /*need data for email*/
+    }
+
+    /**
+     * notify user incident assign via mail and notification
+     *
+     * @param incidentEmailVO
+     */
+    @Async("asyncExecutor")
+    public void notifyIncidentAssign(IncidentEmailVO incidentEmailVO) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //prepare user email
+        List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId()));
+        String category = modules.stream().filter(i -> {
+            return i.getId() == incidentEmailVO.getModuleId();
+        }).findFirst().get().getName();
+        String subCategory = modules.stream().filter(i -> {
+            return i.getId() == incidentEmailVO.getModuleId();
+        }).findFirst().get().getName();
+        List<UserVO> userVOS = userService.getUsersByRoles(
+                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
+        );
+        List<String> bccList = userVOS.stream()
+                .filter(i -> {
+                    if (i.getRoleNames().size() > 0) {
+                        List<String> roles = i.getRoleNames();
+                        for (String s : roles) {
+                            if (s.contains("USER") || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                })
+                .map(UserVO::getEmail)
+                .collect(Collectors.toList());
+        bccList.addAll(Arrays.asList(incidentEmailVO.getWatchList().split(",")));
+        incidentEmailVO.setTo(new String[]{incidentEmailVO.getUserEmail()});
+        incidentEmailVO.setCc(incidentEmailVO.getWatchList().split(","));
+        incidentEmailVO.setBcc(new String[]{});
+        incidentEmailVO.setReplyTo(appReplyToEmail);
+        incidentEmailVO.setCategory(category);
+        incidentEmailVO.setSubCategory(subCategory);
+        incidentEmailVO.setUserVOS(userVOS);
+        incidentEmailVO.populateEscalationMatrices();
+        appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
+        //agent notifications
+        List<UserVO> agentUserVOS = userVOS.stream()
+                .filter(i -> {
+                    if (i.getRoleNames().size() > 0) {
+                        List<String> roles = i.getRoleNames();
+                        for (String s : roles) {
+                            if (incidentEmailVO.getAgentEmail().equals(i.getEmail()) || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+        List<Notification> userNotifications = new ArrayList<Notification>() {{
+            String title = "Incident [".concat(incidentEmailVO.getIncidentNo()).concat("]");
+            String body = "[" + incidentEmailVO.getIncidentNo() + "]".concat(" assigned to ").concat(incidentEmailVO.getAgentName());
+            for (UserVO userVO : agentUserVOS) {
+                add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+            }
+        }};
+        //user notification
+        List<String> userEmails = new ArrayList<String>(){{
+            add(incidentEmailVO.getUserEmail());
+        }} ;
+        userEmails.addAll(Arrays.asList(incidentEmailVO.getWatchList().split(",")));
+        List<UserVO> users = userService.getUsersByEmails(userEmails);
+        String title = "Incident - [".concat(incidentEmailVO.getIncidentNo()).concat("]");
+        String body = incidentEmailVO.getAgentName().concat(" will work on this incident.");
+        for (UserVO userVO : users) {
+            userNotifications.add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        //save notifications
+        notificationService.save(userNotifications);
+        //prepare agent email
+        bccList = userVOS.stream()
+                .filter(i -> {
+                    if (i.getRoleNames().size() > 0) {
+                        List<String> roles = i.getRoleNames();
+                        for (String s : roles) {
+                            if (s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                    return false;
+                })
+                .map(UserVO::getEmail)
+                .collect(Collectors.toList());
+        incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
+        incidentEmailVO.setCc(new String[]{});
+        incidentEmailVO.setBcc(bccList.toArray(new String[0]));
+        incidentEmailVO.setReplyTo(appReplyToEmail);
+        incidentEmailVO.setCategory(category);
+        incidentEmailVO.setSubCategory(subCategory);
+        incidentEmailVO.setUserVOS(userVOS);
+        incidentEmailVO.populateEscalationMatrices();
+        appEmailService.sendIncidentAssignEmail(incidentEmailVO);
     }
 }

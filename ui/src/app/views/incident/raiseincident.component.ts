@@ -91,7 +91,7 @@ export class RaiseIncidentComponent implements OnInit {
 
   ngOnInit(): void {
     this.statusList = Object.values(IncidentStatus)
-      .filter((value) => typeof value === "string")
+      .filter((value) => typeof value === "string" && value != 'ALL' && value != 'DRAFT')
       .map((value) => (value as string));
     this.permissions = this.loggedInUserService.getModulePermissions();
     for (let i in this.permissions) {

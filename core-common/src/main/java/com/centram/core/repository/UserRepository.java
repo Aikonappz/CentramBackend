@@ -23,6 +23,9 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query("select u from User u where upper(u.email) = upper((:email)) and u.organisation.id = (:organisationId)")
     User getUserByEmail(@Param("email") String email, @Param("organisationId") BigInteger organisationId);
 
+    @Query("select u from User u where u.email in (:emails) and u.organisation.id = (:organisationId)")
+    List<User> getUsersByEmails(@Param("emails") List<String> emails, @Param("organisationId") BigInteger organisationId);
+
     @Modifying
     @Query("update User set status = (:status) where id in (:userIds)")
     Integer updateStatus(@Param("status") Status status, @Param("userIds") List<BigInteger> userIds);

@@ -460,8 +460,16 @@ public class UserService implements UserDetailsService {
         roles = ",(".concat(roles).concat("),");
         List<User> users = userRepository.getUsersByRoleIds(roles, loggedInUser.getOrganisationId());
         List<UserVO> userVOS = new ArrayList<UserVO>();
+        List<String> roleNames = new ArrayList<>();
+        UserVO userVO = null;
         for (User user : users) {
-            userVOS.add(new UserVO(user));
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
         }
         return userVOS;
     }
@@ -492,6 +500,21 @@ public class UserService implements UserDetailsService {
     public User getUserByEmail(String email) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userRepository.getUserByEmail(email, loggedInUser.getOrganisationId());
+    }
+
+    /**
+     * @param emails
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsersByEmails(List<String> emails) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<User> users = userRepository.getUsersByEmails(emails, loggedInUser.getOrganisationId());
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        for (User user : users) {
+            userVOS.add(new UserVO(user));
+        }
+        return userVOS;
     }
 
     /**

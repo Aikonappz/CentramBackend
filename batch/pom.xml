@@ -15,7 +15,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <camel.spring.boot-version>3.13.0</camel.spring.boot-version>
-        <camel.version>3.2.0</camel.version>
+        <camel.version>3.13.0</camel.version>
     </properties>
     <dependencies>
         <!--camel-->
@@ -72,12 +72,17 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-quartz</artifactId>
-            <version>3.13.0</version>
+            <version>${camel.version}</version>
         </dependency>
         <!--camel-->
+        <dependency>
+            <groupId>com.centram</groupId>
+            <artifactId>core-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
-        <finalName>api-common</finalName>
+        <finalName>batch</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

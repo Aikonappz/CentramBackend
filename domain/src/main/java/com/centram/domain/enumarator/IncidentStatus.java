@@ -3,16 +3,13 @@ package com.centram.domain.enumarator;
 public enum IncidentStatus {
     OPEN,
     ASSIGNED,
-    NEEDS_CLARIFICATION,
-    PROVIDED_CLARIFICATION,
-    SOLUTION_PROVIDED,
+    NEED_CLARIFICATION,
+    WORK_IN_PROGRESS,
     CLOSED,
     SLA_ABOUT_TO_BREACH,
     SLA_BREACHED,
-    ASSIGNED_REOPENED,
     ON_HOLD,
     PENDING_FROM_VENDOR,
-    PENDING_FROM_REQUESTER,
     ALL,
     DRAFT
 }

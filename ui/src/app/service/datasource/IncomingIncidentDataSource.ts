@@ -33,7 +33,7 @@ export class IncomingIncidentDataSource implements DataSource<Incident>{
             req,
             defaultParam
         );
-        this.service.incomingIncidentsService(params)
+        this.service.agentIncidentsService(params)
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))

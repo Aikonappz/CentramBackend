@@ -24,10 +24,10 @@ My tasks
 4. assign round robin to user - yet to start
 
 
-Raise incident -> createa an incident
-SOLUTION_PROVIDED not required
-after 15 days emp can't reopen the ticket
-remove user email from incident listing
+Raise incident -> createa an incident -d
+SOLUTION_PROVIDED not required -d
+after 15 days emp can't reopen the ticket -d
+remove user email from incident listing -d
 
 
 

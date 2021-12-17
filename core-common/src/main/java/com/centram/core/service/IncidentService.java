@@ -68,8 +68,30 @@ public class IncidentService {
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
     private String appLocalDateTimeFormat;
 
+    /**
+     * get incidents for agent
+     *
+     * @param incidentNo
+     * @param moduleId
+     * @param subModuleId
+     * @param priorityId
+     * @param assignedUserId
+     * @param title
+     * @param status
+     * @param pageable
+     * @return
+     */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getIncomingIncidents(String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> getAgentIncidents(
+            String incidentNo,
+            String moduleId,
+            String subModuleId,
+            String priorityId,
+            String assignedUserId,
+            String title,
+            String status,
+            Pageable pageable
+    ) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
@@ -91,8 +113,33 @@ public class IncidentService {
         ));
     }
 
+    /**
+     * get all non bocked incidents to process in backgroud
+     *
+     * @param statusList
+     * @return
+     */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getIncidents(String incidentNo, String title, String status, Pageable pageable) {
+    public List<Incident> getNonBlockedIncidents(List<IncidentStatus> statusList) {
+        return incidentRepository.getNonBlockedIncidents(statusList);
+    }
+
+    /**
+     * get user incidents
+     *
+     * @param incidentNo
+     * @param title
+     * @param status
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> getUserIncidents(
+            String incidentNo,
+            String title,
+            String status,
+            Pageable pageable
+    ) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
@@ -100,6 +147,12 @@ public class IncidentService {
         return new PaginatedList<Incident>(incidentRepository.getIncidents(loggedInUser.getUserId(), incidentNo, title, intStatus, pageable));
     }
 
+    /**
+     * get incident by id
+     *
+     * @param incidentId
+     * @return
+     */
     @Transactional(readOnly = true)
     public Incident getIncidentById(BigInteger incidentId) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -116,27 +169,45 @@ public class IncidentService {
         return incident.get();
     }
 
+    /**
+     * assign incidents to agent
+     *
+     * @param ids
+     * @param userId
+     */
     @Transactional(readOnly = false)
     public void assignIncidents(List<BigInteger> ids, BigInteger userId) {
-        incidentRepository.assignIncidents(userId, LocalDateTime.now(), ids);
+        incidentRepository.assignIncidents(IncidentStatus.ASSIGNED, userId, LocalDateTime.now(), ids);
+        Iterable<Incident> incidents = incidentRepository.findAllById(ids);
+        for (Incident incident : incidents) {
+            miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appLocalDateTimeFormat));
+        }
     }
 
+    /**
+     * change status of an incident
+     *
+     * @param status
+     * @param ids
+     */
     @Transactional(readOnly = false)
-    public void changeStatus(String status, List<BigInteger> ids) {
+    public void changeIncidentsStatus(String status, List<BigInteger> ids) {
         incidentRepository.changeStatus(IncidentStatus.valueOf(status), LocalDateTime.now(), ids);
     }
 
-    @Transactional
-    public Incident save(Incident incident) {
+    /**
+     * change status of an incident
+     *
+     * @param status
+     * @param ids
+     */
+    @Transactional(readOnly = false)
+    public void reopenIncident(String status, List<BigInteger> ids) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Incident raisedIncident = null;
-        UserVO userVO = userService.getUserById(loggedInUser.getUserId());
-        if (incident.getId() == null) {
-            incident.setRaisedUser(new User(userVO.getVersion(), userVO.getId()));
-            incident.setRaisedAt(LocalDateTime.now());
-            Setting setting = organisationService.getOrganisationSettings();
-            String prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
-            incident.setIncidentNo(incidentNo(prefix));
+        Iterable<Incident> incidents = incidentRepository.findAllById(ids);
+        for (Incident incident : incidents) {
+            incident.setStatus(IncidentStatus.valueOf(status));
+            //incident.setAssignedUser(null);
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());
             /*fetch priority*/
@@ -154,6 +225,46 @@ public class IncidentService {
             raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
             incident.setSlaAt(this.getSlADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
         }
+        incidents = incidentRepository.saveAll(incidents);
+        for (Incident incident : incidents) {
+            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appLocalDateTimeFormat));
+        }
+    }
+
+    /**
+     * save incident data
+     *
+     * @param incident
+     * @return
+     */
+    @Transactional
+    public Incident save(Incident incident) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Incident raisedIncident = null;
+        UserVO userVO = userService.getUserById(loggedInUser.getUserId());
+        ZonedDateTime currentDateTime = ZonedDateTime.now();
+        currentDateTime = currentDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
+        if (incident.getId() == null) {
+            incident.setRaisedUser(new User(userVO.getVersion(), userVO.getId()));
+            incident.setRaisedAt(LocalDateTime.now());
+            Setting setting = organisationService.getOrganisationSettings();
+            String prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
+            incident.setIncidentNo(incidentNo(prefix));
+            /*fetch location*/
+            Location location = locationService.getById(loggedInUser.getLocationId());
+            /*fetch priority*/
+            Priority priority = priorityService.getById(incident.getPriority().getId());
+            /*prepare holiday List*/
+            List<Holiday> holidays = new ArrayList<Holiday>();
+            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
+            if (currentDateTime.getMonth() == Month.DECEMBER) {
+                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+            }
+            holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
+            /*prepare holiday List*/
+            incident.setSlaAt(this.getSlADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+        }
         Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();
         for (IncidentCommunication incidentCommunication : incident.getCommunications()) {
             if (incidentCommunication.getId() == null) {
@@ -163,10 +274,20 @@ public class IncidentService {
             communicationSet.add(incidentCommunication);
         }
         incident.setCommunications(communicationSet);
+        // mark incident hold and set hold time
+        if (this.checkStatusOnHold(incident.getStatus())) {
+            incident.setHoldAt(currentDateTime.toLocalDateTime());
+        }
         raisedIncident = incidentRepository.save(incident);
         //notify respected user
-        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident,appLocalDateTimeFormat));
+        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appLocalDateTimeFormat));
         return raisedIncident;
+    }
+
+    private Boolean checkStatusOnHold(IncidentStatus status) {
+        return status == IncidentStatus.CLOSED || status == IncidentStatus.ON_HOLD ||
+                status == IncidentStatus.NEED_CLARIFICATION ||
+                status == IncidentStatus.PENDING_FROM_VENDOR;
     }
 
     /**
@@ -273,6 +394,13 @@ public class IncidentService {
         return workingDays;
     }
 
+    /**
+     * find next working days from working days list
+     *
+     * @param date
+     * @param workingDays
+     * @return
+     */
     private Optional<WorkingDay> nextWorkingDay(LocalDate date, List<WorkingDay> workingDays) {
         return workingDays
                 .stream().filter(
@@ -282,6 +410,13 @@ public class IncidentService {
                 ).findFirst();
     }
 
+    /**
+     * merge current year and net year holidays into a list
+     *
+     * @param currentYearHolidays
+     * @param nextYearHolidays
+     * @return
+     */
     private List<Holiday> mergeHolidays(List<Holiday> currentYearHolidays, List<Holiday> nextYearHolidays) {
         List<Holiday> upcomingHolidays = new ArrayList<Holiday>();
         upcomingHolidays.addAll(currentYearHolidays);

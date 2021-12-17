@@ -128,14 +128,19 @@ public class Incident extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "raisedAt", nullable = false, updatable = false)
+    @Column(name = "raised_at", nullable = false, updatable = false)
     @JsonView(Views.BasicView.class)
     private LocalDateTime raisedAt;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "slaAt", nullable = true)
+    @Column(name = "sla_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime slaAt;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "hold_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime holdAt;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

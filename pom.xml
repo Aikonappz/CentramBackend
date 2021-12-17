@@ -8,9 +8,10 @@
         <module>common</module>
         <module>domain</module>
         <module>api-common</module>
-        <module>core-api</module>
         <module>batch</module>
         <module>integration</module>
+        <module>core-common</module>
+        <module>core-api</module>
     </modules>
     <groupId>com.centram</groupId>
     <artifactId>centram</artifactId>

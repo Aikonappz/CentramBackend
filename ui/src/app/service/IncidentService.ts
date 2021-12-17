@@ -10,27 +10,27 @@ export class IncidentService {
 
     constructor(private http: ApiHttpService) { }
 
-    incomingIncidentsService(request?: any): Observable<IncidentList> {
-        return this.http.get('/v1/incident/incoming-all', { "params": request });
+    saveIncidentService(inc: Incident): Observable<Incident> {
+        return this.http.post('/v1/incident/', inc);
     }
 
-    incidentsService(request?: any): Observable<IncidentList> {
-        return this.http.get('/v1/incident/all', { "params": request });
+    agentIncidentsService(request?: any): Observable<IncidentList> {
+        return this.http.get('/v1/incident/agent', { "params": request });
+    }
+
+    userIncidentsService(request?: any): Observable<IncidentList> {
+        return this.http.get('/v1/incident/user', { "params": request });
     }
 
     incidentService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/incident/' + id, { "params": request });
     }
 
-    saveIncidentService(inc: Incident): Observable<Incident> {
-        return this.http.post('/v1/incident/', inc);
-    }
-
     assignIncidentService(ids: number[], userId: number, request?: any): Observable<any> {
         return this.http.get('/v1/incident/assign/' + ids.join(",") + '/' + userId, { "params": request });
     }
 
-    changeIncidentStatusService(ids: number[], status: string, request?: any): Observable<any> {
-        return this.http.get('/v1/incident/change-status/' + ids.join(",") + '/' + status, { "params": request });
+    reOpenIncidentService(ids: number[], status: string, request?: any): Observable<any> {
+        return this.http.get('/v1/incident/reopen/' + ids.join(",") + '/' + status, { "params": request });
     }
 }

@@ -32,7 +32,7 @@ export class IncidentDataSource implements DataSource<Incident>{
             req,
             defaultParam
         );
-        this.service.incidentsService(params)
+        this.service.userIncidentsService(params)
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))

@@ -102,7 +102,7 @@ export class IncidentComponent implements OnInit {
     if (res) {
       let ids = [];
       ids.push(inc.id);
-      this.service.changeIncidentStatusService([inc.id], 'OPEN')
+      this.service.reOpenIncidentService([inc.id], 'OPEN')
         .subscribe((data: any) => {
           $("#id-reopen-" + inc.id).addClass('d-none');
           $("#id-note-" + inc.id).removeClass('d-none');

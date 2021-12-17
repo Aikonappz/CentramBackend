@@ -3,16 +3,14 @@ export enum IncidentStatus {
     ASSIGNED,
     NEED_CLARIFICATION,
     PROVIDED_CLARIFICATION,
-    //closer status
     WORK_IN_PROGRESS,
     CLOSED,
-    
     SLA_ABOUT_TO_BREACH,
     SLA_BREACHED,
-    REOPEND,
+    ASSIGNED_REOPENED,
     ON_HOLD,
     PENDING_FROM_VENDOR,
     PENDING_FROM_REQUESTER,
     ALL,
-    DRAFT,
+    DRAFT
 }
