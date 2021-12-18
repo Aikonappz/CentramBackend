@@ -172,7 +172,8 @@ export class IncidentComponent implements OnInit {
     let dateLastModified = moment(modifiedDate).tz(logedinUser.timeZone);
     let today = moment().tz(logedinUser.timeZone);
     //console.log(dateLastModified + " -- " + today + " -- " + today.diff(dateLastModified, 'days'));
-    return (today.diff(dateLastModified, 'days') > 15) ? false : true;
+    //return (today.diff(dateLastModified, 'days') > 15) ? false : true;
+    return true;
   }
 
 }

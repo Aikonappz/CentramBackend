@@ -12,6 +12,7 @@ import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.text.CaseUtils;
 import org.slf4j.Logger;
@@ -30,9 +31,9 @@ public class IncidentRouter extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(IncidentRouter.class);
     private final String interval1Minute = "0 0/1 * * * ?";
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
+    @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
-    @Value("${date.format:yyyy-MM-dd}")
+    @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
     private String appLocalDateTimeFormat;
@@ -40,10 +41,16 @@ public class IncidentRouter extends RouteBuilder {
     private IncidentService incidentService;
 
     @Autowired
+    private ProducerTemplate producerTemplate;
+    //producerTemplate.sendBodyAndHeader("direct:partner-processBulkEvents", partnerToPartnerEvents, "origin", "kafka");
+
+    @Autowired
     private IncidentNotificationService incidentNotificationService;
 
     @Autowired
     private MiscService miscService;
+
+    private Map<String, List<Incident>> listMap = new HashMap<String,List<Incident>>();
 
     @Override
     public void configure() throws Exception {
@@ -71,6 +78,7 @@ public class IncidentRouter extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
+                        listMap = new HashMap<String,List<Incident>>();
                         //log.info("BODY {}", exchange.getIn().getBody());
                     }
                 })
@@ -97,11 +105,16 @@ public class IncidentRouter extends RouteBuilder {
                         sla60MinutesPassed.plusMinutes(60);
 
                         if (currentDatetime.isAfter(wip50PercentPassed) && currentDatetime.isBefore(wip75PercentPassed)) {
-                            exchange.getIn().setBody(incident);
-                            exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name(), false, '_'));
+                            if(listMap.containsKey(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name())){
+                                listMap.get(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name()).add(incident);
+                            }else{
+                                listMap.put(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name(),Collections.singletonList(incident));
+                            }
+                            //exchange.getIn().setBody(incident);
+                            //exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name(), false, '_'));
                         } else if (currentDatetime.isAfter(wip75PercentPassed)) {
-                            exchange.getIn().setBody(incident);
-                            exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED.name(), false, '_'));
+                            //exchange.getIn().setBody(incident);
+                            //exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED.name(), false, '_'));
                         } else if (currentDatetime.isBefore(sla60MinutesPassed) && currentDatetime.isAfter(endDatetime)) {
                             exchange.getIn().setBody(incident);
                             exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.SLA_JUST_BREACHED.name(), false, '_'));
@@ -195,6 +208,12 @@ public class IncidentRouter extends RouteBuilder {
 
         from("direct:skipIncident")
                 .routeId("skip-incident")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        log.info("SKIPPED!");
+                    }
+                })
                 .end();
 
     }

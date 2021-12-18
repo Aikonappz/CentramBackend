@@ -36,9 +36,9 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
 
     @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and " +
             " ( " +
-            "   ((:status) <> 12 and i.status = (:status)) " +
+            "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
-            "   ((:status) = 12) " +
+            "   ((:status) = 9) " +
             " ) and " +
             " ( " +
             "   ((:incidentNo) is not null and upper(i.incidentNo) like (:incidentNo)) " +
@@ -61,9 +61,9 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
 
     @Query("select i from Incident i where i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and " +
             " ( " +
-            "   ((:status) <> 12 and i.status = (:status)) " +
+            "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
-            "   ((:status) = 12) " +
+            "   ((:status) = 9) " +
             " ) and " +
             " ( " +
             "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +

@@ -78,10 +78,10 @@ public class Config implements AsyncConfigurer {
     @Value("${jasypt.encryptor.password}")
     public String jasyptEncryptorPassword;
 
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
+    @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
 
-    @Value("${date.format:yyyy-MM-dd}")
+    @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
 
     @Value("${spring.redis.host}")

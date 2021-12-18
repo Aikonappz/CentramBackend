@@ -188,6 +188,7 @@ export class RaiseIncidentComponent implements OnInit {
       for (let i in this.priorities) {
         if (this.priorities[i].id == priorityId) {
           priority.id = priorityId;
+          priority.name = this.priorities[i].name;
           priority.version = this.priorities[i].version;
         }
       }
@@ -195,7 +196,11 @@ export class RaiseIncidentComponent implements OnInit {
         this.incident.moduleId = this.angForm.controls['moduleId'].value;
         this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
         this.incident.title = this.angForm.controls['title'].value;
-        this.incident.watchList = this.angForm.controls['watchList'].value;
+        if (this.angForm.controls['watchList'].value != "") {
+          this.incident.watchList = this.angForm.controls['watchList'].value;
+        } else {
+          this.incident.watchList = [];
+        }
         this.incident.assignedUser = null;
         this.incident.raisedUser = null;
         this.incident.priority = priority;
@@ -212,7 +217,7 @@ export class RaiseIncidentComponent implements OnInit {
       this.incidentCommunication = new IncidentCommunication();
       this.incidentCommunication.message = this.angForm.controls['message'].value;
       this.incident.communications.push(this.incidentCommunication);
-      //console.log(this.incident);
+      console.log(this.incident);
       this.callSaveIncidentService();
     } else {
       console.log("Invalid Form!");

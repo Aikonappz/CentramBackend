@@ -34,7 +34,7 @@ public class HolidayCalenderService {
 
     private static final Logger log = LoggerFactory.getLogger(HolidayCalenderService.class);
 
-    @Value("${date.format:yyyy-MM-dd}")
+    @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
 
     @Autowired

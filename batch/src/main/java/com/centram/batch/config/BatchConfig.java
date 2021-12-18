@@ -28,9 +28,9 @@ public class BatchConfig {
     private Integer camelThreadPoolMaxQueueSize;
     @Value("${camel.thread.pool.alive-time:2500000000000}")
     private Long camelThreadPoolAliveTime;
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
+    @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
-    @Value("${date.format:yyyy-MM-dd}")
+    @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
     @Value("${camel.integrator.context-path}")
     private String contextPath;

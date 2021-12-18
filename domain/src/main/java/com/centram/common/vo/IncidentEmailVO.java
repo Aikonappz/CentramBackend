@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -31,11 +30,13 @@ public class IncidentEmailVO implements Serializable {
     private String category;
     private String subCategory;
     private String department;
+    private BigInteger userManagerId;
     private String userName;
     private String userEmail;
     private String userContactNo;
     private String userLocation;
     private String watchList;
+    private BigInteger agentManagerId;
     private String agentName = "NA";
     private String agentEmail = "NA";
     private String agentContactNo = "NA";
@@ -59,11 +60,13 @@ public class IncidentEmailVO implements Serializable {
         this.sla = incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateTimeFormat));
         this.status = incident.getStatus().name();
         this.department = incident.getRaisedUser().getDepartment().getName();
+        this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
         this.userLocation = incident.getRaisedUser().getLocation().getName();
         if (incident.getAssignedUser() != null) {
+            this.agentManagerId = incident.getAssignedUser().getManagerId();
             this.agentName = incident.getAssignedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
             this.agentEmail = incident.getAssignedUser().getEmail();
             this.agentContactNo = incident.getAssignedUser().getContactNo();

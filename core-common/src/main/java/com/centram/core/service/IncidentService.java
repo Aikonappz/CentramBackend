@@ -59,10 +59,10 @@ public class IncidentService {
     @Autowired
     private AppEmailService appEmailService;
 
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
+    @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
 
-    @Value("${date.format:yyyy-MM-dd}")
+    @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
 
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
@@ -245,7 +245,7 @@ public class IncidentService {
         ZonedDateTime currentDateTime = ZonedDateTime.now();
         currentDateTime = currentDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
         if (incident.getId() == null) {
-            incident.setRaisedUser(new User(userVO.getVersion(), userVO.getId()));
+            incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
             Setting setting = organisationService.getOrganisationSettings();
             String prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;

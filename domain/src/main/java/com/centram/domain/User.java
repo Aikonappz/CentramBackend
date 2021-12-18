@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.common.vo.UserVO;
 import com.centram.domain.converter.RoleConverter;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -149,5 +150,20 @@ public class User extends BaseEntity implements Serializable {
     public User(Long version, BigInteger id) {
         super(version);
         this.id = id;
+    }
+
+    public User(UserVO userVO) {
+        super(userVO.getVersion());
+        this.id = userVO.getId();
+        this.location = new Location();
+        this.location.setId(userVO.getLocationId());
+        this.location.setName(userVO.getLocation());
+        this.department = new Department();
+        this.department.setId(userVO.getDepartmentId());
+        this.department.setName(userVO.getDepartment());
+        this.firstName = userVO.getFirstName();
+        this.lastName = userVO.getLastName();
+        this.email = userVO.getEmail();
+        this.contactNo = userVO.getContactNo();
     }
 }

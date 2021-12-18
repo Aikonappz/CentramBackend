@@ -305,7 +305,7 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Get user bu Id
+     * Get user by Id
      *
      * @param userId
      * @return

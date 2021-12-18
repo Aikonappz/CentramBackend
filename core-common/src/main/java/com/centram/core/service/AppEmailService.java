@@ -216,9 +216,8 @@ public class AppEmailService {
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
-
-        context.setVariable("incident_title", incidentEmailVO.getTitle());
         context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
+        context.setVariable("incident_title", incidentEmailVO.getTitle());
         mailSubject = templateEngine.process(mailSubject, context);
 
         String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
@@ -244,7 +243,8 @@ public class AppEmailService {
         mailBody = templateEngine.process(mailBody, context);
 
         context = new Context(Locale.ENGLISH);
-        context.setVariable("recipient_name", incidentEmailVO.getUserName());
+        //context.setVariable("recipient_name", incidentEmailVO.getUserName());
+        context.setVariable("recipient_name", "");
         context.setVariable("mail_body", mailBody);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
 
@@ -254,10 +254,8 @@ public class AppEmailService {
         mailMap.put("bcc", incidentEmailVO.getBcc());
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-
         log.info("INCIDENT EMAIL TITLE: {}", mailSubject);
         log.info("INCIDENT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-
         //emailService.sendMail(mailMap);
     }
 
@@ -289,24 +287,20 @@ public class AppEmailService {
         context.setVariable("incident_assignedto_contactno", incidentEmailVO.getAgentContactNo());
         context.setVariable("incident_ecalation_1", incidentEmailVO.getEscalation1Email());
         context.setVariable("incident_ecalation_2", incidentEmailVO.getEscalation2Email());
-
         mailBody = templateEngine.process(mailBody, context);
 
         context = new Context(Locale.ENGLISH);
-        context.setVariable("recipient_name", "Support Team");
+        context.setVariable("recipient_name", "");
         context.setVariable("mail_body", mailBody);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
-
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("to", incidentEmailVO.getTo());
         mailMap.put("cc", incidentEmailVO.getCc());
         mailMap.put("bcc", incidentEmailVO.getBcc());
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-
         log.info("ASSIGN EMAIL TITLE: {}", mailSubject);
         log.info("ASSIGN EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-
         //emailService.sendMail(mailMap);
     }
 
