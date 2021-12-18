@@ -4,7 +4,6 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.filter.RestFilter;
 import com.centram.common.interceptor.MdcInterceptor;
 import com.centram.common.interceptor.RestEndPointInterceptor;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
@@ -79,7 +78,7 @@ public class Config implements AsyncConfigurer {
     @Value("${jasypt.encryptor.password}")
     public String jasyptEncryptorPassword;
 
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
 
     @Value("${date.format:yyyy-MM-dd}")
@@ -100,6 +99,24 @@ public class Config implements AsyncConfigurer {
     @Value("${spring.application.name}")
     private String appName;
 
+    /**
+     * jasypt config
+     *
+     * @return
+     */
+    @Bean
+    public StandardPBEStringEncryptor standardPBEStringEncryptor() {
+        StandardPBEStringEncryptor standardPBEStringEncryptor = new StandardPBEStringEncryptor();
+        standardPBEStringEncryptor.setAlgorithm(jasyptEncryptorAlgorithm);
+        standardPBEStringEncryptor.setPassword(jasyptEncryptorPassword);
+        return standardPBEStringEncryptor;
+    }
+
+    /**
+     * CORS config
+     *
+     * @return
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -111,6 +128,7 @@ public class Config implements AsyncConfigurer {
                         .maxAge(3600)
                         .allowedOrigins("*");
             }
+
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
                 registry.addInterceptor(new MdcInterceptor());
@@ -118,6 +136,11 @@ public class Config implements AsyncConfigurer {
         };
     }
 
+    /**
+     * jackson ObjectMapper config
+     *
+     * @return
+     */
     @Bean
     public ObjectMapper objectMapper() {
         return new Jackson2ObjectMapperBuilder()
@@ -176,11 +199,21 @@ public class Config implements AsyncConfigurer {
                 }).build();
     }
 
+    /**
+     * pre destroy hook
+     *
+     * @return
+     */
     @Bean
     public TerminateBean getTerminateBean() {
         return new TerminateBean();
     }
 
+    /**
+     * jedis config
+     *
+     * @return
+     */
     @Bean
     protected JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHostName, redisPort);
@@ -191,6 +224,13 @@ public class Config implements AsyncConfigurer {
         return factory;
     }
 
+    /**
+     * redis config
+     *
+     * @param factory
+     * @param objectMapper
+     * @return
+     */
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory factory, ObjectMapper objectMapper) {
         RedisSerializationContext.SerializationPair<Object> jsonSerializer = RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
@@ -205,11 +245,22 @@ public class Config implements AsyncConfigurer {
                 .build();
     }
 
+    /**
+     * ModelMapper config
+     *
+     * @return
+     */
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
 
+    /**
+     * Redis Object template config
+     *
+     * @param factory
+     * @return
+     */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
@@ -217,11 +268,22 @@ public class Config implements AsyncConfigurer {
         return template;
     }
 
+    /**
+     * String redis template
+     *
+     * @param factory
+     * @return
+     */
     @Bean("stringRedisTemplate")
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory factory) {
         return new StringRedisTemplate(factory);
     }
 
+    /**
+     * RestTemplate config
+     *
+     * @return
+     */
     @Bean
     public RestTemplate restTemplate() {
         ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
@@ -235,14 +297,11 @@ public class Config implements AsyncConfigurer {
         return restTemplate;
     }
 
-    @Bean
-    public StandardPBEStringEncryptor standardPBEStringEncryptor() {
-        StandardPBEStringEncryptor standardPBEStringEncryptor = new StandardPBEStringEncryptor();
-        standardPBEStringEncryptor.setAlgorithm(jasyptEncryptorAlgorithm);
-        standardPBEStringEncryptor.setPassword(jasyptEncryptorPassword);
-        return standardPBEStringEncryptor;
-    }
-
+    /**
+     * custom filter config
+     *
+     * @return
+     */
     @Bean
     public FilterRegistrationBean<RestFilter> restFilter() {
         FilterRegistrationBean<RestFilter> registrationBean = new FilterRegistrationBean<>();
@@ -252,6 +311,11 @@ public class Config implements AsyncConfigurer {
         return registrationBean;
     }
 
+    /**
+     * asyncExecutor config
+     *
+     * @return
+     */
     @Bean(name = "asyncExecutor")
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -263,18 +327,24 @@ public class Config implements AsyncConfigurer {
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
     }
 
+    /**
+     * envers config
+     *
+     * @return
+     */
     @Bean
     public AuditorAware<BigInteger> auditorAware() {
         return new AuditorAwareImpl();
     }
 
+    /**
+     * password encode config
+     *
+     * @return
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private abstract class IgnoreHibernatePropertiesInJackson {
     }
 
     class TerminateBean {

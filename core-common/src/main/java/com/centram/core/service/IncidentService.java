@@ -59,7 +59,7 @@ public class IncidentService {
     @Autowired
     private AppEmailService appEmailService;
 
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
 
     @Value("${date.format:yyyy-MM-dd}")
@@ -277,6 +277,8 @@ public class IncidentService {
         // mark incident hold and set hold time
         if (this.checkStatusOnHold(incident.getStatus())) {
             incident.setHoldAt(currentDateTime.toLocalDateTime());
+        } else {
+            incident.setHoldAt(null);
         }
         raisedIncident = incidentRepository.save(incident);
         //notify respected user

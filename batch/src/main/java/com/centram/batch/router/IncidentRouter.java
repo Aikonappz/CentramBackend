@@ -1,26 +1,36 @@
 package com.centram.batch.router;
 
+import com.centram.batch.aggregator.IncidentAggregator;
+import com.centram.common.vo.IncidentEmailVO;
+import com.centram.core.service.IncidentNotificationService;
 import com.centram.core.service.IncidentService;
+import com.centram.core.service.MiscService;
+import com.centram.domain.Incident;
+import com.centram.domain.IncidentNotification;
+import com.centram.domain.enumarator.IncidentNotificationType;
 import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.commons.text.CaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class IncidentRouter extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(IncidentRouter.class);
     private final String interval1Minute = "0 0/1 * * * ?";
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${date.format:yyyy-MM-dd}")
     private String dateFormat;
@@ -29,61 +39,99 @@ public class IncidentRouter extends RouteBuilder {
     @Autowired
     private IncidentService incidentService;
 
+    @Autowired
+    private IncidentNotificationService incidentNotificationService;
+
+    @Autowired
+    private MiscService miscService;
+
     @Override
     public void configure() throws Exception {
-
-        /*from("quartzComponent://currentTimer?trigger.repeatInterval=1000&trigger.repeatCount=5")
-                .setBody().simple("TechGeekNext Quartz Example 1")
-                .to("stream:out");*/
-
-        //from("quartzComponent://incident-sla/mark-incident?cron="+interval1Minute+"&stateful=true&durableJob=true&recoverableJob=true")
-        from("quartz://incident-sla/trigger-to-get-non-blocked-incidents?cron=" + interval1Minute + "&stateful=true&durableJob=true&recoverableJob=true")
+        from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .autoStartup(true)
                 .routeId("incident-sla")
-                .setHeader("CURRENT_DATE_TIME", simple(LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat))))
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setBody(new ArrayList<IncidentStatus>(){{
+                        exchange.getIn().setBody(new ArrayList<IncidentStatus>() {{
                             add(IncidentStatus.OPEN);
                             add(IncidentStatus.ASSIGNED);
                             add(IncidentStatus.WORK_IN_PROGRESS);
                             add(IncidentStatus.SLA_ABOUT_TO_BREACH);
                             add(IncidentStatus.SLA_BREACHED);
                         }});
-                        log.info(" CURRENT_DATE_TIME -> ${header.ROUTING_KEY} ");
-
+                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "CURRENT_DATE_TIME -> ${header.ROUTING_KEY}")
-        .to("direct:getNonBlockedIncidents");
+                .log(LoggingLevel.INFO, "CURRENT_DATE_TIME -> ${header.CURRENT_DATE_TIME}")
+                .to("direct:getNonBlockedIncidents");
 
-       /* from("direct:getNonBlockedIncidents")
+        from("direct:getNonBlockedIncidents")
                 .routeId("get-non-blocked-incidents")
-                .doTry()
-                .process(new PreLogProcessor())
-                .loop(simple("${body.events.size}"))
-                .log("Event Index => ${exchangeProperty.CamelLoopIndex}")
-                .enrich("bean:eventLogService?method=get(${header.event-ids[${exchangeProperty.CamelLoopIndex}]})", new EventLogAggregation())
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        //log.info("BODY {}", exchange.getIn().getBody());
+                    }
+                })
+                .enrich("bean:incidentService?method=getNonBlockedIncidents(${body})", new IncidentAggregator())
+                .loop(simple("${body.size}"))
+                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        List<Incident> nonBlockedIncidents = (List<Incident>) exchange.getIn().getBody();
+                        Incident incident = nonBlockedIncidents.get((int) exchange.getProperty("CamelLoopIndex"));
+
+                        Map<String, Incident> routeData = new HashMap<String, Incident>();
+                        String timeZone = incident.getRaisedUser().getLocation().getTimezone();
+                        ZonedDateTime currentDatetime = LocalDateTime.now().atZone(ZoneId.of(timeZone));
+                        ZonedDateTime startDatetime = incident.getCreatedDate().atZone(ZoneId.of(timeZone));
+                        ZonedDateTime endDatetime = incident.getSlaAt().atZone(ZoneId.of(timeZone));
+                        Long difference = endDatetime.toEpochSecond() - startDatetime.toEpochSecond();
+                        ZonedDateTime wip50PercentPassed = incident.getCreatedDate().atZone(ZoneId.of(timeZone));
+                        wip50PercentPassed.plus((difference * 50 / 100), ChronoUnit.SECONDS);
+                        ZonedDateTime wip75PercentPassed = incident.getCreatedDate().atZone(ZoneId.of(timeZone));
+                        wip75PercentPassed.plus((difference * 75 / 100), ChronoUnit.SECONDS);
+                        ZonedDateTime sla60MinutesPassed = incident.getSlaAt().atZone(ZoneId.of(timeZone));
+                        sla60MinutesPassed.plusMinutes(60);
+
+                        if (currentDatetime.isAfter(wip50PercentPassed) && currentDatetime.isBefore(wip75PercentPassed)) {
+                            exchange.getIn().setBody(incident);
+                            exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name(), false, '_'));
+                        } else if (currentDatetime.isAfter(wip75PercentPassed)) {
+                            exchange.getIn().setBody(incident);
+                            exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED.name(), false, '_'));
+                        } else if (currentDatetime.isBefore(sla60MinutesPassed) && currentDatetime.isAfter(endDatetime)) {
+                            exchange.getIn().setBody(incident);
+                            exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.SLA_JUST_BREACHED.name(), false, '_'));
+                        } else if (currentDatetime.isAfter(sla60MinutesPassed)) {
+                            exchange.getIn().setBody(incident);
+                            exchange.getIn().setHeader("next-route", CaseUtils.toCamelCase(IncidentNotificationType.SLA_BREACHED_60_MINUTES_PASSED.name(), false, '_'));
+                        } else {
+                            exchange.getIn().setBody(null);
+                            exchange.getIn().setHeader("next-route", "skipIncident");
+                        }
+                    }
+                })
+                .toD("direct:${header.next-route}")
+                .end();
+
+        from("direct:wip50PercentTimePassed")
+                .routeId("wip-50-percent-time-passed")
                 .choice()
                 .when(exchange -> {
-                    EventProcessDTO eventProcessDTO = (EventProcessDTO) exchange.getIn().getBody();
-                    return CollectionUtils.isEmpty(eventProcessDTO.getEventLogs());
+                    Incident incident = (Incident) exchange.getIn().getBody();
+                    Optional<IncidentNotification> incidentNotification = Optional.ofNullable(incidentNotificationService.find(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED, LocalDateTime.now())));
+                    return !incidentNotification.isPresent();
                 })
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        // logging fresh events
-                        EventProcessDTO eventProcessDTO = (EventProcessDTO) exchange.getIn().getBody();
-                        Event event = eventProcessDTO.getEvents().get(exchange.getProperty("CamelLoopIndex", Integer.class));
-                        eventLog = new EventLog();
-                        eventLog.setNoOfTries(1);
-                        eventLog.setEvent(event);
-                        eventLog.setConsumptionDateTime(LocalDateTime.now());
-                        eventLog.setEventId(event.getId());
-                        eventLog.setStatus(Status.IN_PROGRESS);
-                        eventLog.setMaxTriesReached(Boolean.FALSE);
-                        eventLog.setExceptionMessage(null);
-                        eventLog = eventLogService.save(eventLog);
+                        Incident incident = (Incident) exchange.getIn().getBody();
+                        log.info("BODY {}", incident);
+                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED, LocalDateTime.now()));
+                        miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat));
                     }
                 })
                 .endChoice()
@@ -91,54 +139,63 @@ public class IncidentRouter extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        EventProcessDTO eventProcessDTO = (EventProcessDTO) exchange.getIn().getBody();
-                        BigInteger currentEventId = (BigInteger) exchange.getIn().getHeader("event-ids", List.class).get(exchange.getProperty("CamelLoopIndex", Integer.class));
-                        List<Event> events = eventProcessDTO.getEvents().stream()
-                                .filter(ev -> ev.getId().compareTo(currentEventId) != 0)
-                                .collect(Collectors.toList());
-                        eventProcessDTO.setEvents(events);
-                        exchange.getIn().setBody(eventProcessDTO);
+                        Incident incident = (Incident) exchange.getIn().getBody();
+                        log.info("NOTIFICATION ALREADY TRIGGERED FOR {}!", incident.getIncidentNo());
                     }
                 })
-                .log("SAME EVENT CONSUMED FROM KAFKA! SO IGNORING THIS EVENT.")
                 .endChoice()
-                .end()
-                .end()
-                .process(new ManualKafkaCommitProcessor())
+                .end();
+
+        from("direct:wip75PercentTimePassed")
+                .routeId("wip-75-percent-time-passed")
+                .choice()
+                .when(exchange -> {
+                    Incident incident = (Incident) exchange.getIn().getBody();
+                    Optional<IncidentNotification> incidentNotification = Optional.ofNullable(incidentNotificationService.find(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED, LocalDateTime.now())));
+                    return !incidentNotification.isPresent();
+                })
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        EventProcessDTO eventProcessDTO = (EventProcessDTO) exchange.getIn().getBody();
-                        // side line error events/payload which missed data for further processing
-                        List<Event> notForFurtherProcessEvents = eventProcessDTO.getEvents()
-                                .stream()
-                                .filter(e -> e.getEventSource() == null || e.getEventSource().getOrganizationId() == null || e.getEventDestination() == null || e.getEventDestination().getOrganizationId() == null)
-                                .collect(Collectors.toList());
-                        List<BigInteger> errorIds = notForFurtherProcessEvents.stream().map(event -> event.getId()).collect(Collectors.toList());
-                        List<EventLog> eventLogs = eventLogService.findByEventIds(errorIds);
-                        eventLogs.forEach(el -> {
-                            el.setStatus(Status.FAILED);
-                            el.setExceptionMessage("SOURCE/DESTINATION NOT CONFIGURED PROPERLY IN EVENT PAYLOAD!");
-                        });
-                        eventLogService.saveAll(eventLogs);
-                        // filter events for further processing
-                        List<Event> filteredEvents = eventProcessDTO.getEvents().stream()
-                                .filter(e -> e.getEventSource() != null && e.getEventSource().getOrganizationId() != null && e.getEventDestination() != null && e.getEventDestination().getOrganizationId() != null)
-                                .collect(Collectors.toList());
-                        exchange.getIn().setBody(filteredEvents);
+                        Incident incident = (Incident) exchange.getIn().getBody();
+                        log.info("BODY {}", incident);
+                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED, LocalDateTime.now()));
+                        miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat));
                     }
                 })
-                .to("direct:distributeEvents")
-                .endDoTry()
-                .doCatch(Exception.class)
+                .endChoice()
+                .otherwise()
                 .process(new Processor() {
+                    @Override
                     public void process(Exchange exchange) throws Exception {
-                        Exception cause = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
-                        LOG.error(cause.getMessage());
-                        throw cause;
+                        Incident incident = (Incident) exchange.getIn().getBody();
+                        log.info("NOTIFICATION ALREADY TRIGGERED FOR {}!", incident.getIncidentNo());
                     }
                 })
-                .end();*/
+                .endChoice()
+                .end();
+
+        from("direct:slaJustBreached")
+                .routeId("sla-just-breached")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        log.info("BODY {}", exchange.getIn().getBody());
+                    }
+                });
+
+        from("direct:slaBreached60MinutesPassed")
+                .routeId("sla-breached-60-minutes-passed")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        log.info("BODY {}", exchange.getIn().getBody());
+                    }
+                });
+
+        from("direct:skipIncident")
+                .routeId("skip-incident")
+                .end();
 
     }
 }

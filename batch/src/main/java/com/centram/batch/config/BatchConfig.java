@@ -1,6 +1,7 @@
 package com.centram.batch.config;
 
 import com.centram.batch.router.IncidentRouter;
+import com.centram.domain.IncidentNotification;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.quartz.QuartzComponent;
 import org.apache.camel.spi.ThreadPoolProfile;
@@ -27,12 +28,19 @@ public class BatchConfig {
     private Integer camelThreadPoolMaxQueueSize;
     @Value("${camel.thread.pool.alive-time:2500000000000}")
     private Long camelThreadPoolAliveTime;
-    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}")
+    @Value("${date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${date.format:yyyy-MM-dd}")
     private String dateFormat;
     @Value("${camel.integrator.context-path}")
     private String contextPath;
+
+    /*@Bean
+    public RedisTemplate<String, IncidentNotification> redisTemplate(){
+        RedisTemplate<String, Employee> empTemplate = new RedisTemplate<>();
+        empTemplate.setConnectionFactory(redisConnectionFactory());
+        return empTemplate;
+    }*/
 
     @Bean
     public CamelContextConfiguration contextConfiguration(IncidentRouter incidentRouter, QuartzComponent quartzComponent) {
@@ -52,7 +60,7 @@ public class BatchConfig {
             @Override
             public void afterApplicationStart(CamelContext camelContext) {
                 try {
-                    camelContext.addComponent("quartzComponent", quartzComponent);
+                    //camelContext.addComponent("quartzComponent", quartzComponent);
                     camelContext.addRoutes(incidentRouter);
                 } catch (Exception e) {
                     e.printStackTrace();
