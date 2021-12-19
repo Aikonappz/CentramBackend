@@ -1,11 +1,10 @@
 package com.centram.core.service;
 
 import com.centram.common.vo.UserVO;
-
 import com.centram.domain.ActivityLog;
 import com.centram.domain.Organisation;
+import com.centram.domain.Permission;
 import com.centram.domain.Role;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
@@ -13,12 +12,37 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RedisService {
 
     public static final Logger log = LoggerFactory.getLogger(RedisService.class);
+
+    /*ROLE*/
+    @CachePut(value = "role", key = "#roleId")
+    public Role saveRole(BigInteger roleId, Role role) {
+        return role;
+    }
+
+    @Cacheable(value = "role", key = "#roleId")
+    public Role getRoleById(BigInteger roleId) {
+        return null;
+    }
+    /*ROLE*/
+
+    /*PERMISSION*/
+    @CachePut(value = "permission", key = "'role_'.concat(#roleId)")
+    public List<Permission> savePermission(BigInteger roleId, List<Permission> permissions) {
+        return permissions;
+    }
+
+    @Cacheable(value = "permission", key = "'role_'.concat(#roleId)")
+    public List<Permission> getPermissionByRoleId(BigInteger roleId) {
+        return new ArrayList<Permission>();
+    }
+    /*PERMISSION*/
 
     /*ACTIVITY LOG*/
     @CachePut(value = "activeLogs", key = "#userId")
@@ -32,22 +56,17 @@ public class RedisService {
     }
     /*ACTIVITY LOG*/
 
-    /*ROLE*/
-    @CachePut(value = "role", key = "#roleId")
-    public Role redisOperation(BigInteger roleId, Role role) {
-        return role;
-    }
-    @Cacheable(value = "role", key = "#roleId")
-    public Role getCachedRole(BigInteger roleId) {
-        return null;
-    }
-    /*ROLE*/
 
     /*ORGANISATION*/
     @CachePut(value = "organisation", key = "#organisationId")
-    public Organisation redisOperation(BigInteger organisationId, Organisation organisation) {return organisation;}
+    public Organisation redisOperation(BigInteger organisationId, Organisation organisation) {
+        return organisation;
+    }
+
     @Cacheable(value = "organisation", key = "#organisationId")
-    public Organisation getCachedOrganisation(BigInteger organisationId) { return null; }
+    public Organisation getCachedOrganisation(BigInteger organisationId) {
+        return null;
+    }
     /*ORGANISATION*/
 
     /*USER*/
@@ -55,16 +74,21 @@ public class RedisService {
     public UserVO redisOperation(BigInteger userId, UserVO userVO) {
         return userVO;
     }
+
     @Cacheable(value = "user", key = "#userId")
     public UserVO getCachedUser(BigInteger userId) {
         return null;
     }
+
     @CachePut(value = "userByName", key = "#userName")
     public UserVO redisOperation(String userName, UserVO userVO) {
         return userVO;
     }
+
     @Cacheable(value = "userByName", key = "#userName")
-    public UserVO getCachedUser(String userName) {return null;}
+    public UserVO getCachedUser(String userName) {
+        return null;
+    }
     /*USER*/
 
 

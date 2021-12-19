@@ -25,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -119,7 +121,7 @@ public class UserService implements UserDetailsService {
         if (user != null) {
             UserVO userVO = new UserVO(user);
             userVO.setRoleNames(roleService.getByIds(userVO.getRoles()));
-            List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles(), PageRequest.of(0, Integer.MAX_VALUE, Sort.by("id"))).getContent();
+            List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
             List<PermissionVO> modulePermissions = new ArrayList<PermissionVO>();
             for (Permission permission : permissions) {
                 Boolean alreadyExist = modulePermissions.stream()
@@ -138,18 +140,6 @@ public class UserService implements UserDetailsService {
                     modulePermissions.add(new PermissionVO(permission));
                 }
             }
-            /*HashMap<String, String> modulePermissions = new HashMap<String, String>();
-            String prm = null;
-            for (Permission permission : permissions) {
-                prm = null;
-                if (modulePermissions.containsKey(permission.getModule().getName())) {
-                    prm = modulePermissions.get(permission.getModule().getName());
-                    prm = prm.concat(",").concat(permission.getAction().getName());
-                } else {
-                    prm = permission.getAction().getName();
-                }
-                modulePermissions.put(permission.getModule().getName(), prm);
-            }*/
             LoggedInUser loggedInUser = new LoggedInUser(userVO, modulePermissions);
             //save data in redis
             redisTemplate.opsForValue().set(email, loggedInUser);

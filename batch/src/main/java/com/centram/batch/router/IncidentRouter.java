@@ -54,7 +54,7 @@ public class IncidentRouter extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        /*from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
                 .routeId("incident-sla")
                 .process(new Processor() {
@@ -71,7 +71,7 @@ public class IncidentRouter extends RouteBuilder {
                     }
                 })
                 .log(LoggingLevel.INFO, "CURRENT_DATE_TIME -> ${header.CURRENT_DATE_TIME}")
-                .to("direct:getNonBlockedIncidents");
+                .to("direct:getNonBlockedIncidents");*/
 
         from("direct:getNonBlockedIncidents")
                 .routeId("get-non-blocked-incidents")

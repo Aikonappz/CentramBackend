@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +26,9 @@ public class PermissionService {
 
     @Autowired
     private PermissionRepository permissionRepository;
+
+    @Autowired
+    private RedisService redisService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -41,8 +45,22 @@ public class PermissionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Permission> getPermissionByRoleIds(List<BigInteger> roleIds, Pageable pageable) {
-        return permissionRepository.getPermissionByRoleIds(roleIds, pageable);
+    public List<Permission> getPermissionByRoleId(BigInteger roleId) {
+        List<Permission> permissions = redisService.getPermissionByRoleId(roleId);
+        if (permissions.size() == 0) {
+            permissions = permissionRepository.getPermissionByRoleId(roleId);
+            redisService.savePermission(roleId, permissions);
+        }
+        return permissions;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Permission> getPermissionByRoleIds(List<BigInteger> roleIds) {
+        List<Permission> permissions = new ArrayList<Permission>();
+        for (BigInteger roleId : roleIds) {
+            permissions.addAll(this.getPermissionByRoleId(roleId));
+        }
+        return permissions;
     }
 
     @Transactional(readOnly = true)
@@ -55,11 +73,6 @@ public class PermissionService {
         return permissionRepository.getPermissionByRoleNames(roleIds);
     }
 
-    @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "permission", key = "'role_'.concat(#roleId)")
-    public Page<Permission> getPermissionByRoleId(BigInteger roleId, Pageable pageable) {
-        return permissionRepository.getPermissionByRoleId(roleId, pageable);
-    }
 
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = "permission", key = "'permission_'.concat(#permissionId)")

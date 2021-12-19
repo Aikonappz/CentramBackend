@@ -43,10 +43,33 @@ If the ticket is not resolved after the 1st level escalation within 2 hours, the
 
 support@centram.live/Welcome@12345#
 
-List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId()));
-String category = modules.stream().filter(i -> {
-    return i.getId().equals(incidentEmailVO.getModuleId());
-}).findFirst().get().getName();
-String subCategory = modules.stream().filter(i -> {
-    return i.getId().equals(incidentEmailVO.getModuleId());
-}).findFirst().get().getName();
+https://letsencrypt.org/ -->ssl
+
+
+1. EC2 -> provisioning is done
+2. deploy and test application in aws
+    2.1  s3 -> UI
+    2.2. t2.micro -> serviec/redis/mysql
+3. round robin
+4. have to ask zoho if we can delete mail
+
+
+
+
+
+
+REPORT
+-----
+1. WE CAN DIRECTLY CALL OUR DB.
+2. INTERMIDIATOR/JOB
+
+
+
+
+
+
+
+
+
+
+

@@ -24,7 +24,8 @@ public class ActivityLogService {
     @Transactional
     @Async("asyncExecutor")
     public ActivityLog save(ActivityLog activityLog) {
-        return activityLogRepository.save(activityLog);
+        return new ActivityLog();
+        //return activityLogRepository.save(activityLog);
     }
 
     @Transactional(readOnly = true)

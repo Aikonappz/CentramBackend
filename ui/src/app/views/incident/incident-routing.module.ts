@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { IncidentComponent } from './incident.component';
-import { IncomingIncidentComponent } from './incomingincident.component';
-import { RaiseIncidentComponent } from './raiseincident.component';
+import { AgentIncidentComponent } from './agentincident.component';
+import { EditIncidentComponent } from './editincident.component';
+import { UserIncidentComponent } from './userincident.component';
 
 const routes: Routes = [
   {
@@ -16,24 +16,24 @@ const routes: Routes = [
         redirectTo: 'raised'
       },
       {
-        path: 'raised',
-        component: IncidentComponent,
+        path: 'user',
+        component: UserIncidentComponent,
         pathMatch: 'full',
         data: {
           title: 'Incident'
         },
       },
       {
-        path: 'incoming',
-        component: IncomingIncidentComponent,
+        path: 'agent',
+        component: AgentIncidentComponent,
         pathMatch: 'full',
         data: {
           title: 'Incoming Incident'
         }
       },
       {
-        path: 'raise',
-        component: RaiseIncidentComponent,
+        path: 'add',
+        component: EditIncidentComponent,
         pathMatch: 'full',
         data: {
           title: 'Raise Incident'
@@ -41,7 +41,7 @@ const routes: Routes = [
       },
       {
         path: 'edit/:id',
-        component: RaiseIncidentComponent,
+        component: EditIncidentComponent,
         pathMatch: 'full',
         data: {
           title: 'Edit Incident'

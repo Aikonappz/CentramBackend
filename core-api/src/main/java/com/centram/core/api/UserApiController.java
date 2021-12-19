@@ -60,6 +60,11 @@ public class UserApiController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    /**
+     * user signin
+     * @param body
+     * @return
+     */
     @ApiOperation(value = "SignIn Api", nickname = "SignIn", notes = "SignIn user", tags = {"user",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
@@ -69,11 +74,10 @@ public class UserApiController {
         try {
             LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), Utility.decode(body.getPassword()))).getPrincipal();
             loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
-            LoggedInUserVO loggedInUserVO = new LoggedInUserVO(userService.getProfilePhoto(loggedInUser.getUserId()), loggedInUser);
-            HttpHeaders responseHeaders = new HttpHeaders() {{
+            LoggedInUserVO loggedInUserVO = new LoggedInUserVO(loggedInUser);
+            return ResponseEntity.ok().headers(new HttpHeaders() {{
                 set("Authorization", loggedInUser.getAuthToken());
-            }};
-            return ResponseEntity.ok().headers(responseHeaders).body(loggedInUserVO);
+            }}).body(loggedInUserVO);
         } catch (DisabledException e) {
             throw new DisabledException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
@@ -81,6 +85,10 @@ public class UserApiController {
         }
     }
 
+    /**
+     * user signout
+     * @return
+     */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Logout", nickname = "logout", notes = "logout", response = CommonResponse.class, tags = {"user",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),

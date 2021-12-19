@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -26,21 +26,31 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private RedisService redisService;
+
     @Transactional(readOnly = true)
-    //@Cacheable(value = "role", key = "#roleId")
     public Role getById(BigInteger roleId) {
-        Optional<Role> role = roleRepository.findById(roleId);
-        if (role.isPresent()) {
-            return role.get();
+        Role role = redisService.getRoleById(roleId);
+        if (role == null) {
+            Optional<Role> optRole = roleRepository.findById(roleId);
+            if (optRole.isPresent()) {
+                role = optRole.get();
+                redisService.saveRole(roleId, role);
+            }
         }
-        return null;
+        return role;
     }
 
     @Transactional(readOnly = true)
     public List<String> getByIds(List<BigInteger> roleIds) {
-        return roleRepository.findAllById(roleIds).stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+        List<String> roleNames = new ArrayList<String>();
+        Role role = null;
+        for (BigInteger roleId : roleIds) {
+            role = this.getById(roleId);
+            roleNames.add(role.getName());
+        }
+        return roleNames;
     }
 
     /**

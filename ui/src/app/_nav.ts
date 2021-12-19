@@ -51,12 +51,12 @@ export const navItems: INavData[] = [
   },
   {
     name: 'My Incidents',
-    url: '/incident/raised',
+    url: '/incident/user',
     icon: 'fa fa-ticket'
   },
   {
     name: 'My Group Incidents',
-    url: '/incident/incoming',
+    url: '/incident/agent',
     icon: 'fa fa-ticket'
   },
 ];

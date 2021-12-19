@@ -33,6 +33,24 @@ public class LoggedInUserVO implements Serializable {
     private List<String> roles;
     private List<PermissionVO> modulePermissions;
 
+    public LoggedInUserVO(LoggedInUser loggedInUser) {
+        this.userId = loggedInUser.getUserId();
+        this.organisationId = loggedInUser.getOrganisationId();
+        this.appManager = loggedInUser.getAppManager();
+        this.name = loggedInUser.getName();
+        this.orgName = loggedInUser.getOrgName();
+        this.email = loggedInUser.getEmail();
+        this.profileImage = profileImage;
+        this.modulePermissions = loggedInUser.getModulePermissions();
+        this.jwtToken = loggedInUser.getAuthToken();
+        this.department = loggedInUser.getDepartment();
+        this.location = loggedInUser.getLocation();
+        this.timeZone = loggedInUser.getTimeZone();
+        this.roles = loggedInUser.getAuthorities().stream()
+                .map(i -> i.getAuthority())
+                .collect(Collectors.toList());
+    }
+
     public LoggedInUserVO(MediaFile profileImage, LoggedInUser loggedInUser) {
         this.userId = loggedInUser.getUserId();
         this.organisationId = loggedInUser.getOrganisationId();

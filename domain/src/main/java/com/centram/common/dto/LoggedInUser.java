@@ -33,6 +33,7 @@ public class LoggedInUser implements UserDetails, Serializable {
     private String email;
     private String authToken;
     private String password;
+    private List<BigInteger> roles;
     @JsonProperty("authorities")
     private Collection<? extends GrantedAuthority> authorities;
     private List<PermissionVO> modulePermissions;
@@ -53,11 +54,20 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.timeZone = userVO.getTimeZone();
         this.location = userVO.getLocation();
         this.department = userVO.getDepartment();
+        this.roles = userVO.getRoles();
         this.authorities = userVO.getRoleNames()
                 .stream()
                 .map(r -> new SimpleGrantedAuthority(r))
                 .collect(Collectors.toList());
         this.appManager = userVO.getOrganisationId() == null;
+    }
+
+    public List<BigInteger> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<BigInteger> roles) {
+        this.roles = roles;
     }
 
     @JsonIgnore

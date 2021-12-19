@@ -23,11 +23,11 @@ import { AssignUser } from '../../model/AssignUser';
 declare var $: any;
 
 @Component({
-  selector: 'app-incomingincident',
-  templateUrl: './incomingincident.component.html',
-  styleUrls: ['./incomingincident.component.scss']
+  selector: 'app-agentincident',
+  templateUrl: './agentincident.component.html',
+  styleUrls: ['./agentincident.component.scss']
 })
-export class IncomingIncidentComponent implements OnInit {
+export class AgentIncidentComponent implements OnInit {
   displayedColumns = ['select', 'incDtl', 'assignedUser', 'slaAt', 'status', 'action'];
   datasource: IncomingIncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -192,7 +192,7 @@ export class IncomingIncidentComponent implements OnInit {
     this.router.navigate(['/incident/edit/' + inc.id]);
   }
   add() {
-    this.router.navigate(['/incident/raise']);
+    this.router.navigate(['/incident/add']);
   }
 
   loadData(req = {}) {

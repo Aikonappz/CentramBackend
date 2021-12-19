@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IncomingIncidentComponent } from './incomingincident.component';
+import { AgentIncidentComponent } from './agentincident.component';
 
-describe('IncomingIncidentComponent', () => {
-  let component: IncomingIncidentComponent;
-  let fixture: ComponentFixture<IncomingIncidentComponent>;
+describe('AgentIncidentComponent', () => {
+  let component: AgentIncidentComponent;
+  let fixture: ComponentFixture<AgentIncidentComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [IncomingIncidentComponent]
+      declarations: [AgentIncidentComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IncomingIncidentComponent);
+    fixture = TestBed.createComponent(AgentIncidentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

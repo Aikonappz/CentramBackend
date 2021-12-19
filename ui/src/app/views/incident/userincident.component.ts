@@ -15,11 +15,11 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 declare var $: any;
 
 @Component({
-  selector: 'app-incident',
-  templateUrl: './incident.component.html',
-  styleUrls: ['./incident.component.scss']
+  selector: 'app-userincident',
+  templateUrl: './userincident.component.html',
+  styleUrls: ['./userincident.component.scss']
 })
-export class IncidentComponent implements OnInit {
+export class UserIncidentComponent implements OnInit {
   displayedColumns = ['inc', 'slaAt', 'status', 'action'];
   private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -112,7 +112,7 @@ export class IncidentComponent implements OnInit {
   }
 
   add() {
-    this.router.navigate(['/incident/raise']);
+    this.router.navigate(['/incident/add']);
   }
 
   loadData(req?: Object) {

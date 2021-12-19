@@ -42,21 +42,21 @@ public class Permission implements Serializable {
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Valid
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Valid
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "module_id", referencedColumnName = "id")
     private Module module;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Valid
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "action_id", referencedColumnName = "id")
     private Action action;
 }

@@ -3,6 +3,7 @@ package com.centram.common.exeception;
 import org.apache.commons.lang3.StringUtils;
 
 public enum GenericErrorCode implements ErrorCode {
+    LOGIN_FAILED("Invalid Credentials!"),
     INVALID_REQUEST("Invalid Request!"),
     FILE_UPLOAD_ISSUE("File Upload Issue!"),
     AUTH_FAILURE("Authentication Error!"),

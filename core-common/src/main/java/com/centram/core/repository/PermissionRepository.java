@@ -16,7 +16,7 @@ import java.util.List;
 public interface PermissionRepository extends JpaRepository<Permission, BigInteger> {
 
     @Query("select p from Permission p where p.role.id = (:roleId)")
-    Page getPermissionByRoleId(@Param("roleId") BigInteger roleId, Pageable pageable);
+    List<Permission> getPermissionByRoleId(@Param("roleId") BigInteger roleId);
 
     @Query("select p from Permission p where p.role.id in (:roleIds)")
     Page getPermissionByRoleIds(@Param("roleIds") List<BigInteger> roleIds, Pageable pageable);

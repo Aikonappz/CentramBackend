@@ -24,11 +24,11 @@ import { Status } from '../../model/enumerator/Status';
 declare var $: any;
 
 @Component({
-  selector: 'app-raiseincident',
-  templateUrl: './raiseincident.component.html',
-  styleUrls: ['./raiseincident.component.scss']
+  selector: 'app-editincident',
+  templateUrl: './editincident.component.html',
+  styleUrls: ['./editincident.component.scss']
 })
-export class RaiseIncidentComponent implements OnInit {
+export class EditIncidentComponent implements OnInit {
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'OPEN';
@@ -217,7 +217,7 @@ export class RaiseIncidentComponent implements OnInit {
       this.incidentCommunication = new IncidentCommunication();
       this.incidentCommunication.message = this.angForm.controls['message'].value;
       this.incident.communications.push(this.incidentCommunication);
-      console.log(this.incident);
+      //console.log(this.incident);
       this.callSaveIncidentService();
     } else {
       console.log("Invalid Form!");
@@ -265,9 +265,9 @@ export class RaiseIncidentComponent implements OnInit {
   goBack() { this._location.back(); }
 
   callSaveIncidentService() {
-    let returnPath = '/incident/raised';
+    let returnPath = '/incident/user';
     if (this.hasAgentPermission) {
-      returnPath = '/incident/incoming';
+      returnPath = '/incident/agent';
     }
     this.incidentService
       .saveIncidentService(this.incident)

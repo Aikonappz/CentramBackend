@@ -36,7 +36,10 @@
             ],
             "allowedCommonJsDependencies": [
               "chart.js",
-              "classnames"
+              "classnames",
+              "sockjs-client",
+              "stompjs",
+              "moment-timezone"
             ]
           },
           "configurations": {

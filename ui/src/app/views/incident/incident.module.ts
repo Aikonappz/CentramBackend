@@ -1,24 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IncidentRoutingModule } from './incident-routing.module';
-import { IncidentComponent } from './incident.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { MasterRoutingModule } from '../master/master-routing.module';
-import { BrowserModule } from '@angular/platform-browser';
-import { RaiseIncidentComponent } from './raiseincident.component';
+import { EditIncidentComponent } from './editincident.component';
 import { CKEditorModule } from 'ckeditor4-angular';
-import { AssignIncidentComponent, IncomingIncidentComponent } from './incomingincident.component';
+import { AssignIncidentComponent, AgentIncidentComponent } from './agentincident.component';
+import { UserIncidentComponent } from './userincident.component';
 
 
 
 @NgModule({
   declarations: [
-    IncidentComponent,
-    RaiseIncidentComponent,
-    IncomingIncidentComponent,
+    UserIncidentComponent,
+    EditIncidentComponent,
+    AgentIncidentComponent,
     AssignIncidentComponent
   ],
   imports: [

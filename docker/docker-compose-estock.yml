@@ -1,0 +1,126 @@
+version: '2.2'
+services:
+  mongo:
+    image: "mongo"
+    container_name: "mongo"
+    environment:
+      - MONGO_INITDB_DATABASE=estock_stock
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    volumes:
+      - /var/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - /var/mongo/mongo-volume:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - estock
+  redis:
+    image: "redis:alpine"
+    container_name: "redis"
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - estock
+  registry:
+    image: estock/registry
+    container_name: "registry"
+    ports:
+      - "8761:8761"
+    environment:
+      eureka.instance.hostname: registry
+    networks:
+      - estock
+  config:
+    image: estock/config
+    container_name: "config"
+    ports:
+      - "7777:7777"
+    links:
+      - registry
+    environment:
+      eureka.instance.hostname: config
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+    healthcheck:
+      test: curl --fail -s http://localhost:7777/actuator/health || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+    depends_on:
+      registry:
+        condition: service_started
+    networks:
+      - estock
+  gateway:
+    image: estock/gateway
+    container_name: "gateway"
+    command: /bin/sh -c "./delay.sh"
+    ports:
+      - "8081:8081"
+    links:
+      - registry
+      - config
+    environment:
+      eureka.instance.hostname: gateway
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      EUREKA_CONFIG_LIENT_SERVICEURL_DEFAULTZONE: http://config:7777
+    depends_on:
+      config:
+        condition: service_healthy
+    networks:
+      - estock
+  stock-api:
+    image: estock/stock-api
+    container_name: "stock-api"
+    ports:
+      - "5002:5002"
+    links:
+      - registry
+      - config
+      - gateway
+      - mongo
+    environment:
+      eureka.instance.hostname: stock-api
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      EUREKA_CONFIG_LIENT_SERVICEURL_DEFAULTZONE: http://config:7777
+      REDIS_HOST: redis
+      MONGO_HOST: mongo
+    depends_on:
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+      gateway:
+        condition: service_started
+    networks:
+      - estock
+  company-api:
+    image: estock/company-api
+    container_name: "company-api"
+    ports:
+      - "5003:5003"
+    links:
+      - registry
+      - config
+      - gateway
+      - redis
+    environment:
+      eureka.instance.hostname: company-api
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+      EUREKA_CONFIG_LIENT_SERVICEURL_DEFAULTZONE: http://config:7777
+      REDIS_HOST: redis
+    depends_on:
+      redis:
+        condition: service_started
+      gateway:
+        condition: service_started
+    networks:
+      - estock
+networks:
+  estock:
+    driver: bridge
