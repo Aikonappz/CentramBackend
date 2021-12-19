@@ -121,7 +121,14 @@ public class IncidentService {
      */
     @Transactional(readOnly = true)
     public List<Incident> getNonBlockedIncidents(List<IncidentStatus> statusList) {
-        return incidentRepository.getNonBlockedIncidents(statusList);
+        List<Incident> incidents = incidentRepository.getNonBlockedIncidents(statusList);
+        List<Incident> filteredIncidents = new ArrayList<Incident>();
+        for (int i = 0; i < incidents.size(); i++) {
+            if (i <= 3) {
+                filteredIncidents.add(incidents.get(i));
+            }
+        }
+        return filteredIncidents;
     }
 
     /**

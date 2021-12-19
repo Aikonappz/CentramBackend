@@ -223,7 +223,7 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getModuleId());
         }).findFirst().get().getName();
         String subCategory = modules.stream().filter(i -> {
-            return i.getId().equals(incidentEmailVO.getModuleId());
+            return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
         List<UserVO> userVOS = userService.getUsersByRoles(
                 Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
@@ -316,7 +316,7 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getModuleId());
         }).findFirst().get().getName();
         String subCategory = modules.stream().filter(i -> {
-            return i.getId().equals(incidentEmailVO.getModuleId());
+            return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
         List<UserVO> userVOS = userService.getUsersByRoles(
                 Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
@@ -422,10 +422,11 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getModuleId());
         }).findFirst().get().getName();
         String subCategory = modules.stream().filter(i -> {
-            return i.getId().equals(incidentEmailVO.getModuleId());
+            return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        List<UserVO> userVOS = userService.getUsersByRoles(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
+                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory),
+                incidentEmailVO.getOrganisationId()
         );
         incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
         incidentEmailVO.setCc(new String[]{});
@@ -442,8 +443,8 @@ public class MiscService {
                 })
                 .collect(Collectors.toList());
         List<Notification> userNotifications = new ArrayList<Notification>() {{
-            String title = "Incident [".concat(incidentEmailVO.getIncidentNo()).concat("]");
-            String body = incidentEmailVO.getIncidentNo().substring(0, Math.min(incidentEmailVO.getIncidentNo().length(), 50)).concat("...");
+            String title = "[".concat(incidentEmailVO.getIncidentNo()).concat("]");
+            String body = incidentEmailVO.getIncidentNo().concat(" 50% time passed! Please complete within SLA.");
             for (UserVO userVO : agentUserVOS) {
                 add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
             }
@@ -462,10 +463,11 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getModuleId());
         }).findFirst().get().getName();
         String subCategory = modules.stream().filter(i -> {
-            return i.getId().equals(incidentEmailVO.getModuleId());
+            return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        List<UserVO> userVOS = userService.getUsersByRoles(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
+                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory),
+                incidentEmailVO.getOrganisationId()
         );
         incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
         incidentEmailVO.setCc(new String[]{});
@@ -482,8 +484,8 @@ public class MiscService {
                 })
                 .collect(Collectors.toList());
         List<Notification> userNotifications = new ArrayList<Notification>() {{
-            String title = "Incident [".concat(incidentEmailVO.getIncidentNo()).concat("]");
-            String body = incidentEmailVO.getIncidentNo().substring(0, Math.min(incidentEmailVO.getIncidentNo().length(), 50)).concat("...");
+            String title = "[".concat(incidentEmailVO.getIncidentNo()).concat("]");
+            String body = incidentEmailVO.getIncidentNo().concat(" 75% time passed! Please complete within SLA.");
             for (UserVO userVO : agentUserVOS) {
                 add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
             }
@@ -502,69 +504,122 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getModuleId());
         }).findFirst().get().getName();
         String subCategory = modules.stream().filter(i -> {
-            return i.getId().equals(incidentEmailVO.getModuleId());
+            return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        List<UserVO> userVOS = userService.getUsersByRoles(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory)
+        UserVO agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
+                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory),
+                incidentEmailVO.getOrganisationId()
         );
-        List<String> bccList = userVOS.stream()
-                .filter(i -> {
-                    if (i.getRoleNames().size() > 0) {
-                        List<String> roles = i.getRoleNames();
-                        for (String s : roles) {
-                            if (s.contains("USER") || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                    return false;
-                })
-                .map(UserVO::getEmail)
-                .collect(Collectors.toList());
-        bccList.addAll(Arrays.asList(incidentEmailVO.getWatchList().split(",")));
-        //incidentEmailVO.setTo(new String[]{loggedInUser.getEmail()});
+        userVOS.add(agentManagerUserVO);
+        List<String> userEmails = new ArrayList<String>() {{
+            add(incidentEmailVO.getAgentEmail());
+        }};
+        for (UserVO userVO : userVOS) {
+            List<String> roles = userVO.getRoleNames();
+            for (String s : roles) {
+                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail())
+                        || s.equals("ORG_INCIDENT_AGENT_LEAD")
+                        || userVO.getId().equals(incidentEmailVO.getAgentManagerId())
+                ) {
+                    userEmails.add(userVO.getEmail());
+                }
+            }
+        }
+        incidentEmailVO.setTo(userEmails.toArray(new String[0]));
         incidentEmailVO.setCc(new String[]{});
-        incidentEmailVO.setBcc(bccList.toArray(new String[0]));
+        incidentEmailVO.setBcc(new String[]{});
         incidentEmailVO.setReplyTo(appReplyToEmail);
         incidentEmailVO.setCategory(category);
         incidentEmailVO.setSubCategory(subCategory);
         incidentEmailVO.setUserVOS(userVOS);
         incidentEmailVO.populateEscalationMatrices();
         //agent notifications
-        List<UserVO> agentUserVOS = userVOS.stream()
-                .filter(i -> {
-                    if (i.getRoleNames().size() > 0) {
-                        List<String> roles = i.getRoleNames();
-                        for (String s : roles) {
-                            if (s.contains("AGENT") || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD")) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+        Set<UserVO> userVOSet = new HashSet<UserVO>();
+        for (UserVO userVO : userVOS) {
+            List<String> roles = userVO.getRoleNames();
+            for (String s : roles) {
+                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail())
+                        || s.equals("ORG_INCIDENT_AGENT_LEAD")
+                        || userVO.getId().equals(incidentEmailVO.getAgentManagerId())
+                ) {
+                    userVOSet.add(userVO);
+                }
+            }
+        }
         List<Notification> userNotifications = new ArrayList<Notification>() {{
-            String title = "New Incident [".concat(incidentEmailVO.getIncidentNo()).concat("]");
-            String body = incidentEmailVO.getIncidentNo().substring(0, Math.min(incidentEmailVO.getIncidentNo().length(), 50)).concat("...");
-            for (UserVO userVO : agentUserVOS) {
+            String title = "[".concat(incidentEmailVO.getIncidentNo()).concat("]");
+            String body = incidentEmailVO.getIncidentNo().concat(" SLA exceeds. Please respond immediately!");
+            for (UserVO userVO : userVOSet) {
                 add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
             }
         }};
+        //save notifications
+        notificationService.save(userNotifications);
+        appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
+        /*need data for email*/
+    }
 
-        //user notification
+    @Async("asyncExecutor")
+    public void notifySlaBreached60MinutesPassed(IncidentEmailVO incidentEmailVO) {
+        /*need data for email*/
+        List<Module> modules = moduleService.getModuleByIds(Arrays.asList(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId()));
+        String category = modules.stream().filter(i -> {
+            return i.getId().equals(incidentEmailVO.getModuleId());
+        }).findFirst().get().getName();
+        String subCategory = modules.stream().filter(i -> {
+            return i.getId().equals(incidentEmailVO.getSubModuleId());
+        }).findFirst().get().getName();
+        UserVO agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
+                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER", category, subCategory),
+                incidentEmailVO.getOrganisationId()
+        );
+        userVOS.add(agentManagerUserVO);
         List<String> userEmails = new ArrayList<String>() {{
-            add(incidentEmailVO.getUserEmail());
+            add(incidentEmailVO.getAgentEmail());
         }};
-        userEmails.addAll(Arrays.asList(incidentEmailVO.getWatchList().split(",")));
-        List<UserVO> users = userService.getUsersByEmails(userEmails);
-        String title = "Incident - [".concat(incidentEmailVO.getIncidentNo()).concat("]");
-        String body = "Agent will contact you soon...";
-        for (UserVO userVO : users) {
-            userNotifications.add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        for (UserVO userVO : userVOS) {
+            List<String> roles = userVO.getRoleNames();
+            for (String s : roles) {
+                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail())
+                        || s.equals("ORG_INCIDENT_AGENT_MANAGER")
+                        || s.equals("ORG_INCIDENT_AGENT_LEAD")
+                        || userVO.getId().equals(incidentEmailVO.getAgentManagerId())
+                ) {
+                    userEmails.add(userVO.getEmail());
+                }
+            }
         }
+        incidentEmailVO.setTo(userEmails.toArray(new String[0]));
+        incidentEmailVO.setCc(new String[]{});
+        incidentEmailVO.setBcc(new String[]{});
+        incidentEmailVO.setReplyTo(appReplyToEmail);
+        incidentEmailVO.setCategory(category);
+        incidentEmailVO.setSubCategory(subCategory);
+        incidentEmailVO.setUserVOS(userVOS);
+        incidentEmailVO.populateEscalationMatrices();
+        //agent notifications
+        Set<UserVO> userVOSet = new HashSet<UserVO>();
+        for (UserVO userVO : userVOS) {
+            List<String> roles = userVO.getRoleNames();
+            for (String s : roles) {
+                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail())
+                        || s.equals("ORG_INCIDENT_AGENT_MANAGER")
+                        || s.equals("ORG_INCIDENT_AGENT_LEAD")
+                        || userVO.getId().equals(incidentEmailVO.getAgentManagerId())
+                ) {
+                    userVOSet.add(userVO);
+                }
+            }
+        }
+        List<Notification> userNotifications = new ArrayList<Notification>() {{
+            String title = "[".concat(incidentEmailVO.getIncidentNo()).concat("]");
+            String body = incidentEmailVO.getIncidentNo().concat(" SLA exceeds. Please respond immediately!");
+            for (UserVO userVO : userVOSet) {
+                add(new Notification(title, body, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+            }
+        }};
         //save notifications
         notificationService.save(userNotifications);
         appEmailService.sendIncidentUpdateEmail(incidentEmailVO);

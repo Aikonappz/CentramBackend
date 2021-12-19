@@ -46,6 +46,7 @@ public class IncidentEmailVO implements Serializable {
     private String escalation2Email;
     private BigInteger moduleId;
     private BigInteger subModuleId;
+    private BigInteger organisationId;
     private List<UserVO> userVOS;
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat) {
@@ -65,6 +66,7 @@ public class IncidentEmailVO implements Serializable {
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
         this.userLocation = incident.getRaisedUser().getLocation().getName();
+        this.organisationId = incident.getRaisedUser().getOrganisation().getId();
         if (incident.getAssignedUser() != null) {
             this.agentManagerId = incident.getAssignedUser().getManagerId();
             this.agentName = incident.getAssignedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());

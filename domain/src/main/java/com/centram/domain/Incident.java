@@ -122,7 +122,7 @@ public class Incident extends BaseEntity implements Serializable {
     @ApiModelProperty(required = false, value = "")
     @Valid
     //@NotNull
-    @OneToMany(mappedBy = "incident", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "incident", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private Set<IncidentCommunication> communications;
 

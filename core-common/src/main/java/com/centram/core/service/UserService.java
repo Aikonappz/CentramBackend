@@ -672,4 +672,24 @@ public class UserService implements UserDetailsService {
         }
         return userVOS;
     }
+
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsersByRolesAndOrganisation(List<String> roles, BigInteger organisationId) {
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        List<Role> roleList = roleService.getByRoleNames(roles);
+        List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
+        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), organisationId);
+        List<String> roleNames = new ArrayList<>();
+        UserVO userVO = null;
+        for (User user : users) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
+        }
+        return userVOS;
+    }
 }

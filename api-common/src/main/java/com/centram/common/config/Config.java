@@ -4,6 +4,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.filter.RestFilter;
 import com.centram.common.interceptor.MdcInterceptor;
 import com.centram.common.interceptor.RestEndPointInterceptor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
@@ -364,5 +365,9 @@ public class Config implements AsyncConfigurer {
             }
             return Optional.of(loggedInUser.getUserId());
         }
+    }
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private abstract class IgnoreHibernatePropertiesInJackson {
     }
 }
