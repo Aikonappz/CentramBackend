@@ -3,6 +3,7 @@ package com.centram.common.dto;
 
 import com.centram.common.vo.PermissionVO;
 import com.centram.common.vo.UserVO;
+import com.centram.domain.enumarator.LicenseType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,6 +25,7 @@ public class LoggedInUser implements UserDetails, Serializable {
     private BigInteger organisationId;
     private BigInteger locationId;
     private BigInteger departmentId;
+    @JsonProperty("appManager")
     private Boolean appManager;
     private String name;
     private String orgName;
@@ -36,7 +38,11 @@ public class LoggedInUser implements UserDetails, Serializable {
     private List<BigInteger> roles;
     @JsonProperty("authorities")
     private Collection<? extends GrantedAuthority> authorities;
+    @JsonProperty("roles")
     private List<PermissionVO> modulePermissions;
+    @JsonProperty("licenseType")
+    private LicenseType licenseType;
+
 
     public LoggedInUser() {
     }
@@ -60,6 +66,15 @@ public class LoggedInUser implements UserDetails, Serializable {
                 .map(r -> new SimpleGrantedAuthority(r))
                 .collect(Collectors.toList());
         this.appManager = userVO.getOrganisationId() == null;
+        this.licenseType = (userVO.getDepartmentId() == null) ? null : userVO.getLicenseType();
+    }
+
+    public LicenseType getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(LicenseType licenseType) {
+        this.licenseType = licenseType;
     }
 
     public List<BigInteger> getRoles() {
@@ -115,7 +130,6 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.timeZone = timeZone;
     }
 
-    @JsonIgnore
     public Boolean getAppManager() {
         return appManager;
     }

@@ -13,9 +13,16 @@ public class AppSecurityUtilityService {
     private static final Logger LOG = LoggerFactory.getLogger(AppSecurityUtilityService.class);
 
     public Boolean hasAppAdminAccess(LoggedInUser loggedInUser) {
-        return loggedInUser.getAuthorities()
+        return (loggedInUser.getAuthorities()
                 .stream()
                 .filter(a -> a.getAuthority().equals("APP_ADMIN"))
-                .count() > 0;
+                .count() > 0 && loggedInUser.getAppManager());
+    }
+
+    public Boolean hasOrgAdminAccess(LoggedInUser loggedInUser) {
+        return (loggedInUser.getAuthorities()
+                .stream()
+                .filter(a -> a.getAuthority().equals("ORG_ADMIN"))
+                .count() > 0 && !loggedInUser.getAppManager());
     }
 }

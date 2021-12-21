@@ -51,18 +51,6 @@ public class OrganisationApiController {
         return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update an organisation", nickname = "updateOrganisation", notes = "Update an organisation", tags = {"organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid organisation supplied"),
-            @ApiResponse(code = 404, message = "Organisation not found"),
-            @ApiResponse(code = 405, message = "Validation exception")
-    })
-    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
-    @PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<Organisation> updateOrganisation(@ApiParam(value = "Organisation object", required = true) @Valid @RequestBody Organisation body) {
-        return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
-    }
-
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of an organisation", nickname = "updateStatus", notes = "Update status of an organisation", tags = {"organisation",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
@@ -87,18 +75,6 @@ public class OrganisationApiController {
         return new ResponseEntity<Organisation>(organisationService.getOrganisationById(organisationId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload organisation logo", nickname = "uploadOrganisationLogo", notes = "Upload organisation logo", tags = {"organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid organisation supplied"),
-            @ApiResponse(code = 404, message = "Organisation not found"),
-            @ApiResponse(code = 405, message = "Validation exception")
-    })
-    @RequestMapping(value = "/upload-logo", produces = {"application/json"}, method = RequestMethod.POST)
-    //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
-    public ResponseEntity<OrganisationDTO> uploadOrganisationLogo(HttpServletRequest request) {
-        return new ResponseEntity<OrganisationDTO>(organisationService.uploadOrganisationLogo(request), HttpStatus.OK);
-    }
-
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all organisation", nickname = "getOrganisations", notes = "Get all Organisation", response = PaginatedList.class, tags = {"organisation",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
@@ -121,7 +97,7 @@ public class OrganisationApiController {
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/get-settings", produces = {"application/json"}, method = RequestMethod.GET)
-    //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
     public ResponseEntity<Setting> getOrganisationSettings() {
         return new ResponseEntity<Setting>(organisationService.getOrganisationSettings(), HttpStatus.OK);
     }
@@ -133,8 +109,20 @@ public class OrganisationApiController {
             @ApiResponse(code = 405, message = "Validation exception")
     })
     @RequestMapping(value = "/set-settings", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
-    //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
     public ResponseEntity<Setting> updateOrganisationSettings(@ApiParam(value = "Setting object", required = true) @Valid @RequestBody Setting body) {
         return new ResponseEntity<Setting>(organisationService.updateOrganisationSettings(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload organisation logo", nickname = "uploadOrganisationLogo", notes = "Upload organisation logo", tags = {"organisation",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid organisation supplied"),
+            @ApiResponse(code = 404, message = "Organisation not found"),
+            @ApiResponse(code = 405, message = "Validation exception")
+    })
+    @RequestMapping(value = "/upload-logo", produces = {"application/json"}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
+    public ResponseEntity<OrganisationDTO> uploadOrganisationLogo(HttpServletRequest request) {
+        return new ResponseEntity<OrganisationDTO>(organisationService.uploadOrganisationLogo(request), HttpStatus.OK);
     }
 }

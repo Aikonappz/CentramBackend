@@ -17,6 +17,8 @@ import { UserVO } from '../../model/UserVO';
 import * as moment from 'moment-timezone';
 import { AppUtility } from '../../config/AppUtility';
 import { StartEndDateValidation } from '../../validator/StartEndDateValidation';
+import { Setting } from '../../model/Setting';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-edituser',
@@ -24,6 +26,8 @@ import { StartEndDateValidation } from '../../validator/StartEndDateValidation';
   styleUrls: ['./editorganisation.component.scss']
 })
 export class EditOrganisationComponent implements OnInit {
+  moduleName: string = "ORGANISATION";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   licenseTypes: string[];
   panRegex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
   tanRegex = /^([a-zA-Z]){4}([0-9]){5}([a-zA-Z]){1}?$/;
@@ -40,6 +44,7 @@ export class EditOrganisationComponent implements OnInit {
   departments: Department[];
   angForm: FormGroup;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private datePipe: DatePipe,
     private route: ActivatedRoute,
@@ -63,6 +68,10 @@ export class EditOrganisationComponent implements OnInit {
     this.licenseTypes = licenseTypeList;
     this.org = new Organisation();
     this.org.status = this.defaultStatus;
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {
@@ -297,6 +306,7 @@ export class EditOrganisationComponent implements OnInit {
       this.org.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(JSON.stringify(this.org));
       if (this.newEntity) {
+        this.org.setting = new Setting();
         this.user.firstName = this.angForm.controls['firstName'].value;
         this.user.lastName = this.angForm.controls['lastName'].value;
         this.user.email = this.angForm.controls['email'].value;
@@ -329,11 +339,7 @@ export class EditOrganisationComponent implements OnInit {
         this.user.status = Status['ACTIVE'];
         //console.log(JSON.stringify(this.user));
       }
-      if (this.newEntity) {
-        this.callAddOrganisationService();
-      } else {
-        this.callEditOrganisationService();
-      }
+      this.callSaveOrganisationService();
     } else {
       console.log("Invalid Form!");
     }
@@ -341,12 +347,15 @@ export class EditOrganisationComponent implements OnInit {
 
   goBack() { this._location.back(); }
 
-  callAddOrganisationService() {
+  callSaveOrganisationService() {
     this.orgService
-      .addOrganisationService(this.org)
+      .saveOrganisationService(this.org)
       .subscribe((data: Organisation) => {
-        //console.log(JSON.stringify(data));        
-        this.callAddUserService(data.id, data.version);
+        //console.log(JSON.stringify(data)); 
+        if (this.newEntity) {
+          this.callAddUserService(data.id, data.version);
+        }
+        this.router.navigate(['/organisation']);
       });
   }
 
@@ -357,17 +366,7 @@ export class EditOrganisationComponent implements OnInit {
     this.userService
       .addUserService(this.user)
       .subscribe((data: UserVO) => {
-        //console.log(data);
-        this.router.navigate(['/organisation']);
-      });
-  }
-
-  callEditOrganisationService() {
-    this.orgService
-      .editOrganisationService(this.org)
-      .subscribe((data: Organisation) => {
-        //console.log(data);
-        this.router.navigate(['/organisation']);
+        //console.log(data);        
       });
   }
 
@@ -390,6 +389,7 @@ export class EditOrganisationComponent implements OnInit {
         this.org.licenseEnd = data.licenseEnd;
         this.org.licenseStart = data.licenseStart;
         this.org.licenseType = data.licenseType;
+        this.org.setting = data.setting == null ? new Setting() : data.setting;
         //console.log(JSON.stringify(this.org));
 
         this.angForm.get('licenseType').setValue(this.org.licenseType);

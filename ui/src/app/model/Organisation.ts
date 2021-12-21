@@ -2,6 +2,7 @@ import { Base } from "./Base";
 import { LicenseType } from "./enumerator/LicenseType";
 import { Status } from "./enumerator/Status";
 import { MediaFile } from "./MediaFile";
+import { Setting } from "./Setting";
 import { User } from "./User";
 
 export class Organisation extends Base {
@@ -18,6 +19,7 @@ export class Organisation extends Base {
     licenseEnd: any;
     status: any;
     licenseType: LicenseType;
+    setting: Setting;
 
     constructor() {
         super();
@@ -34,6 +36,7 @@ export class Organisation extends Base {
         this.licenseEnd = null;
         this.status = Status.ACTIVE;
         this.licenseType = LicenseType.ALL;
+        this.setting = new Setting();
     }
 }
 

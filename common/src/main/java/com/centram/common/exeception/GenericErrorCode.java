@@ -10,6 +10,7 @@ public enum GenericErrorCode implements ErrorCode {
     USER_DISABLED("User Disabled!"),
     INVALID_CREDENTIALS("Invalid Credential!"),
     UNKNOWN_ERROR("Unknown Error!"),
+    UNAUTHORIZED("UNAUTHORIZED!"),
     FILE_READ_ISSUE("File read issue!"),
     DATA_NOT_FOUND("Data not found!"),
     JSON_PROCESS_EXCEPTION("Json process exception!"),

@@ -52,7 +52,7 @@ export class AppUtility {
     constructor() { }
 
     static prepareDateToString(date: Date): string {
-        return String(moment(date).format('YYYY-MM-DD') + 'T00:00:00.000Z');
+        return String(moment(date).format('YYYY-MM-DD') + 'T00:00:00');
     }
 
     static getDayHourList(diff: number) {

@@ -3,6 +3,7 @@ package com.centram.common.vo;
 
 import com.centram.domain.BaseEntity;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import lombok.*;
 
@@ -38,6 +39,7 @@ public class UserVO extends BaseEntity implements Serializable {
     private String location;
     private BigInteger departmentId;
     private String department;
+    private LicenseType licenseType;
 
 
     public UserVO(User user) {
@@ -62,6 +64,7 @@ public class UserVO extends BaseEntity implements Serializable {
         this.department = (user.getDepartment() != null) ? user.getDepartment().getName() : null;
         this.managerId = (user.getManagerId() != null) ? user.getManagerId() : null;
         this.timeZone = (user.getLocation() != null) ? user.getLocation().getTimezone() : "Asia/Kolkata";
+        this.licenseType = (user.getOrganisation() != null) ? user.getOrganisation().getLicenseType() : null;
     }
 }
 

@@ -9,6 +9,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { Organisation } from '../../model/Organisation';
 import { OrganisationDataSource } from '../../service/datasource/OrganisationDataSource';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { OrganisationService } from '../../service/OrganisationService';
 
 @Component({
@@ -17,6 +18,8 @@ import { OrganisationService } from '../../service/OrganisationService';
   styleUrls: ['./organisation.component.scss']
 })
 export class OrganisationComponent implements OnInit {
+  moduleName: string = "ORGANISATION";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'addressDtl', 'licence', 'status', 'action'];
   private datasource: OrganisationDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -24,7 +27,9 @@ export class OrganisationComponent implements OnInit {
   org: Organisation;
   defaultStatus: any = 'ALL';
   statusFlag: boolean = true;
+
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
@@ -46,6 +51,10 @@ export class OrganisationComponent implements OnInit {
     });
     this.org = new Organisation();
     this.org.status = this.defaultStatus;
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {
