@@ -11,7 +11,6 @@ export const environment = {
   appLandingPage: '/',
   appName: 'Centram',
   appServiceEndpoint: 'http://localhost:7001/api',
-
   appWSServiceEndpoint: 'http://localhost:7001/app-ws-notification',
   appWSNotificationTopic: '/topic/notification',
   appWSCred: {

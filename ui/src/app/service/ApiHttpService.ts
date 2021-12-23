@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { ErrormessageComponent } from '../views/errormessage/errormessage.component';
 import { environment } from '../../environments/environment';
+import { Location } from '@angular/common';
 @Injectable({
     providedIn: 'root'
 })
@@ -14,6 +15,7 @@ export class ApiHttpService {
     private REST_API_SERVER = environment.appServiceEndpoint;
 
     constructor(
+        private _location: Location,
         private http: HttpClient,
         private router: Router,
         private modalService: BsModalService,
@@ -49,7 +51,8 @@ export class ApiHttpService {
         console.log(error);
         let errorMessage = 'Unknown error!';
         if (error.status === 401) {
-            this.router.navigate(['/sign-in']);
+            this._location.back();
+            //this.router.navigate(['/sign-in']);
         }
         //console.log(JSON.stringify(error));
         if (error.error instanceof ErrorEvent) {

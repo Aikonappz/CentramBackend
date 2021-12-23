@@ -7,6 +7,7 @@ import { MiscService } from '../../service/MiscService';
 import { Setting } from '../../model/Setting';
 import { OrganisationService } from '../../service/OrganisationService';
 import { IncidentTicketAllocationType } from '../../model/enumerator/IncidentTicketAllocationType';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-orgsettings',
@@ -14,12 +15,15 @@ import { IncidentTicketAllocationType } from '../../model/enumerator/IncidentTic
   styleUrls: ['./orgsettings.component.scss']
 })
 export class OrgSettingsComponent implements OnInit {
+  moduleName: string = "ORGANISATION";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   alphaNumericRegex = /^[a-z0-9]+$/i;
   angForm: FormGroup;
   setting: Setting;
   saved: boolean = false;
   ticketAllocationTypes: any;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private _location: Location,
@@ -37,6 +41,10 @@ export class OrgSettingsComponent implements OnInit {
     this.ticketAllocationTypes = Object.values(IncidentTicketAllocationType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

@@ -14,8 +14,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 public class AppWSConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Value("${app.base.origin.url}")
-    private String appBaseOriginUrl;
+    @Value("${app.allowed.origins}")
+    private String[] appAllowedOrigins;
 
     @Value("${app.ws.broker.prefix}")
     private String appWSBrokerPrefix;
@@ -42,7 +42,7 @@ public class AppWSConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // ui client will use this to connect to the server
         registry.addEndpoint(appWSEndPoint)
-                .setAllowedOrigins(appBaseOriginUrl)
+                .setAllowedOrigins(appAllowedOrigins)
                 .addInterceptors(appWSHandshakeInterceptor)
                 .withSockJS();
     }
