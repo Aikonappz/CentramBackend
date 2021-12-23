@@ -6,6 +6,7 @@ import com.centram.domain.User;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class UserVO extends BaseEntity implements Serializable {
+public class UserVO extends BaseEntity implements Serializable, Comparable<UserVO> {
     private static final long serialVersionUID = 9194601811170425900L;
     private BigInteger id;
     private String firstName;
@@ -65,6 +66,11 @@ public class UserVO extends BaseEntity implements Serializable {
         this.managerId = (user.getManagerId() != null) ? user.getManagerId() : null;
         this.timeZone = (user.getLocation() != null) ? user.getLocation().getTimezone() : "Asia/Kolkata";
         this.licenseType = (user.getOrganisation() != null) ? user.getOrganisation().getLicenseType() : null;
+    }
+
+    @Override
+    public int compareTo(@NotNull UserVO userVO) {
+        return this.getFullName().compareTo(userVO.getFullName());
     }
 }
 

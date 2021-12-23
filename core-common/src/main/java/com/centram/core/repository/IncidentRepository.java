@@ -108,8 +108,10 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where i.status in (:statuses) and i.holdAt is null")
-    List<Incident> getNonBlockedIncidents(@Param("statuses") List<IncidentStatus> statuses);
+    @Query("select i from Incident i where i.status in (:statuses) order by i.id asc")
+    List<Incident> getIncidentsByStatus(@Param("statuses") List<IncidentStatus> statuses);
 
+    @Query("select i from Incident i join i.raisedUser ru join ru.organisation o where i.status in (:statuses) and o.id = (:organisationId) order by i.id asc")
+    List<Incident> getIncidentsByOrganisationAndStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
 
 }

@@ -50,6 +50,9 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Big
             Pageable pageable
     );
 
+    @Query("select o from Organisation o where o.status = 1")
+    List<Organisation> findAll();
+
     /*@Query("select new com.erp.common.vo.OrganisationVO(o.createdDate, o.modifiedDate, o.version, o.modifiedBy, o.createdBy,o.id,o.name,o.mnemonic,o.setting,o.addresses,o.contacts,o.bankDetails,o.status) from Organisation o")
     Page<OrganisationVO> getOrganisations(Pageable pageable);*/
 

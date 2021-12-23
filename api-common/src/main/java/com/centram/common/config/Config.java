@@ -359,11 +359,16 @@ public class Config implements AsyncConfigurer {
     public class AuditorAwareImpl implements AuditorAware<BigInteger> {
         @Override
         public Optional<BigInteger> getCurrentAuditor() {
-            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (loggedInUser == null) {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                //TODO : for batch need to handle later on
                 return null;
+            } else {
+                LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (loggedInUser == null) {
+                    return null;
+                }
+                return Optional.of(loggedInUser.getUserId());
             }
-            return Optional.of(loggedInUser.getUserId());
         }
     }
 

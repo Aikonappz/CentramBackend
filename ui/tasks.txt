@@ -64,21 +64,34 @@ REPORT
 2. INTERMIDIATOR/JOB
 
 
+AWS
+---
+appzhosting@gmail.com
+Welcome123$@
+AWS-DEV
+-------
+https://371378098883.signin.aws.amazon.com/console
+sumit-dev/Welcome123$@
 
-ssh -i "centram-key-stag.pem" ec2-user@ec2-65-1-100-215.ap-south-1.compute.amazonaws.com
-scp -i "centram-key-stag.pem" "/home/sumit/Documents/ramesh/app/centram/ui/dist/centram-ui/ui.zip"  ec2-user@ec2-65-1-100-215.ap-south-1.compute.amazonaws.com:/tmp
-scp -i "centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/core-api/target/core-service-api.jar  ec2-user@ec2-65-1-100-215.ap-south-1.compute.amazonaws.com:/tmp
+STAG
+----
+ssh -i "centram-key-stag.pem" ec2-user@ec2-3-111-47-178.ap-south-1.compute.amazonaws.com
+scp -i "centram-key-stag.pem" "/home/sumit/Documents/ramesh/app/centram/ui/dist/centram-ui/ui.zip"  ec2-user@ec2-3-111-47-178.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/core-api/target/core-service-api.jar  ec2-user@ec2-3-111-47-178.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/properties/application-stag.properties  ec2-user@ec2-3-111-47-178.ap-south-1.compute.amazonaws.com:/tmp
 
 
-
+U3VtMVRANDkzMQ==
 
 sudo service nginx start
-sudo service nginx redis
-sudo service nginx mysqld
-sudo nohup java -Dspring.config.location=/home/ec2-user/application.properties -jar /home/ec2-user/core-service-api.jar >& /dev/null &
+sudo service redis start
+sudo service mysqld start
+sudo nohup java -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar >& /dev/null &
 
 sudo nohup java -jar /home/ec2-user/core-service-api.jar -Dapp.allowed.origins=http://65.1.100.215,http://65.1.100.215:80 >& /dev/null &
 
+
+java -Dspring.config.location=/home/sumit/Documents/ramesh/app/centram/properties/application.properties -jar ./core-service-api.jar
 
 
 

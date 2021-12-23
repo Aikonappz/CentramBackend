@@ -2,7 +2,6 @@ package com.centram.common.utility;
 
 import com.centram.common.view.Views;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.data.domain.Page;
 
@@ -34,7 +33,7 @@ public class PaginatedList<T> implements Serializable {
         this.totalElements = page.getTotalElements();
         this.numberOfElements = page.getNumberOfElements();
         this.totalPages = page.getTotalPages();
-        this.offset = page.getPageable().getOffset();
+        this.offset = page.getPageable().isPaged() ? page.getPageable().getOffset() : 0;
         this.pageNumber = page.getNumber();
         this.pageSize = page.getSize();
         this.content = page.getContent();

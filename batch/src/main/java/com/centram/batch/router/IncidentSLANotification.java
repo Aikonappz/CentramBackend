@@ -8,7 +8,6 @@ import com.centram.core.service.MiscService;
 import com.centram.domain.Incident;
 import com.centram.domain.IncidentNotification;
 import com.centram.domain.enumarator.IncidentNotificationType;
-import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -25,14 +24,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class IncidentRouter extends RouteBuilder {
+public class IncidentSLANotification extends RouteBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(IncidentRouter.class);
-    private final String interval1Minute = "0 0/1 * * * ?";
+    private static final Logger log = LoggerFactory.getLogger(IncidentSLANotification.class);
+    private final String interval1Minute = "0 0/10 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")
@@ -41,37 +39,26 @@ public class IncidentRouter extends RouteBuilder {
     private String appLocalDateTimeFormat;
     @Autowired
     private IncidentService incidentService;
-
     @Autowired
     private ProducerTemplate producerTemplate;
-    //producerTemplate.sendBodyAndHeader("direct:partner-processBulkEvents", partnerToPartnerEvents, "origin", "kafka");
-
     @Autowired
     private IncidentNotificationService incidentNotificationService;
-
     @Autowired
     private MiscService miscService;
 
     @Override
     public void configure() throws Exception {
-        /*from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
                 .routeId("incident-sla")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setBody(new ArrayList<IncidentStatus>() {{
-                            add(IncidentStatus.OPEN);
-                            add(IncidentStatus.ASSIGNED);
-                            add(IncidentStatus.WORK_IN_PROGRESS);
-                            add(IncidentStatus.SLA_ABOUT_TO_BREACH);
-                            add(IncidentStatus.SLA_BREACHED);
-                        }});
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
                 .log(LoggingLevel.INFO, "CURRENT_DATE_TIME -> ${header.CURRENT_DATE_TIME}")
-                .to("direct:getNonBlockedIncidents");*/
+                .to("direct:getNonBlockedIncidents");
 
         from("direct:getNonBlockedIncidents")
                 .routeId("get-non-blocked-incidents")
@@ -81,7 +68,7 @@ public class IncidentRouter extends RouteBuilder {
                         //log.info("BODY {}", exchange.getIn().getBody());
                     }
                 })
-                .enrich("bean:incidentService?method=getNonBlockedIncidents(${body})", new IncidentAggregator())
+                .enrich("bean:incidentService?method=getNonBlockedIncidents()", new IncidentAggregator())
                 .loop(simple("${body.size}"))
                 .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {

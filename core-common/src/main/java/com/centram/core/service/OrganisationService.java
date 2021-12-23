@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganisationService {
@@ -222,5 +223,20 @@ public class OrganisationService {
         organisationRepository.updateSetting(setting, loggedInUser.getOrganisationId());
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
         return setting;
+    }
+
+    /**
+     * get Organisations those has round robin settings
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Organisation> getRoundRobinOrganisations() {
+        List<Organisation> organisations = organisationRepository.findAll();
+        return organisations.stream()
+                .filter(i -> {
+                    return i.getSetting() != null && i.getSetting().getTicketAllocationType() == IncidentAllocationType.ROUND_ROBIN;
+                })
+                .collect(Collectors.toList());
     }
 }

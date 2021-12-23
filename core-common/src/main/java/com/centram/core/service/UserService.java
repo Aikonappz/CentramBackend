@@ -508,6 +508,20 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * @param emails
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsersByEmailsAndOrganisation(List<String> emails, BigInteger organisationId) {
+        List<User> users = userRepository.getUsersByEmails(emails, organisationId);
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        for (User user : users) {
+            userVOS.add(new UserVO(user));
+        }
+        return userVOS;
+    }
+
+    /**
      * @param employeeId
      * @return
      */
@@ -668,7 +682,8 @@ public class UserService implements UserDetailsService {
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<Role> roleList = roleService.getByRoleNames(roles);
         List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
-        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), organisationId);
+        String roleFilterStr = ",(".concat(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"))).concat("),");
+        List<User> users = userRepository.getUsersByRoleIds(roleFilterStr, organisationId);
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;
         for (User user : users) {

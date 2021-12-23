@@ -1,7 +1,7 @@
 package com.centram.batch.config;
 
-import com.centram.batch.router.IncidentRouter;
-import com.centram.domain.IncidentNotification;
+import com.centram.batch.router.IncidentAssign;
+import com.centram.batch.router.IncidentSLANotification;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.quartz.QuartzComponent;
 import org.apache.camel.spi.ThreadPoolProfile;
@@ -35,15 +35,12 @@ public class BatchConfig {
     @Value("${camel.integrator.context-path}")
     private String contextPath;
 
-    /*@Bean
-    public RedisTemplate<String, IncidentNotification> redisTemplate(){
-        RedisTemplate<String, Employee> empTemplate = new RedisTemplate<>();
-        empTemplate.setConnectionFactory(redisConnectionFactory());
-        return empTemplate;
-    }*/
-
     @Bean
-    public CamelContextConfiguration contextConfiguration(IncidentRouter incidentRouter, QuartzComponent quartzComponent) {
+    public CamelContextConfiguration contextConfiguration(
+            IncidentSLANotification incidentSlaNotification,
+            IncidentAssign incidentAssign,
+            QuartzComponent quartzComponent
+    ) {
         return new CamelContextConfiguration() {
             @Override
             public void beforeApplicationStart(CamelContext context) {
@@ -61,7 +58,8 @@ public class BatchConfig {
             public void afterApplicationStart(CamelContext camelContext) {
                 try {
                     //camelContext.addComponent("quartzComponent", quartzComponent);
-                    camelContext.addRoutes(incidentRouter);
+                    camelContext.addRoutes(incidentSlaNotification);
+                    camelContext.addRoutes(incidentAssign);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -77,8 +75,13 @@ public class BatchConfig {
     }
 
     @Bean
-    public IncidentRouter incidentRouter() {
-        return new IncidentRouter();
+    public IncidentSLANotification incidentSLANotification() {
+        return new IncidentSLANotification();
+    }
+
+    @Bean
+    public IncidentAssign incidentAssign() {
+        return new IncidentAssign();
     }
 
     /*@Bean

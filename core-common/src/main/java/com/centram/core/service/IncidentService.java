@@ -114,21 +114,53 @@ public class IncidentService {
     }
 
     /**
-     * get all non bocked incidents to process in backgroud
+     * get all non bocked incidents to process in background
+     *
+     * @return
+     */
+    public List<Incident> getNonBlockedIncidents() {
+        return this.getIncidentsByStatus(new ArrayList<IncidentStatus>() {{
+            add(IncidentStatus.OPEN);
+            add(IncidentStatus.ASSIGNED);
+            add(IncidentStatus.WORK_IN_PROGRESS);
+            add(IncidentStatus.SLA_ABOUT_TO_BREACH);
+            add(IncidentStatus.SLA_BREACHED);
+        }});
+    }
+
+    /**
+     * get all open incidents
+     *
+     * @param organisationId
+     * @return
+     */
+    public List<Incident> getOpenIncidents(BigInteger organisationId) {
+        List<Incident> incidents = this.getIncidentsByOrganisationAndStatus(organisationId, new ArrayList<IncidentStatus>() {{
+            add(IncidentStatus.OPEN);
+        }});
+        List<Incident> filterd = new ArrayList<>();
+        for (int k = 0; k < incidents.size(); k++) {
+            //if (k < 3) {
+            filterd.add(incidents.get(k));
+            //}
+        }
+        return filterd;
+    }
+
+    /**
+     * get incident by status
      *
      * @param statusList
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Incident> getNonBlockedIncidents(List<IncidentStatus> statusList) {
-        List<Incident> incidents = incidentRepository.getNonBlockedIncidents(statusList);
-        List<Incident> filteredIncidents = new ArrayList<Incident>();
-        for (int i = 0; i < incidents.size(); i++) {
-            if (i <= 3) {
-                filteredIncidents.add(incidents.get(i));
-            }
-        }
-        return filteredIncidents;
+    public List<Incident> getIncidentsByStatus(List<IncidentStatus> statusList) {
+        return incidentRepository.getIncidentsByStatus(statusList);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Incident> getIncidentsByOrganisationAndStatus(BigInteger organisationId, List<IncidentStatus> statusList) {
+        return incidentRepository.getIncidentsByOrganisationAndStatus(organisationId, statusList);
     }
 
     /**
@@ -189,6 +221,20 @@ public class IncidentService {
         for (Incident incident : incidents) {
             miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appLocalDateTimeFormat));
         }
+    }
+
+    /**
+     * assign incident to agent
+     *
+     * @param incident
+     * @param userVO
+     */
+    @Transactional(readOnly = false)
+    public void assignIncidentViaBatch(Incident incident, UserVO userVO) {
+        incident.setAssignedUser(new User(userVO));
+        incident.setStatus(IncidentStatus.ASSIGNED);
+        incident = incidentRepository.save(incident);
+        miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appLocalDateTimeFormat));
     }
 
     /**
