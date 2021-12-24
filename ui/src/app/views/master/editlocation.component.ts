@@ -15,6 +15,7 @@ import { CountryWithTimeZone } from '../../model/CountryWithTimeZone';
 import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { StartEndTimeValidation } from '../../validator/StartEndTimeValidation';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-editlocation',
@@ -22,6 +23,8 @@ import { StartEndTimeValidation } from '../../validator/StartEndTimeValidation';
   styleUrls: ['./editlocation.component.scss']
 })
 export class EditLocationComponent implements OnInit {
+  moduleName: string = "LOCATION";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
@@ -34,6 +37,7 @@ export class EditLocationComponent implements OnInit {
   angForm: FormGroup;
 
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private _location: Location,
@@ -77,6 +81,10 @@ export class EditLocationComponent implements OnInit {
     this.loc = new LocationVO();
     this.loc.status = this.defaultStatus;
     this.timeList = AppUtility.getDayHourList(30);
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

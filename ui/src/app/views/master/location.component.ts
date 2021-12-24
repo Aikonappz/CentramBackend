@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 import { Status } from '../../model/enumerator/Status';
 import { LocationVO } from '../../model/LocationVO';
 import { LocationDataSource } from '../../service/datasource/LocationDataSource';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
 
 @Component({
@@ -14,10 +15,13 @@ import { MiscService } from '../../service/MiscService';
   styleUrls: ['./location.component.scss']
 })
 export class LocationComponent implements OnInit {
+  moduleName: string = "LOCATION";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['country', 'state', 'city', 'timezone', 'name', 'status', 'action'];
   private datasource: LocationDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
     private service: MiscService
@@ -28,6 +32,10 @@ export class LocationComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

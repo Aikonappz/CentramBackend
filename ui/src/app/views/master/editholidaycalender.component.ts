@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { Location } from '@angular/common';
 import { MiscService } from '../../service/MiscService';
 import { HolidayCalender } from '../../model/HolidayCalender';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-editholidaycalender',
@@ -12,6 +13,8 @@ import { HolidayCalender } from '../../model/HolidayCalender';
   styleUrls: ['./editholidaycalender.component.scss']
 })
 export class EditHolidayCalenderComponent implements OnInit {
+  moduleName: string = "HOLIDAY CALENDER";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;
@@ -21,12 +24,14 @@ export class EditHolidayCalenderComponent implements OnInit {
   angForm: FormGroup;
   selectedFiles?: FileList;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private _location: Location,
     private titleService: Title,
     private router: Router,
-    private miscService: MiscService) {
+    private miscService: MiscService
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -47,6 +52,10 @@ export class EditHolidayCalenderComponent implements OnInit {
     for (let i = 2021; i <= 2099; i++) {
       this.yearList.push(i);
     }
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getFileDetails(event) {

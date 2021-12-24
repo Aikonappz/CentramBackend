@@ -12,8 +12,8 @@
                                     class="icon-cloud-upload"></i></button> -->
                             <!-- <button type="button" class="btn btn-sm btn-minimize"><i
                                     class="icon-cloud-download"></i></button> -->
-                            <button type="button" class="btn btn-sm btn-primary" (click)="add()"><i
-                                    class="icon-plus"></i> Add
+                            <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                (click)="add()"><i class="icon-plus"></i> Add
                             </button>
                         </div>
                     </div>
@@ -48,11 +48,11 @@
                         <ng-container matColumnDef="action">
                             <th class="w-20" mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button type="button" class="btn btn-sm btn-primary" (click)="updateStatus(element)"><i
-                                        class="icon-ban"></i> Change Status
+                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                    (click)="updateStatus(element)"><i class="icon-ban"></i> Change Status
                                 </button>
-                                <button type="button" class="btn btn-sm btn-primary" (click)="edit(element)"><i
-                                        class="icon-pencil"></i> Edit
+                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                    (click)="edit(element)"><i class="icon-pencil"></i> Edit
                                 </button>
                             </td>
                         </ng-container>

@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 import { Department } from '../../model/Department';
 import { Status } from '../../model/enumerator/Status';
 import { DepartmentDataSource } from '../../service/datasource/DepartmentDataSource';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
 
 @Component({
@@ -14,10 +15,13 @@ import { MiscService } from '../../service/MiscService';
   styleUrls: ['./department.component.scss']
 })
 export class DepartmentComponent implements OnInit {
+  moduleName: string = "DEPARTMENT";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'status', 'action'];
   private datasource: DepartmentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
     private service: MiscService
@@ -28,6 +32,10 @@ export class DepartmentComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

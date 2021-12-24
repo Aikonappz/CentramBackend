@@ -5,7 +5,6 @@ import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.service.EmailService;
 import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
-import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.AppConfiguration;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -25,11 +25,17 @@ import java.util.*;
 public class AppEmailService {
     private static final Logger log = LoggerFactory.getLogger(AppEmailService.class);
 
-    @Value("${app.base.url:http://localhost:4200/#/}")
+    @Value("${app.name}")
+    private String appName;
+
+    @Value("${app.base.url}")
     private String appBaseUrl;
 
+    @Value("${app.mail.from.name}")
+    private String fromName;
+
     @Autowired
-    private AppConfigRepository appConfigRepository;
+    private AppConfigService appConfigService;
 
     @Autowired
     private EmailService emailService;
@@ -43,9 +49,10 @@ public class AppEmailService {
      * @param userVO
      * @param mailValues
      */
+    @Transactional(readOnly = true)
     @Async("asyncExecutor")
     public void sendForgotPasswordMail(UserVO userVO, Map<String, String> mailValues) {
-        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "FORGOT_PASSWORD_EMAIL_TEMPLATE"));
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "FORGOT_PASSWORD_EMAIL_TEMPLATE"));
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();
@@ -54,7 +61,7 @@ public class AppEmailService {
                 .findFirst().get();
         String forgotPasswordEmailTemplate = appConfiguration.getConfigurationValue();
         String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
-        String link = appBaseUrl.concat("#/app/reset-password?uuid=").concat(mailValues.get("uuid"));
+        String link = appBaseUrl.concat("/reset-password?uuid=").concat(mailValues.get("uuid"));
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();
@@ -64,15 +71,62 @@ public class AppEmailService {
         forgotPasswordEmailTemplate = templateEngine.process(forgotPasswordEmailTemplate, context);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", userVO.getFirstName());
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
         context.setVariable("mail_body", forgotPasswordEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("to", new String[]{userVO.getEmail()});
-        mailMap.put("cc", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("EMAIL TITLE: {}", mailSubject);
+        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
     }
+
+    /**
+     * Send reset password mail
+     *
+     * @param userVO
+     * @param mailValues
+     */
+    @Transactional(readOnly = true)
+    @Async("asyncExecutor")
+    public void sendResetPasswordMail(UserVO userVO, Map<String, String> mailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "RESET_PASSWORD_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("RESET_PASSWORD_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String resetPasswordEmailTemplate = appConfiguration.getConfigurationValue();
+        String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
+        String link = appBaseUrl.concat("/sign-in");
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("signin_link", link);
+        resetPasswordEmailTemplate = templateEngine.process(resetPasswordEmailTemplate, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", userVO.getFirstName());
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", resetPasswordEmailTemplate);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("EMAIL TITLE: {}", mailSubject);
+        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
+    }
+
 
     /**
      * Send welcome mail
@@ -80,9 +134,10 @@ public class AppEmailService {
      * @param userVO
      * @param mailValues
      */
+    @Transactional(readOnly = true)
     @Async("asyncExecutor")
     public void sendOnboardMail(UserVO userVO, Map<String, String> mailValues) {
-        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "WELCOME_ONBOARD_EMAIL_TEMPLATE"));
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "WELCOME_ONBOARD_EMAIL_TEMPLATE"));
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();
@@ -94,69 +149,44 @@ public class AppEmailService {
         //String uuid = UUID.randomUUID().toString();
         //redisTemplate.opsForValue().set(uuid, userVO, Duration.ofHours(24));
         //String confirmLink = appBaseUrl.concat("/app/validate-emaill?uuid=").concat(uuid);
-        String loginLink = appBaseUrl.concat("#/app/sign-in");
+        String loginLink = appBaseUrl.concat("/sign-in");
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
         context.setVariable("login_link", loginLink);
+        context.setVariable("app_name", appName);
         context.setVariable("user_name", userVO.getEmail());
         context.setVariable("password", mailValues.get("password"));
         //context.setVariable("confirm_link", confirmLink);
         onboardEmailTemplate = templateEngine.process(onboardEmailTemplate, context);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", userVO.getFirstName());
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
         context.setVariable("mail_body", onboardEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("to", new String[]{userVO.getEmail()});
-        mailMap.put("cc", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        //emailService.sendMail(mailMap);
+        log.info("EMAIL TITLE: {}", mailSubject);
+        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
     }
 
     /**
-     * Send reset password mail
+     * onboard request mail
      *
-     * @param userVO
+     * @param requestDemoDTO
      * @param mailValues
      */
-    @Async("asyncExecutor")
-    public void sendResetPasswordMail(UserVO userVO, Map<String, String> mailValues) {
-        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "RESET_PASSWORD_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("RESET_PASSWORD_EMAIL_TEMPLATE"))
-                .findFirst().get();
-        String resetPasswordEmailTemplate = appConfiguration.getConfigurationValue();
-        String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
-        String link = appBaseUrl.concat("#/app/sign-in");
-        StringTemplateResolver templateResolver = new StringTemplateResolver();
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        TemplateEngine templateEngine = new TemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver);
-        Context context = new Context(Locale.ENGLISH);
-        context.setVariable("signin_link", link);
-        resetPasswordEmailTemplate = templateEngine.process(resetPasswordEmailTemplate, context);
-        context = new Context(Locale.ENGLISH);
-        context.setVariable("recipient_name", userVO.getFirstName());
-        context.setVariable("mail_body", resetPasswordEmailTemplate);
-        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
-        Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", new String[]{userVO.getEmail()});
-        mailMap.put("cc", new String[]{userVO.getEmail()});
-        mailMap.put("subject", mailSubject);
-        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        //emailService.sendMail(mailMap);
-    }
-
+    @Transactional(readOnly = true)
     @Async("asyncExecutor")
     public void sendOnboardRequestMail(RequestDemoDTO requestDemoDTO, Map<String, String> mailValues) {
-        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "DEMO_REQUEST_EMAIL_TEMPLATE", "APP_DEMO_REQUEST_EMAIL_TEMPLATE"));
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "DEMO_REQUEST_EMAIL_TEMPLATE", "APP_DEMO_REQUEST_EMAIL_TEMPLATE"));
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();
@@ -173,6 +203,8 @@ public class AppEmailService {
         Context context = new Context(Locale.ENGLISH);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", requestDemoDTO.getName());
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
         context.setVariable("mail_body", demoRequestEmailTemplate);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();
@@ -180,6 +212,8 @@ public class AppEmailService {
         mailMap.put("subject", demoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
+        log.info("EMAIL TITLE: {}", demoRequestMailSubject);
+        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         appConfiguration = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("APP_DEMO_REQUEST_EMAIL_TEMPLATE"))
                 .findFirst().get();
@@ -192,18 +226,23 @@ public class AppEmailService {
         adminDemoRequestEmailTemplate = templateEngine.process(adminDemoRequestEmailTemplate, context);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", "Team");
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
         context.setVariable("mail_body", adminDemoRequestEmailTemplate);
         adminBaseEmailTemplate = templateEngine.process(adminBaseEmailTemplate, context);
         mailMap = new HashMap<>();
         mailMap.put("to", new String[]{adminTeamEmail});
         mailMap.put("subject", adminDemoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(adminBaseEmailTemplate));
-        //emailService.sendMail(mailMap);
+
+        log.info("EMAIL TITLE: {}", adminDemoRequestMailSubject);
+        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
     }
 
     @Async("asyncExecutor")
     public void sendIncidentUpdateEmail(IncidentEmailVO incidentEmailVO) {
-        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE"));
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE"));
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();
@@ -261,7 +300,7 @@ public class AppEmailService {
 
     @Async("asyncExecutor")
     public void sendIncidentAssignEmail(IncidentEmailVO incidentEmailVO) {
-        List<AppConfiguration> appConfigurations = appConfigRepository.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_ASSIGN_EMAIL_TEMPLATE"));
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_ASSIGN_EMAIL_TEMPLATE"));
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();

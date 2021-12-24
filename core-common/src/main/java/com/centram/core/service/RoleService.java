@@ -7,7 +7,6 @@ import com.centram.domain.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,10 @@ public class RoleService {
     @Autowired
     private RedisService redisService;
 
+    /**
+     * @param roleId
+     * @return
+     */
     @Transactional(readOnly = true)
     public Role getById(BigInteger roleId) {
         Role role = redisService.getRoleById(roleId);
@@ -42,6 +45,10 @@ public class RoleService {
         return role;
     }
 
+    /**
+     * @param roleIds
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<String> getByIds(List<BigInteger> roleIds) {
         List<String> roleNames = new ArrayList<String>();
@@ -62,6 +69,10 @@ public class RoleService {
         return roleRepository.getByRoleNames(roles);
     }
 
+    /**
+     * @param pageable
+     * @return
+     */
     @Transactional(readOnly = true)
     public PaginatedList<Role> getRoles(Pageable pageable) {
         return new PaginatedList<Role>(roleRepository.findAll(pageable));

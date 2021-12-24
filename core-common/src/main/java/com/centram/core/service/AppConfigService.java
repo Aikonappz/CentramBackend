@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,17 +20,26 @@ public class AppConfigService {
     private static final Logger log = LoggerFactory.getLogger(AppConfigService.class);
 
     @Autowired
+    private RedisService redisService;
+
+    @Autowired
     private AppConfigRepository appConfigRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "appConfiguration", key = "#configurationKey")
     public AppConfiguration findByConfigurationKeyAndStatus(String configurationKey) {
-        AppConfiguration appConfiguration = appConfigRepository.findByConfigurationKeyAndStatus(configurationKey, Status.ACTIVE);
+        AppConfiguration appConfiguration = redisService.getAppConfigurationByKey(configurationKey);
+        if (appConfiguration == null) {
+            appConfiguration = appConfigRepository.findByConfigurationKeyAndStatus(configurationKey, Status.ACTIVE);
+            redisService.saveAppConfiguration(configurationKey, appConfiguration);
+        }
         return appConfiguration;
     }
 
-    @Transactional(readOnly = true)
     public List<AppConfiguration> getAppConfigurations(List<String> configurationKeys) {
-        return appConfigRepository.getAppConfigurations(configurationKeys);
+        List<AppConfiguration> appConfigurations = new ArrayList<AppConfiguration>();
+        for (String key : configurationKeys) {
+            appConfigurations.add(this.findByConfigurationKeyAndStatus(key));
+        }
+        return appConfigurations;
     }
 }

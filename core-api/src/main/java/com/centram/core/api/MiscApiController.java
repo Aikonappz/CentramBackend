@@ -2,6 +2,7 @@ package com.centram.core.api;
 
 
 import com.centram.common.dto.RequestDemoDTO;
+import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.NotificationVO;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +43,9 @@ import java.util.List;
 public class MiscApiController {
 
     private static final Logger log = LoggerFactory.getLogger(MiscApiController.class);
+
+    @Autowired
+    private AppSecurityUtilityService appSecurityUtilityService;
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -106,6 +111,7 @@ public class MiscApiController {
             @ApiResponse(code = 404, message = "Department not found")
     })
     @RequestMapping(value = "/department/{departmentId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','READ',authentication.principal)")
     public ResponseEntity<Department> getDepartentById(@ApiParam(value = "id of department", required = true) @PathVariable("departmentId") BigInteger departmentId) {
         return new ResponseEntity<Department>(departmentService.getById(departmentId), HttpStatus.OK);
     }
@@ -115,7 +121,8 @@ public class MiscApiController {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/all-departments", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/all-department", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Department>> getDepartments(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Department>>(departmentService.getDepartments(pageable), HttpStatus.OK);
     }
@@ -125,6 +132,7 @@ public class MiscApiController {
             @ApiResponse(code = 405, message = "Invalid input")
     })
     @RequestMapping(value = "/department", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
     public ResponseEntity<Department> saveDepartment(@ApiParam(value = "Department object", required = true) @Valid @RequestBody Department body) {
         return new ResponseEntity<Department>(departmentService.save(body), HttpStatus.OK);
     }
@@ -134,7 +142,8 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Department not found")
     })
-    @RequestMapping(value = "/department/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/department/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
     public ResponseEntity<Void> updateDepartmentsStatus(
             @NotNull @ApiParam(value = "Departent id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
             @ApiParam(value = "Status", required = true) @PathVariable("status") Status status
@@ -148,6 +157,7 @@ public class MiscApiController {
             @ApiResponse(code = 405, message = "Invalid input")
     })
     @RequestMapping(value = "/location", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','READ',authentication.principal)")
     public ResponseEntity<Location> saveLocation(@ApiParam(value = "Location object", required = true) @Valid @RequestBody Location body) {
         return new ResponseEntity<Location>(locationService.save(body), HttpStatus.OK);
     }
@@ -157,7 +167,8 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Location not found")
     })
-    @RequestMapping(value = "/location/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/location/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','WRITE',authentication.principal)")
     public ResponseEntity<Void> updateLocationsStatus(@NotNull @ApiParam(value = "Location id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
         locationService.updateLocationsStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
@@ -170,6 +181,7 @@ public class MiscApiController {
             @ApiResponse(code = 404, message = "Location not found")
     })
     @RequestMapping(value = "/location/{locationId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','READ',authentication.principal)")
     public ResponseEntity<Location> getLocationById(@ApiParam(value = "id of location", required = true) @PathVariable("locationId") BigInteger locationId) {
         return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.OK);
     }
@@ -179,7 +191,8 @@ public class MiscApiController {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/all-locations", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/all-location", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Location>> getLocations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
     }
@@ -189,6 +202,7 @@ public class MiscApiController {
             @ApiResponse(code = 405, message = "Invalid input")
     })
     @RequestMapping(value = "/priority", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','WRITE',authentication.principal)")
     public ResponseEntity<Priority> savePriority(@ApiParam(value = "Priority object", required = true) @Valid @RequestBody Priority body) {
         return new ResponseEntity<Priority>(priorityService.save(body), HttpStatus.OK);
     }
@@ -198,7 +212,8 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "priority not found")
     })
-    @RequestMapping(value = "/priority/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','WRITE',authentication.principal)")
+    @RequestMapping(value = "/priority/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<Void> updatePrioritiesStatus(@NotNull @ApiParam(value = "Priority id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
         priorityService.updatePrioritiesStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
@@ -211,6 +226,7 @@ public class MiscApiController {
             @ApiResponse(code = 404, message = "Location not found")
     })
     @RequestMapping(value = "/priority/{priorityId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','READ',authentication.principal)")
     public ResponseEntity<Priority> getPriorityById(@ApiParam(value = "id of priority", required = true) @PathVariable("priorityId") BigInteger priorityId) {
         return new ResponseEntity<Priority>(priorityService.getById(priorityId), HttpStatus.OK);
     }
@@ -220,7 +236,8 @@ public class MiscApiController {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/all-priorities", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/all-priority", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Priority>> getPriorities(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(pageable), HttpStatus.OK);
     }
@@ -230,7 +247,8 @@ public class MiscApiController {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/all-holiday-callenders", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/all-holiday-callender", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<HolidayCalender>> getHolidayCalenders(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<HolidayCalender>>(holidayCalenderService.getHolidayCalenders(pageable), HttpStatus.OK);
     }
@@ -242,6 +260,7 @@ public class MiscApiController {
             @ApiResponse(code = 404, message = "holiday calender not found")
     })
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
     public ResponseEntity<HolidayCalender> getHolidayCalenderById(@ApiParam(value = "id of holiday-callender", required = true) @PathVariable("holidayCallenderId") BigInteger holidayCallenderId) {
         return new ResponseEntity<HolidayCalender>(holidayCalenderService.getById(holidayCallenderId), HttpStatus.OK);
     }
@@ -251,7 +270,7 @@ public class MiscApiController {
             @ApiResponse(code = 405, message = "Validation exception")
     })
     @RequestMapping(value = "/upload-holiday-calender", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
-    //@PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','WRITE',authentication.principal)")
     public ResponseEntity<HolidayCalender> uploadHolidayCalenderData(
             @ApiParam(value = "Holiday Calender CSV file", required = true) @RequestPart(name = "file", required = true) MultipartFile multipartFile,
             @ApiParam(value = "Holiday Calender object", required = true) @RequestPart("holidayCalender") HolidayCalender holidayCalender
@@ -265,6 +284,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}/download", method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
     public ResponseEntity<Resource> downloadHolidayCalender(
             @ApiParam(value = "id of holiday-callender", required = true) @PathVariable("holidayCallenderId") BigInteger holidayCallenderId
     ) {

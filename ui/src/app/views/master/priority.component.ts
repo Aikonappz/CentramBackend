@@ -8,6 +8,7 @@ import { LocationVO } from '../../model/LocationVO';
 import { Priority } from '../../model/Priority';
 import { LocationDataSource } from '../../service/datasource/LocationDataSource';
 import { PriorityDataSource } from '../../service/datasource/PriorityDataSource';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
 
 @Component({
@@ -16,10 +17,13 @@ import { MiscService } from '../../service/MiscService';
   styleUrls: ['./priority.component.scss']
 })
 export class PriorityComponent implements OnInit {
+  moduleName: string = "PRIORITY";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
   private datasource: PriorityDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
     private service: MiscService
@@ -30,6 +34,10 @@ export class PriorityComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

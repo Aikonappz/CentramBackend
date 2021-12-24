@@ -11,6 +11,7 @@ import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
 import { AppUtility } from '../../config/AppUtility';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-editdepartment',
@@ -18,6 +19,8 @@ import { AppUtility } from '../../config/AppUtility';
   styleUrls: ['./editdepartment.component.scss']
 })
 export class EditDepartmentComponent implements OnInit {
+  moduleName: string = "DEPARTMENT";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
@@ -32,6 +35,7 @@ export class EditDepartmentComponent implements OnInit {
     ]),
   });
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private route: ActivatedRoute,
     private _location: Location,
     private titleService: Title,
@@ -45,6 +49,10 @@ export class EditDepartmentComponent implements OnInit {
     });
     this.dept = new Department();
     this.dept.status = this.defaultStatus;
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

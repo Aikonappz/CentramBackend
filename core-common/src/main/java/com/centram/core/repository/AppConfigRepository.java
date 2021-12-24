@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public interface AppConfigRepository extends JpaRepository<AppConfiguration, BigInteger> {
+
     AppConfiguration findByConfigurationKeyAndStatus(@Param("configurationKey") String configurationKey, @Param("Status") Status status);
 
     @Query("select ac from AppConfiguration ac where ac.configurationKey in (:configurationKeys) and status = 1")

@@ -12,11 +12,11 @@
                                     class="icon-cloud-upload"></i></button> -->
                             <!-- <button type="button" class="btn btn-sm btn-minimize"><i
                                     class="icon-cloud-download"></i></button> -->
-                            <a href="assets/downloads/holiday-callender.csv"
+                            <a *ngIf="hasPermission('WRITE')" href="assets/downloads/holiday-callender.csv"
                                 class="btn btn-sm btn-warning btn-minimize"><i class="icon-arrow-up-circle"></i> Sample
                                 Upload File</a>
-                            <button type="button" class="btn btn-sm btn-primary" (click)="add()"><i
-                                    class="icon-plus"></i> Add
+                            <button type="button" *ngIf="hasPermission('WRITE')" class="btn btn-sm btn-primary"
+                                (click)="add()"><i class="icon-plus"></i> Add
                             </button>
                         </div>
                     </div>
@@ -35,11 +35,11 @@
                                 <!-- <button type="button" class="btn btn-sm btn-primary" (click)="updateStatus(element)"><i
                                         class="icon-ban"></i> Change Status
                                 </button> -->
-                                <button type="button" (click)="download(element)"
+                                <button type="button" *ngIf="hasPermission('READ')" (click)="download(element)"
                                     class=" btn btn-sm btn-primary btn-minimize"><i class="icon-cloud-download"></i>
                                     Download</button>
-                                <button type="button" class="btn btn-sm btn-primary" (click)="edit(element)"><i
-                                        class="icon-pencil"></i> Edit
+                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                    (click)="edit(element)"><i class="icon-pencil"></i> Edit
                                 </button>
                             </td>
                         </ng-container>

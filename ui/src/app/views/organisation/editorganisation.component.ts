@@ -318,6 +318,7 @@ export class EditOrganisationComponent implements OnInit {
         this.user.employeeId = this.user.employeeId == null ? null : this.user.employeeId.replace(/\s/g, "");
         this.user.projectCode = this.user.projectCode == null ? null : this.user.projectCode.replace(/\s/g, "")
         this.user.organisation = null;
+        this.user.employeeId = "0001";
         /* process department and location */
         let location = this.angForm.controls['location'].value;
         let department = this.angForm.controls['department'].value;

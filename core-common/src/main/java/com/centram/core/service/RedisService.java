@@ -1,10 +1,7 @@
 package com.centram.core.service;
 
 import com.centram.common.vo.UserVO;
-import com.centram.domain.ActivityLog;
-import com.centram.domain.Organisation;
-import com.centram.domain.Permission;
-import com.centram.domain.Role;
+import com.centram.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
@@ -19,6 +16,18 @@ import java.util.List;
 public class RedisService {
 
     public static final Logger log = LoggerFactory.getLogger(RedisService.class);
+
+    /*AppConfiguration*/
+    @CachePut(value = "appConfiguration", key = "#appConfigurationKey")
+    public AppConfiguration saveAppConfiguration(String appConfigurationKey, AppConfiguration appConfiguration) {
+        return appConfiguration;
+    }
+
+    @Cacheable(value = "appConfiguration", key = "#appConfigurationKey")
+    public AppConfiguration getAppConfigurationByKey(String appConfigurationKey) {
+        return null;
+    }
+    /*AppConfiguration*/
 
     /*ROLE*/
     @CachePut(value = "role", key = "#roleId")

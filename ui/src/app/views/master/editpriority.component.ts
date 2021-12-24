@@ -8,6 +8,7 @@ import { MiscService } from '../../service/MiscService';
 import { Status } from '../../model/enumerator/Status';
 import { AppUtility } from '../../config/AppUtility';
 import { Priority } from '../../model/Priority';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-editpriority',
@@ -15,6 +16,8 @@ import { Priority } from '../../model/Priority';
   styleUrls: ['./editpriority.component.scss']
 })
 export class EditPriorityComponent implements OnInit {
+  moduleName: string = "PRIORITY";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;
@@ -24,6 +27,7 @@ export class EditPriorityComponent implements OnInit {
   nameList: string[] = [];
   angForm: FormGroup;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private _location: Location,
@@ -58,6 +62,10 @@ export class EditPriorityComponent implements OnInit {
     for (let k = 1; k <= 10; k++) {
       this.nameList.push("P" + k);
     }
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

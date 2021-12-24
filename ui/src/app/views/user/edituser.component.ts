@@ -144,11 +144,13 @@ export class EditUserComponent implements OnInit {
           .locationsService()
           .subscribe((data: any) => {
             //console.log("load locations");
-            this.locations = data.content;
-            this.c = 0;
-            for (let indx = 0; indx < this.locations.length; indx++) {
-              if (this.locations[indx].status == 1) {
-                this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+            if (typeof data.content !== 'undefined') {
+              this.locations = data.content;
+              this.c = 0;
+              for (let indx = 0; indx < this.locations.length; indx++) {
+                if (this.locations[indx].status == 1) {
+                  this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+                }
               }
             }
           });
@@ -156,11 +158,13 @@ export class EditUserComponent implements OnInit {
           .departmentsService()
           .subscribe((data: any) => {
             //console.log("load departments");
-            this.departments = data.content;
-            this.c = 0;
-            for (let indx = 0; indx < this.departments.length; indx++) {
-              if (this.departments[indx].status == 1) {
-                this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+            if (typeof data.content !== 'undefined') {
+              this.departments = data.content;
+              this.c = 0;
+              for (let indx = 0; indx < this.departments.length; indx++) {
+                if (this.departments[indx].status == 1) {
+                  this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+                }
               }
             }
           });
@@ -218,7 +222,6 @@ export class EditUserComponent implements OnInit {
                     this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
                   }
                 }
-
                 if (this.route.snapshot.paramMap.has('id')) {
                   if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
                     //console.log("load provided id data...");
@@ -260,22 +263,26 @@ export class EditUserComponent implements OnInit {
               .locationsService()
               .subscribe((data: any) => {
                 //console.log("load locations");
-                this.locations = data.content;
-                this.c = 0;
-                for (let indx = 0; indx < this.locations.length; indx++) {
-                  if (this.locations[indx].status == 1) {
-                    this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+                if (typeof data.content !== 'undefined') {
+                  this.locations = data.content;
+                  this.c = 0;
+                  for (let indx = 0; indx < this.locations.length; indx++) {
+                    if (this.locations[indx].status == 1) {
+                      this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+                    }
                   }
                 }
                 this.miscService
                   .departmentsService()
                   .subscribe((data: any) => {
                     //console.log("load departments");
-                    this.departments = data.content;
-                    this.c = 0;
-                    for (let indx = 0; indx < this.departments.length; indx++) {
-                      if (this.departments[indx].status == 1) {
-                        this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+                    if (typeof data.content !== 'undefined') {
+                      this.departments = data.content;
+                      this.c = 0;
+                      for (let indx = 0; indx < this.departments.length; indx++) {
+                        if (this.departments[indx].status == 1) {
+                          this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
+                        }
                       }
                     }
                     this.userService
@@ -409,14 +416,18 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('roles').setValue(this.user.roles.map(String));
         this.angForm.get('managerId').setValue(this.user.managerId);
         if (!this.loggedInUserService.appManager()) {
-          for (var i = 0; i < this.departments.length; i++) {
-            if (this.departments[i].id == this.user.department.id) {
-              this.angForm.get('department').setValue(this.user.department.id + '__' + this.departments[i].version);
+          if (typeof this.departments !== 'undefined') {
+            for (var i = 0; i < this.departments.length; i++) {
+              if (this.departments[i].id == this.user.department.id) {
+                this.angForm.get('department').setValue(this.user.department.id + '__' + this.departments[i].version);
+              }
             }
           }
-          for (var i = 0; i < this.locations.length; i++) {
-            if (this.locations[i].id == this.user.location.id) {
-              this.angForm.get('location').setValue(this.user.location.id + '__' + this.locations[i].version);
+          if (typeof this.locations !== 'undefined') {
+            for (var i = 0; i < this.locations.length; i++) {
+              if (this.locations[i].id == this.user.location.id) {
+                this.angForm.get('location').setValue(this.user.location.id + '__' + this.locations[i].version);
+              }
             }
           }
         }

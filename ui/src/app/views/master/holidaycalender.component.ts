@@ -10,6 +10,7 @@ import { Priority } from '../../model/Priority';
 import { HolidayCalenderDataSource } from '../../service/datasource/HolidayCalenderDataSource';
 import { LocationDataSource } from '../../service/datasource/LocationDataSource';
 import { PriorityDataSource } from '../../service/datasource/PriorityDataSource';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
 
 @Component({
@@ -18,10 +19,13 @@ import { MiscService } from '../../service/MiscService';
   styleUrls: ['./holidaycalender.component.scss']
 })
 export class HolidayCalenderComponent implements OnInit {
+  moduleName: string = "HOLIDAY CALENDER";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['year', 'action'];
   private datasource: HolidayCalenderDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
     private service: MiscService
@@ -32,6 +36,10 @@ export class HolidayCalenderComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {
