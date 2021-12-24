@@ -10,6 +10,7 @@ import { Status } from '../../model/enumerator/Status';
 import { User } from '../../model/User';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-user',
@@ -17,6 +18,8 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
+  moduleName: string = "USER";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   modalRef: BsModalRef;
   displayedColumns = ['name', 'contact', 'employeeId', 'location', 'department', 'projectCode', 'status', 'action'];
   private userVODatasource: UserDataSource
@@ -26,6 +29,7 @@ export class UserComponent implements OnInit {
   defaultStatus: any = 'ALL';
   statusFlag: boolean = true;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
@@ -50,6 +54,10 @@ export class UserComponent implements OnInit {
     });
     this.usr = new User();
     this.usr.status = this.defaultStatus;
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

@@ -114,7 +114,7 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        emailService.sendMail(mailMap);
+        //emailService.sendMail(mailMap);
     }
 
     /**
@@ -151,7 +151,7 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{userVO.getEmail()});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        emailService.sendMail(mailMap);
+        //emailService.sendMail(mailMap);
     }
 
     @Async("asyncExecutor")
@@ -198,7 +198,7 @@ public class AppEmailService {
         mailMap.put("to", new String[]{adminTeamEmail});
         mailMap.put("subject", adminDemoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(adminBaseEmailTemplate));
-        emailService.sendMail(mailMap);
+        //emailService.sendMail(mailMap);
     }
 
     @Async("asyncExecutor")

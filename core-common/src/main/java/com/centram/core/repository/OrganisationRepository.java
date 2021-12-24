@@ -11,17 +11,18 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
 public interface OrganisationRepository extends CrudRepository<Organisation, BigInteger> {
     @Modifying
-    @Query("update Organisation set status = (:status) where id in (:organisationIds)")
-    Integer updateStatus(@Param("status") Status status, @Param("organisationIds") List<BigInteger> organisationId);
+    @Query("update Organisation set status = (:status), modifiedDate = (:modifiedDate) where id in (:organisationIds)")
+    Integer updateStatus(@Param("status") Status status, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("organisationIds") List<BigInteger> organisationId);
 
     @Modifying
-    @Query("update Organisation set setting = (:setting) where id = (:organisationId)")
-    Integer updateSetting(@Param("setting") Setting setting, @Param("organisationId") BigInteger organisationId);
+    @Query("update Organisation set setting = (:setting), modifiedDate = (:modifiedDate) where id = (:organisationId)")
+    Integer updateSetting(@Param("setting") Setting setting, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("organisationId") BigInteger organisationId);
 
     //@Query("select o from Organisation o where o.status = (:status)")
     //Page<Organisation> findByStatus(@Param("status") Status status, Pageable pageable);

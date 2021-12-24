@@ -13,20 +13,15 @@ import com.centram.common.vo.PermissionVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.UserRepository;
 import com.centram.domain.*;
-import com.centram.domain.enumarator.*;
+import com.centram.domain.enumarator.ActivityType;
+import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.*;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,12 +33,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -114,7 +108,7 @@ public class UserService implements UserDetailsService {
      * @return
      * @throws UsernameNotFoundException
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.getUserByEmail(email);
@@ -174,7 +168,7 @@ public class UserService implements UserDetailsService {
      * @param authRequestDTO
      * @return
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public CommonResponse forgotPassword(AuthRequestDTO authRequestDTO) {
         UserVO userVO = redisService.getCachedUser(authRequestDTO.getUsername());
         if (userVO == null) {
@@ -215,7 +209,7 @@ public class UserService implements UserDetailsService {
         if (userVO != null) {
             redisTemplate.delete(authRequestDTO.getUsername());
             String encodedPassword = passwordEncoder.encode(Utility.decode(authRequestDTO.getPassword()));
-            userRepository.updatePassword(encodedPassword, userVO.getId());
+            userRepository.updatePassword(encodedPassword, LocalDateTime.now(), userVO.getId());
             Map<String, String> mailValues = new HashMap<>();
             appEmailService.sendResetPasswordMail(userVO, mailValues);
             activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
@@ -226,6 +220,45 @@ public class UserService implements UserDetailsService {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
         return commonResponse;
+    }
+
+    /**
+     * Change Signed In User Password
+     *
+     * @param userDTO
+     */
+    @Transactional(readOnly = false)
+    public void changePassword(UserDTO userDTO) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userRepository.updatePassword(passwordEncoder.encode(Utility.decode(userDTO.getNewPassword())), LocalDateTime.now(), loggedInUser.getUserId());
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
+    }
+
+    /**
+     * Get Paginated user list
+     *
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        email = (!email.equals("")) ? "%" + email.toUpperCase() + "%" : null;
+        employeeId = (!employeeId.equals("")) ? "%" + employeeId.toUpperCase() + "%" : null;
+        Page<User> page = userRepository.getUsers(loggedInUser.getOrganisationId(), email, employeeId, status.ordinal(), pageable);
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        UserVO userVO = null;
+        List<String> roleNames = null;
+        for (User user : page.getContent()) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
+        }
+        return new PaginatedList<UserVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), userVOS);
     }
 
     /**
@@ -265,17 +298,7 @@ public class UserService implements UserDetailsService {
         if (newOnboard) {
             Map<String, String> mailValues = new HashMap<>();
             mailValues.put("password", password);
-            appEmailService.sendOnboardMail(userVO, mailValues);
-            /* fetch onboard related notification config */
-            List<AppConfiguration> appConfigs = appConfigService.getAppConfigurations(Arrays.asList("ONBOARD_NOTIFICATION"));
-            /* save notification to db*/
-            Notification notification = new Notification();
-            notification.setStatus(Status.PUSHED);
-            notification.setNotificationTitle(appConfigs.get(0).getConfigurationProperties().get("title").toString());
-            notification.setNotificationBody(appConfigs.get(0).getConfigurationProperties().get("body").toString());
-            notification.setNotificationType(NotificationType.INFO);
-            notification.setUser(new User(userVO.getVersion(), userVO.getId()));
-            notification = notificationService.save(notification);
+            miscService.sendOnboardMail(userVO, mailValues);
         }
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return userVO;
@@ -290,7 +313,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void updateUsersStatus(Status status, List<BigInteger> userIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userRepository.updateStatus(status, userIds);
+        userRepository.updateStatus(status, LocalDateTime.now(), userIds);
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_USER));
     }
 
@@ -317,38 +340,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    /**
-     * Get Paginated user list
-     *
-     * @param pageable
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, Pageable pageable) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        email = (!email.equals("")) ? "%" + email.toUpperCase() + "%" : null;
-        employeeId = (!employeeId.equals("")) ? "%" + employeeId.toUpperCase() + "%" : null;
-        Page<User> page = userRepository.getUsers(
-                loggedInUser.getOrganisationId(),
-                email,
-                employeeId,
-                status.ordinal(),
-                pageable
-        );
-        List<UserVO> userVOS = new ArrayList<UserVO>();
-        UserVO userVO = null;
-        List<String> roleNames = null;
-        for (User user : page.getContent()) {
-            userVO = new UserVO(user);
-            roleNames = new ArrayList<>();
-            for (BigInteger roleId : userVO.getRoles()) {
-                roleNames.add(roleService.getById(roleId).getName());
-            }
-            userVO.setRoleNames(roleNames);
-            userVOS.add(userVO);
-        }
-        return new PaginatedList<UserVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), userVOS);
-    }
 
     /**
      * Download Users as CSV
@@ -419,23 +410,6 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Get filtered users b id
-     *
-     * @param ids
-     * @param pageable
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Page<UserVO> getUserByIds(List<BigInteger> ids, Pageable pageable) {
-        List<User> users = userRepository.getUserByIds(ids, pageable).getContent();
-        List<UserVO> userVOS = new ArrayList<UserVO>();
-        for (User user : users) {
-            userVOS.add(new UserVO(user));
-        }
-        return new PageImpl<>(userVOS);
-    }
-
-    /**
      * Get filtered users by module and acton
      *
      * @param moduleIds
@@ -465,24 +439,8 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Get User by UserName
+     * get user by email
      *
-     * @param userName
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public UserVO getUserByUserName(String userName) {
-        User user = userRepository.getUserByEmail(userName);
-        UserVO userVO = null;
-        if (user != null) {
-            userVO = new UserVO(user);
-        } else {
-            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
-        }
-        return userVO;
-    }
-
-    /**
      * @param email
      * @return
      */
@@ -493,6 +451,8 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * get users by multiple email
+     *
      * @param emails
      * @return
      */
@@ -508,6 +468,8 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * get users by multiple email and organisation
+     *
      * @param emails
      * @return
      */
@@ -522,6 +484,8 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * get user by emp id
+     *
      * @param employeeId
      * @return
      */
@@ -531,96 +495,6 @@ public class UserService implements UserDetailsService {
         return userRepository.getUserByEmployeeId(employeeId, loggedInUser.getOrganisationId());
     }
 
-    @Transactional
-    public Iterable<User> saveUsers(List<User> users) {
-        return userRepository.saveAll(users);
-    }
-
-    /**
-     * Get User Profile Image
-     *
-     * @param userId
-     * @return
-     */
-    public MediaFile getProfilePhoto(BigInteger userId) {
-        return mediaService.getMediaFile(EntityType.USER, MediaType.USER_PROFILE_IMAGE, userId);
-    }
-
-    /**
-     * Get Signed In User Profile
-     *
-     * @return
-     */
-    public UserDTO getUserSettings() {
-        UserDTO userDTO = new UserDTO();
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userDTO.setMediaFile(this.getProfilePhoto(loggedInUser.getUserId()));
-        return userDTO;
-    }
-
-    /**
-     * Change Signed In User Password
-     *
-     * @param userDTO
-     */
-    @Transactional
-    public void changePassword(UserDTO userDTO) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserVO userVO = this.getUserById(loggedInUser.getUserId());
-        userRepository.changePassword(passwordEncoder.encode(Utility.decode(userDTO.getNewPassword())), loggedInUser.getUserId());
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
-    }
-
-    /**
-     * Upload Signed In User Profile Image
-     *
-     * @param request
-     * @return
-     */
-    @Transactional
-    public UserDTO uploadUserProfile(HttpServletRequest request) {
-        UserDTO userDTO = new UserDTO();
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!ServletFileUpload.isMultipartContent(request)) {
-            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
-        }
-        MediaFile mediaFile = this.getProfilePhoto(loggedInUser.getUserId());
-        mediaFile = (mediaFile == null) ? new MediaFile() : mediaFile;
-        mediaFile.setEntityId(loggedInUser.getUserId());
-        mediaFile.setEntityType(EntityType.USER);
-        mediaFile.setMediaType(MediaType.USER_PROFILE_IMAGE);
-        try {
-            ServletFileUpload upload = new ServletFileUpload();
-            FileItemIterator itemIterator = upload.getItemIterator(request);
-            while (itemIterator.hasNext()) {
-                FileItemStream item = itemIterator.next();
-                String name = item.getFieldName();
-                InputStream stream = item.openStream();
-                if (!item.isFormField()) {
-                    String filename = item.getName();
-                    mediaFile.setFileName(filename);
-                    mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(filename));
-                    mediaFile.setContent(IOUtils.toByteArray(stream));
-                    /*OutputStream out = new FileOutputStream(filename);
-                    IOUtils.copy(stream, out);
-                    out.close();*/
-                    stream.close();
-                }
-            }
-        } catch (FileUploadException e) {
-            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
-        } catch (IOException e) {
-            throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
-        }
-        //userDTO.setMediaFile(mediaService.save(mediaFile));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.USER_PROFILE_PHOTO_UPLOAD));
-        return userDTO;
-    }
-
-    public Page<ActivityLog> getActivityLogs(Pageable pageable) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return activityLogService.getActivities(loggedInUser.getUserId(), pageable);
-    }
 
     /**
      * upload users data
@@ -656,6 +530,12 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * get user by roles
+     *
+     * @param roles
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<UserVO> getUsersByRoles(List<String> roles) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -677,6 +557,13 @@ public class UserService implements UserDetailsService {
         return userVOS;
     }
 
+    /**
+     * get users by roles and organisation
+     *
+     * @param roles
+     * @param organisationId
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<UserVO> getUsersByRolesAndOrganisation(List<String> roles, BigInteger organisationId) {
         List<UserVO> userVOS = new ArrayList<UserVO>();
@@ -697,4 +584,89 @@ public class UserService implements UserDetailsService {
         }
         return userVOS;
     }
+
+    /**
+     * save multiple users
+     *
+     * @param users
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public Iterable<User> saveUsers(List<User> users) {
+        return userRepository.saveAll(users);
+    }
+
+    /*
+    public Page<ActivityLog> getActivityLogs(Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return activityLogService.getActivities(loggedInUser.getUserId(), pageable);
+    }
+     @Transactional(readOnly = true)
+    public Page<UserVO> getUserByIds(List<BigInteger> ids, Pageable pageable) {
+        List<User> users = userRepository.getUserByIds(ids, pageable).getContent();
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        for (User user : users) {
+            userVOS.add(new UserVO(user));
+        }
+        return new PageImpl<>(userVOS);
+    }
+
+    public MediaFile getProfilePhoto(BigInteger userId) {
+        return mediaService.getMediaFile(EntityType.USER, MediaType.USER_PROFILE_IMAGE, userId);
+    }
+    public UserDTO getUserSettings() {
+        UserDTO userDTO = new UserDTO();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userDTO.setMediaFile(this.getProfilePhoto(loggedInUser.getUserId()));
+        return userDTO;
+    }
+    @Transactional
+    public UserDTO uploadUserProfile(HttpServletRequest request) {
+        UserDTO userDTO = new UserDTO();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!ServletFileUpload.isMultipartContent(request)) {
+            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+        }
+        MediaFile mediaFile = this.getProfilePhoto(loggedInUser.getUserId());
+        mediaFile = (mediaFile == null) ? new MediaFile() : mediaFile;
+        mediaFile.setEntityId(loggedInUser.getUserId());
+        mediaFile.setEntityType(EntityType.USER);
+        mediaFile.setMediaType(MediaType.USER_PROFILE_IMAGE);
+        try {
+            ServletFileUpload upload = new ServletFileUpload();
+            FileItemIterator itemIterator = upload.getItemIterator(request);
+            while (itemIterator.hasNext()) {
+                FileItemStream item = itemIterator.next();
+                String name = item.getFieldName();
+                InputStream stream = item.openStream();
+                if (!item.isFormField()) {
+                    String filename = item.getName();
+                    mediaFile.setFileName(filename);
+                    mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(filename));
+                    mediaFile.setContent(IOUtils.toByteArray(stream));
+
+                    stream.close();
+                }
+            }
+        } catch (FileUploadException e) {
+            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
+        }
+        //userDTO.setMediaFile(mediaService.save(mediaFile));
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.USER_PROFILE_PHOTO_UPLOAD));
+        return userDTO;
+    }
+    @Transactional(readOnly = true)
+    public UserVO getUserByUserName(String userName) {
+        User user = userRepository.getUserByEmail(userName);
+        UserVO userVO = null;
+        if (user != null) {
+            userVO = new UserVO(user);
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        return userVO;
+    }
+     */
 }

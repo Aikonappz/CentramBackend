@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -27,16 +28,12 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     List<User> getUsersByEmails(@Param("emails") List<String> emails, @Param("organisationId") BigInteger organisationId);
 
     @Modifying
-    @Query("update User set status = (:status) where id in (:userIds)")
-    Integer updateStatus(@Param("status") Status status, @Param("userIds") List<BigInteger> userIds);
+    @Query("update User set status = (:status), modifiedDate = (:modifiedDate) where id in (:userIds)")
+    Integer updateStatus(@Param("status") Status status, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("userIds") List<BigInteger> userIds);
 
     @Modifying
-    @Query("update User set password = (:password) where id = (:userId)")
-    Integer changePassword(@Param("password") String password, @Param("userId") BigInteger userId);
-
-    @Modifying
-    @Query("update User set password = (:password) where id = (:userId)")
-    Integer updatePassword(@Param("password") String password, @Param("userId") BigInteger userId);
+    @Query("update User set password = (:password), modifiedDate = (:modifiedDate) where id = (:userId)")
+    Integer updatePassword(@Param("password") String password, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("userId") BigInteger userId);
 
     @Query("select u from User u " +
             "left join u.organisation o " +

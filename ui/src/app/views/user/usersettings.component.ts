@@ -7,6 +7,7 @@ import { Location } from '@angular/common';
 import { MiscService } from '../../service/MiscService';
 import { MustMatch } from '../../validator/MustMatch';
 import { UserDTO } from '../../model/UserDTO';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 @Component({
   selector: 'app-usersettings',
@@ -14,18 +15,22 @@ import { UserDTO } from '../../model/UserDTO';
   styleUrls: ['./usersettings.component.scss']
 })
 export class UserSettingsComponent implements OnInit {
+  moduleName: string = "USER";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   angForm: FormGroup;
   user: UserDTO;
   passwordChanged: boolean = false;
   constructor(
+    private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private _location: Location,
     private titleService: Title,
     private router: Router,
     private userService: UserService,
-    private miscService: MiscService) {
+    private miscService: MiscService
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -33,6 +38,10 @@ export class UserSettingsComponent implements OnInit {
       }
     });
     this.user = new UserDTO();
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {

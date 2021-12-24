@@ -19,6 +19,8 @@ declare var $: any;
   styleUrls: ['./edituser.component.scss']
 })
 export class EditUserComponent implements OnInit {
+  moduleName: string = "USER";
+  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
@@ -91,6 +93,10 @@ export class EditUserComponent implements OnInit {
     });
     this.user = new User();
     this.user.status = this.defaultStatus;
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   getTitle(state, parent) {
@@ -317,7 +323,7 @@ export class EditUserComponent implements OnInit {
   get f() { return this.angForm.controls; }
 
   formSubmit() {
-    console.log(this.angForm);
+    //console.log(this.angForm);
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.user.firstName = this.angForm.controls['firstName'].value;
@@ -352,11 +358,7 @@ export class EditUserComponent implements OnInit {
       /* process department and location */
       this.user.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user);
-      if (this.newEntity) {
-        this.callAddUserService();
-      } else {
-        this.callEditUserService();
-      }
+      this.callSaveUserService();
     } else {
       console.log("Invalid Form!");
     }
@@ -364,18 +366,9 @@ export class EditUserComponent implements OnInit {
 
   goBack() { this._location.back(); }
 
-  callAddUserService() {
+  callSaveUserService() {
     this.userService
-      .addUserService(this.user)
-      .subscribe((data: any) => {
-        //console.log(data);
-        this.router.navigate(['/user']);
-      });
-  }
-
-  callEditUserService() {
-    this.userService
-      .editUserService(this.user)
+      .saveUserService(this.user)
       .subscribe((data: any) => {
         //console.log(data);
         this.router.navigate(['/user']);

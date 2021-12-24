@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,7 +100,7 @@ public class OrganisationService {
     @Transactional
     public void updateStatus(Status status, List<BigInteger> organisationIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        organisationRepository.updateStatus(status, organisationIds);
+        organisationRepository.updateStatus(status, LocalDateTime.now(), organisationIds);
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
     }
 
@@ -220,7 +221,7 @@ public class OrganisationService {
     @Transactional
     public Setting updateOrganisationSettings(Setting setting) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        organisationRepository.updateSetting(setting, loggedInUser.getOrganisationId());
+        organisationRepository.updateSetting(setting, LocalDateTime.now(), loggedInUser.getOrganisationId());
         activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
         return setting;
     }

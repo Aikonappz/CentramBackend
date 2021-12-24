@@ -364,7 +364,7 @@ export class EditOrganisationComponent implements OnInit {
     this.user.organisation.id = id;
     this.user.organisation.version = version;
     this.userService
-      .addUserService(this.user)
+      .saveUserService(this.user)
       .subscribe((data: UserVO) => {
         //console.log(data);        
       });

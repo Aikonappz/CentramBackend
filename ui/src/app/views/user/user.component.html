@@ -8,20 +8,24 @@
                             <i class="fa fa-align-justify"></i> Users
                         </div>
                         <div class="col-md-5 d-flex justify-content-between">
-                            <a href="assets/downloads/users.csv" class="btn btn-sm btn-warning btn-minimize"><i
-                                    class="icon-arrow-up-circle"></i> Sample Upload File</a>
-                            <button type="button" class="btn btn-sm btn-success btn-minimize" (click)="upload()"><i
+                            <a *ngIf="hasPermission('WRITE')" href="assets/downloads/users.csv"
+                                class="btn btn-sm btn-warning btn-minimize"><i class="icon-arrow-up-circle"></i> Sample
+                                Upload File</a>
+                            <button *ngIf="hasPermission('WRITE')" type="button"
+                                class="btn btn-sm btn-success btn-minimize" (click)="upload()"><i
                                     class="icon-cloud-upload"></i> Upload</button>
-                            <button type="button" class="btn btn-sm btn-warning btn-minimize" (click)="download()"><i
+                            <button *ngIf="hasPermission('READ')" type="button"
+                                class="btn btn-sm btn-warning btn-minimize" (click)="download()"><i
                                     class="icon-cloud-download"></i> Download</button>
-                            <button type="button" class="btn btn-sm btn-primary" (click)="add()">
+                            <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                (click)="add()">
                                 <i class="icon-plus"></i> Add
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="card ">
+                    <div *ngIf="hasPermission('SEARCH')" class="card ">
                         <div class="card-header">
                             <i class="fa fa-search"></i>Search User
                         </div>
@@ -64,19 +68,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col w-10 justify-content-around d-flex flex-column">
-                                        <div>
-                                            <button type="submit" class="btn btn-primary btn-sm">
-                                                <i class="fa fa-search"></i> Search
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
-                                                <i class="fa fa-close"></i> Cancel
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-search"></i> Search
+                                </button>
+                                <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
+                                    <i class="fa fa-close"></i> Cancel
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -135,11 +135,11 @@
                         <ng-container matColumnDef="action">
                             <th class="w-20" mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button type="button" class="btn btn-sm btn-primary" (click)="updateStatus(element)"><i
-                                        class="icon-ban"></i> Change Status
+                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                    (click)="updateStatus(element)"><i class="icon-ban"></i> Change Status
                                 </button>
-                                <button type="button" class="btn btn-sm btn-primary" (click)="edit(element)"><i
-                                        class="icon-pencil"></i> Edit
+                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
+                                    (click)="edit(element)"><i class="icon-pencil"></i> Edit
                                 </button>
                             </td>
                         </ng-container>

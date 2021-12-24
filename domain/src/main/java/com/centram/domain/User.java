@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
@@ -128,18 +130,21 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     private Organisation organisation;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
     private Location location;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "department_id", nullable = true, referencedColumnName = "id")
     private Department department;
 

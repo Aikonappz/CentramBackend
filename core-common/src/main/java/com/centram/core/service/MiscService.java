@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -204,16 +205,32 @@ public class MiscService {
                 mailValues = new HashMap<>();
                 log.info("email : {}, password: {}", userVO.getEmail(), userVO.getPassword());
                 mailValues.put("password", userVO.getPassword());
-                appEmailService.sendOnboardMail(userVO, mailValues);
+                this.sendOnboardMail(userVO, mailValues);
             }
         }
     }
+
+    @Transactional
+    @Async("asyncExecutor")
+    public void sendOnboardMail(UserVO userVO, Map<String, String> mailValues) {
+        /* save notification to db*/
+        Notification notification = new Notification();
+        notification.setStatus(Status.PUSHED);
+        notification.setNotificationTitle("Welcome to Centram!");
+        notification.setNotificationBody("Please use the application now!");
+        notification.setNotificationType(NotificationType.INFO);
+        notification.setUser(new User(userVO.getVersion(), userVO.getId()));
+        notification = notificationService.save(notification);
+        appEmailService.sendOnboardMail(userVO, mailValues);
+    }
+
 
     /**
      * notify user incident update via mail and notification
      *
      * @param incidentEmailVO
      */
+    @Transactional
     @Async("asyncExecutor")
     public void notifyIncidentUpdate(IncidentEmailVO incidentEmailVO) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -307,6 +324,7 @@ public class MiscService {
      *
      * @param incidentEmailVO
      */
+    @Transactional
     @Async("asyncExecutor")
     public void notifyIncidentAssign(IncidentEmailVO incidentEmailVO) {
         //LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -419,6 +437,7 @@ public class MiscService {
      *
      * @param incidentEmailVO
      */
+    @Transactional
     @Async("asyncExecutor")
     public void notifyIncidentAssignViaBatch(IncidentEmailVO incidentEmailVO) {
         //LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -527,6 +546,7 @@ public class MiscService {
         appEmailService.sendIncidentAssignEmail(incidentEmailVO);
     }
 
+    @Transactional
     @Async("asyncExecutor")
     public void notifyWip50PercentTimePassed(IncidentEmailVO incidentEmailVO) {
         /*need data for email*/
@@ -568,6 +588,7 @@ public class MiscService {
         /*need data for email*/
     }
 
+    @Transactional
     @Async("asyncExecutor")
     public void notifyWip75PercentTimePassed(IncidentEmailVO incidentEmailVO) {
         /*need data for email*/
@@ -609,6 +630,7 @@ public class MiscService {
         /*need data for email*/
     }
 
+    @Transactional
     @Async("asyncExecutor")
     public void notifySlaBreached(IncidentEmailVO incidentEmailVO) {
         /*need data for email*/
@@ -673,6 +695,7 @@ public class MiscService {
         /*need data for email*/
     }
 
+    @Transactional
     @Async("asyncExecutor")
     public void notifySlaBreached60MinutesPassed(IncidentEmailVO incidentEmailVO) {
         /*need data for email*/

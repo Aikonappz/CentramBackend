@@ -56,7 +56,7 @@ public class OrganisationApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Organisation not found")
     })
-    @RequestMapping(value = "/{ids}/{status}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{ids}/{status}", method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasAppAdminAccess(authentication.principal)")
     public ResponseEntity<Void> updateStatus(@NotNull @ApiParam(value = "Organisation id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
         organisationService.updateStatus(status, ids);
