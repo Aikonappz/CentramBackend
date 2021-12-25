@@ -165,7 +165,7 @@ public class UserApiController {
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('USER,MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE|SEARCH,WRITE|SEARCH,',authentication.principal)")
     public ResponseEntity<PaginatedList<UserVO>> getUsers(
             @ApiParam(value = "User Email", defaultValue = "", required = false) @RequestParam(value = "email", defaultValue = "", required = false) String email,
             @ApiParam(value = "User EmployeeId", defaultValue = "", required = false) @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId,

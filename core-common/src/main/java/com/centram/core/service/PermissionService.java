@@ -5,7 +5,6 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.PermissionRepository;
 import com.centram.domain.Permission;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,6 @@ public class PermissionService {
     @Autowired
     private RedisService redisService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
     @Transactional
     public Permission save(Permission permission) {
         return permissionRepository.save(permission);
@@ -49,7 +45,11 @@ public class PermissionService {
         List<Permission> permissions = redisService.getPermissionByRoleId(roleId);
         if (permissions.size() == 0) {
             permissions = permissionRepository.getPermissionByRoleId(roleId);
-            redisService.savePermission(roleId, permissions);
+            if (permissions != null) {
+                redisService.savePermission(roleId, permissions);
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            }
         }
         return permissions;
     }
@@ -75,7 +75,7 @@ public class PermissionService {
 
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "permission", key = "'permission_'.concat(#permissionId)")
+    //@Cacheable(cacheNames = "permission", key = "'permission_'.concat(#permissionId)")
     public Permission getPermissionById(BigInteger permissionId) {
         Permission permission = permissionRepository.getOne(permissionId);
         if (permission == null) {

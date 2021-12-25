@@ -3,10 +3,8 @@ package com.centram.core.service;
 
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
-import com.centram.common.redis.repository.RedisModuleRepository;
 import com.centram.core.repository.ModuleRepository;
 import com.centram.domain.Module;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -27,28 +26,33 @@ public class ModuleService {
     private ModuleRepository moduleRepository;
 
     @Autowired
-    private RedisModuleRepository redisModuleRepository;
+    private RedisService redisService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    //@Cacheable(cacheNames = "all_modules", key = "'list'")
+    @Transactional(readOnly = true)
     public Page<Module> getModules(Pageable pageable) {
-        //return modelMapper.map(moduleRepository.findAll(pageable).getContent(), new TypeToken<List<ModuleVO>>() {}.getType());
         return moduleRepository.findAll(pageable);
     }
 
-    //@Cacheable(cacheNames = "module", key = "#moduleId")
+    @Transactional(readOnly = true)
     public Module getModuleById(BigInteger moduleId) {
-        Module module = moduleRepository.getOne(moduleId);
+        Module module = redisService.getModuleById(moduleId);
         if (module == null) {
-            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            module = moduleRepository.getById(moduleId);
+            if (module != null) {
+                redisService.saveModule(moduleId, module);
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            }
         }
-        //return modelMapper.map(module, new TypeToken<ModuleVO>() { }.getType());
         return module;
     }
 
+    @Transactional(readOnly = true)
     public List<Module> getModuleByIds(List<BigInteger> moduleIds) {
-        return moduleRepository.findAllById(moduleIds);
+        List<Module> modules = new ArrayList<Module>();
+        for (BigInteger moduleId : moduleIds) {
+            modules.add(this.getModuleById(moduleId));
+        }
+        return modules;
     }
 }

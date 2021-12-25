@@ -19,7 +19,7 @@ export class MiscService {
         return this.http.post('/v1/misc/request-demo', requestDemo);
     }
     rolesService(request?: any): Observable<any> {
-        return this.http.get('/v1/misc/all-roles', { "params": request });
+        return this.http.get('/v1/misc/all-role', { "params": request });
     }
     roleService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/role/' + id, { "params": request });

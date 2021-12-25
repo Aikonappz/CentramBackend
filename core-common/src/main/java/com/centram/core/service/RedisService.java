@@ -2,11 +2,13 @@ package com.centram.core.service;
 
 import com.centram.common.vo.UserVO;
 import com.centram.domain.*;
+import com.centram.domain.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -16,6 +18,18 @@ import java.util.List;
 public class RedisService {
 
     public static final Logger log = LoggerFactory.getLogger(RedisService.class);
+
+    /*MODULE*/
+    @CachePut(value = "module", key = "#moduleId")
+    public Module saveModule(BigInteger moduleId, Module module) {
+        return module;
+    }
+
+    @Cacheable(value = "module", key = "#moduleId")
+    public Module getModuleById(BigInteger moduleId) {
+        return null;
+    }
+    /*MODULE*/
 
     /*AppConfiguration*/
     @CachePut(value = "appConfiguration", key = "#appConfigurationKey")

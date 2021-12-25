@@ -1,6 +1,8 @@
 package com.centram.core.service;
 
 
+import com.centram.common.exeception.AppException;
+import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.RoleRepository;
 import com.centram.domain.Role;
@@ -14,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -36,10 +37,11 @@ public class RoleService {
     public Role getById(BigInteger roleId) {
         Role role = redisService.getRoleById(roleId);
         if (role == null) {
-            Optional<Role> optRole = roleRepository.findById(roleId);
-            if (optRole.isPresent()) {
-                role = optRole.get();
+            role = roleRepository.getById(roleId);
+            if (role == null) {
                 redisService.saveRole(roleId, role);
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
             }
         }
         return role;
