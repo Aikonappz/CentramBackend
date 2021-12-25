@@ -8,8 +8,8 @@ export const navItems: INavData[] = [
     icon: 'icon-speedometer',
   },
   {
-    name: 'Organisation',
-    url: '/organisation',
+    name: 'Organization',
+    url: '/organization',
     icon: 'icon-target',
   },
   {

@@ -1,7 +1,7 @@
 <app-header [navbarBrandRouterLink]="['/dashboard']" [fixed]="true"
   [navbarBrandFull]="{src: 'assets/img/brand/logo.svg', width: 89, height: 25, alt: 'CoreUI Logo'}"
   [navbarBrandMinimized]="{src: 'assets/img/brand/sygnet.svg', width: 30, height: 30, alt: 'CoreUI Logo'}"
-  [sidebarToggler]="'lg'" [asideMenuToggler]="'lg'">
+  [sidebarToggler]="'lg'" [asideMenuToggler]=false>
   <!-- <ul class="nav navbar-nav d-md-down-none">
     <li class="nav-item px-3">
       <a class="nav-link" href="#">Dashboard</a>
@@ -98,7 +98,7 @@
       <app-spinner></app-spinner>
     </div><!-- /.container-fluid -->
   </main>
-  <app-aside [fixed]="true" [display]="false" [ngClass]="'test'">
+  <!-- <app-aside [fixed]="true" [display]="false" [ngClass]="'test'">
     <tabset>
       <tab>
         <ng-template tabHeading><i class="icon-list"></i></ng-template>
@@ -364,9 +364,9 @@
         </div>
       </tab>
     </tabset>
-  </app-aside>
+  </app-aside> -->
 </div>
-<!-- <app-footer>
+<app-footer>
   <span><a href="{{appUrl}}">{{appBrandName}}</a> &copy; {{currentYear}} {{appDevName}}.</span>
   <span class="ml-auto">Powered by <a href="{{appUrl}}">{{appDevName}}</a></span>
-</app-footer> -->
+</app-footer>

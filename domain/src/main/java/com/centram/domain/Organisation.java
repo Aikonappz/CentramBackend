@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.converter.ContactPersonConverter;
 import com.centram.domain.converter.SettingConverter;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
@@ -17,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ApiModel(description = "Organisation")
 @Validated
@@ -117,6 +119,13 @@ public class Organisation extends BaseEntity implements Serializable {
     @Column(name = "setting", nullable = false, columnDefinition = "TEXT not null")
     @Convert(converter = SettingConverter.class)
     private Setting setting;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @Lob
+    @Column(name = "contact_Persons", nullable = false, columnDefinition = "TEXT not null")
+    @Convert(converter = ContactPersonConverter.class)
+    private List<ContactPerson> contactPersons;
 
     public Organisation(@NotNull BigInteger id) {
         this.id = id;

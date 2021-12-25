@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { EditOrganisationComponent } from './editorganisation.component';
 import { OrgSettingsComponent } from './orgsettings.component';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { OrgSettingsComponent } from './orgsettings.component';
     OrganisationRoutingModule,
     MatTableModule,
     MatPaginatorModule,
+    BsDropdownModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
     TabsModule,

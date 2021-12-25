@@ -1,3 +1,8 @@
+ALTER TABLE centram.organisation ADD contact_Persons varchar(5000) DEFAULT '[{"name":null,"email":null,"contactNo":null},{"name":null,"email":null,"contactNo":null}]' NOT NULL;
+
+
+
+
 SET @@session.time_zone = "+00:00";
 SET @@global.time_zone = "+00:00";
 commit;

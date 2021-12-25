@@ -19,6 +19,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { StartEndDateValidation } from '../../validator/StartEndDateValidation';
 import { Setting } from '../../model/Setting';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { ContactPerson } from '../../model/ContactPerson';
 
 @Component({
   selector: 'app-edituser',
@@ -26,7 +27,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
   styleUrls: ['./editorganisation.component.scss']
 })
 export class EditOrganisationComponent implements OnInit {
-  moduleName: string = "ORGANISATION";
+  moduleName: string = "ORGANIZATION";
   actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   licenseTypes: string[];
   panRegex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
@@ -108,17 +109,17 @@ export class EditOrganisationComponent implements OnInit {
           Validators.maxLength(10)
         ]),
         pan: new FormControl('', [
-          Validators.required,
+          //Validators.required,
           Validators.pattern(this.panRegex),
           //Validators.required
         ]),
         tan: new FormControl('', [
-          Validators.required,
+          //Validators.required,
           Validators.pattern(this.tanRegex),
           //Validators.required
         ]),
         gstin: new FormControl('', [
-          Validators.required,
+          //Validators.required,
           Validators.pattern(this.gstinRegex),
           //Validators.required
         ]),
@@ -168,6 +169,34 @@ export class EditOrganisationComponent implements OnInit {
         location: new FormControl('', [
           //Validators.required
         ]),
+        keyPersonName1: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(255),
+        ]),
+        keyPersonEmail1: new FormControl('', [
+          Validators.required,
+          Validators.email,
+          Validators.maxLength(255),
+        ]),
+        keyPersonContact1: new FormControl('', [
+          Validators.required,
+          Validators.pattern(this.phoneRegex),
+          Validators.maxLength(255),
+        ]),
+        keyPersonName2: new FormControl('', [
+          //Validators.required
+          Validators.maxLength(255),
+        ]),
+        keyPersonEmail2: new FormControl('', [
+          //Validators.required
+          Validators.email,
+          Validators.maxLength(255),
+        ]),
+        keyPersonContact2: new FormControl('', [
+          //Validators.required
+          Validators.pattern(this.phoneRegex),
+          Validators.maxLength(255),
+        ]),
       }, {
         validators: StartEndDateValidation('licenseStart', 'licenseEnd')
       });
@@ -205,17 +234,17 @@ export class EditOrganisationComponent implements OnInit {
           Validators.maxLength(10)
         ]),
         pan: new FormControl('', [
-          Validators.required,
+          //Validators.required,
           Validators.pattern(this.panRegex),
           //Validators.required
         ]),
         tan: new FormControl('', [
-          Validators.required,
+          //Validators.required,
           Validators.pattern(this.tanRegex),
           //Validators.required
         ]),
         gstin: new FormControl('', [
-          Validators.required,
+          //Validators.required,
           Validators.pattern(this.gstinRegex),
           //Validators.required
         ]),
@@ -249,6 +278,34 @@ export class EditOrganisationComponent implements OnInit {
         department: new FormControl('', [
         ]),
         location: new FormControl('', [
+        ]),
+        keyPersonName1: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(255),
+        ]),
+        keyPersonEmail1: new FormControl('', [
+          Validators.required,
+          Validators.email,
+          Validators.maxLength(255),
+        ]),
+        keyPersonContact1: new FormControl('', [
+          Validators.required,
+          Validators.pattern(this.phoneRegex),
+          Validators.maxLength(255),
+        ]),
+        keyPersonName2: new FormControl('', [
+          //Validators.required
+          Validators.maxLength(255),
+        ]),
+        keyPersonEmail2: new FormControl('', [
+          //Validators.required
+          Validators.email,
+          Validators.maxLength(255),
+        ]),
+        keyPersonContact2: new FormControl('', [
+          //Validators.required
+          Validators.pattern(this.phoneRegex),
+          Validators.maxLength(255),
         ]),
       }, {
         validators: StartEndDateValidation('licenseStart', 'licenseEnd')
@@ -304,6 +361,17 @@ export class EditOrganisationComponent implements OnInit {
       this.org.licenseStart = AppUtility.prepareDateToString(moment(this.angForm.controls['licenseStart'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       this.org.licenseEnd = AppUtility.prepareDateToString(moment(this.angForm.controls['licenseEnd'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       this.org.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
+      let cnt1 = new ContactPerson();
+      cnt1.name = this.angForm.controls['keyPersonName1'].value;
+      cnt1.email = this.angForm.controls['keyPersonEmail1'].value;
+      cnt1.contactNo = this.angForm.controls['keyPersonContact1'].value;
+      let cnt2 = new ContactPerson();
+      cnt2.name = this.angForm.controls['keyPersonName2'].value;
+      cnt2.email = this.angForm.controls['keyPersonEmail2'].value;
+      cnt2.contactNo = this.angForm.controls['keyPersonContact2'].value;
+      this.org.contactPersons = [];
+      this.org.contactPersons.push(cnt1);
+      this.org.contactPersons.push(cnt2);
       //console.log(JSON.stringify(this.org));
       if (this.newEntity) {
         this.org.setting = new Setting();
@@ -356,7 +424,7 @@ export class EditOrganisationComponent implements OnInit {
         if (this.newEntity) {
           this.callAddUserService(data.id, data.version);
         }
-        this.router.navigate(['/organisation']);
+        this.router.navigate(['/organization']);
       });
   }
 
@@ -390,6 +458,7 @@ export class EditOrganisationComponent implements OnInit {
         this.org.licenseEnd = data.licenseEnd;
         this.org.licenseStart = data.licenseStart;
         this.org.licenseType = data.licenseType;
+        this.org.contactPersons = data.contactPersons;
         this.org.setting = data.setting == null ? new Setting() : data.setting;
         //console.log(JSON.stringify(this.org));
 
@@ -404,11 +473,19 @@ export class EditOrganisationComponent implements OnInit {
         this.angForm.get('pan').setValue(this.org.pan);
         this.angForm.get('tan').setValue(this.org.tan);
         this.angForm.get('name').setValue(this.org.name);
-
         this.statusFlag = String(this.org.status) == 'ACTIVE' ? true : false;
+
+
+        this.angForm.get('keyPersonName1').setValue(this.org.contactPersons[0].name);
+        this.angForm.get('keyPersonEmail1').setValue(this.org.contactPersons[0].email);
+        this.angForm.get('keyPersonContact1').setValue(this.org.contactPersons[0].contactNo);
+        this.angForm.get('keyPersonName2').setValue(this.org.contactPersons[1].name);
+        this.angForm.get('keyPersonEmail2').setValue(this.org.contactPersons[1].email);
+        this.angForm.get('keyPersonContact2').setValue(this.org.contactPersons[1].contactNo);
+
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
-        this.angForm.markAllAsTouched();
+        //this.angForm.markAllAsTouched();
         this.initSelectBoxes();
       });
   }

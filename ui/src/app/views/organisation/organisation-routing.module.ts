@@ -8,7 +8,7 @@ const routes: Routes = [
   {
     path: '',
     data: {
-      title: 'Organisation'
+      title: 'Organization'
     },
     children: [
       {
@@ -16,7 +16,7 @@ const routes: Routes = [
         component: OrganisationComponent,
         pathMatch: 'full',
         data: {
-          title: 'Organisation'
+          title: 'Organization'
         },
       },
       {
@@ -24,7 +24,7 @@ const routes: Routes = [
         component: EditOrganisationComponent,
         pathMatch: 'full',
         data: {
-          title: 'Add Organisation'
+          title: 'Add Organization'
         }
       },
       {
@@ -32,7 +32,7 @@ const routes: Routes = [
         component: EditOrganisationComponent,
         pathMatch: 'full',
         data: {
-          title: 'Edit Organisation'
+          title: 'Edit Organization'
         }
       },
       {
@@ -40,7 +40,7 @@ const routes: Routes = [
         component: OrgSettingsComponent,
         pathMatch: 'full',
         data: {
-          title: 'Organisation Settings'
+          title: 'Organization Settings'
         }
       },
     ]

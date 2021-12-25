@@ -1,4 +1,5 @@
 import { Base } from "./Base";
+import { ContactPerson } from "./ContactPerson";
 import { LicenseType } from "./enumerator/LicenseType";
 import { Status } from "./enumerator/Status";
 import { MediaFile } from "./MediaFile";
@@ -20,6 +21,7 @@ export class Organisation extends Base {
     status: any;
     licenseType: LicenseType;
     setting: Setting;
+    contactPersons: ContactPerson[];
 
     constructor() {
         super();
@@ -37,6 +39,7 @@ export class Organisation extends Base {
         this.status = Status.ACTIVE;
         this.licenseType = LicenseType.ALL;
         this.setting = new Setting();
+        this.contactPersons = [];
     }
 }
 

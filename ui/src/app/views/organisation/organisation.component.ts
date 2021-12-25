@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
@@ -17,8 +17,8 @@ import { OrganisationService } from '../../service/OrganisationService';
   templateUrl: './organisation.component.html',
   styleUrls: ['./organisation.component.scss']
 })
-export class OrganisationComponent implements OnInit {
-  moduleName: string = "ORGANISATION";
+export class OrganisationComponent implements OnInit, OnDestroy {
+  moduleName: string = "ORGANIZATION";
   actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'addressDtl', 'licence', 'status', 'action'];
   private datasource: OrganisationDataSource;
@@ -27,6 +27,10 @@ export class OrganisationComponent implements OnInit {
   org: Organisation;
   defaultStatus: any = 'ALL';
   statusFlag: boolean = true;
+  status: { isOpen: boolean } = { isOpen: false };
+  disabled: boolean = false;
+  isDropup: boolean = true;
+  autoClose: boolean = false;
 
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -53,6 +57,26 @@ export class OrganisationComponent implements OnInit {
     this.org.status = this.defaultStatus;
   }
 
+  onHidden(): void {
+    console.log('Dropdown is hidden');
+  }
+  onShown(): void {
+    console.log('Dropdown is shown');
+  }
+  isOpenChange(): void {
+    console.log('Dropdown state is changed');
+  }
+
+  toggleDropdown($event: MouseEvent): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.status.isOpen = !this.status.isOpen;
+  }
+
+  change(value: boolean): void {
+    this.status.isOpen = value;
+  }
+
   hasPermission(action: string): boolean {
     return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
@@ -71,6 +95,10 @@ export class OrganisationComponent implements OnInit {
   ngOnInit(): void {
     this.datasource = new OrganisationDataSource(this.service);
     this.datasource.loadData();
+  }
+
+  ngOnDestroy() {
+    this.status.isOpen = false;
   }
 
   ngAfterViewInit() {
@@ -107,10 +135,10 @@ export class OrganisationComponent implements OnInit {
     }
   }
   edit(org: Organisation) {
-    this.router.navigate(['/organisation/edit/' + org.id]);
+    this.router.navigate(['/organization/edit/' + org.id]);
   }
   add() {
-    this.router.navigate(['/organisation/add']);
+    this.router.navigate(['/organization/add']);
   }
   loadPage() {
     this.angForm.reset();
@@ -137,9 +165,8 @@ export class OrganisationComponent implements OnInit {
     }
   }
 
-  @ViewChild("status") status;
-  onChange(inp: string) {
-    let val: any = inp;
-    this.org.status = val;
+  view(element: Organisation){
+
   }
+
 }

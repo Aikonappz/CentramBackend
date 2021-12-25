@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -37,8 +38,9 @@ public class RoleService {
     public Role getById(BigInteger roleId) {
         Role role = redisService.getRoleById(roleId);
         if (role == null) {
-            role = roleRepository.getById(roleId);
-            if (role != null) {
+            Optional<Role> optionalRole = roleRepository.findById(roleId);
+            if (optionalRole.isPresent()) {
+                role = optionalRole.get();
                 redisService.saveRole(roleId, role);
             } else {
                 throw new AppException(GenericErrorCode.DATA_NOT_FOUND);

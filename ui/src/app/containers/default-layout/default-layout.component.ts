@@ -13,6 +13,7 @@ import { NotificationService } from '../../service/NotificationService';
 import { NotificationWSService } from '../../service/NotificationWSService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { navItems } from '../../_nav';
+declare var $: any;
 
 @Component({
   selector: 'app-dashboard',
@@ -108,7 +109,11 @@ export class DefaultLayoutComponent implements OnInit {
     this.sidebarMinimized = e;
   }
 
-  ngOnInit(): void { this.connect(); }
+  ngOnInit(): void {
+    //$(".navbar-nav > .navbar-toggler").addClass("d-none");
+    //$("#message > a.close-notify").siblings('span').text("your text");
+    this.connect();
+  }
 
   ngAfterViewInit() {
   }

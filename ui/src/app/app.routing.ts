@@ -94,7 +94,7 @@ export const routes: Routes = [
         loadChildren: () => import('./views/user/user.module').then(m => m.UserModule),
       },
       {
-        path: 'organisation',
+        path: 'organization',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
       },

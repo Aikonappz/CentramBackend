@@ -3,15 +3,15 @@
     <div class="col-sm-12">
       <div class="card">
         <div class="card-header" *ngIf="newEntity">
-          <strong>Add User</strong>
+          <strong>Add Organization</strong>
         </div>
         <div class="card-header" *ngIf="!newEntity">
-          <strong>Edit User</strong>
+          <strong>Edit Organization</strong>
         </div>
         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
           <div class="card-body">
             <fieldset class="border p-2">
-              <legend class="w-auto">Organisation</legend>
+              <legend class="w-auto">Organization</legend>
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="name">Name</label>
@@ -78,7 +78,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="pan">Pan</label>
+                  <label class="form-col-form-label" for="pan">PAN</label>
                   <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="pan" ngModel
                     id="pan" name="pan" class="form-control" placeholder="Pan" aria-label="Pan">
                   <div *ngIf="f.pan.touched && f.pan.invalid" class="alert alert-danger-custom">
@@ -93,7 +93,7 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="tan">Tan</label>
+                  <label class="form-col-form-label" for="tan">TAN</label>
                   <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="tan" ngModel
                     id="tan" name="tan" class="form-control" placeholder="Tan" aria-label="Tan">
                   <div *ngIf="f.tan.touched && f.tan.invalid" class="alert alert-danger-custom">
@@ -106,7 +106,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="gstin">Gstin</label>
+                  <label class="form-col-form-label" for="gstin">GSTIN</label>
                   <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="gstin" ngModel
                     id="gstin" name="gstin" class="form-control" placeholder="Gstin" aria-label="Gstin">
                   <div *ngIf="f.gstin.touched && f.gstin.invalid" class="alert alert-danger-custom">
@@ -162,13 +162,119 @@
                     <div class="form-check form-check-inline mr-1" id="inline-radios">
                       <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
                         name="status" id="ACTIVE" [checked]="(org.status == 'ACTIVE')" value="true">
-                      <label class="form-check-label" for="ACTIVE">ACTIVE</label>
+                      <label class="form-check-label" for="ACTIVE">Active</label>
                     </div>
                     <div class="form-check form-check-inline mr-1">
                       <input class="form-check-input" type="radio" name="status" id="INACTIVE"
                         [checked]="(org.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
                         value="false">
-                      <label class="form-check-label" for="INACTIVE">INACTIVE</label>
+                      <label class="form-check-label" for="INACTIVE">Inactive</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset class="border p-2">
+              <legend class="w-auto">Key Person</legend>
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="keyPersonName1">Key Person Name
+                    1</label>
+                  <input type="text" formControlName="keyPersonName1" ngModel id="keyPersonName1" name="keyPersonName1"
+                    class="form-control" placeholder="Key Person Name 1" aria-label="Key Person Name 1">
+                  <div *ngIf="f.keyPersonName1.touched && f.keyPersonName1.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.keyPersonName1.errors?.required">
+                      Key Person Name 1 is required.
+                    </div>
+                    <div *ngIf="f.keyPersonName1.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="keyPersonEmail1">Key Person Email
+                    1</label>
+                  <input type="text" formControlName="keyPersonEmail1" ngModel id="keyPersonEmail1"
+                    name="keyPersonEmail1" class="form-control" placeholder="Key Person Email 1"
+                    aria-label="Key Person Email 1">
+                  <div *ngIf="f.keyPersonEmail1.touched && f.keyPersonEmail1.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.keyPersonEmail1.errors?.required">
+                      Key Person Email 1 is required.
+                    </div>
+                    <div *ngIf="f.keyPersonEmail1.errors?.email">
+                      Invalid input! Only email allowed.
+                    </div>
+                    <div *ngIf="f.keyPersonEmail1.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="keyPersonContact1">Key Person Contact
+                    1</label>
+                  <input type="text" formControlName="keyPersonContact1" ngModel id="keyPersonContact1"
+                    name="keyPersonContact1" class="form-control" placeholder="Key Person Contact 1"
+                    aria-label="Key Person Contact 1">
+                  <div *ngIf="f.keyPersonContact1.touched && f.keyPersonContact1.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.keyPersonContact1.errors?.required">
+                      Key Person Contact 1 is required.
+                    </div>
+                    <div *ngIf="f.keyPersonContact1.errors?.pattern">
+                      Invalid input! Only phone numbers allowed.
+                    </div>
+                    <div *ngIf="f.keyPersonContact1.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label " for="keyPersonName2">Key Person Name 2</label>
+                  <input type="text" formControlName="keyPersonName2" ngModel id="keyPersonName2" name="keyPersonName2"
+                    class="form-control" placeholder="Key Person Name 2" aria-label="Key Person Name 2">
+                  <div *ngIf="f.keyPersonName2.touched && f.keyPersonName2.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.keyPersonName2.errors?.required">
+                      Key Person Name 2 is required.
+                    </div>
+                    <div *ngIf="f.keyPersonName2.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label " for="keyPersonEmail2">Key Person Email 2</label>
+                  <input type="text" formControlName="keyPersonEmail2" ngModel id="keyPersonEmail2"
+                    name="keyPersonEmail2" class="form-control" placeholder="Key Person Email 2"
+                    aria-label="Key Person Email 2">
+                  <div *ngIf="f.keyPersonEmail2.touched && f.keyPersonEmail2.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.keyPersonEmail2.errors?.required">
+                      Key Person Email 2 is required.
+                    </div>
+                    <div *ngIf="f.keyPersonEmail2.errors?.email">
+                      Invalid input! Only email allowed.
+                    </div>
+                    <div *ngIf="f.keyPersonEmail2.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label " for="keyPersonContact2">Key Person Contact 2</label>
+                  <input type="text" formControlName="keyPersonContact2" ngModel id="keyPersonContact2"
+                    name="keyPersonContact2" class="form-control" placeholder="Key Person Contact 2"
+                    aria-label="Key Person Contact 2">
+                  <div *ngIf="f.keyPersonContact2.touched && f.keyPersonContact2.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.keyPersonContact2.errors?.required">
+                      Key Person Contact 2 is required.
+                    </div>
+                    <div *ngIf="f.keyPersonContact2.errors?.pattern">
+                      Invalid input! Only phone numbers allowed.
+                    </div>
+                    <div *ngIf="f.keyPersonContact2.errors?.maxlength">
+                      Allowed maxlength exceeds.
                     </div>
                   </div>
                 </div>
