@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -197,7 +198,8 @@ public class Config implements AsyncConfigurer {
                             return null;
                         }
                     }
-                }).build();
+                }).build()
+                .registerModule(new JavaTimeModule());
     }
 
     /**

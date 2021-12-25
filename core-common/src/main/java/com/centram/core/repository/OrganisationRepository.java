@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public interface OrganisationRepository extends CrudRepository<Organisation, BigInteger> {
+public interface OrganisationRepository extends PagingAndSortingRepository<Organisation, BigInteger> {
     @Modifying
     @Query("update Organisation set status = (:status), modifiedDate = (:modifiedDate) where id in (:organisationIds)")
     Integer updateStatus(@Param("status") Status status, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("organisationIds") List<BigInteger> organisationId);

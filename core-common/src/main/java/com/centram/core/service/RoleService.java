@@ -38,7 +38,7 @@ public class RoleService {
         Role role = redisService.getRoleById(roleId);
         if (role == null) {
             role = roleRepository.getById(roleId);
-            if (role == null) {
+            if (role != null) {
                 redisService.saveRole(roleId, role);
             } else {
                 throw new AppException(GenericErrorCode.DATA_NOT_FOUND);

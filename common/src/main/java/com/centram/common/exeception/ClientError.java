@@ -1,24 +1,25 @@
 package com.centram.common.exeception;
 
 import org.slf4j.MDC;
-import java.time.Instant;
+
+import java.time.LocalDateTime;
 
 public class ClientError {
     private final String token;
-    private final Instant timestamp;
+    private final LocalDateTime timestamp;
     private final String message;
     private String code;
 
     ClientError(String message) {
         this.message = message;
         this.token = MDC.get("correlation-id");
-        this.timestamp = Instant.now();
+        this.timestamp = LocalDateTime.now();
     }
 
     public ClientError(String code, String message) {
         this.message = message;
         this.token = MDC.get("correlation-id");
-        this.timestamp = Instant.now();
+        this.timestamp = LocalDateTime.now();
         this.code = code;
     }
 
@@ -33,7 +34,7 @@ public class ClientError {
         return token;
     }
 
-    public Instant getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 

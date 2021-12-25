@@ -33,9 +33,9 @@ public class RestFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         RequestWrapper requestWrapper = new RequestWrapper(req);
         //MDC.put("correlation-id", Utility.getCorrelationId());
-        log.info("ORIGIN => {} ", req.getHeader("Origin"));
-        log.info("ALLOWED ORIGIN => {} ", allowedOrigins);
-        log.info("CONDITIONAL ALLOWED ORIGIN => {}", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
+        //log.info("ORIGIN => {} ", req.getHeader("Origin"));
+        //log.info("ALLOWED ORIGIN => {} ", allowedOrigins);
+        //log.info("CONDITIONAL ALLOWED ORIGIN => {}", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
         res.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
         res.setHeader("Access-Control-Allow-Credentials", "true");
         //res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
