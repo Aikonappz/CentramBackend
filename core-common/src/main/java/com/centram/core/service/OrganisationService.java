@@ -173,10 +173,16 @@ public class OrganisationService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Organisation> getOrganisations(String name, Status status, Pageable pageable) {
+    public PaginatedList<Organisation> getOrganisations(String name, Status status, LicenseType licenseType, Pageable pageable) {
         name = (!name.equals("")) ? "%" + name.toUpperCase() + "%" : null;
         log.info("Name => {}, Status => {}", name, status);
-        return new PaginatedList<Organisation>(organisationRepository.findAll(name, status.ordinal(), pageable));
+        return new PaginatedList<Organisation>(organisationRepository.findAll(
+                name,
+                status.ordinal(),
+                licenseType.ordinal(),
+                pageable
+        )
+        );
 
 
         /*CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

@@ -25,8 +25,21 @@ public class AppSecurityUtilityService {
     public Boolean hasAppAdminAccess(LoggedInUser loggedInUser) {
         return (loggedInUser.getAuthorities()
                 .stream()
-                .filter(a -> a.getAuthority().equals("APP_ADMIN"))
+                .filter(a -> {return (a.getAuthority().equals("APP_ADMIN")); })
                 .count() > 0 && loggedInUser.getAppManager());
+    }
+
+    /**
+     * check user is business lead
+     *
+     * @param loggedInUser
+     * @return
+     */
+    public Boolean hasBusinessLeadAccess(LoggedInUser loggedInUser) {
+        return (loggedInUser.getAuthorities()
+                .stream()
+                .filter(a -> {return (a.getAuthority().equals("APP_BUSINESS_LEAD")); })
+                .count() > 0);
     }
 
     /**

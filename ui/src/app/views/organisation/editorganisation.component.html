@@ -27,12 +27,12 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="add1">Add1</label>
+                  <label class="form-col-form-label required-control-label" for="add1">Addr1</label>
                   <input type="text" formControlName="add1" ngModel id="add1" name="add1" class="form-control"
-                    placeholder="Add1" aria-label="Add1">
+                    placeholder="Addr1" aria-label="Addr1">
                   <div *ngIf="f.add1.touched && f.add1.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.add1.errors?.required">
-                      Add1 is required.
+                      Addr1 is required.
                     </div>
                     <div *ngIf="f.add1.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -40,9 +40,9 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label " for="add2">Add2</label>
+                  <label class="form-col-form-label " for="add2">Addr2</label>
                   <input type="text" formControlName="add2" ngModel id="add2" name="add2" class="form-control"
-                    placeholder="Add2" aria-label="Add2">
+                    placeholder="Addr2" aria-label="Addr2">
                   <div *ngIf="f.add2.touched && f.add2.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.add2.errors?.maxlength">
                       Allowed maxlength exceeds.

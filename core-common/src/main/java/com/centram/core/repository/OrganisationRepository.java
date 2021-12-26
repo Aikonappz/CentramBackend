@@ -1,5 +1,6 @@
 package com.centram.core.repository;
 
+import com.centram.common.vo.AdminDashboardVO;
 import com.centram.domain.Organisation;
 import com.centram.domain.Setting;
 import com.centram.domain.enumarator.Status;
@@ -40,6 +41,11 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
             "   ((:status) = 2) " +
             " ) and " +
             " ( " +
+            "   ((:licenseType) <> 3 and o.licenseType = (:licenseType)) " +
+            "   OR  " +
+            "   ((:licenseType) = 3) " +
+            " ) and " +
+            " ( " +
             "   ((:name) is not null and upper(o.name) like (:name)) " +
             "   OR " +
             "   ((:name) is null) " +
@@ -48,14 +54,22 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
     Page<Organisation> findAll(
             @Param("name") String name,
             @Param("status") Integer status,
+            @Param("licenseType") Integer licenseType,
             Pageable pageable
     );
 
     @Query("select o from Organisation o where o.status = 1")
     List<Organisation> findAll();
 
-    /*@Query("select new com.erp.common.vo.OrganisationVO(o.createdDate, o.modifiedDate, o.version, o.modifiedBy, o.createdBy,o.id,o.name,o.mnemonic,o.setting,o.addresses,o.contacts,o.bankDetails,o.status) from Organisation o")
-    Page<OrganisationVO> getOrganisations(Pageable pageable);*/
+    @Query(value = "select " +
+            " sum(1) as totalCompanies, " +
+            " sum(case when status = 0 then 0 else 1 end) as activeCompanies, " +
+            " sum(case when status = 0 then 1 else 0 end) as inactiveCompanies, " +
+            " sum(case when license_type = 0 then 1 else 0 end) as allLicenceTypeCompanies, " +
+            " sum(case when license_type = 1 then 1 else 0 end) as incidentLicenceTypeCompanies, " +
+            " sum(case when license_type = 2 then 1 else 0 end) as assetLicenceTypeCompanies " +
+            " from organisation ", nativeQuery = true)
+    AdminDashboardVO appAdminDashboardData();
 
     /*@Query("select new com.erp.common.vo.OrganisationVO(o.createdDate, o.modifiedDate, o.version, o.modifiedBy, o.createdBy,o.id,o.name,o.mnemonic,o.setting,o.addresses,o.contacts,o.bankDetails,o.status) from Organisation o where o.id = (:id)")
     OrganisationVO getById(@Param("id") BigInteger id);*/

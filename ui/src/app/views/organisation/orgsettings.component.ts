@@ -32,7 +32,8 @@ export class OrgSettingsComponent implements OnInit {
     private titleService: Title,
     private router: Router,
     private service: OrganisationService,
-    private miscService: MiscService) {
+    private miscService: MiscService
+  ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
