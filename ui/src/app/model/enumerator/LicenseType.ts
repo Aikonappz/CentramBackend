@@ -1,5 +1,5 @@
 export enum LicenseType {
     ALL,
-    EVENT,
+    INCIDENT,
     ASSET,
 }

@@ -4,23 +4,39 @@
             <div class="card">
                 <div class="card-header ">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-10">
                             <i class="fa fa-align-justify"></i> Users
                         </div>
-                        <div class="col-md-5 d-flex justify-content-between">
-                            <a *ngIf="hasPermission('WRITE')" href="assets/downloads/users.csv"
-                                class="btn btn-sm btn-warning btn-minimize"><i class="icon-arrow-up-circle"></i> Sample
-                                Upload File</a>
-                            <button *ngIf="hasPermission('WRITE')" type="button"
-                                class="btn btn-sm btn-success btn-minimize" (click)="upload()"><i
-                                    class="icon-cloud-upload"></i> Upload</button>
-                            <button *ngIf="hasPermission('READ')" type="button"
-                                class="btn btn-sm btn-warning btn-minimize" (click)="download()"><i
-                                    class="icon-cloud-download"></i> Download</button>
-                            <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
-                                (click)="add()">
-                                <i class="icon-plus"></i> Add
-                            </button>
+                        <div class="col-md-2 float-right">
+                            <div class="btn-group d-flex justify-content-between" dropdown>
+                                <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
+                                        class="caret"></span></button>
+                                <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                    <li role="menuitem">
+                                        <a *ngIf="hasPermission('WRITE')" class="dropdown-item"
+                                            href="assets/downloads/users.csv"><i class="icon-arrow-up-circle"></i>
+                                            Sample upload file</a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a *ngIf="hasPermission('WRITE')" class="dropdown-item" (click)="upload()"
+                                            href="javascript:void(0);">
+                                            <i class="icon-cloud-upload"></i> Upload
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a class="dropdown-item" (click)="download()" *ngIf="hasPermission('READ')"
+                                            href="javascript:void(0);">
+                                            <i class="icon-cloud-download"></i> Download
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a class="dropdown-item" (click)="add()" *ngIf="hasPermission('WRITE')"
+                                            href="javascript:void(0);">
+                                            <i class="icon-plus"></i> Add
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -32,39 +48,39 @@
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-sm-3">
                                         <label class="form-col-form-label" for="userEmail">User Email</label>
                                         <input type="text" formControlName="userEmail" ngModel id="userEmail"
                                             name="userEmail" class="form-control" placeholder="User Email"
                                             aria-label="User Email">
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-3">
                                         <label class="form-col-form-label" for="userEmployeeId">User Employee
                                             Id.</label>
                                         <input type="text" formControlName="userEmployeeId" ngModel id="userEmployeeId"
                                             name="userEmail" class="form-control" placeholder="User Employee Id."
                                             aria-label="User Employee Id.">
                                     </div>
-                                    <div class="col">
+                                    <div class="col-sm-6">
                                         <label class="form-col-form-label " for="status">Status</label>
                                         <div class="col-md-9 col-form-label">
                                             <div class="form-check form-check-inline mr-1">
                                                 <input class="form-check-input" type="radio" name="status" id="ALL"
                                                     [checked]="(usr.status == 'ALL')" #status
                                                     (change)="onChange( 'ALL')" checked="checked" value="ALL">
-                                                <label class="form-check-label" for="ALL">ALL</label>
+                                                <label class="form-check-label" for="ALL">All</label>
                                             </div>
                                             <div class="form-check form-check-inline mr-1" id="inline-radios">
                                                 <input class="form-check-input" type="radio" name="status" id="ACTIVE"
                                                     [checked]="(usr.status == 'ACTIVE')" #status
                                                     (change)="onChange( 'ACTIVE')" value="ACTIVE">
-                                                <label class="form-check-label" for="ACTIVE">ACTIVE</label>
+                                                <label class="form-check-label" for="ACTIVE">Active</label>
                                             </div>
                                             <div class="form-check form-check-inline mr-1">
                                                 <input class="form-check-input" type="radio" name="status" id="INACTIVE"
                                                     [checked]="(usr.status == 'INACTIVE')" #status
                                                     (change)="onChange( 'INACTIVE')" value="INACTIVE">
-                                                <label class="form-check-label" for="INACTIVE">INACTIVE</label>
+                                                <label class="form-check-label" for="INACTIVE">Inactive</label>
                                             </div>
                                         </div>
                                     </div>
@@ -80,67 +96,61 @@
                             </div>
                         </form>
                     </div>
-                    <hr />
-                    <table mat-table [dataSource]="userVODatasource">
+                    <hr *ngIf="hasPermission('SEARCH')" />
+                    <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="name">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Name </th>
+                            <th mat-header-cell *matHeaderCellDef> Name </th>
                             <td mat-cell *matCellDef="let element">{{element.firstName}} {{element.lastName}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="contact">
-                            <th class="w-20" mat-header-cell *matHeaderCellDef> Cont. Dtl. </th>
+                        <ng-container matColumnDef="email">
+                            <th mat-header-cell *matHeaderCellDef> Email </th>
                             <td mat-cell *matCellDef="let element">
-                                {{element.email}}<br />
-                                {{element.contactNo}}<br />
+                                {{element.email}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="contact">
+                            <th mat-header-cell *matHeaderCellDef> Contact </th>
+                            <td mat-cell *matCellDef="let element">
+                                <b>{{element.contactNo}}</b><br />
                                 {{element.secContactNo}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="employeeId">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Emp. Dtl. </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{element.employeeId}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="location">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Loc. Dtl. </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{element.location}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="department">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Dept. Dtl. </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{element.department}}
-                            </td>
-                        </ng-container>
-                        <!-- <ng-container matColumnDef="managerId">
-                            <th mat-header-cell *matHeaderCellDef> Mngr. Dtl. </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{element.managerId}}
-                            </td>
-                        </ng-container> -->
-                        <ng-container matColumnDef="projectCode">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Proj. Dtl. </th>
-                            <td mat-cell *matCellDef="let element">
-                                {{element.projectCode}}
-                            </td>
-                        </ng-container>
                         <ng-container matColumnDef="status">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Status </th>
+                            <th mat-header-cell *matHeaderCellDef> Status </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
                                 {{element.status}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">
-                            <th class="w-20" mat-header-cell *matHeaderCellDef> Action </th>
+                            <th mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
-                                    (click)="updateStatus(element)"><i class="icon-ban"></i> Change Status
-                                </button>
-                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
-                                    (click)="edit(element)"><i class="icon-pencil"></i> Edit
-                                </button>
+                                <div class="btn-group" dropdown>
+                                    <button dropdownToggle type="button"
+                                        class="btn btn-primary dropdown-toggle">Actions<span
+                                            class="caret"></span></button>
+                                    <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="view(element)"
+                                                *ngIf="hasPermission('READ')" href="javascript:void(0);">
+                                                <i class="icon-eye"></i> View
+                                            </a>
+                                        </li>
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="updateStatus(element)"
+                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
+                                                <i class="icon-ban"></i> Change Status
+                                            </a>
+                                        </li>
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="edit(element)"
+                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
+                                                <i class="icon-pencil"></i>Edit
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

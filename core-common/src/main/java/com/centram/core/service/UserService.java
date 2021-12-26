@@ -540,7 +540,7 @@ public class UserService implements UserDetailsService {
     public List<UserVO> getUsersByRoles(List<String> roles) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<UserVO> userVOS = new ArrayList<UserVO>();
-        List<Role> roleList = roleService.getByRoleNames(roles);
+        List<Role> roleList = roleService.getByNames(roles);
         List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
         List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), loggedInUser.getOrganisationId());
         List<String> roleNames = new ArrayList<>();
@@ -567,7 +567,7 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public List<UserVO> getUsersByRolesAndOrganisation(List<String> roles, BigInteger organisationId) {
         List<UserVO> userVOS = new ArrayList<UserVO>();
-        List<Role> roleList = roleService.getByRoleNames(roles);
+        List<Role> roleList = roleService.getByNames(roles);
         List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
         String roleFilterStr = ",(".concat(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"))).concat("),");
         List<User> users = userRepository.getUsersByRoleIds(roleFilterStr, organisationId);

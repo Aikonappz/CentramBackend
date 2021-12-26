@@ -57,12 +57,22 @@ public class RedisService {
 
     /*ROLE*/
     @CachePut(value = "role", key = "#roleId")
-    public Role saveRole(BigInteger roleId, Role role) {
+    public Role saveRoleById(BigInteger roleId, Role role) {
         return role;
     }
 
     @Cacheable(value = "role", key = "#roleId")
     public Role getRoleById(BigInteger roleId) {
+        return null;
+    }
+
+    @CachePut(value = "role", key = "#roleName")
+    public Role saveRoleByName(String roleName, Role role) {
+        return role;
+    }
+
+    @Cacheable(value = "role", key = "#roleName")
+    public Role getRoleByName(String roleName) {
         return null;
     }
     /*ROLE*/

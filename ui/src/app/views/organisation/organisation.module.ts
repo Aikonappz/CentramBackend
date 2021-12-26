@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OrganisationComponent } from './organisation.component';
+import { OrganisationComponent, ViewOrganisationDetail } from './organisation.component';
 import { OrganisationRoutingModule } from './organisation-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -13,6 +13,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 @NgModule({
   declarations: [
     OrgSettingsComponent,
+    ViewOrganisationDetail,
     OrganisationComponent,
     EditOrganisationComponent
   ],

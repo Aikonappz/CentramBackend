@@ -41,7 +41,7 @@ public class RoleService {
             Optional<Role> optionalRole = roleRepository.findById(roleId);
             if (optionalRole.isPresent()) {
                 role = optionalRole.get();
-                redisService.saveRole(roleId, role);
+                redisService.saveRoleById(roleId, role);
             } else {
                 throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
             }
@@ -65,12 +65,37 @@ public class RoleService {
     }
 
     /**
+     * @param roleName
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Role getByName(String roleName) {
+        Role role = redisService.getRoleByName(roleName);
+        if (role == null) {
+            Optional<Role> optionalRole = roleRepository.findByName(roleName);
+            if (optionalRole.isPresent()) {
+                role = optionalRole.get();
+                redisService.saveRoleByName(roleName, role);
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            }
+        }
+        return role;
+    }
+
+    /**
      * @param roles
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Role> getByRoleNames(List<String> roles) {
-        return roleRepository.getByRoleNames(roles);
+    public List<Role> getByNames(List<String> roles) {
+        List<Role> roleList = new ArrayList<Role>();
+        Role role = null;
+        for (String roleName : roles) {
+            role = this.getByName(roleName);
+            roleList.add(role);
+        }
+        return roleList;
     }
 
     /**

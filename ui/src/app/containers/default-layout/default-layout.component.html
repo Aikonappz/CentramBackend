@@ -46,7 +46,7 @@
           <h6><u>{{loggedInUser.timeZone}}</u></h6>
         </a>
         <div class="dropdown-header text-center"><strong>Settings</strong></div>
-        <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item" [routerLink]="['organisation/settings']"><i
+        <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item" [routerLink]="['organization/settings']"><i
             class="fa fa-wrench"></i> Organisation Setting</a>
         <div class="divider"></div>
         <a class="dropdown-item" [routerLink]="['/user/settings']"><i class="fa fa-wrench"></i> User Setting</a>
@@ -75,7 +75,7 @@
         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
           <!-- <a class="btn" href="#"><i class="icon-speech"></i></a> -->
           <a class="btn" [routerLink]="['/dashboard']"><i class="icon-graph"></i> &nbsp;Dashboard</a>
-          <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="['/organisation/settings']">
+          <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="['/organization/settings']">
             <i class="icon-settings"></i>&nbsp;Organisation Setting</a>
           <a class="btn" [routerLink]="['/user/settings']"><i class="icon-settings"></i> &nbsp;User Settings</a>
         </div>
@@ -366,7 +366,7 @@
     </tabset>
   </app-aside> -->
 </div>
-<app-footer>
+<!-- <app-footer>
   <span><a href="{{appUrl}}">{{appBrandName}}</a> &copy; {{currentYear}} {{appDevName}}.</span>
   <span class="ml-auto">Powered by <a href="{{appUrl}}">{{appDevName}}</a></span>
-</app-footer>
+</app-footer> -->

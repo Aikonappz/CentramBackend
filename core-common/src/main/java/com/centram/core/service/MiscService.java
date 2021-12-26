@@ -92,6 +92,7 @@ public class MiscService {
      *
      * @param dataList
      */
+    @Transactional(readOnly = false)
     @Async("asyncExecutor")
     public void saveBulkUploadedData(List<Map<String, String>> dataList) {
         LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -134,7 +135,7 @@ public class MiscService {
                 //TODO: have to decide
                 continue;
             } else {
-                List<Role> roles = roleService.getByRoleNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
+                List<Role> roles = roleService.getByNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
                 if (roles != null && roles.size() > 0) {
                     user.setRoles(roles
                             .stream()
@@ -184,28 +185,36 @@ public class MiscService {
                     user.setDepartment(department);
                 }
             }
-            user.setOrganisation(organisationService.getOrganisationById(loggedInUserDTO.getOrganisationId()));
+            if (loggedInUserDTO.getOrganisationId() != null) {
+                user.setOrganisation(organisationService.getOrganisationById(loggedInUserDTO.getOrganisationId()));
+            }
             password = Utility.getUniqueString(8);
             user.setPassword(passwordEncoder.encode(password));
             user.setStatus(Status.ACTIVE);
             user.setId(null);
             users.add(user);
-
+            //prepare uservo object
             userVO = new UserVO(user);
             userVO.setPassword(password);
             userVOS.add(userVO);
-
             //System.out.println(data);
         }
         log.info("{}", users);
         if (users.size() > 0) {
-            userService.saveUsers(users);
+            Iterable<User> userList = userService.saveUsers(users);
             Map<String, String> mailValues = new HashMap<>();
-            for (UserVO uv : userVOS) {
-                mailValues = new HashMap<>();
-                log.info("email : {}, password: {}", userVO.getEmail(), userVO.getPassword());
-                mailValues.put("password", userVO.getPassword());
-                this.sendOnboardMail(userVO, mailValues);
+            for (User usr : userList) {
+                userVO = userVOS.stream().filter(i -> {
+                    return i.getEmail().equalsIgnoreCase(usr.getEmail());
+                }).findFirst().get();
+                if (userVO != null) {
+                    userVO.setId(usr.getId());
+                    userVO.setVersion(usr.getVersion());
+                    mailValues = new HashMap<>();
+                    log.info("email : {}, password: {}", userVO.getEmail(), userVO.getPassword());
+                    mailValues.put("password", userVO.getPassword());
+                    this.sendOnboardMail(userVO, mailValues);
+                }
             }
         }
     }

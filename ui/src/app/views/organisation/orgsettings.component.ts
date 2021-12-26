@@ -8,6 +8,7 @@ import { Setting } from '../../model/Setting';
 import { OrganisationService } from '../../service/OrganisationService';
 import { IncidentTicketAllocationType } from '../../model/enumerator/IncidentTicketAllocationType';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { LoggedInUser } from '../../model/LoggedInUser';
 
 @Component({
   selector: 'app-orgsettings',
@@ -22,6 +23,7 @@ export class OrgSettingsComponent implements OnInit {
   setting: Setting;
   saved: boolean = false;
   ticketAllocationTypes: any;
+  loggedInUser: LoggedInUser;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -41,6 +43,8 @@ export class OrgSettingsComponent implements OnInit {
     this.ticketAllocationTypes = Object.values(IncidentTicketAllocationType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    //console.log(this.loggedInUser);
   }
 
   hasPermission(action: string): boolean {

@@ -3,6 +3,7 @@ package com.centram.common.vo;
 
 import com.centram.common.dto.LoggedInUser;
 import com.centram.domain.MediaFile;
+import com.centram.domain.enumarator.LicenseType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -28,6 +29,7 @@ public class LoggedInUserVO implements Serializable {
     private String timeZone;
     private String location;
     private String department;
+    private LicenseType licenseType;
     private MediaFile profileImage;
     private MediaFile organisationLogo;
     private List<String> roles;
@@ -49,6 +51,7 @@ public class LoggedInUserVO implements Serializable {
         this.roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
                 .collect(Collectors.toList());
+        this.licenseType = loggedInUser.getLicenseType();
     }
 
     public LoggedInUserVO(MediaFile profileImage, LoggedInUser loggedInUser) {

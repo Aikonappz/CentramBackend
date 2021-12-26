@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UserDataSource } from '../../service/datasource/UserDataSource';
 import { MatPaginator } from '@angular/material/paginator';
 import { tap } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UserVO } from '../../model/UserVO';
 import { Status } from '../../model/enumerator/Status';
 import { User } from '../../model/User';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 
@@ -17,17 +17,21 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, OnDestroy {
   moduleName: string = "USER";
   actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   modalRef: BsModalRef;
-  displayedColumns = ['name', 'contact', 'employeeId', 'location', 'department', 'projectCode', 'status', 'action'];
-  private userVODatasource: UserDataSource
+  displayedColumns = ['name', 'email', 'contact', 'status', 'action'];
+  private datasource: UserDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
   angForm: FormGroup;
   usr: User;
   defaultStatus: any = 'ALL';
   statusFlag: boolean = true;
+  status: { isOpen: boolean } = { isOpen: false };
+  disabled: boolean = false;
+  isDropup: boolean = true;
+  autoClose: boolean = false;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -60,6 +64,30 @@ export class UserComponent implements OnInit {
     return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
+  onHidden(): void {
+    console.log('Dropdown is hidden');
+  }
+  onShown(): void {
+    console.log('Dropdown is shown');
+  }
+  isOpenChange(): void {
+    console.log('Dropdown state is changed');
+  }
+
+  toggleDropdown($event: MouseEvent): void {
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.status.isOpen = !this.status.isOpen;
+  }
+
+  change(value: boolean): void {
+    this.status.isOpen = value;
+  }
+
+  ngOnDestroy() {
+    this.status.isOpen = false;
+  }
+
   getTitle(state, parent) {
     var data = [];
     if (parent && parent.snapshot.data && parent.snapshot.data.title) {
@@ -72,12 +100,12 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userVODatasource = new UserDataSource(this.userService);
-    this.userVODatasource.loadUserVOs();
+    this.datasource = new UserDataSource(this.userService);
+    this.datasource.loadUserVOs();
   }
 
   ngAfterViewInit() {
-    this.userVODatasource.counter$
+    this.datasource.counter$
       .pipe(
         tap((count) => {
           this.paginator.length = count;
@@ -93,7 +121,7 @@ export class UserComponent implements OnInit {
   }
 
   loadData(req = {}) {
-    this.userVODatasource.loadUserVOs(this.paginator.pageIndex, this.paginator.pageSize, req);
+    this.datasource.loadUserVOs(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
 
   loadPage() {
@@ -146,7 +174,7 @@ export class UserComponent implements OnInit {
         let url = window.URL.createObjectURL(blob);
         let pwa = window.open(url);
         if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
-          //alert('Please disable your Pop-up blocker and try again.');
+          alert('Please disable your Pop-up blocker and try again.');
         }
       });
   }
@@ -169,12 +197,103 @@ export class UserComponent implements OnInit {
     }
   }
 
-  @ViewChild("status") status;
-  onChange(inp: string) {
-    let val: any = inp;
-    this.usr.status = val;
+  view(element: UserVO) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-bg',
+    };
+    const initialState = {
+      usr: element
+    };
+    this.modalRef = this.modalService.show(ViewUserDetail,
+      Object.assign({}, config, { initialState })
+    );
   }
 
+}
+
+@Component({
+  selector: 'modal-content',
+  template: `<div class="modal-header">
+  <h6 class="modal-title pull-left"><i class="icon-eye"></i> View User Details</h6>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="row">
+      <div class="col-sm-12">
+          <div class="card ">
+              <table class="table table-bordered">
+                  <tr>
+                      <td>Name</td>
+                      <td>{{usr.firstName}} {{usr.lastName}}</td>
+                  </tr>
+                  <tr>
+                      <td>Email</td>
+                      <td>{{usr.email}}</td>
+                  </tr>
+                  <tr>
+                      <td>Contact</td>
+                      <td>
+                      <b>{{usr.contactNo}}</b><br/>
+                         {{usr.secContactNo}}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>Employee Id.</td>
+                      <td>{{usr.employeeId}}</td>
+                  </tr>
+                  <tr>
+                      <td>Project Code</td>
+                      <td>{{usr.projectCode}}</td>
+                  </tr>
+                  <tr>
+                      <td>Roles</td>
+                      <td>{{usr.roleNames.join(',')}}</td>
+                  </tr>
+                  <tr>
+                      <td>Location</td>
+                      <td>{{usr.location}}</td>
+                  </tr>
+                  <tr>
+                      <td>Department</td>
+                      <td>{{usr.department}}</td>
+                  </tr>
+                  <tr>
+                      <td>Organization</td>
+                      <td>{{usr.organisation}}</td>
+                  </tr>
+                  <tr>
+                      <td>Status</td>
+                      <td>{{usr.status}}</td>
+                  </tr>
+              </table>
+          </div>
+      </div>
+  </div>
+</div>`
+})
+export class ViewUserDetail implements OnInit {
+  usr: UserVO;
+  constructor(
+    private fb: FormBuilder,
+    public bsModalRef: BsModalRef,
+    private service: UserService,
+    public options: ModalOptions,
+  ) {
+  }
+  ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+  }
+
+  ngAfterContentInit() {
+  }
 }
 
 @Component({

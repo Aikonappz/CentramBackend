@@ -12,7 +12,9 @@ import { UserDTO } from '../model/UserDTO';
     providedIn: 'root' // just before your class
 })
 export class UserService {
-    constructor(private http: ApiHttpService) { }
+    constructor(
+        private http: ApiHttpService,
+    ) { }
     signInService(authRequest: AuthRequest): Observable<any> {
         return this.http.post('/v1/user/sign-in', authRequest);
     }

@@ -1,3 +1,4 @@
+import { LicenseType } from "./enumerator/LicenseType";
 import { MediaFile } from "./MediaFile";
 import { Permission } from "./Permssion";
 
@@ -15,5 +16,6 @@ export class LoggedInUser {
     orgName: string;
     name: string;
     roles: string[];
-    modulePermissions: Permission[]
+    modulePermissions: Permission[];
+    licenseType: LicenseType;
 }

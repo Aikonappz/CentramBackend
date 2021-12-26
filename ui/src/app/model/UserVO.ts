@@ -1,3 +1,4 @@
+import { LicenseType } from "./enumerator/LicenseType";
 import { Status } from "./enumerator/Status";
 
 export class UserVO {
@@ -5,17 +6,25 @@ export class UserVO {
     id: number;
     firstName: string;
     lastName: string;
+    fullName: string;
     email: string;
     password: string;
     contactNo: string;
+    secContactNo: string;
     employeeId: string;
     projectCode: string;
     roles: number[];
     roleNames: string[];
     status: any;
+    timeZone: string;
+    managerId: number;
     organisationId: number;
+    organisation: string;
     locationId: number;
+    location: string;
     departmentId: number;
+    department: string;
+    licenseType: LicenseType;
 
     constructor() {
         this.id = null;
@@ -24,6 +33,7 @@ export class UserVO {
         this.email = '';
         this.password = '';
         this.contactNo = '';
+        this.secContactNo = '';
         this.employeeId = '';
         this.projectCode = '';
         this.roles = [];
