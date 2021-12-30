@@ -20,7 +20,7 @@ declare var $: any;
   styleUrls: ['./userincident.component.scss']
 })
 export class UserIncidentComponent implements OnInit {
-  displayedColumns = ['inc', 'slaAt', 'status', 'action'];
+  displayedColumns = ['inc', 'slaAt', 'assignedUser', 'status', 'action'];
   private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: string[];
@@ -36,13 +36,15 @@ export class UserIncidentComponent implements OnInit {
     private service: IncidentService,
     private loggedInUserService: LoggedInUserService
   ) {
+    //TODO: check referrer and redirect
+    //console.log(document.referrer.substring(document.referrer.lastIndexOf('/') + 1));
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
         titleService.setTitle(title);
       }
     });
-    this.statusList = Object.values(IncidentStatus)
+    this.statusList = Object.keys(IncidentStatus)
       .filter((value) => typeof value === "string" && value != 'ALL')
       .map((value) => (value as string));
     this.angForm = this.fb.group({

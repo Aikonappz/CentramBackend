@@ -6,58 +6,75 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/dashboard',
     icon: 'icon-speedometer',
+    attributes: { "moduleName": "DASHBOARD" }
   },
   {
     name: 'Organization',
     url: '/organization',
     icon: 'icon-target',
+    attributes: { "moduleName": "ORGANIZATION" }
   },
   {
     name: 'User',
     url: '/user',
     icon: 'icon-people',
+    attributes: { "moduleName": "USER" }
   },
   {
     name: 'Masters',
     url: '/master',
     icon: 'icon-layers',
+    attributes: { "moduleName": "MASTERS" },
     children: [
       {
         name: 'Department',
         url: '/master/department',
-        icon: 'icon-puzzle'
+        icon: 'icon-puzzle',
+        attributes: { "moduleName": "DEPARTMENT" }
       },
       {
         name: 'Location',
         url: '/master/location',
-        icon: 'icon-location-pin'
+        icon: 'icon-location-pin',
+        attributes: { "moduleName": "LOCATION" }
       },
       {
         name: 'Priority',
         url: '/master/priority',
-        icon: 'icon-star'
+        icon: 'icon-star',
+        attributes: { "moduleName": "PRIORITY" }
       },
       {
         name: 'Holiday Calender',
         url: '/master/calender',
-        icon: 'icon-calendar'
+        icon: 'icon-calendar',
+        attributes: { "moduleName": "HOLIDAY CALENDER" }
       },
     ]
+  },
+  {
+    name: 'Create Incident',
+    url: '/incident/add',
+    icon: 'fa fa-ticket',
+    attributes: { "moduleName": "MY INCIDENTS" }
+  },
+  {
+    name: 'My Incidents',
+    url: '/incident/user',
+    icon: 'fa fa-ticket',
+    attributes: { "moduleName": "MY INCIDENTS" }
+  },
+  {
+    name: 'My Group Incidents',
+    url: '/incident/agent',
+    icon: 'fa fa-ticket',
+    attributes: { "moduleName": "MY GROUP INCIDENTS" }
   },
   {
     name: 'My Notifications',
     url: '/notification',
     icon: 'icon-info',
-  },
-  {
-    name: 'My Incidents',
-    url: '/incident/user',
-    icon: 'fa fa-ticket'
-  },
-  {
-    name: 'My Group Incidents',
-    url: '/incident/agent',
-    icon: 'fa fa-ticket'
+    attributes: { "moduleName": "MY NOTIFICATIONS" }
   },
 ];
 

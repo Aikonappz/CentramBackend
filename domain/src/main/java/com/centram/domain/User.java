@@ -139,6 +139,7 @@ public class User extends BaseEntity implements Serializable {
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
     private Location location;
 
     @ApiModelProperty(required = false, value = "")
@@ -146,6 +147,7 @@ public class User extends BaseEntity implements Serializable {
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "department_id", nullable = true, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
     private Department department;
 
     public User(@NotNull BigInteger id) {

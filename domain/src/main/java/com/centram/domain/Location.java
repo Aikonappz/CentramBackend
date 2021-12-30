@@ -1,6 +1,8 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -43,37 +45,45 @@ public class Location extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
+    @JsonView(Views.BasicView.class)
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "country", columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
     private String country;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "state", columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
     private String state;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "city", columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
     private String city;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "timezone", columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
     private String timezone;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "name", columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String name;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "ops_start_time", nullable = false)
+    @JsonView(Views.BasicView.class)
     private LocalTime opsStartTime;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "ops_end_time", nullable = false)
+    @JsonView(Views.BasicView.class)
     private LocalTime opsEndTime;
 
     @ApiModelProperty(value = "")

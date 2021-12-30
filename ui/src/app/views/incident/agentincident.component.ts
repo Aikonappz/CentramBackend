@@ -109,7 +109,7 @@ export class AgentIncidentComponent implements OnInit {
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
       });
-    this.statusList = Object.values(IncidentStatus)
+    this.statusList = Object.keys(IncidentStatus)
       .filter((value) => typeof value === "string" && (value != 'ALL' && value != 'DRAFT'))
       .map((value) => (value as string));
 

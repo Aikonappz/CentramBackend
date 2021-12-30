@@ -223,7 +223,7 @@ public class UserApiController {
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('USER,MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE,WRITE',authentication.principal)")
     public ResponseEntity<UserVO> getUserById(@ApiParam(value = "id of user to return", required = true) @PathVariable("userId") BigInteger userId) {
         return new ResponseEntity<UserVO>(userService.getUserById(userId), HttpStatus.OK);
     }

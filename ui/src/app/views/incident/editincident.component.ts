@@ -49,6 +49,7 @@ export class EditIncidentComponent implements OnInit {
   ckeditorToolbarConfig: any;
   readOnlyckeditorToolbarConfig: any;
   hasAgentPermission: boolean;
+  mngrDtl: UserVO;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -71,6 +72,7 @@ export class EditIncidentComponent implements OnInit {
     this.incident = new Incident();
     this.incident.status = this.defaultStatus;
     this.hasAgentPermission = false;
+    this.mngrDtl = new UserVO();
     //this.ckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
     //this.readOnlyckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
     //this.readOnlyckeditorToolbarConfig.readOnly = true;
@@ -90,7 +92,7 @@ export class EditIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.statusList = Object.values(IncidentStatus)
+    this.statusList = Object.keys(IncidentStatus)
       .filter((value) => typeof value === "string" && value != 'ALL' && value != 'DRAFT')
       .map((value) => (value as string));
     this.permissions = this.loggedInUserService.getModulePermissions();
@@ -347,6 +349,11 @@ export class EditIncidentComponent implements OnInit {
         this.angForm.get('status').setValue(this.incident.status);
         //console.log(JSON.stringify(this.incident));
         //this.angForm.markAllAsTouched();
+        this.userService
+          .getUserService(this.incident.raisedUser.managerId)
+          .subscribe((data: any) => {
+            this.mngrDtl = data;
+          });
       });
   }
 

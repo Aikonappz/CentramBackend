@@ -34,8 +34,8 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="title">Issue Title</label>
-                                        <input type="text" formControlName="title" ngModel id="title" name="title"
-                                            class="form-control" placeholder="Issue Title" aria-label="Issue Title">
+                                        <textarea formControlName="title" ngModel id="title" name="title" rows="4"
+                                            class="form-control" placeholder="Issue Title"></textarea>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="status">Status</label>
@@ -44,8 +44,6 @@
                                             <option value="">-- Select Incident Status--</option>
                                             <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
                                         </select>
-                                    </div>
-                                    <div class="col">
                                     </div>
                                 </div>
                             </div>
@@ -62,32 +60,39 @@
                     <hr />
                     <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="inc">
-                            <th class="w-20" mat-header-cell *matHeaderCellDef>Inc. Dtl.</th>
+                            <th mat-header-cell *matHeaderCellDef>Incident Details</th>
                             <td mat-cell *matCellDef="let element">
                                 {{element.incidentNo}}<br />
                                 {{element.title}}<br />
                                 {{element.priority.name}}<br />
-                                {{element.watchList.join(', ')}}<br />
                                 {{formatDateTime(element.raisedAt)}}<br />
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="slaAt">
-                            <th class="w-15" mat-header-cell *matHeaderCellDef> SLA. At </th>
+                            <th mat-header-cell *matHeaderCellDef> SLA. Details </th>
                             <td mat-cell *matCellDef="let element">
                                 {{formatDateTime(element.slaAt)}}
                             </td>
                         </ng-container>
+                        <ng-container matColumnDef="assignedUser">
+                            <th mat-header-cell *matHeaderCellDef> Assigned User </th>
+                            <td [attr.data-label]="element.status" mat-cell *matCellDef="let element">
+                                {{element.assignedUser?.firstName}}&nbsp;{{element.assignedUser?.lastName}}<br />
+                                {{element.assignedUser?.email}}
+                            </td>
+                        </ng-container>
                         <ng-container matColumnDef="status">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Status </th>
+                            <th mat-header-cell *matHeaderCellDef> Status </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
                                 {{element.status}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">
-                            <th class="w-10" mat-header-cell *matHeaderCellDef> Action </th>
+                            <th mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button *ngIf="canReopen(element.modifiedDate);" id="id-reopen-{{element.id}}" type="button" [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
+                                <button *ngIf="canReopen(element.modifiedDate);" id="id-reopen-{{element.id}}"
+                                    type="button" [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
                                  'btn btn-sm btn-warning':true}" (click)="reopen(element)"><i class="fa fa-folder-open-o
                                         "></i> Reopen
                                 </button>

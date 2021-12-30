@@ -32,6 +32,7 @@ export class DefaultLayoutComponent implements OnInit {
   private permissions: Permission[];
   private loggedInUser: any;
   private unreadNotifications: number;
+  private menuAttributes: any;
   constructor(
     private service: MiscService,
     private pushNotifications: PushNotificationsService,
@@ -53,11 +54,13 @@ export class DefaultLayoutComponent implements OnInit {
     // });
     //console.log(JSON.stringify(this.permissions));
     let c = 0;
+
     for (let i = 0; i < this.navItems.length; i++) {
+      this.menuAttributes = this.navItems[i].attributes;
       for (let j in this.permissions) {
         if (
           this.permissions[j].appModule == true &&
-          this.navItems[i].name.toUpperCase() === this.permissions[j].moduleName &&
+          this.menuAttributes.moduleName === this.permissions[j].moduleName &&
           this.permissions[j].actions.includes('READ')
         ) {
           //console.log(JSON.stringify(this.navItems[i]));
@@ -73,9 +76,10 @@ export class DefaultLayoutComponent implements OnInit {
             let childMenus = [];
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {
+                this.menuAttributes = this.newNavItems[c].children[sm].attributes;
                 if (
                   this.permissions[k].appModule == true &&
-                  this.newNavItems[c].children[sm].name.toUpperCase() === this.permissions[k].moduleName &&
+                  this.menuAttributes.moduleName === this.permissions[k].moduleName &&
                   this.permissions[k].actions.includes('READ') &&
                   parentId === this.permissions[k].moduleParentId
                 ) {

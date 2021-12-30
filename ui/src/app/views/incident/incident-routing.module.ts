@@ -13,14 +13,14 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'raised'
+        redirectTo: 'user'
       },
       {
         path: 'user',
         component: UserIncidentComponent,
         pathMatch: 'full',
         data: {
-          title: 'Incident'
+          title: 'My Incidents'
         },
       },
       {
@@ -28,7 +28,7 @@ const routes: Routes = [
         component: AgentIncidentComponent,
         pathMatch: 'full',
         data: {
-          title: 'Incoming Incident'
+          title: 'My Group Incidents'
         }
       },
       {
@@ -36,7 +36,7 @@ const routes: Routes = [
         component: EditIncidentComponent,
         pathMatch: 'full',
         data: {
-          title: 'Raise Incident'
+          title: 'Create Incident'
         }
       },
       {
@@ -50,7 +50,6 @@ const routes: Routes = [
     ]
   }
 ];
-
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
