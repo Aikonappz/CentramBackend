@@ -20,6 +20,7 @@ import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
+import { ClientStorageService } from '../../service/ClientStorageService';
 //import * as jQuery from "jquery";
 declare var $: any;
 
@@ -43,13 +44,14 @@ export class EditIncidentComponent implements OnInit {
   incident: Incident;
   incidentCommunication: IncidentCommunication;
   incidentCommunications: IncidentCommunication[] = [];
-  statusList: string[];
+  statusList: any = [];
   selectedFiles?: FileList;
   angForm: FormGroup;
   ckeditorToolbarConfig: any;
   readOnlyckeditorToolbarConfig: any;
   hasAgentPermission: boolean;
   mngrDtl: UserVO;
+  draftData: any = { "new": null, "existing": [] };
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -61,6 +63,7 @@ export class EditIncidentComponent implements OnInit {
     private userService: UserService,
     private incidentService: IncidentService,
     private mediaService: MediaService,
+    private clientStorageService: ClientStorageService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -92,9 +95,11 @@ export class EditIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.statusList = Object.keys(IncidentStatus)
-      .filter((value) => typeof value === "string" && value != 'ALL' && value != 'DRAFT')
-      .map((value) => (value as string));
+    for (let item in IncidentStatus) {
+      if (item != "ALL") {
+        this.statusList.push({ "key": item, "value": IncidentStatus[item] });
+      }
+    }
     this.permissions = this.loggedInUserService.getModulePermissions();
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null) {
@@ -125,18 +130,28 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
       });
-      this.miscService.prioritiesService()
+      this.miscService.prioritiesService({ "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
-        });
-      this.userService.getUsersService()
-        .subscribe((result: UserVOListResponse) => {
-          let logedinUser = this.loggedInUserService.getLoggedInUser();
-          this.users = [];
-          for (let i = 0; i < result.content.length; i++) {
-            if (logedinUser.userId != result.content[i].id)
-              this.users.push(result.content[i]);
-          }
+          this.userService.getUsersService()
+            .subscribe((result: UserVOListResponse) => {
+              let logedinUser = this.loggedInUserService.getLoggedInUser();
+              this.users = [];
+              for (let i = 0; i < result.content.length; i++) {
+                if (logedinUser.userId != result.content[i].id)
+                  this.users.push(result.content[i]);
+              }
+              if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
+                this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+                this.populateSubmodule(this.draftData.new.moduleId);
+                this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
+                this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
+                this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
+                this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                this.angForm.get('title').setValue(this.draftData.new.title);
+                this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
+              }
+            });
         });
     } else {
       this.angForm = this.fb.group({
@@ -153,7 +168,7 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
       });
-      this.miscService.prioritiesService()
+      this.miscService.prioritiesService({ "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
           this.userService.getUsersService()
@@ -164,6 +179,17 @@ export class EditIncidentComponent implements OnInit {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callIncidentService(this.entityId);
+      if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
+        this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+        for (let k in this.draftData.existing) {
+          if (this.draftData.existing[k].id == this.entityId) {
+            this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
+            break;
+          } else {
+            continue;
+          }
+        }
+      }
     }
   }
 
@@ -171,10 +197,23 @@ export class EditIncidentComponent implements OnInit {
 
   ngAfterContentInit() {
     $(function () {
-      $("#accordion").accordion({
+      $("#comments").accordion({
+        //icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
         heightStyle: "content",
         active: false,
         collapsible: true,
+        activate: function (event, ui) {
+          var index = $(this).accordion("option", "active");
+          console.log(index);
+          if (index === false) {
+            $('#comments-action').addClass('fa-plus-circle');
+            $('#comments-action').removeClass('fa-minus-circle');
+          }
+          else {
+            $('#comments-action').removeClass('fa-plus-circle');
+            $('#comments-action').addClass('fa-minus-circle');
+          }
+        }
       });
     });
   }
@@ -185,42 +224,97 @@ export class EditIncidentComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       // prepare incident  object
-      let priorityId = this.angForm.controls['priorityId'].value;
-      let priority = new Priority();
-      for (let i in this.priorities) {
-        if (this.priorities[i].id == priorityId) {
-          priority.id = priorityId;
-          priority.name = this.priorities[i].name;
-          priority.version = this.priorities[i].version;
+      if (sts === "DRAFT") {
+        let returnPath = '/incident/user';
+        if (this.hasAgentPermission) {
+          returnPath = '/incident/agent';
         }
-      }
-      if (this.newEntity) {
-        this.incident.moduleId = this.angForm.controls['moduleId'].value;
-        this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
-        this.incident.title = this.angForm.controls['title'].value;
-        if (this.angForm.controls['watchList'].value != "") {
-          this.incident.watchList = this.angForm.controls['watchList'].value;
+        let inc = new Incident();
+        let ic = new IncidentCommunication();
+        let priorityId = this.angForm.controls['priorityId'].value;
+        let priority = new Priority();
+        for (let i in this.priorities) {
+          if (this.priorities[i].id == priorityId) {
+            priority.id = priorityId;
+            priority.name = this.priorities[i].name;
+            priority.version = this.priorities[i].version;
+          }
+        }
+        if (this.newEntity) {
+          inc.moduleId = this.angForm.controls['moduleId'].value;
+          inc.subModuleId = this.angForm.controls['subModuleId'].value;
+          inc.title = this.angForm.controls['title'].value;
+          if (this.angForm.controls['watchList'].value != "") {
+            inc.watchList = this.angForm.controls['watchList'].value;
+          } else {
+            inc.watchList = [];
+          }
+          inc.priority = priority;
+          inc.status = sts;
+          ic = new IncidentCommunication();
+          ic.message = this.angForm.controls['message'].value;
+          inc.communications.push(ic);
+          this.draftData.new = inc;
+          this.clientStorageService.set(AppUtility.APP_INCIDENT_DRAFT_KEY, JSON.stringify(this.draftData));
+          this.router.navigate([returnPath]);
         } else {
-          this.incident.watchList = [];
+          ic = new IncidentCommunication();
+          ic.message = this.angForm.controls['message'].value;
+          inc.communications.push(ic);
+          inc.id = this.incident.id;
+          if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
+            this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+            for (let k in this.draftData.existing) {
+              if (this.draftData.existing[k].id == this.incident.id) {
+                this.draftData.existing[k] = inc;
+                break;
+              } else {
+                continue;
+              }
+            }
+          } else {
+            this.draftData.existing.push(inc);
+          }
+          this.clientStorageService.set(AppUtility.APP_INCIDENT_DRAFT_KEY, JSON.stringify(this.draftData));
+          this.router.navigate([returnPath]);
         }
-        this.incident.assignedUser = null;
-        this.incident.raisedUser = null;
-        this.incident.priority = priority;
-        this.incident.status = sts;
       } else {
-        this.incident.priority = priority;
-        if (this.angForm.controls['status'].value == 'DRAFT') {
-          this.incident.status = IncidentStatus[this.defaultStatus];
-        } else {
-          this.incident.status = IncidentStatus[this.angForm.controls['status'].value];
+        let priorityId = this.angForm.controls['priorityId'].value;
+        let priority = new Priority();
+        for (let i in this.priorities) {
+          if (this.priorities[i].id == priorityId) {
+            priority.id = priorityId;
+            priority.name = this.priorities[i].name;
+            priority.version = this.priorities[i].version;
+            priority.organisation = null;
+          }
         }
+        if (this.newEntity) {
+          this.incident.moduleId = this.angForm.controls['moduleId'].value;
+          this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
+          this.incident.title = this.angForm.controls['title'].value;
+          if (this.angForm.controls['watchList'].value != "") {
+            this.incident.watchList = this.angForm.controls['watchList'].value;
+          } else {
+            this.incident.watchList = [];
+          }
+          this.incident.assignedUser = null;
+          this.incident.raisedUser = null;
+          this.incident.priority = priority;
+          this.incident.status = this.defaultStatus;
+        } else {
+          this.incident.priority = priority;
+          this.incident.status = this.angForm.controls['status'].value;
+        }
+        // prepare incidentCommunication object
+        this.incidentCommunication = new IncidentCommunication();
+        this.incidentCommunication.message = this.angForm.controls['message'].value;
+        this.incidentCommunication.communicatedBy = null;
+        this.incidentCommunication.incident = null;
+        this.incident.communications.push(this.incidentCommunication);
+        //console.log(this.incident);
+        this.callSaveIncidentService();
       }
-      // prepare incidentCommunication object
-      this.incidentCommunication = new IncidentCommunication();
-      this.incidentCommunication.message = this.angForm.controls['message'].value;
-      this.incident.communications.push(this.incidentCommunication);
-      //console.log(this.incident);
-      this.callSaveIncidentService();
     } else {
       console.log("Invalid Form!");
     }
@@ -233,34 +327,23 @@ export class EditIncidentComponent implements OnInit {
       var size = event.target.files[i].size;
       var modifiedDate = event.target.files[i].lastModifiedDate;
       const file = this.angForm.controls['fileInput'];
-      if (file.errors && !file.errors.mustBeCSVFile && !file.errors.mustBeLessThan2MB) {
+      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan2MB) {
         return;
       }
-      // if (file.errors && !file.errors.mustBeCSVFile && !file.errors.mustBeLessThan2MB) {
-      //   return;
-      // }
-      // if (type != "text/csv" && size > (3145728)) {
-      //   file.setErrors({ mustBeCSVFile: true, mustBeLessThan2MB: true });
-      // } else if (type == "text/csv" && size > (3145728)) {
-      //   file.setErrors({ mustBeCSVFile: false, mustBeLessThan2MB: true });
-      // } else if (type != "text/csv" && size <= (3145728)) {
-      //   file.setErrors({ mustBeCSVFile: true, mustBeLessThan2MB: false });
-      // } else if (type == "text/csv" && size <= (3145728)) {
-      //   file.setErrors(null);
-      //   this.selectedFiles = event.target.files;
-      // }
-      console.log('Name: ' + name + "\n" +
-        'Type: ' + type + "\n" +
-        'Last-Modified-Date: ' + modifiedDate + "\n" +
-        'Size: ' + Math.round(size / 1024) + " KB");
-
-      if (size > (3145728)) {
-        file.setErrors({ mustBeCSVFile: false, mustBeLessThan2MB: true });
-        return;
+      let validMimeTpes = ["text/plain", "application/x-msexcel", "application/x-excel", "application/vnd.ms-excel", "application/excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingm", "image/jpeg", "image/pjpeg", "image/png"];
+      if (!validMimeTpes.includes(type)) {
+        file.setErrors({ validAttachments: true, mustBeLessThan2MB: false });
+      } else if (size > (3145728)) {
+        file.setErrors({ validAttachments: false, mustBeLessThan2MB: true });
       } else {
         file.setErrors(null);
         this.selectedFiles = event.target.files;
       }
+
+      console.log('Name: ' + name + "\n" +
+        'Type: ' + type + "\n" +
+        'Last-Modified-Date: ' + modifiedDate + "\n" +
+        'Size: ' + Math.round(size / 1024) + " KB");
     }
   }
 
@@ -275,6 +358,8 @@ export class EditIncidentComponent implements OnInit {
       .saveIncidentService(this.incident)
       .subscribe((data: Incident) => {
         //console.log(data);
+        this.draftData = { "new": null, "existing": [] };
+        this.clientStorageService.remove(AppUtility.APP_INCIDENT_DRAFT_KEY);
         if (typeof this.selectedFiles != "undefined") {
           if (this.selectedFiles.length > 0) {
             const formData: FormData = new FormData();
@@ -284,7 +369,7 @@ export class EditIncidentComponent implements OnInit {
             let headers = new Headers();
             headers.append('Content-Type', 'multipart/form-data');
             headers.set('Accept', 'application/json');
-            let commId = data.communications[data.communications.length - 1].id;
+            let commId = data.communications[0].id;
             this.mediaService
               .saveMediaService(commId, EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION, formData, { 'headers': headers })
               .subscribe((data: any) => {

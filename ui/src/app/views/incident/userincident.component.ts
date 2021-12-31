@@ -23,12 +23,13 @@ export class UserIncidentComponent implements OnInit {
   displayedColumns = ['inc', 'slaAt', 'assignedUser', 'status', 'action'];
   private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  statusList: string[];
+  statusList: any = [];
   permissions: Permission[] = [];
   moduleList: Permission[] = [];
   subModuleList: Permission[];
   angForm: FormGroup;
   searchedData: Object = {};
+  incidentStatus: IncidentStatus;
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -44,9 +45,11 @@ export class UserIncidentComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    this.statusList = Object.keys(IncidentStatus)
-      .filter((value) => typeof value === "string" && value != 'ALL')
-      .map((value) => (value as string));
+    for (let item in IncidentStatus) {
+      if (item != "ALL") {
+        this.statusList.push({ "key": item, "value": IncidentStatus[item] });
+      }
+    }
     this.angForm = this.fb.group({
       incidentNo: new FormControl('', [
       ]),

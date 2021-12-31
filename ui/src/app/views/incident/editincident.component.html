@@ -35,7 +35,7 @@
                 <div class="col" *ngIf="hasAgentPermission">
                   <label class="form-col-form-label required-control-label" for="status">Status</label>
                   <select class="form-control" formControlName="status" id="status" name="status">
-                    <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
+                    <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
                   </select>
                   <div *ngIf="f.status.touched && f.status.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.status.errors?.required">
@@ -90,11 +90,12 @@
                 <div class="col">
                   <label class="form-col-form-label" for="agentName">Agent Name</label>
                   <input type="text" id="agentName" readonly
-                    value="{{incident.assignedUser.firstName}} {{incident.assignedUser.lastName}}" class="form-control">
+                    value="{{incident.assignedUser?.firstName}} {{incident.assignedUser?.lastName}}"
+                    class="form-control">
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="agentEmail">Agent Email</label>
-                  <input type="text" id="agentEmail" readonly value="{{incident.assignedUser.email}}"
+                  <input type="text" id="agentEmail" readonly value="{{incident.assignedUser?.email}}"
                     class="form-control">
                 </div>
                 <div class="col"></div>
@@ -178,11 +179,12 @@
                 <div class="col"></div>
               </div>
             </fieldset>
-            <div *ngIf="!newEntity" id="accordion" class="row-margin-05">
-              <h3><b>{{incident.title}}&nbsp;&nbsp;[{{incident.incidentNo}}]</b></h3>
+            <div *ngIf="!newEntity" id="comments" class="row-margin-05">
+              <h3 class="accordion-toggle"><b>{{incident.title}}&nbsp;&nbsp;[{{incident.incidentNo}}]</b> <i
+                  id="comments-action" class="fa fa-plus-circle float-right"></i></h3>
               <div>
                 <div *ngFor="let item of incidentCommunications">
-                  <div [ngClass]="{'highlight-grid-u': incident.raisedUser.id==item.communicatedBy.id,
+                  <div *ngIf="item.communicatedBy!=null" [ngClass]="{'highlight-grid-u': incident.raisedUser.id==item.communicatedBy.id,
                   'highlight-grid-a ': incident.raisedUser.id!=item.communicatedBy.id, 'row col-sm-12':true}">
                     <div class="col-sm-12">
                       <div [innerHTML]="item.message"></div>
@@ -222,16 +224,16 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label " for="fileInput">Attachments </label>
-                  <i class="icon-info" tooltip="(suported file types
-                      .xls,.xslx,.csv,.tsv, .pdf,.doc,.docx,.msg,.jpeg,.jpg,.png)"></i>&nbsp;&nbsp;
+                  <i class="icon-info"
+                    tooltip="Max file size can be 2 M.B and suported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png"></i>&nbsp;&nbsp;
                   <input multiple="multiple" (change)="getFileDetails($event)" type="file" id="fileInput"
                     formControlName="fileInput" name="fileInput">
                   <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.fileInput.errors?.mustBeCSVFile">
-                      File should be CSV.
+                    <div *ngIf="f.fileInput.errors?.validAttachments">
+                      Supported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png.
                     </div>
                     <div *ngIf="f.fileInput.errors?.mustBeLessThan2MB">
-                      File should be less than 3 MB.
+                      File size should be less than 3 MB.
                     </div>
                   </div>
                 </div>
@@ -240,8 +242,8 @@
             </fieldset>
           </div>
           <div class="card-footer">
-            <button *ngIf="newEntity" [disabled]="!angForm.valid" (click)="formSubmit('DRAFT')" type="button"
-              class="btn btn-primary">Save As
+            <button [disabled]="!angForm.valid" (click)="formSubmit('DRAFT')" type="button" class="btn btn-primary">Save
+              As
               Draft</button>
             <button [disabled]="!angForm.valid" (click)="formSubmit('OPEN')" type="button"
               class="btn btn-primary">Save</button>

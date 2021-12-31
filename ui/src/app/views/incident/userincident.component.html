@@ -42,7 +42,7 @@
                                         <select class="form-control" formControlName="status" ngModel id="status"
                                             name="status">
                                             <option value="">-- Select Incident Status--</option>
-                                            <option *ngFor="let e of statusList" value="{{e}}">{{e}}</option>
+                                            <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
                                         </select>
                                     </div>
                                 </div>

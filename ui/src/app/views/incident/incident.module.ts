@@ -10,6 +10,7 @@ import { EditIncidentComponent } from './editincident.component';
 import { CKEditorModule } from 'ckeditor4-angular';
 import { AssignIncidentComponent, AgentIncidentComponent } from './agentincident.component';
 import { UserIncidentComponent } from './userincident.component';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 
 
@@ -30,6 +31,7 @@ import { UserIncidentComponent } from './userincident.component';
     ReactiveFormsModule,
     TabsModule,
     CKEditorModule,
+    TooltipModule.forRoot(),
   ]
 })
 export class IncidentModule { }

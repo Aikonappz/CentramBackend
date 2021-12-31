@@ -32,7 +32,7 @@ import java.util.List;
 @Table(name = "incident_communication", indexes = {
         @Index(name = "incident_idx", columnList = "incident_id", unique = false)
 })
-public class IncidentCommunication extends BaseEntity implements Serializable, Comparable<IncidentCommunication> {
+public class IncidentCommunication extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -1033450309367452581L;
 
     @ApiModelProperty(required = true, value = "")
@@ -70,9 +70,4 @@ public class IncidentCommunication extends BaseEntity implements Serializable, C
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     @Transient
     private List<MediaFile> attachments;
-
-    @Override
-    public int compareTo(@org.jetbrains.annotations.NotNull IncidentCommunication incidentCommunication) {
-        return this.getId().compareTo(incidentCommunication.getId());
-    }
 }

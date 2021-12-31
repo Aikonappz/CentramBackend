@@ -341,6 +341,17 @@ public class IncidentService {
         raisedIncident = incidentRepository.save(incident);
         //notify respected user
         miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appLocalDateTimeFormat));
+        TreeSet<IncidentCommunication> descSortedCommunicationSet = new TreeSet<IncidentCommunication>(new Comparator<IncidentCommunication>() {
+            @Override
+            public int compare(IncidentCommunication ic1, IncidentCommunication ic2) {
+                return ic2.getId().compareTo(ic1.getId());
+            }
+        });
+        for (IncidentCommunication incidentCommunication : raisedIncident.getCommunications()) {
+            incidentCommunication.setAttachments(mediaService.getMediaFiles(incidentCommunication.getId(), EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION));
+            descSortedCommunicationSet.add(incidentCommunication);
+        }
+        raisedIncident.setCommunications(descSortedCommunicationSet);
         return raisedIncident;
     }
 

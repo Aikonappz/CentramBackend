@@ -28,11 +28,11 @@ declare var $: any;
   styleUrls: ['./agentincident.component.scss']
 })
 export class AgentIncidentComponent implements OnInit {
-  displayedColumns = ['select', 'incDtl', 'assignedUser', 'slaAt', 'status', 'action'];
+  displayedColumns = ['select', 'incDtl', 'slaAt', 'assignedUser', 'status', 'action'];
   datasource: IncomingIncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   selection = new SelectionModel<Incident>(true, []);
-  statusList: string[];
+  statusList: any = [];
   permissions: Permission[] = [];
   moduleList: Permission[] = [];
   subModuleList: Permission[];
@@ -63,7 +63,11 @@ export class AgentIncidentComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-
+    for (let item in IncidentStatus) {
+      if (item != "ALL") {
+        this.statusList.push({ "key": item, "value": IncidentStatus[item] });
+      }
+    }
     this.angForm = this.fb.group({
       incidentNo: new FormControl(null, [
       ]),
@@ -105,14 +109,10 @@ export class AgentIncidentComponent implements OnInit {
         //console.log(this.tmpuserList);
         //console.log(this.tmpagentList);
       });
-    this.miscService.prioritiesService({})
+      this.miscService.prioritiesService({ "sort": "name,asc" })
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
       });
-    this.statusList = Object.keys(IncidentStatus)
-      .filter((value) => typeof value === "string" && (value != 'ALL' && value != 'DRAFT'))
-      .map((value) => (value as string));
-
     this.permissions = this.loggedInUserService.getModulePermissions();
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null) {
