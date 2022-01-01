@@ -37,8 +37,6 @@ export class UserIncidentComponent implements OnInit {
     private service: IncidentService,
     private loggedInUserService: LoggedInUserService
   ) {
-    //TODO: check referrer and redirect
-    //console.log(document.referrer.substring(document.referrer.lastIndexOf('/') + 1));
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -78,6 +76,7 @@ export class UserIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.redirectIfAgent();
     this.datasource = new IncidentDataSource(this.service);
     this.datasource.loadData();
   }
@@ -181,4 +180,14 @@ export class UserIncidentComponent implements OnInit {
     return true;
   }
 
+  checkRole(): string {
+    let role = this.loggedInUserService.hasPermissionByName("MY INCIDENTS", "READ") ? "USER" : "AGENT";
+    return role;
+  }
+
+  redirectIfAgent() {
+    if (this.checkRole() === "AGENT") {
+      this.router.navigate(['/incident/agent']);
+    }
+  }
 }

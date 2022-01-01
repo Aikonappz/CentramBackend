@@ -17,7 +17,7 @@
                   <label class="form-col-form-label" for="titleReadOnly">Title</label>
                   <textarea [readonly]="!newEntity" id="titleReadOnly" rows="4"
                     class="form-control textarea-non-resizable"
-                    placeholder="Priority Description">{{incident.title}}</textarea>
+                    placeholder="Incident Title">{{incident.title}}</textarea>
                 </div>
                 <div class="col" *ngIf="hasAgentPermission">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
@@ -165,8 +165,8 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="title">Title</label>
-                  <textarea [readonly]="!newEntity" formControlName="title" ngModel id="title" name="title" rows="4"
-                    class="form-control textarea-non-resizable" placeholder="Priority Description"></textarea>
+                  <textarea formControlName="title" ngModel id="title" name="title" rows="4"
+                    class="form-control textarea-non-resizable" placeholder="Incident Title"></textarea>
                   <div *ngIf="f.title.touched && f.title.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.title.errors?.required">
                       Title is required.
@@ -207,11 +207,11 @@
               </div>
             </div>
             <fieldset class="border p-2">
-              <legend *ngIf="newEntity" class="w-auto">Incident Description</legend>
-              <legend *ngIf="!newEntity" class="w-auto">Update Incident</legend>
+              <legend *ngIf="newEntity" class="w-auto required-control-label">Incident Description</legend>
+              <legend *ngIf="!newEntity" class="w-auto required-control-label">Update Incident</legend>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="message">Issue Details</label>
+                  <!-- <label class="form-col-form-label required-control-label" for="message">Issue Details</label> -->
                   <ckeditor [config]="{readOnly:false}" formControlName="message" name="message" id="message">
                   </ckeditor>
                   <div *ngIf="f.message.touched && f.message.invalid" class="alert alert-danger-custom">
@@ -243,8 +243,7 @@
           </div>
           <div class="card-footer">
             <button [disabled]="!angForm.valid" (click)="formSubmit('DRAFT')" type="button" class="btn btn-primary">Save
-              As
-              Draft</button>
+              as Draft</button>
             <button [disabled]="!angForm.valid" (click)="formSubmit('OPEN')" type="button"
               class="btn btn-primary">Save</button>
             <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>

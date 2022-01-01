@@ -2,7 +2,7 @@ import * as moment from "moment-timezone";
 
 export class AppUtility {
     public static LOGGED_IN_PROFILE = 'prfl';
-    public static LOGED_IN_LAST_VISIT = 'lvst';
+    public static LOGGED_IN_LAST_VISIT = 'lvst';
     public static APP_VIEW_DATE_FORMAT = 'DD/MM/YYYY';
     public static APP_VIEW_DATE_TIME_FORMAT = 'DD/MM/YYYY hh:mm A';
     public static APP_VIEW_DATEPICKER_INP_DATE_FORMAT = 'DD/MM/YYYY';
@@ -10,6 +10,12 @@ export class AppUtility {
     public static APP_DEFAULT_TIMEZONE = 'Asia/Kolkata';
     public static APP_TIME_FORMAT = 'HH:mm:ss';
     public static APP_CLIENT_STORAGE_TYPE = 'SESSION';
+    public static APP_INCIDENT_DRAFT_KEY = 'incidentDraft';
+    public static APP_LOGOUT_WARNING_MODAL_STATUS_KEY = 'warningModalOpened';
+    public static APP_LAST_ACTION_KEY = 'lastAction';
+    public static APP_ACTIVITY_CHECK_INTERVAL = 15000;
+    public static APP_LOGOUT_WARNING_INTERVAL = 1;
+    public static APP_NON_ACTIVITY_LOGOUT_INTERVAL = 2;
 
     public static EDITOR_CONFIG = {
         readOnly: false,
@@ -70,6 +76,15 @@ export class AppUtility {
         }, noList);
         timeList = noList;
         return timeList;
+    }
+
+    static toTitleCase(str) {
+        return str.replace(
+            /\w\S*/g,
+            function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }
+        );
     }
 }
 

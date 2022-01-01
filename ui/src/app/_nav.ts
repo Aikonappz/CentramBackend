@@ -53,22 +53,30 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'Create Incident',
-    url: '/incident/add',
-    icon: 'fa fa-ticket',
-    attributes: { "moduleName": "MY INCIDENTS" }
-  },
-  {
-    name: 'My Incidents',
-    url: '/incident/user',
-    icon: 'fa fa-ticket',
-    attributes: { "moduleName": "MY INCIDENTS" }
-  },
-  {
-    name: 'My Group Incidents',
-    url: '/incident/agent',
-    icon: 'fa fa-ticket',
-    attributes: { "moduleName": "MY GROUP INCIDENTS" }
+    name: 'Incidents',
+    url: '/incident',
+    icon: 'fa fa-list-alt',
+    attributes: { "moduleName": "INCIDENT" },
+    children: [
+      {
+        name: 'Create Incident',
+        url: '/incident/add',
+        icon: 'fa fa-plus',
+        attributes: { "moduleName": "MY INCIDENTS" }
+      },
+      {
+        name: 'My Incidents',
+        url: '/incident/user',
+        icon: 'fa fa-ticket',
+        attributes: { "moduleName": "MY INCIDENTS" }
+      },
+      {
+        name: 'My Group Incidents',
+        url: '/incident/agent',
+        icon: 'fa fa-ticket',
+        attributes: { "moduleName": "MY GROUP INCIDENTS" }
+      },
+    ]
   },
   {
     name: 'My Notifications',

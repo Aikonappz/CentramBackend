@@ -101,9 +101,12 @@ export class EditIncidentComponent implements OnInit {
       }
     }
     this.permissions = this.loggedInUserService.getModulePermissions();
+    let p;
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null) {
-        this.moduleList.push(this.permissions[i]);
+        p = new Permission(this.permissions[i]);
+        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        this.moduleList.push(p);
       }
     }
     if (!this.route.snapshot.paramMap.has('id')) {
@@ -455,9 +458,12 @@ export class EditIncidentComponent implements OnInit {
     let c = 0;
     if (moduleId != "") {
       this.subModuleList = [];
+      let p;
       for (let i = 0; i < this.permissions.length; i++) {
         if (this.permissions[i].moduleParentId == moduleId) {
-          this.subModuleList[c] = this.permissions[i];
+          p = new Permission(this.permissions[i]);
+          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          this.subModuleList[c] = p;
           c++;
         }
       }
