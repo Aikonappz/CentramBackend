@@ -30,6 +30,8 @@ declare var $: any;
   styleUrls: ['./editincident.component.scss']
 })
 export class EditIncidentComponent implements OnInit {
+  moduleName: string = "MY INCIDENTS,MY GROUP INCIDENTS";
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'OPEN';
@@ -81,6 +83,17 @@ export class EditIncidentComponent implements OnInit {
     //this.readOnlyckeditorToolbarConfig.readOnly = true;
     //console.log(this.ckeditorToolbarConfig);
     //console.log(this.readOnlyckeditorToolbarConfig);
+  }
+
+  hasPermission(actions: string): boolean {
+    let modules = this.moduleName.split(",");
+    let actionList = actions.split(",");
+    for (let i in modules) {
+      if (this.loggedInUserService.hasPermissionByName(modules[i], actionList[i])) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getTitle(state, parent) {
@@ -408,6 +421,24 @@ export class EditIncidentComponent implements OnInit {
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
         this.populateSubmodule(this.incident.moduleId);
+
+        if (
+          (
+            this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE')
+            &&
+            this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')
+          )
+          ||
+          (
+            this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'WRITE')
+            &&
+            this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'WRITE')
+          )
+        ) {
+          console.log("has permission!");
+        } else {
+          this.goBack();
+        }
 
         for (let k in this.incident.communications) {
           this.incident.communications[k].communicatedBy.status = Status[this.incident.communications[k].communicatedBy.status];

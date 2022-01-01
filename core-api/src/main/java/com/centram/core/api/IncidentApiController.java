@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class IncidentApiController {
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS,MY GROUP INCIDENTS','WRITE,WRITE|SOLVE',authentication.principal)")
     public ResponseEntity<Incident> save(@ApiParam(value = "Incident object", required = true) @Valid @RequestBody Incident body) {
         return new ResponseEntity<Incident>(incidentService.save(body), HttpStatus.OK);
     }
@@ -53,6 +55,7 @@ public class IncidentApiController {
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{incidentId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE|SOLVE|READ',authentication.principal)")
     public ResponseEntity<Incident> getIncidentById(@ApiParam(value = "id of incident to return", required = true) @PathVariable("incidentId") BigInteger incidentId) {
         return new ResponseEntity<Incident>(incidentService.getIncidentById(incidentId), HttpStatus.OK);
     }
@@ -64,6 +67,7 @@ public class IncidentApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS','READ,SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> getUserIncidents(
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
@@ -80,6 +84,7 @@ public class IncidentApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/agent", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY GROUP INCIDENTS','SEARCH|READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> getAgentIncidents(
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
@@ -101,6 +106,7 @@ public class IncidentApiController {
             @ApiResponse(code = 404, message = "Incident not found")
     })
     @RequestMapping(value = "/assign/{ids}/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY GROUP INCIDENTS','WRITE|SOLVE|ASSIGN',authentication.principal)")
     public ResponseEntity<Void> assignIncidents(
             @NotNull @ApiParam(value = "Incident id's to assign", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
             @ApiParam(value = "User Id", required = true) @PathVariable("userId") BigInteger userId
@@ -115,6 +121,7 @@ public class IncidentApiController {
             @ApiResponse(code = 404, message = "Incident not found")
     })
     @RequestMapping(value = "/reopen/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS','WRITE',authentication.principal)")
     public ResponseEntity<Void> reopenIncident(
             @NotNull @ApiParam(value = "Incident id's to change", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
             @ApiParam(value = "status", required = true) @PathVariable("status") String status

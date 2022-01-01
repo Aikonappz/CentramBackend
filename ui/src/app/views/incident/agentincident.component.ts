@@ -28,6 +28,8 @@ declare var $: any;
   styleUrls: ['./agentincident.component.scss']
 })
 export class AgentIncidentComponent implements OnInit {
+  moduleName: string = "MY GROUP INCIDENTS";
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['select', 'incDtl', 'slaAt', 'assignedUser', 'status', 'action'];
   datasource: IncomingIncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -109,14 +111,17 @@ export class AgentIncidentComponent implements OnInit {
         //console.log(this.tmpuserList);
         //console.log(this.tmpagentList);
       });
-      this.miscService.prioritiesService({ "sort": "name,asc" })
+    this.miscService.prioritiesService({ "sort": "name,asc" })
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
       });
     this.permissions = this.loggedInUserService.getModulePermissions();
+    let p;
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null) {
-        this.moduleList.push(this.permissions[i]);
+        p = new Permission(this.permissions[i]);
+        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        this.moduleList.push(p);
       }
     }
 
@@ -131,6 +136,10 @@ export class AgentIncidentComponent implements OnInit {
       }
       //console.log(this.selectedValues);
     });
+  }
+
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
 
   private confirmAgentRole(roles: string[]): boolean {
@@ -263,9 +272,12 @@ export class AgentIncidentComponent implements OnInit {
     if (moduleId != "") {
       this.subModuleList = [];
       this.moduleIds = [];
+      let p;
       for (let i = 0; i < this.permissions.length; i++) {
-        if (this.permissions[i].moduleParentId == moduleId) {
-          this.subModuleList[c] = this.permissions[i];
+        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId) {
+          p = new Permission(this.permissions[i]);
+          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          this.subModuleList[c] = p;
           c++;
         }
       }

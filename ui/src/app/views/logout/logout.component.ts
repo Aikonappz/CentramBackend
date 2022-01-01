@@ -48,7 +48,10 @@ export class LogoutComponent implements OnInit {
     this.userService
       .signOutService()
       .subscribe((data: any) => {
+        clearInterval();
         this.clientStorageService.remove(AppUtility.LOGGED_IN_PROFILE);
+        this.clientStorageService.remove(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY);
+        this.clientStorageService.remove(AppUtility.APP_LAST_ACTION_KEY);
         this.clientStorageService.clear();
         //console.log(data);
         //this.angForm.reset();

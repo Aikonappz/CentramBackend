@@ -20,7 +20,7 @@ export class CheckLoggedIn implements Resolve<any> {
         if (this.loggedInUser != null && this.loggedInUser.jwtToken != null && this.loggedInUser.jwtToken.replace(/\s/g, "") != "") {
             return true;
         } else {
-            this.clientStorageService.set(AppUtility.LOGED_IN_LAST_VISIT, this.router.url);
+            this.clientStorageService.set(AppUtility.LOGGED_IN_LAST_VISIT, this.router.url);
             this.router.navigate(['/sign-in']);
             return false;
         }

@@ -242,10 +242,11 @@
             </fieldset>
           </div>
           <div class="card-footer">
-            <button [disabled]="!angForm.valid" (click)="formSubmit('DRAFT')" type="button" class="btn btn-primary">Save
+            <button *ngIf="hasPermission('WRITE,SOLVE')" [disabled]="!angForm.valid" (click)="formSubmit('DRAFT')"
+              type="button" class="btn btn-primary">Save
               as Draft</button>
-            <button [disabled]="!angForm.valid" (click)="formSubmit('OPEN')" type="button"
-              class="btn btn-primary">Save</button>
+            <button *ngIf="hasPermission('WRITE,SOLVE')" [disabled]="!angForm.valid" (click)="formSubmit('OPEN')"
+              type="button" class="btn btn-primary">Save</button>
             <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
           </div>
         </form>

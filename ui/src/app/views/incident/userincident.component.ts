@@ -20,6 +20,8 @@ declare var $: any;
   styleUrls: ['./userincident.component.scss']
 })
 export class UserIncidentComponent implements OnInit {
+  moduleName: string = "MY INCIDENTS";
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['inc', 'slaAt', 'assignedUser', 'status', 'action'];
   private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -64,6 +66,10 @@ export class UserIncidentComponent implements OnInit {
     }
   }
 
+  hasPermission(action: string): boolean {
+    return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
+  }
+
   getTitle(state, parent) {
     var data = [];
     if (parent && parent.snapshot.data && parent.snapshot.data.title) {
@@ -76,9 +82,12 @@ export class UserIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.redirectIfAgent();
-    this.datasource = new IncidentDataSource(this.service);
-    this.datasource.loadData();
+    if (this.checkRole() === "AGENT") {
+      this.router.navigate(['/incident/agent']);
+    } else {
+      this.datasource = new IncidentDataSource(this.service);
+      this.datasource.loadData();
+    }
   }
 
   ngAfterViewInit() {
@@ -181,13 +190,7 @@ export class UserIncidentComponent implements OnInit {
   }
 
   checkRole(): string {
-    let role = this.loggedInUserService.hasPermissionByName("MY INCIDENTS", "READ") ? "USER" : "AGENT";
+    let role = this.hasPermission("READ") ? "USER" : "AGENT";
     return role;
-  }
-
-  redirectIfAgent() {
-    if (this.checkRole() === "AGENT") {
-      this.router.navigate(['/incident/agent']);
-    }
   }
 }

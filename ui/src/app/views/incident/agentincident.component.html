@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="card ">
+                    <div *ngIf="hasPermission('SEARCH')" class="card ">
                         <div class="card-header">
                             <i class="fa fa-search"></i>Search Group Incident
                         </div>
@@ -108,7 +108,7 @@
                                 <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
                                     <i class="fa fa-close"></i> Cancel
                                 </button>
-                                <button type="button"
+                                <button *ngIf="hasPermission('ASSIGN')" type="button"
                                     [disabled]="(canAssignNow && selection.selected.length>=1)? false : true"
                                     (click)="openAssignModal()" class="btn btn-warning btn-sm">
                                     <i class="fa fa-male"></i> Assign
@@ -116,7 +116,7 @@
                             </div>
                         </form>
                     </div>
-                    <hr />
+                    <hr *ngIf="hasPermission('SEARCH')" />
                     <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="select">
                             <th mat-header-cell *matHeaderCellDef>
@@ -164,11 +164,13 @@
                         <ng-container matColumnDef="action">
                             <th mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button id="id-assign-{{element.id}}" type="button" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                <button *ngIf="hasPermission('ASSIGN')" id="id-assign-{{element.id}}" type="button"
+                                    [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
                                 'btn btn-sm btn-warning':true}" (click)="assign(element)"><i class="fa fa-man
                                        "></i> Assign
                                 </button>
-                                <button id="id-note-{{element.id}}" type="button" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                <button *ngIf="hasPermission('SOLVE')" id="id-note-{{element.id}}" type="button"
+                                    [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
                                 'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
                                         class="fa fa-comments-o"></i> View/Update
                                 </button>

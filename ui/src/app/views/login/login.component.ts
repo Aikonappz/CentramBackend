@@ -46,6 +46,12 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.removeClientData();
+  }
+
+  removeClientData() {
+    this.clientStorageService.remove(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY);
+    this.clientStorageService.remove(AppUtility.APP_LAST_ACTION_KEY);
   }
 
   getTitle(state, parent) {
