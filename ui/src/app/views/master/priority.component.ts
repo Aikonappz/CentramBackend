@@ -18,7 +18,7 @@ import { MiscService } from '../../service/MiscService';
 })
 export class PriorityComponent implements OnInit {
   moduleName: string = "PRIORITY";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
   private datasource: PriorityDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;

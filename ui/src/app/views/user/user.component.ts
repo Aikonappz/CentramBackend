@@ -19,7 +19,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 })
 export class UserComponent implements OnInit, OnDestroy {
   moduleName: string = "USER";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   modalRef: BsModalRef;
   displayedColumns = ['name', 'email', 'contact', 'status', 'action'];
   private datasource: UserDataSource

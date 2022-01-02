@@ -20,7 +20,7 @@ import { OrganisationService } from '../../service/OrganisationService';
 })
 export class OrganisationComponent implements OnInit, OnDestroy {
   moduleName: string = "ORGANIZATION";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'addressDtl', 'licence', 'status', 'action'];
   private datasource: OrganisationDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;

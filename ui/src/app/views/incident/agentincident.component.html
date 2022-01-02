@@ -164,16 +164,27 @@
                         <ng-container matColumnDef="action">
                             <th mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button *ngIf="hasPermission('ASSIGN')" id="id-assign-{{element.id}}" type="button"
-                                    [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
-                                'btn btn-sm btn-warning':true}" (click)="assign(element)"><i class="fa fa-man
-                                       "></i> Assign
-                                </button>
-                                <button *ngIf="hasPermission('SOLVE')" id="id-note-{{element.id}}" type="button"
-                                    [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
-                                'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
-                                        class="fa fa-comments-o"></i> View/Update
-                                </button>
+                                <div class="btn-group" dropdown>
+                                    <button dropdownToggle type="button"
+                                        class="btn btn-primary dropdown-toggle">Actions<span
+                                            class="caret"></span></button>
+                                    <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                *ngIf="hasPermission('ASSIGN')" id="id-assign-{{element.id}}" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                        'btn btn-sm btn-warning':true}" (click)="assign(element)"><i class="fa fa-male
+                                               "></i> Assign
+                                            </a>
+                                        </li>
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                *ngIf="hasPermission('SOLVE')" id="id-note-{{element.id}}" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                        'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
+                                                    class="fa fa-comments-o"></i> View/Update
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

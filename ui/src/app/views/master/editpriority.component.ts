@@ -17,7 +17,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 })
 export class EditPriorityComponent implements OnInit {
   moduleName: string = "PRIORITY";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;

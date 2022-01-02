@@ -11,6 +11,7 @@ import { CKEditorModule } from 'ckeditor4-angular';
 import { AssignIncidentComponent, AgentIncidentComponent } from './agentincident.component';
 import { UserIncidentComponent } from './userincident.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 
 
@@ -32,6 +33,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
     TabsModule,
     CKEditorModule,
     TooltipModule.forRoot(),
+    BsDropdownModule.forRoot(),
   ]
 })
 export class IncidentModule { }

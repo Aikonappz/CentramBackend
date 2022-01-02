@@ -53,6 +53,7 @@ https://letsencrypt.org/ -->ssl
 3. round robin
 4. have to ask zoho if we can delete mail
 
+https://github.com/selectize/selectize.js/blob/master/docs/usage.md
 
 
 

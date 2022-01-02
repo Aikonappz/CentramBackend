@@ -16,7 +16,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 })
 export class UserSettingsComponent implements OnInit {
   moduleName: string = "USER";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   angForm: FormGroup;
   user: UserDTO;

@@ -16,7 +16,7 @@ import { MiscService } from '../../service/MiscService';
 })
 export class DepartmentComponent implements OnInit {
   moduleName: string = "DEPARTMENT";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['name', 'status', 'action'];
   private datasource: DepartmentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;

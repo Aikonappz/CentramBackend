@@ -21,7 +21,6 @@ import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { ClientStorageService } from '../../service/ClientStorageService';
-//import * as jQuery from "jquery";
 declare var $: any;
 
 @Component({
@@ -167,6 +166,7 @@ export class EditIncidentComponent implements OnInit {
                 this.angForm.get('title').setValue(this.draftData.new.title);
                 this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
               }
+              this.preapareSelect();
             });
         });
     } else {
@@ -209,6 +209,35 @@ export class EditIncidentComponent implements OnInit {
     }
   }
 
+  preapareSelect() {
+    $(document).ready(function () {
+      let v = [];
+      $('#watchList').selectize({
+        //maxItems: 3
+        onItemAdd: function (value, $item) {
+          let selected = value.split(":");
+          let index = selected[0];
+          let val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
+          // var input = $('#watchList');
+          // let v = input.val();
+          // v.push(val);
+          // input.val(v);
+          // input.trigger('input'); // Use for Chrome/Firefox/Edge
+          // input.trigger('change'); // Use for Chrome/Firefox/Edge + IE11
+        },
+        onItemRemove: function (value) {
+          let selected = value.split(":");
+          let index = selected[0];
+          let val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
+          console.log(index + '==' + val);
+        }
+      });
+      // $('#moduleId').selectize({
+      //   maxItems: 1
+      // });
+    })
+  }
+
   ngAfterViewInit() { }
 
   ngAfterContentInit() {
@@ -240,6 +269,17 @@ export class EditIncidentComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       // prepare incident  object
+      let selected = null;
+      let index = null;
+      let val = null;
+      let watchers = $('#watchList').val();
+      for (let k in watchers) {
+        selected = watchers[k].split(":");
+        index = selected[0];
+        val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
+        console.log(index + '==' + val);
+        watchers[k] = val;
+      }
       if (sts === "DRAFT") {
         let returnPath = '/incident/user';
         if (this.hasAgentPermission) {
@@ -260,11 +300,7 @@ export class EditIncidentComponent implements OnInit {
           inc.moduleId = this.angForm.controls['moduleId'].value;
           inc.subModuleId = this.angForm.controls['subModuleId'].value;
           inc.title = this.angForm.controls['title'].value;
-          if (this.angForm.controls['watchList'].value != "") {
-            inc.watchList = this.angForm.controls['watchList'].value;
-          } else {
-            inc.watchList = [];
-          }
+          inc.watchList = watchers;
           inc.priority = priority;
           inc.status = sts;
           ic = new IncidentCommunication();
@@ -309,11 +345,7 @@ export class EditIncidentComponent implements OnInit {
           this.incident.moduleId = this.angForm.controls['moduleId'].value;
           this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
           this.incident.title = this.angForm.controls['title'].value;
-          if (this.angForm.controls['watchList'].value != "") {
-            this.incident.watchList = this.angForm.controls['watchList'].value;
-          } else {
-            this.incident.watchList = [];
-          }
+          this.incident.watchList = watchers;
           this.incident.assignedUser = null;
           this.incident.raisedUser = null;
           this.incident.priority = priority;
@@ -430,9 +462,9 @@ export class EditIncidentComponent implements OnInit {
           )
           ||
           (
-            this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'WRITE')
+            this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'RAISE INCIDENT')
             &&
-            this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'WRITE')
+            this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'RAISE INCIDENT')
           )
         ) {
           console.log("has permission!");

@@ -20,6 +20,7 @@ import { StartEndDateValidation } from '../../validator/StartEndDateValidation';
 import { Setting } from '../../model/Setting';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { ContactPerson } from '../../model/ContactPerson';
+declare var $: any;
 
 @Component({
   selector: 'app-edituser',
@@ -341,6 +342,7 @@ export class EditOrganisationComponent implements OnInit {
   get f() { return this.angForm.controls; }
 
   initSelectBoxes() {
+    //$('#name').fastselect();
     // $('#licenseType').select2();
     // $('#department').select2();
     // $('#location').select2();

@@ -24,7 +24,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 })
 export class EditLocationComponent implements OnInit {
   moduleName: string = "LOCATION";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';

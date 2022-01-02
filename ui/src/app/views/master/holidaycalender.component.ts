@@ -20,7 +20,7 @@ import { MiscService } from '../../service/MiscService';
 })
 export class HolidayCalenderComponent implements OnInit {
   moduleName: string = "HOLIDAY CALENDER";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['year', 'action'];
   private datasource: HolidayCalenderDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;

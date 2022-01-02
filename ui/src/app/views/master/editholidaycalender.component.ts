@@ -14,7 +14,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 })
 export class EditHolidayCalenderComponent implements OnInit {
   moduleName: string = "HOLIDAY CALENDER";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;

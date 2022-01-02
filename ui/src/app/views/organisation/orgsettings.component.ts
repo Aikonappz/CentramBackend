@@ -17,7 +17,7 @@ import { LoggedInUser } from '../../model/LoggedInUser';
 })
 export class OrgSettingsComponent implements OnInit {
   moduleName: string = "ORGANISATION";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   alphaNumericRegex = /^[a-z0-9]+$/i;
   angForm: FormGroup;
   setting: Setting;

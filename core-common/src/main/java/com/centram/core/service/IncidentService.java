@@ -281,7 +281,7 @@ public class IncidentService {
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
             raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
-            incident.setSlaAt(this.getSlADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
         }
         incidents = incidentRepository.saveAll(incidents);
         for (Incident incident : incidents) {
@@ -321,7 +321,7 @@ public class IncidentService {
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
-            incident.setSlaAt(this.getSlADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            incident.setSlaAt(this.getSLADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
         }
         Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();
         for (IncidentCommunication incidentCommunication : incident.getCommunications()) {
@@ -371,7 +371,7 @@ public class IncidentService {
      * @param holidays
      * @return
      */
-    private LocalDateTime getSlADateTime(ZonedDateTime raisedDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays) {
+    private LocalDateTime getSLADateTime(ZonedDateTime raisedDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long hours = Long.valueOf(hour.split((":"))[0]);
         Long minutes = Long.valueOf(hour.split((":"))[1]);

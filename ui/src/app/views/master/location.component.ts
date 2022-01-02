@@ -16,7 +16,7 @@ import { MiscService } from '../../service/MiscService';
 })
 export class LocationComponent implements OnInit {
   moduleName: string = "LOCATION";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['country', 'state', 'city', 'timezone', 'name', 'status', 'action'];
   private datasource: LocationDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
