@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, Router } from '@angular/router';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { tap } from 'rxjs/operators';
 import { Notification } from '../../model/Notification';
 import { NotificationDataSource } from '../../service/datasource/NotificationSource';
@@ -24,6 +24,7 @@ export class NotificationComponent implements OnInit {
     private titleService: Title,
     private router: Router,
     private modalService: BsModalService,
+    private route: ActivatedRoute,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -31,6 +32,7 @@ export class NotificationComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    //console.log("test...");
   }
 
   getTitle(state, parent) {
@@ -47,6 +49,14 @@ export class NotificationComponent implements OnInit {
   ngOnInit(): void {
     this.datasource = new NotificationDataSource(this.service);
     this.datasource.load(0, 10, { status: "ALL" });
+    if (!this.route.snapshot.paramMap.has('id')) {
+
+    } else {
+      this.route.params.subscribe(params => {
+        let entityId = Number(this.route.snapshot.paramMap.get('id'));
+        this.viewNotification(entityId);
+      });
+    }
   }
 
   ngAfterViewInit() {
@@ -68,4 +78,51 @@ export class NotificationComponent implements OnInit {
   loadData(req = {}) {
     this.datasource.load(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
+
+  view(id: number) {
+    this.router.navigate(['/notification/view/' + id]);
+  }
+
+  viewNotification(id: number) {
+    this.service.notificationService(id, {})
+      .subscribe((data: Notification) => {
+        //console.log("completed....");
+        const initialState = {
+          notification: data,
+        };
+        this.modalRef = this.modalService.show(NotificationViewComponent, { initialState });
+        this.modalRef.content.closeBtnName = 'Close';
+      });
+  }
+}
+@Component({
+  selector: 'modal-content',
+  template: `<div class="modal-header">
+  <h6 class="modal-title pull-left"><i class="fa fa-info-circle"></i>&nbsp; &nbsp;{{notification.notificationTitle}}</h6>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="row">
+      <div class="col-sm-12">
+          <div class="card ">
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col">
+                          <div [innerHTML]="notification.notificationBody"></div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>`
+})
+export class NotificationViewComponent implements OnInit {
+  notification: Notification;
+  constructor(public bsModalRef: BsModalRef,) { }
+  ngOnInit() { }
+  ngAfterViewInit() { }
+  ngAfterContentInit() { }
 }

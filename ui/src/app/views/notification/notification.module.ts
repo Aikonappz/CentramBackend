@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationComponent } from './notification.component';
+import { NotificationComponent, NotificationViewComponent } from './notification.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
@@ -11,7 +11,8 @@ import { NotificationRoutingModule } from './notification-routing.module';
 
 @NgModule({
   declarations: [
-    NotificationComponent
+    NotificationComponent,
+    NotificationViewComponent
   ],
   imports: [
     CommonModule,

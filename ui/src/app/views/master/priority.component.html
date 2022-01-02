@@ -4,17 +4,22 @@
             <div class="card">
                 <div class="card-header ">
                     <div class="row">
-                        <div class="col-md-11">
+                        <div class="col-md-10">
                             <i class="fa fa-align-justify"></i> Priorities
                         </div>
-                        <div class="col-md-1 float-right">
-                            <!-- <button type="button" class="btn btn-sm btn-minimize"><i
-                                    class="icon-cloud-upload"></i></button> -->
-                            <!-- <button type="button" class="btn btn-sm btn-minimize"><i
-                                    class="icon-cloud-download"></i></button> -->
-                            <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
-                                (click)="add()"><i class="icon-plus"></i> Add
-                            </button>
+                        <div class="col-md-2 float-right">
+                            <div class="btn-group d-flex justify-content-between" dropdown>
+                                <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
+                                        class="caret"></span></button>
+                                <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                    <li role="menuitem">
+                                        <a class="dropdown-item" (click)="add()" *ngIf="hasPermission('WRITE')"
+                                            href="javascript:void(0);">
+                                            <i class="icon-plus"></i> Add
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,12 +53,25 @@
                         <ng-container matColumnDef="action">
                             <th class="w-20" mat-header-cell *matHeaderCellDef> Action </th>
                             <td mat-cell *matCellDef="let element">
-                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
-                                    (click)="updateStatus(element)"><i class="icon-ban"></i> Change Status
-                                </button>
-                                <button *ngIf="hasPermission('WRITE')" type="button" class="btn btn-sm btn-primary"
-                                    (click)="edit(element)"><i class="icon-pencil"></i> Edit
-                                </button>
+                                <div class="btn-group" dropdown>
+                                    <button dropdownToggle type="button"
+                                        class="btn btn-primary dropdown-toggle">Actions<span
+                                            class="caret"></span></button>
+                                    <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="updateStatus(element)"
+                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
+                                                <i class="icon-ban"></i> Change Status
+                                            </a>
+                                        </li>
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="edit(element)"
+                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
+                                                <i class="icon-pencil"></i>Edit
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

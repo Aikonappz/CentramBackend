@@ -54,6 +54,9 @@ public class MiscApiController {
     private ObjectMapper objectMapper;
 
     @Autowired
+    private MapDlService mapDlService;
+
+    @Autowired
     private RoleService roleService;
 
     @Autowired
@@ -342,6 +345,39 @@ public class MiscApiController {
     ) {
         notificationService.save(body);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find mapdl by id", nickname = "getById", notes = "Find mapdl by id", response = Department.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Department.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "MapDl not found")
+    })
+    @RequestMapping(value = "/map-dl/{departmentId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MAP DL','READ',authentication.principal)")
+    public ResponseEntity<MapDL> getById(@ApiParam(value = "id of mapdl", required = true) @PathVariable("mapDlId") BigInteger mapDlId) {
+        return new ResponseEntity<MapDL>(mapDlService.getById(mapDlId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all map dl", nickname = "getMapDLs", notes = "Get all map dl", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-map-dl", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MAP DL','READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<MapDL>> getMapDLs(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<MapDL>>(mapDlService.getMapDLs(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a map dl", nickname = "saveMapDL", notes = "Add a map dl", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/department", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MAP DL','WRITE',authentication.principal)")
+    public ResponseEntity<MapDL> saveMapDL(@ApiParam(value = "Mapdl object", required = true) @Valid @RequestBody MapDL body) {
+        return new ResponseEntity<MapDL>(mapDlService.save(body), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/notification/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)

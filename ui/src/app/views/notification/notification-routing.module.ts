@@ -20,7 +20,7 @@ const routes: Routes = [
       },
       {
         path: 'view/:id',
-        component: Notification,
+        component: NotificationComponent,
         pathMatch: 'full',
         data: {
           title: 'View Notification'

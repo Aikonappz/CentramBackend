@@ -13,6 +13,7 @@ import { PriorityComponent } from './priority.component';
 import { EditPriorityComponent } from './editpriority.component';
 import { HolidayCalenderComponent } from './holidaycalender.component';
 import { EditHolidayCalenderComponent } from './editholidaycalender.component';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 
 
@@ -20,8 +21,8 @@ import { EditHolidayCalenderComponent } from './editholidaycalender.component';
   declarations: [
     HolidayCalenderComponent,
     EditHolidayCalenderComponent,
-    PriorityComponent,   
-    EditPriorityComponent, 
+    PriorityComponent,
+    EditPriorityComponent,
     DepartmentComponent,
     EditDepartmentComponent,
     LocationComponent,
@@ -35,6 +36,7 @@ import { EditHolidayCalenderComponent } from './editholidaycalender.component';
     FormsModule,
     ReactiveFormsModule,
     TabsModule,
+    BsDropdownModule.forRoot(),
   ]
 })
 export class MasterModule { }
