@@ -14,6 +14,8 @@ import { EditPriorityComponent } from './editpriority.component';
 import { HolidayCalenderComponent } from './holidaycalender.component';
 import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { DistributionListComponent } from './distributionlist.component';
+import { EditDlComponent } from './editdl.component';
 
 
 
@@ -26,7 +28,9 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     DepartmentComponent,
     EditDepartmentComponent,
     LocationComponent,
-    EditLocationComponent
+    EditLocationComponent,
+    DistributionListComponent,
+    EditDlComponent
   ],
   imports: [
     CommonModule,

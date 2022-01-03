@@ -50,6 +50,12 @@ export const navItems: INavData[] = [
         icon: 'icon-calendar',
         attributes: { "moduleName": "HOLIDAY CALENDER" }
       },
+      {
+        name: 'Distribution List',
+        url: '/master/dl',
+        icon: 'icon-list',
+        attributes: { "moduleName": "DISTRIBUTION LIST" }
+      },
     ]
   },
   {
@@ -85,6 +91,7 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "MY NOTIFICATIONS" }
   },
 ];
+
 
 /*export const navItems: INavData[] = [
   {

@@ -55,33 +55,33 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label" for="userName">User Name</label>
+                  <label class="form-col-form-label" for="userName">Employee Name</label>
                   <input type="text" id="userName" readonly
                     value="{{incident.raisedUser.firstName}} {{incident.raisedUser.lastName}}" class="form-control">
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="userEmail">User Email</label>
+                  <label class="form-col-form-label" for="userEmail">Employee Email</label>
                   <input type="text" id="userEmail" readonly value="{{incident.raisedUser.email}}" class="form-control">
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="userContactNo">User Contact No.</label>
+                  <label class="form-col-form-label" for="userContactNo">Employee Contact No.</label>
                   <input type="text" id="userContactNo" readonly value="{{incident.raisedUser.contactNo}}"
                     class="form-control">
                 </div>
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label" for="userDepartment">User Department</label>
+                  <label class="form-col-form-label" for="userDepartment">Employee Department</label>
                   <input type="text" id="userDepartment" readonly value="{{incident.raisedUser.department.name}}"
                     class="form-control">
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="userLocation">User Location</label>
+                  <label class="form-col-form-label" for="userLocation">Employee Location</label>
                   <input type="text" id="userLocation" readonly value="{{incident.raisedUser.location.name}}"
                     class="form-control">
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="userLocation">User Manager</label>
+                  <label class="form-col-form-label" for="userLocation">Employee Manager</label>
                   <input type="text" id="userLocation" readonly value="{{mngrDtl.firstName}} {{mngrDtl.lastName}}"
                     class="form-control">
                 </div>
@@ -98,7 +98,11 @@
                   <input type="text" id="agentEmail" readonly value="{{incident.assignedUser?.email}}"
                     class="form-control">
                 </div>
-                <div class="col"></div>
+                <div class="col">
+                  <label class="form-col-form-label" for="agentContactNo">Agent Contact No.</label>
+                  <input type="text" id="agentContactNo" readonly value="{{incident.assignedUser?.contactNo}}"
+                    class="form-control">
+                </div>
               </div>
             </fieldset>
             <fieldset *ngIf="newEntity" class="border p-2">
@@ -180,8 +184,12 @@
               </div>
             </fieldset>
             <div *ngIf="!newEntity" id="comments" class="row-margin-05">
-              <h3 class="accordion-toggle"><b>{{incident.title}}&nbsp;&nbsp;[{{incident.incidentNo}}]</b> <i
-                  id="comments-action" class="fa fa-plus-circle float-right"></i></h3>
+              <h3 class="accordion-toggle"><b>{{incident.title}}&nbsp;&nbsp;[{{incident.incidentNo}}]</b>
+                <span class="float-right">
+                  <span class="highlight" id="highlight">Expand</span>
+                  <i id="comments-action" class="fa fa-plus-circle "></i>
+                </span>
+              </h3>
               <div>
                 <div *ngFor="let item of incidentCommunications">
                   <div *ngIf="item.communicatedBy!=null" [ngClass]="{'highlight-grid-u': incident.raisedUser.id==item.communicatedBy.id,
@@ -246,7 +254,7 @@
               type="button" class="btn btn-primary">Save
               as Draft</button>
             <button *ngIf="hasPermission('WRITE,SOLVE')" [disabled]="!angForm.valid" (click)="formSubmit('OPEN')"
-              type="button" class="btn btn-primary">Save</button>
+              type="button" class="btn btn-primary">Submit</button>
             <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
           </div>
         </form>

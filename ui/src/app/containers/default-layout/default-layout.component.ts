@@ -151,7 +151,7 @@ export class DefaultLayoutComponent implements OnInit {
       //console.log("timeleft => " + timeleft);
       //console.log("warningTimeleft => " + warningTimeleft);
       //TODO: need to handle setinterval
-      console.log("diff => " + diff);
+      //console.log("diff => " + diff);
       if (!isTimeout && warningTimeleft - now < 0) {
         let modalOpened = (this.clientStorageService.get(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY) == "1") ? true : false;
         //console.log(modalOpened);

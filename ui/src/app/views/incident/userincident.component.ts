@@ -50,6 +50,11 @@ export class UserIncidentComponent implements OnInit {
         this.statusList.push({ "key": item, "value": IncidentStatus[item] });
       }
     }
+    this.statusList.sort(function (a, b) {
+      if (b.key > a.key) return -1;
+      if (a.key > b.key) return 1;
+      return 0;
+    });
     this.angForm = this.fb.group({
       incidentNo: new FormControl('', [
       ]),
@@ -137,7 +142,7 @@ export class UserIncidentComponent implements OnInit {
   }
   formatDateTime(d: string) {
     if (d != null && d != "") {
-      return moment(d).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
   }

@@ -243,14 +243,6 @@ export class OrganisationComponent implements OnInit, OnDestroy {
                       <td>{{formatDate(org.licenseEnd)}}</td>
                   </tr>
                   <tr>
-                      <td>Setting</td>
-                      <td>
-                      <p *ngIf="org.licenseType=='ALL'||org.licenseType=='INCIDENT'">Ticket allocation type - {{org.setting.ticketAllocationType}}</p>
-                      <p *ngIf="org.licenseType=='ALL'||org.licenseType=='INCIDENT'">Incident prefix - {{org.setting.incidentPrefix}}</p>
-                      <p *ngIf="org.licenseType=='ALL'||org.licenseType=='ASSET'">Asset prefix - {{org.setting.assetPrefix}}</p>
-                      </td>
-                  </tr>
-                  <tr>
                       <td>Contact Persons</td>
                       <td>
                       <p *ngIf="org.contactPersons.length > 0">Key person 1 name - {{org.contactPersons[0].name}}</p>
@@ -292,7 +284,7 @@ export class ViewOrganisationDetail implements OnInit {
 
   formatDate(d: string) {
     if (d != null && d != "") {
-      return moment(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
+      return moment.utc(d).tz(AppUtility.APP_DEFAULT_TIMEZONE).format(AppUtility.APP_VIEW_DATE_FORMAT);
     }
     return null;
   }

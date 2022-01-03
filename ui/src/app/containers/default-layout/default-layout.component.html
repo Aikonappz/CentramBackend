@@ -42,11 +42,12 @@
         <a class="dropdown-item" href="#"><i class="fa fa-comments"></i> Comment<span class="badge badge-warning">42</span></a> -->
         <div class="dropdown-header text-center small"><strong>User Info</strong></div>
         <a class="dropdown-item small">
-          <i class="fa fa-user"></i>{{loggedInUser.name}}({{loggedInUser.timeZone}})
+          <i class="fa fa-user"></i>{{loggedInUser.name}}
+          <!-- ({{loggedInUser.timeZone}}) -->
         </a>
         <div class="dropdown-header small text-center"><strong>Settings</strong></div>
         <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item small" [routerLink]="['organization/settings']"><i
-            class="fa fa-wrench"></i> Organisation Setting</a>
+            class="fa fa-wrench"></i> Organization Setting</a>
         <div class="divider"></div>
         <a class="dropdown-item small" [routerLink]="['/user/settings']"><i class="fa fa-wrench"></i> User Setting</a>
         <!-- <a class="dropdown-item" href="#"><i class="fa fa-usd"></i> Payments<span class="badge badge-dark">42</span></a>
@@ -75,7 +76,7 @@
           <!-- <a class="btn" href="#"><i class="icon-speech"></i></a> -->
           <a class="btn" [routerLink]="['/dashboard']"><i class="icon-graph"></i> &nbsp;Dashboard</a>
           <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="['/organization/settings']">
-            <i class="icon-settings"></i>&nbsp;Organisation Setting</a>
+            <i class="icon-settings"></i>&nbsp;Organization Setting</a>
           <a class="btn" [routerLink]="['/user/settings']"><i class="icon-settings"></i> &nbsp;User Settings</a>
         </div>
       </li>

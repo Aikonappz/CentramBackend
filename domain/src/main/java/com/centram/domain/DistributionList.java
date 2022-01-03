@@ -18,11 +18,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Set;
 
 /**
  * Incident
  */
-@ApiModel(description = "Map DL")
+@ApiModel(description = "Distribution List")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
@@ -32,16 +33,15 @@ import java.math.BigInteger;
 //@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "map_dl",
+@Table(name = "distribution_list",
         indexes = {
-                @Index(name = "map_dl_module_id_indx", columnList = "module_id", unique = false),
-                @Index(name = "map_dl_sub_module_id_indx", columnList = "sub_module_id", unique = false),
-                @Index(name = "map_dl_dl_name_indx", columnList = "dl_name", unique = false),
-                @Index(name = "map_dl_organisation_id_indx", columnList = "organisation_id", unique = false),
+                @Index(name = "dl_dl_name_org_indx", columnList = "dl_name,organisation_id", unique = false),
+                @Index(name = "dl_dl_name_indx", columnList = "dl_name", unique = false),
+                @Index(name = "dl_org_id_indx", columnList = "organisation_id", unique = false),
         }
 )
 @Audited
-public class MapDL extends BaseEntity implements Serializable {
+public class DistributionList extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337184473432054L;
 
     @ApiModelProperty(value = "")
@@ -54,21 +54,23 @@ public class MapDL extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "module_id", nullable = false)
-    @JsonView(Views.BasicView.class)
-    private BigInteger moduleId;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "sub_module_id", nullable = false)
-    @JsonView(Views.BasicView.class)
-    private BigInteger subModuleId;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
     @Column(name = "dl_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String dlName;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "dl_email", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String dlEmail;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    //@NotNull
+    @Fetch(FetchMode.JOIN)
+    @OneToMany(mappedBy = "distributionList", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
+    private Set<DistributionListModule> distributionListModules;
 
     @ApiModelProperty(required = false, value = "")
     @Valid
@@ -77,11 +79,11 @@ public class MapDL extends BaseEntity implements Serializable {
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     private Organisation organisation;
 
-    public MapDL(@NotNull BigInteger id) {
+    public DistributionList(@NotNull BigInteger id) {
         this.id = id;
     }
 
-    public MapDL(Long version, BigInteger id) {
+    public DistributionList(Long version, BigInteger id) {
         super(version);
         this.id = id;
     }

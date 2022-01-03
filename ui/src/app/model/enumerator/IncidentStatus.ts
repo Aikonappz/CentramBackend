@@ -9,4 +9,5 @@ export enum IncidentStatus {
     ON_HOLD = "On Hold",
     PENDING_FROM_VENDOR = "Pending From Vendor",
     ALL = "All",
+    CLARIFICATION_PROVIDED = "Clarification Provided",
 }

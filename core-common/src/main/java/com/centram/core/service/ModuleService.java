@@ -3,12 +3,12 @@ package com.centram.core.service;
 
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ModuleRepository;
 import com.centram.domain.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +29,8 @@ public class ModuleService {
     private RedisService redisService;
 
     @Transactional(readOnly = true)
-    public Page<Module> getModules(Pageable pageable) {
-        return moduleRepository.findAll(pageable);
+    public PaginatedList<Module> getModules(Pageable pageable) {
+        return new PaginatedList<Module>(moduleRepository.findAll(pageable));
     }
 
     @Transactional(readOnly = true)

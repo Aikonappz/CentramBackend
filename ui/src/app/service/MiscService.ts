@@ -9,6 +9,9 @@ import { Status } from '../model/enumerator/Status';
 import { Priority, PriorityList } from '../model/Priority';
 import { HolidayCalenderList } from '../model/HolidayCalender';
 import { Notification, NotificationList } from '../model/Notification';
+import { MapDLVO, MapDLVOList } from '../model/MapDLVO';
+import { DistributionList, DistributionListList } from '../model/DistributionList';
+import { Module } from '../model/Module';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -87,5 +90,17 @@ export class MiscService {
 
     updateNotificationsStatusService(ids: number[], status: Status, request?: any): Observable<any> {
         return this.http.get('/v1/misc/notification/' + ids.join(",") + '/' + Status[status], { "params": request });
+    }
+    saveDistributionListService(mapdl: DistributionList): Observable<DistributionList> {
+        return this.http.post('/v1/misc/distribution-list', mapdl);
+    }
+    distributionListsService(request?: any): Observable<DistributionListList> {
+        return this.http.get('/v1/misc/all-distribution-list', { "params": request });
+    }
+    distributionListService(id: number, request?: any): Observable<DistributionList> {
+        return this.http.get('/v1/misc/distribution-list/' + id, { "params": request });
+    }
+    modulesService(request?: any): Observable<Module[]> {
+        return this.http.get('/v1/misc/all-module', { "params": request });
     }
 }

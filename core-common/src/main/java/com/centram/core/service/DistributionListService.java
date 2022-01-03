@@ -5,9 +5,10 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
-import com.centram.core.repository.MapDlRepository;
+import com.centram.core.repository.DistributionListRepository;
 import com.centram.domain.ActivityLog;
-import com.centram.domain.MapDL;
+import com.centram.domain.DistributionList;
+import com.centram.domain.DistributionListModule;
 import com.centram.domain.enumarator.ActivityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +19,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
-public class MapDlService {
+public class DistributionListService {
 
-    private static final Logger log = LoggerFactory.getLogger(MapDlService.class);
+    private static final Logger log = LoggerFactory.getLogger(DistributionListService.class);
 
     @Autowired
-    private MapDlRepository mapDlRepository;
+    private DistributionListRepository distributionListRepository;
 
     @Autowired
     private OrganisationService organisationService;
@@ -42,9 +45,9 @@ public class MapDlService {
      */
     @Transactional(readOnly = true)
     //@Cacheable(value = "locations", key = "#locationId")
-    public MapDL getById(BigInteger id) {
+    public DistributionList getById(BigInteger id) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<MapDL> mapDl = mapDlRepository.findById(id);
+        Optional<DistributionList> mapDl = distributionListRepository.findById(id);
         if (!mapDl.isPresent()) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -59,9 +62,9 @@ public class MapDlService {
      */
     @Transactional(readOnly = true)
     //@Cacheable(value = "locations", key = "#locationId")
-    public MapDL getByName(String name) {
+    public DistributionList getByName(String name) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return mapDlRepository.getByName(name, loggedInUser.getOrganisationId());
+        return distributionListRepository.getByName(name, loggedInUser.getOrganisationId());
     }
 
     /**
@@ -71,22 +74,28 @@ public class MapDlService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<MapDL> getMapDLs(Pageable pageable) {
+    public PaginatedList<DistributionList> getDistributionLists(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<MapDL>(mapDlRepository.getMapDLByOrganisation(loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<DistributionList>(distributionListRepository.getMapDLByOrganisation(loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
      * save MapDL
      *
-     * @param mapDL
+     * @param distributionList
      * @return
      */
     @Transactional
-    public MapDL save(MapDL mapDL) {
+    public DistributionList save(DistributionList distributionList) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        mapDL.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, mapDL.getId() != null ? ActivityType.ADD_LOCATION : ActivityType.UPDATE_LOCATION));
-        return mapDlRepository.save(mapDL);
+        distributionList.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+        Set<DistributionListModule> distributionListModules = new HashSet<DistributionListModule>();
+        for (DistributionListModule distributionListModule : distributionList.getDistributionListModules()) {
+            distributionListModule.setDistributionList(distributionList);
+            distributionListModules.add(distributionListModule);
+        }
+        distributionList.setDistributionListModules(distributionListModules);
+        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, distributionList.getId() != null ? ActivityType.ADD_LOCATION : ActivityType.UPDATE_LOCATION));
+        return distributionListRepository.save(distributionList);
     }
 }

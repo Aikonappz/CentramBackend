@@ -99,3 +99,38 @@ java -Dspring.config.location=/home/sumit/Documents/ramesh/app/centram/propertie
 
 
 
+https://github.com/gabrielpulga/spring-boot-websocket
+
+
+1. Dashboard should not have tan pan info -d
+2. need 3/2 tiles in Dashboard -d
+3. Setting need to remove from org view -d
+4. remove change status from everyewhere -d
+5. if user/org inactive change msg in login error.
+6. Upload(Template) instead whatevere there. -d
+7. Timezonenot required. -d
+8. Organisation -> Organization -d
+9. change priority order in tab display also -p
+
+10. ORG_ADMIN shoud have 2 view type-- ORG_ADMIN/ORG_EMP
+11.
+As an Admin
+
+My Company Dashboard
+Users
+Masters
+
+As an Employee
+
+My Dashboard
+Incidents
+Create an Incident
+My Incidents
+My Notifications
+
+12. Save should be Submit in create incident -d
+13. User should be Employee in incident page -d
+14.Agent contact no required -d
+15. Expand here + symbol -> coler redis -d
+16. Incident Status should be in ascending order -d
+17. Need clarification should change automatically to provided clarification

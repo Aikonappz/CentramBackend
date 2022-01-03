@@ -112,6 +112,11 @@ export class EditIncidentComponent implements OnInit {
         this.statusList.push({ "key": item, "value": IncidentStatus[item] });
       }
     }
+    this.statusList.sort(function (a, b) {
+      if (b.key > a.key) return -1;
+      if (a.key > b.key) return 1;
+      return 0;
+    });
     this.permissions = this.loggedInUserService.getModulePermissions();
     let p;
     for (let i in this.permissions) {
@@ -253,10 +258,12 @@ export class EditIncidentComponent implements OnInit {
           if (index === false) {
             $('#comments-action').addClass('fa-plus-circle');
             $('#comments-action').removeClass('fa-minus-circle');
+            $('#highlight').text('Expand');
           }
           else {
             $('#comments-action').removeClass('fa-plus-circle');
             $('#comments-action').addClass('fa-minus-circle');
+            $('#highlight').text('Collapse');
           }
         }
       });
@@ -551,7 +558,9 @@ export class EditIncidentComponent implements OnInit {
 
   formatDateTime(d: string) {
     if (d != null && d != "") {
-      return moment(d).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+      //console.log(moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT));
+      //console.log(moment(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT));
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
   }

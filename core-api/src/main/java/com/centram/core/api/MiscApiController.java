@@ -4,11 +4,14 @@ package com.centram.core.api;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.view.Views;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.NotificationVO;
 import com.centram.core.service.*;
+import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -51,10 +54,13 @@ public class MiscApiController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
-    private MapDlService mapDlService;
+    private DistributionListService distributionListService;
 
     @Autowired
     private RoleService roleService;
@@ -75,7 +81,7 @@ public class MiscApiController {
     private MiscService miscService;
 
     @Autowired
-    private NotificationService notificationService;
+    private ModuleService moduleService;
 
     @ApiOperation(value = "Demo Request Api", nickname = "requestDemo", notes = "Demo Request Api", tags = {"misc",})
     @ApiResponses(value = {
@@ -84,6 +90,27 @@ public class MiscApiController {
     @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<CommonResponse> requestDemo(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody RequestDemoDTO body) {
         return new ResponseEntity<CommonResponse>(miscService.requestDemo(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find module by id", nickname = "getModuleById", notes = "Find module by id", response = Module.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Role.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "Module not found")
+    })
+    @RequestMapping(value = "/module/{moduleId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Module> getModuleById(@ApiParam(value = "id of module", required = true) @PathVariable("moduleId") BigInteger moduleId) {
+        return new ResponseEntity<Module>(moduleService.getModuleById(moduleId), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Modules", nickname = "getModules", notes = "Get all Modules", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Module>> getModules(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find role by id", nickname = "getRoleById", notes = "Find role by id", response = Role.class, tags = {"misc",})
@@ -353,31 +380,34 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid name supplied"),
             @ApiResponse(code = 404, message = "MapDl not found")
     })
-    @RequestMapping(value = "/map-dl/{departmentId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MAP DL','READ',authentication.principal)")
-    public ResponseEntity<MapDL> getById(@ApiParam(value = "id of mapdl", required = true) @PathVariable("mapDlId") BigInteger mapDlId) {
-        return new ResponseEntity<MapDL>(mapDlService.getById(mapDlId), HttpStatus.OK);
+    @RequestMapping(value = "/distribution-list/{dlid}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','READ',authentication.principal)")
+    @JsonView({Views.DetailView.class,})
+    public ResponseEntity<DistributionList> getById(@ApiParam(value = "id of mapdl", required = true) @PathVariable("dlid") BigInteger dlid) {
+        return new ResponseEntity<DistributionList>(distributionListService.getById(dlid), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all map dl", nickname = "getMapDLs", notes = "Get all map dl", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all map dl", nickname = "getDistributionLists", notes = "Get all map dl", response = PaginatedList.class, tags = {"misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/all-map-dl", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MAP DL','READ',authentication.principal)")
-    public ResponseEntity<PaginatedList<MapDL>> getMapDLs(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<MapDL>>(mapDlService.getMapDLs(pageable), HttpStatus.OK);
+    @RequestMapping(value = "/all-distribution-list", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','READ',authentication.principal)")
+    @JsonView(Views.ListView.class)
+    public ResponseEntity<PaginatedList<DistributionList>> getDistributionLists(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<DistributionList>>(distributionListService.getDistributionLists(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a map dl", nickname = "saveMapDL", notes = "Add a map dl", tags = {"misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
-    @RequestMapping(value = "/department", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MAP DL','WRITE',authentication.principal)")
-    public ResponseEntity<MapDL> saveMapDL(@ApiParam(value = "Mapdl object", required = true) @Valid @RequestBody MapDL body) {
-        return new ResponseEntity<MapDL>(mapDlService.save(body), HttpStatus.OK);
+    @RequestMapping(value = "/distribution-list", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<DistributionList> saveMapDL(@ApiParam(value = "Mapdl object", required = true) @Valid @RequestBody DistributionList body) {
+        return new ResponseEntity<DistributionList>(distributionListService.save(body), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/notification/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)

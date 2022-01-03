@@ -338,6 +338,11 @@ public class IncidentService {
         } else {
             incident.setHoldAt(null);
         }
+        if (incident.getRaisedUser() != null
+                && incident.getStatus() == IncidentStatus.NEED_CLARIFICATION
+                && loggedInUser.getUserId().compareTo(incident.getRaisedUser().getId()) == 0) {
+            incident.setStatus(IncidentStatus.CLARIFICATION_PROVIDED);
+        }
         raisedIncident = incidentRepository.save(incident);
         //notify respected user
         miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appLocalDateTimeFormat));

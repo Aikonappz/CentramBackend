@@ -24,6 +24,7 @@ export class OrgSettingsComponent implements OnInit {
   saved: boolean = false;
   ticketAllocationTypes: any;
   loggedInUser: LoggedInUser;
+  canEdit: boolean = true;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -117,10 +118,13 @@ export class OrgSettingsComponent implements OnInit {
       .getOrganisationSettingService()
       .subscribe((data: Setting) => {
         if (data != null) {
+          this.canEdit = false;
           this.setting = data;
           this.angForm.get('assetPrefix').setValue(this.setting.assetPrefix);
           this.angForm.get('incidentPrefix').setValue(this.setting.incidentPrefix);
           this.angForm.get('ticketAllocationType').setValue(this.setting.ticketAllocationType);
+        } else {
+          this.canEdit = true;
         }
       });
   }

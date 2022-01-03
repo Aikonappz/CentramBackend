@@ -6,10 +6,7 @@ import { tap } from 'rxjs/operators';
 import { Status } from '../../model/enumerator/Status';
 import { HolidayCalender } from '../../model/HolidayCalender';
 import { LocationVO } from '../../model/LocationVO';
-import { Priority } from '../../model/Priority';
 import { HolidayCalenderDataSource } from '../../service/datasource/HolidayCalenderDataSource';
-import { LocationDataSource } from '../../service/datasource/LocationDataSource';
-import { PriorityDataSource } from '../../service/datasource/PriorityDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
 
