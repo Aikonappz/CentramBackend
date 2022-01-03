@@ -29,9 +29,16 @@ export class PriorityDataSource implements DataSource<Priority>{
         this.countSubject.complete();
     }
 
-    loadData(pageNumber = 0, pageSize = 10) {
+    loadData(pageNumber = 0, pageSize = 10, req = {}) {
         this.loadingSubject.next(true);
-        this.service.prioritiesService({ page: pageNumber, size: pageSize })
+        let defaultParam = {
+            page: pageNumber, size: pageSize, sort: "name,asc"
+        };
+        let params = Object.assign(
+            req,
+            defaultParam
+        );
+        this.service.prioritiesService(params)
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))

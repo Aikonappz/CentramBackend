@@ -457,6 +457,7 @@ export class EditIncidentComponent implements OnInit {
         this.incident.incidentNo = data.incidentNo;
         this.incident.raisedAt = data.raisedAt;
         this.incident.status = data.status;
+        this.incident.holdAt = data.holdAt;
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
         this.populateSubmodule(this.incident.moduleId);

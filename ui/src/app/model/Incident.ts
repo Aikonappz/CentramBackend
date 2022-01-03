@@ -1,5 +1,6 @@
 import { Base } from "./Base";
 import { IncidentStatus } from "./enumerator/IncidentStatus";
+import { Status } from "./enumerator/Status";
 import { IncidentCommunication } from "./IncidentCommunication";
 import { Priority } from "./Priority";
 import { User } from "./User";
@@ -12,12 +13,14 @@ export class Incident extends Base {
     incidentNo: string;
     priority: Priority;
     watchList: string[];
+    prevStatus: any;
     status: any;
     raisedUser: User;
     assignedUser: User;
     communications: IncidentCommunication[];
     raisedAt: any;
     slaAt: any;
+    holdAt: any;
     constructor() {
         super();
         this.id = null;

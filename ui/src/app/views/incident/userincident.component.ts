@@ -116,7 +116,7 @@ export class UserIncidentComponent implements OnInit {
   }
 
   reopen(inc: Incident) {
-    let res = window.confirm("Are you sure?")
+    let res = window.confirm("Do you really want to Reopen this incident?")
     if (res) {
       let ids = [];
       ids.push(inc.id);

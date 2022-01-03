@@ -483,10 +483,7 @@ export class DashboardComponent implements OnInit {
                   <ng-container matColumnDef="name">
                       <th mat-header-cell *matHeaderCellDef> Name </th>
                       <td mat-cell *matCellDef="let element">
-                          {{element.name}}<br />
-                          {{element.pan}}<br />
-                          {{element.tan}}<br />
-                          {{element.gstin}}
+                          {{element.name}}
                       </td>
                   </ng-container>
                   <ng-container matColumnDef="addressDtl">
@@ -538,6 +535,7 @@ export class ViewAppAdminDashboardDetails implements OnInit {
     public bsModalRef: BsModalRef,
     private service: OrganisationService,
     public options: ModalOptions,
+    private loggedInUserService: LoggedInUserService,
   ) {
   }
   ngOnInit(): void {
@@ -565,7 +563,7 @@ export class ViewAppAdminDashboardDetails implements OnInit {
   }
   formatDate(d: string) {
     if (d != null && d != "") {
-      return moment(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
     }
     return null;
   }

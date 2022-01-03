@@ -5,6 +5,7 @@ export class Module {
     status: any;
     appModule: boolean;
     licenseType: string;
+    customerModuleName: string;
 
     constructor() {
         this.id = null;
@@ -13,5 +14,6 @@ export class Module {
         this.status = '';
         this.appModule = true;
         this.licenseType = '';
+        this.customerModuleName = '';
     }
 }

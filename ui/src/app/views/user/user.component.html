@@ -15,7 +15,7 @@
                                     <li role="menuitem">
                                         <a *ngIf="hasPermission('WRITE')" class="dropdown-item"
                                             href="assets/downloads/users.csv"><i class="icon-arrow-up-circle"></i>
-                                            Upload File Template</a>
+                                            Upload(Template)</a>
                                     </li>
                                     <li role="menuitem">
                                         <a *ngIf="hasPermission('WRITE')" class="dropdown-item" (click)="upload()"
@@ -137,12 +137,12 @@
                                                 <i class="icon-eye"></i> View
                                             </a>
                                         </li>
-                                        <li role="menuitem">
+                                        <!-- <li role="menuitem">
                                             <a class="dropdown-item" (click)="updateStatus(element)"
                                                 *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
                                                 <i class="icon-ban"></i> Change Status
                                             </a>
-                                        </li>
+                                        </li> -->
                                         <li role="menuitem">
                                             <a class="dropdown-item" (click)="edit(element)"
                                                 *ngIf="hasPermission('WRITE')" href="javascript:void(0);">

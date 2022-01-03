@@ -1,0 +1,81 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add DL</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit DL</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="dlModuleId">Category</label>
+                <select #dlModuleId (change)="populateSubmodule($event.target.value)" class="form-control"
+                  formControlName="dlModuleId" ngModel id="dlModuleId" name="dlModuleId">
+                  <option value="">-- Select Category --</option>
+                  <option *ngFor="let e of moduleList" value="{{e.id}}">{{e.customerModuleName}}</option>
+                </select>
+                <div *ngIf="f.dlModuleId.touched && f.dlModuleId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.dlModuleId.errors?.required">
+                    Category is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="dlSubModuleId">Sub Category</label>
+                <select multiple class="form-control" formControlName="dlSubModuleId" ngModel id="dlSubModuleId"
+                  name="dlSubModuleId">
+                  <option *ngFor="let e of subModuleList" value="{{e.id}}">{{e.customerModuleName}}
+                  </option>
+                </select>
+                <div *ngIf="f.dlSubModuleId.touched && f.dlSubModuleId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.dlSubModuleId.errors?.required">
+                    Sub Category is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="dlName">DL Name</label>
+                <input type="text" formControlName="dlName" ngModel id="dlName" name="dlName" class="form-control"
+                  placeholder="DL name" aria-label="DL name">
+                <div *ngIf="f.dlName.touched && f.dlName.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.dlName.errors?.required">
+                    DL is required.
+                  </div>
+                  <div *ngIf="f.dlName.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="dlEmail">DL Email</label>
+                <input type="text" formControlName="dlEmail" ngModel id="dlEmail" name="dlEmail" class="form-control"
+                  placeholder="DL Email" aria-label="DL Email">
+                <div *ngIf="f.dlEmail.touched && f.dlEmail.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.dlEmail.errors?.required">
+                    DL is required.
+                  </div>
+                  <div *ngIf="f.dlEmail.errors?.email">
+                    Invalid input! Only email allowed.
+                  </div>
+                  <div *ngIf="f.dlEmail.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="submit"
+              class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

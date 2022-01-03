@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DepartmentComponent } from './department.component';
+import { DistributionListComponent } from './distributionlist.component';
 import { EditDepartmentComponent } from './editdepartment.component';
+import { EditDlComponent } from './editdl.component';
 import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 import { EditLocationComponent } from './editlocation.component';
 import { EditPriorityComponent } from './editpriority.component';
@@ -114,6 +116,30 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Edit Holiday Calender'
+        }
+      },
+      {
+        path: 'dl',
+        component: DistributionListComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Distribution List'
+        },
+      },
+      {
+        path: 'dl/add',
+        component: EditDlComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Distribution List'
+        }
+      },
+      {
+        path: 'dl/edit/:id',
+        component: EditDlComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Distribution List'
         }
       },
     ]

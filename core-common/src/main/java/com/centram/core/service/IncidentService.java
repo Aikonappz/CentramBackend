@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -333,15 +334,30 @@ public class IncidentService {
         }
         incident.setCommunications(communicationSet);
         // mark incident hold and set hold time
-        if (this.checkStatusOnHold(incident.getStatus())) {
-            incident.setHoldAt(currentDateTime.toLocalDateTime());
-        } else {
-            incident.setHoldAt(null);
+        if (incident.getHoldAt() == null && this.checkStatusOnHold(incident.getStatus())) {
+            incident.setHoldAt(LocalDateTime.now());
         }
-        if (incident.getRaisedUser() != null
+        if (incident.getHoldAt() != null
+                && incident.getRaisedUser() != null
                 && incident.getStatus() == IncidentStatus.NEED_CLARIFICATION
                 && loggedInUser.getUserId().compareTo(incident.getRaisedUser().getId()) == 0) {
             incident.setStatus(IncidentStatus.CLARIFICATION_PROVIDED);
+            /*fetch location*/
+            Location location = locationService.getById(loggedInUser.getLocationId());
+            /*fetch priority*/
+            Priority priority = priorityService.getById(incident.getPriority().getId());
+            /*prepare holiday List*/
+            List<Holiday> holidays = new ArrayList<Holiday>();
+            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
+            if (currentDateTime.getMonth() == Month.DECEMBER) {
+                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+            }
+            holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
+            ZonedDateTime holdDateTime = incident.getHoldAt().atZone(ZoneId.systemDefault());
+            holdDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
+            incident.setSlaAt(this.getHoldSLADateTime(currentDateTime, holdDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            incident.setHoldAt(null);
         }
         raisedIncident = incidentRepository.save(incident);
         //notify respected user
@@ -360,10 +376,67 @@ public class IncidentService {
         return raisedIncident;
     }
 
+    /**
+     * check whether status is hold status or not
+     *
+     * @param status
+     * @return
+     */
     private Boolean checkStatusOnHold(IncidentStatus status) {
         return status == IncidentStatus.CLOSED || status == IncidentStatus.ON_HOLD ||
                 status == IncidentStatus.NEED_CLARIFICATION ||
                 status == IncidentStatus.PENDING_FROM_VENDOR;
+    }
+
+    /**
+     * calculate hold incident further SLA
+     *
+     * @param raisedDateTime
+     * @param holdAtDateTime
+     * @param hour
+     * @param opsStartTime
+     * @param opsEndTime
+     * @param holidays
+     * @return
+     */
+    private LocalDateTime getHoldSLADateTime(ZonedDateTime raisedDateTime, ZonedDateTime holdAtDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ChronoUnit chronoUnit = ChronoUnit.MINUTES;
+        Long timePassed = chronoUnit.between(holdAtDateTime, raisedDateTime);
+        Long hours = Long.valueOf(hour.split((":"))[0]);
+        Long minutes = Long.valueOf(hour.split((":"))[1]);
+        log.info("hours => {}, minutes => {}", hours, minutes);
+        Long minuteToAdd = (hours * 60) + minutes;
+        minuteToAdd = minuteToAdd - timePassed;
+        log.info(" converted minutes => {}", minuteToAdd);
+        List<WorkingDay> workingDays = this.getWorkingDays(raisedDateTime, holidays, opsStartTime, opsEndTime);
+        Collections.sort(workingDays);
+        ZonedDateTime slaDayDateTime = raisedDateTime;
+        ZonedDateTime slaDayEndTime = null;
+        Duration duration = null;
+        if (this.isHoliday(raisedDateTime.toLocalDate(), holidays)) {
+            Optional<WorkingDay> nextWorkingDayOptional = this.nextWorkingDay(raisedDateTime.toLocalDate(), workingDays);
+            if (nextWorkingDayOptional.isPresent()) {
+                slaDayDateTime = nextWorkingDayOptional.get()
+                        .getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+            } else {
+                throw new AppException(GenericErrorCode.HOLIDAY_CALENDER_MASTER_DATA_MISSING);
+            }
+        }
+        for (WorkingDay workingDay : workingDays) {
+            if (slaDayDateTime.toLocalDate().compareTo(workingDay.getDate()) == 0) {
+                slaDayDateTime = slaDayDateTime.plusMinutes(minuteToAdd).toLocalDateTime().atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                if (!this.checkIsValidSLA(slaDayDateTime, workingDays)) {
+                    slaDayEndTime = slaDayDateTime.with(opsEndTime);
+                    duration = Duration.between(slaDayEndTime, slaDayDateTime);
+                    minuteToAdd = duration.toMinutes();
+                    slaDayDateTime = slaDayDateTime.plusDays(1).toLocalDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                }
+            }
+        }
+        log.info("UTC {}", slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+        log.info("LOCAL {}", slaDayDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone())).toLocalDateTime());
+        return slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     /**
