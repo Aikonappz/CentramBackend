@@ -141,9 +141,7 @@ public class IncidentService {
         }});
         List<Incident> filterd = new ArrayList<>();
         for (int k = 0; k < incidents.size(); k++) {
-            //if (k < 3) {
             filterd.add(incidents.get(k));
-            //}
         }
         return filterd;
     }
@@ -225,7 +223,7 @@ public class IncidentService {
         incidentRepository.assignIncidents(IncidentStatus.ASSIGNED, userId, LocalDateTime.now(), ids);
         Iterable<Incident> incidents = incidentRepository.findAllById(ids);
         for (Incident incident : incidents) {
-            miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appLocalDateTimeFormat));
+            miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appLocalDateTimeFormat, null));
         }
     }
 
@@ -240,7 +238,7 @@ public class IncidentService {
         incident.setAssignedUser(new User(userVO));
         incident.setStatus(IncidentStatus.ASSIGNED);
         incident = incidentRepository.save(incident);
-        miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appLocalDateTimeFormat));
+        miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appLocalDateTimeFormat, null));
     }
 
     /**
@@ -286,7 +284,7 @@ public class IncidentService {
         }
         incidents = incidentRepository.saveAll(incidents);
         for (Incident incident : incidents) {
-            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appLocalDateTimeFormat));
+            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appLocalDateTimeFormat, "Incident Reopened!"));
         }
     }
 
@@ -337,6 +335,7 @@ public class IncidentService {
         if (incident.getHoldAt() == null && this.checkStatusOnHold(incident.getStatus())) {
             incident.setHoldAt(LocalDateTime.now());
         }
+        // calculate SLA after it's free
         if (incident.getHoldAt() != null
                 && incident.getRaisedUser() != null
                 && incident.getStatus() == IncidentStatus.NEED_CLARIFICATION
@@ -360,8 +359,7 @@ public class IncidentService {
             incident.setHoldAt(null);
         }
         raisedIncident = incidentRepository.save(incident);
-        //notify respected user
-        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appLocalDateTimeFormat));
+        // sorting incident communication via auto increment id
         TreeSet<IncidentCommunication> descSortedCommunicationSet = new TreeSet<IncidentCommunication>(new Comparator<IncidentCommunication>() {
             @Override
             public int compare(IncidentCommunication ic1, IncidentCommunication ic2) {
@@ -373,6 +371,8 @@ public class IncidentService {
             descSortedCommunicationSet.add(incidentCommunication);
         }
         raisedIncident.setCommunications(descSortedCommunicationSet);
+        //notify respected user
+        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appLocalDateTimeFormat, null));
         return raisedIncident;
     }
 

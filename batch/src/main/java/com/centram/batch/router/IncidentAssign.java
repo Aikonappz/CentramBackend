@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class IncidentAssign extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(IncidentAssign.class);
-    private final String interval1Minute = "0 0/5 * * * ?";
+    private final String interval = "0 0/5 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")
@@ -50,7 +50,7 @@ public class IncidentAssign extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incidentAssign/roundRobinAssignIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://incidentAssign/roundRobinAssignIncidents?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
                 .routeId("incident-assign")
                 .enrich("bean:organisationService?method=getRoundRobinOrganisations()", new OrganisationAggregator())

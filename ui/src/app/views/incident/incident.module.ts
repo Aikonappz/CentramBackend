@@ -12,6 +12,7 @@ import { AssignIncidentComponent, AgentIncidentComponent } from './agentincident
 import { UserIncidentComponent } from './userincident.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { AssignedIncidentComponent } from './assignedincident.component';
 
 
 
@@ -20,7 +21,8 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     UserIncidentComponent,
     EditIncidentComponent,
     AgentIncidentComponent,
-    AssignIncidentComponent
+    AssignIncidentComponent,
+    AssignedIncidentComponent
   ],
   imports: [
     CommonModule,

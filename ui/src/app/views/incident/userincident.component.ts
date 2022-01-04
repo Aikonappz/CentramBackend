@@ -88,7 +88,7 @@ export class UserIncidentComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.checkRole() === "AGENT") {
-      this.router.navigate(['/incident/agent']);
+      this.router.navigate(['/incident/agent/all']);
     } else {
       this.datasource = new IncidentDataSource(this.service);
       this.datasource.loadData();
@@ -112,7 +112,7 @@ export class UserIncidentComponent implements OnInit {
   }
 
   edit(inc: Incident) {
-    this.router.navigate(['/incident/edit/' + inc.id]);
+    this.router.navigate(['/incident/user/edit/' + inc.id]);
   }
 
   reopen(inc: Incident) {
@@ -130,7 +130,7 @@ export class UserIncidentComponent implements OnInit {
   }
 
   add() {
-    this.router.navigate(['/incident/add']);
+    this.router.navigate(['/incident/user/add']);
   }
 
   loadData(req?: Object) {

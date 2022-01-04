@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -37,9 +38,10 @@ public class ModuleService {
     public Module getModuleById(BigInteger moduleId) {
         Module module = redisService.getModuleById(moduleId);
         if (module == null) {
-            module = moduleRepository.getById(moduleId);
-            if (module != null) {
-                redisService.saveModule(moduleId, module);
+            Optional<Module> moduleOptional = moduleRepository.findById(moduleId);
+            if (moduleOptional.isPresent()) {
+                module = moduleOptional.get();
+                redisService.saveModule(moduleId, moduleOptional.get());
             } else {
                 throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
             }

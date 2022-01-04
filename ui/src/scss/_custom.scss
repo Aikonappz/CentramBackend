@@ -296,3 +296,16 @@
   color: red;
   font-weight: bold;
 }
+
+.badge-sla-about-to-breach {
+  color: #fff;
+  background-color: orange;
+}
+.badge-sla-breached {
+  color: #fff;
+  background-color: red;
+}
+.badge-closed {
+  color: #fff;
+  background-color: greenyellow;
+}

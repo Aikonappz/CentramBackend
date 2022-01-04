@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AgentIncidentComponent } from './agentincident.component';
+import { AssignedIncidentComponent } from './assignedincident.component';
 import { EditIncidentComponent } from './editincident.component';
 import { UserIncidentComponent } from './userincident.component';
 
@@ -24,7 +25,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'agent',
+        path: 'agent/all',
         component: AgentIncidentComponent,
         pathMatch: 'full',
         data: {
@@ -32,7 +33,15 @@ const routes: Routes = [
         }
       },
       {
-        path: 'add',
+        path: 'agent/mine',
+        component: AssignedIncidentComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Assigned Incidents'
+        }
+      },
+      {
+        path: ':referer/add',
         component: EditIncidentComponent,
         pathMatch: 'full',
         data: {
@@ -40,7 +49,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'edit/:id',
+        path: ':referer/edit/:id',
         component: EditIncidentComponent,
         pathMatch: 'full',
         data: {

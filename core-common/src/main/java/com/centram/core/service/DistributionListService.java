@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,6 +53,29 @@ public class DistributionListService {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
         return mapDl.get();
+    }
+
+    /**
+     * get DL list by module and submodule wise
+     *
+     * @param moduleId
+     * @param subModuleId
+     * @return
+     */
+    public List<DistributionList> getByModuleIdAndSubModuleId(BigInteger moduleId, BigInteger subModuleId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, loggedInUser.getOrganisationId());
+    }
+
+    /**
+     * get DL list by module, submodule and organisation wise
+     *
+     * @param moduleId
+     * @param subModuleId
+     * @return
+     */
+    public List<DistributionList> getByModuleIdAndSubModuleId(BigInteger moduleId, BigInteger subModuleId, BigInteger organisationId) {
+        return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, organisationId);
     }
 
     /**

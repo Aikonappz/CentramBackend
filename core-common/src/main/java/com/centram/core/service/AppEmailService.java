@@ -242,14 +242,16 @@ public class AppEmailService {
 
     @Async("asyncExecutor")
     public void sendIncidentUpdateEmail(IncidentEmailVO incidentEmailVO) {
-        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE"));
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
+                Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE")
+        );
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();
         AppConfiguration appConfiguration = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("INCIDENT_EMAIL_TEMPLATE"))
                 .findFirst().get();
-        String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getNewIncident() ? "newIncidentMailSubject" : "oldIncidentMailSubject").toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();
@@ -259,7 +261,9 @@ public class AppEmailService {
         context.setVariable("incident_title", incidentEmailVO.getTitle());
         mailSubject = templateEngine.process(mailSubject, context);
 
-        String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
+        String referer = incidentEmailVO.getMailToType().equalsIgnoreCase("AGENT") ? "agent-all" : "user";
+        String incLink = appBaseUrl.concat("/incident/" + referer + "/edit/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
+        String mailBody = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getNewIncident() ? "newIncidentMailBody" : "oldIncidentMailBody").toString();
         context = new Context(Locale.ENGLISH);
         context.setVariable("incident_communication", (incidentEmailVO.getDescription()));
         context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
@@ -279,11 +283,14 @@ public class AppEmailService {
         context.setVariable("incident_watchlist", incidentEmailVO.getWatchList());
         context.setVariable("incident_ecalation_1", incidentEmailVO.getEscalation1Email());
         context.setVariable("incident_ecalation_2", incidentEmailVO.getEscalation2Email());
+        context.setVariable("inc_link", incLink);
         mailBody = templateEngine.process(mailBody, context);
 
         context = new Context(Locale.ENGLISH);
         //context.setVariable("recipient_name", incidentEmailVO.getUserName());
         context.setVariable("recipient_name", "");
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
         context.setVariable("mail_body", mailBody);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
 
@@ -318,6 +325,8 @@ public class AppEmailService {
         context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
         mailSubject = templateEngine.process(mailSubject, context);
 
+        String referer = incidentEmailVO.getMailToType().equalsIgnoreCase("AGENT") ? "agent-mine" : "user";
+        String incLink = appBaseUrl.concat("/incident/agent-mine/edit/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
         String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
         context = new Context(Locale.ENGLISH);
         context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
@@ -326,10 +335,13 @@ public class AppEmailService {
         context.setVariable("incident_assignedto_contactno", incidentEmailVO.getAgentContactNo());
         context.setVariable("incident_ecalation_1", incidentEmailVO.getEscalation1Email());
         context.setVariable("incident_ecalation_2", incidentEmailVO.getEscalation2Email());
+        context.setVariable("inc_link", incLink);
         mailBody = templateEngine.process(mailBody, context);
 
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", "");
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
         context.setVariable("mail_body", mailBody);
         baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
         Map<String, Object> mailMap = new HashMap<>();

@@ -8,6 +8,7 @@ import com.centram.core.service.MiscService;
 import com.centram.domain.Incident;
 import com.centram.domain.IncidentNotification;
 import com.centram.domain.enumarator.IncidentNotificationType;
+import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -24,13 +25,14 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class IncidentSLANotification extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(IncidentSLANotification.class);
-    private final String interval1Minute = "0 0/10 * * * ?";
+    private final String interval = "0 0/10 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")
@@ -48,7 +50,7 @@ public class IncidentSLANotification extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval1Minute).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
                 .routeId("incident-sla")
                 .process(new Processor() {
@@ -123,8 +125,7 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("WIP_50_PERCENT_TIME_PASSED BODY {}", incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED, LocalDateTime.now()));
-                        miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat));
+                        miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
                     }
                 })
                 .endChoice()
@@ -152,8 +153,8 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("WIP_75_PERCENT_TIME_PASSED BODY {}", incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED, LocalDateTime.now()));
-                        miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat));
+                        incidentService.changeIncidentsStatus(IncidentStatus.SLA_ABOUT_TO_BREACH.name(), Collections.singletonList(incident.getId()));
+                        miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 75% time passed! Please complete within SLA.")));
                     }
                 })
                 .endChoice()
@@ -181,8 +182,8 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("SLA_JUST_BREACHED BODY {}", incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_JUST_BREACHED, LocalDateTime.now()));
-                        miscService.notifySlaBreached(new IncidentEmailVO(incident, dateTimeFormat));
+                        incidentService.changeIncidentsStatus(IncidentStatus.SLA_BREACHED.name(), Collections.singletonList(incident.getId()));
+                        miscService.notifySlaBreached(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
                 .endChoice()
@@ -210,8 +211,7 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("SLA_BREACHED_60_MINUTES_PASSED BODY {}", incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_BREACHED_60_MINUTES_PASSED, LocalDateTime.now()));
-                        miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, dateTimeFormat));
+                        miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
                 .endChoice()

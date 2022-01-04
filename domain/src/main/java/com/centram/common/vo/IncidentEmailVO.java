@@ -20,7 +20,9 @@ public class IncidentEmailVO implements Serializable {
     private String[] to;
     private String[] cc;
     private String[] bcc;
+    private String mailToType;
     private String replyTo;
+    private BigInteger incidentId;
     private String incidentNo;
     private String title;
     private String description;
@@ -31,12 +33,16 @@ public class IncidentEmailVO implements Serializable {
     private String subCategory;
     private String department;
     private BigInteger userManagerId;
+    private BigInteger userId;
+    private Long userVersion;
     private String userName;
     private String userEmail;
     private String userContactNo;
     private String userLocation;
     private String watchList;
     private BigInteger agentManagerId;
+    private BigInteger agentId;
+    private Long agentVersion;
     private String agentName = "NA";
     private String agentEmail = "NA";
     private String agentContactNo = "NA";
@@ -48,26 +54,35 @@ public class IncidentEmailVO implements Serializable {
     private BigInteger subModuleId;
     private BigInteger organisationId;
     private List<UserVO> userVOS;
+    private Boolean newIncident;
 
-    public IncidentEmailVO(Incident incident, String dateTimeFormat) {
+
+    public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment) {
         this.watchList = incident.getWatchList().stream().map(String::toString).collect(Collectors.joining(","));
         this.moduleId = incident.getModuleId();
         this.subModuleId = incident.getSubModuleId();
+        this.mailToType = "USER";
+        this.incidentId = incident.getId();
         this.incidentNo = incident.getIncidentNo();
         this.title = incident.getTitle();
-        this.description = incident.getCommunications().iterator().next().getMessage();
+        this.newIncident = incident.getCommunications().size() == 1;
+        this.description = (customComment == null) ? incident.getCommunications().iterator().next().getMessage() : customComment;
         this.watchList = incident.getWatchList().stream().map(String::toString).collect(Collectors.joining(","));
         this.priority = incident.getPriority().getName();
         this.sla = incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateTimeFormat));
         this.status = incident.getStatus().name();
         this.department = incident.getRaisedUser().getDepartment().getName();
         this.userManagerId = incident.getRaisedUser().getManagerId();
+        this.userId = incident.getRaisedUser().getId();
+        this.userVersion = incident.getRaisedUser().getVersion();
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
         this.userLocation = incident.getRaisedUser().getLocation().getName();
         this.organisationId = incident.getRaisedUser().getOrganisation().getId();
         if (incident.getAssignedUser() != null) {
+            this.agentId = incident.getAssignedUser().getId();
+            this.agentVersion = incident.getAssignedUser().getVersion();
             this.agentManagerId = incident.getAssignedUser().getManagerId();
             this.agentName = incident.getAssignedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
             this.agentEmail = incident.getAssignedUser().getEmail();

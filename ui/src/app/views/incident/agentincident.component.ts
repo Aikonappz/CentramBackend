@@ -3,7 +3,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { tap } from 'rxjs/operators';
@@ -45,7 +45,6 @@ export class AgentIncidentComponent implements OnInit {
   loggedInUser: LoggedInUser;
   moduleIds: number[] = [];
   canAssignNow: boolean = false;
-  //selectedValues: Set<IncidentVO> = new Set<IncidentVO>();
   selectedValues: Map<number, string> = new Map<number, string>();
   modalRef: BsModalRef;
   searchedData: Object = {};
@@ -58,6 +57,7 @@ export class AgentIncidentComponent implements OnInit {
     private loggedInUserService: LoggedInUserService,
     private miscService: MiscService,
     private modalService: BsModalService,
+    private route: ActivatedRoute,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -177,6 +177,10 @@ export class AgentIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.route.params.subscribe(params => {
+    //   let type = this.route.snapshot.paramMap.get('dp');
+    //   //console.log(type);
+    // });
     this.datasource = new IncomingIncidentDataSource(this.service);
     this.datasource.loadData();
   }
@@ -203,10 +207,10 @@ export class AgentIncidentComponent implements OnInit {
   }
 
   edit(inc: Incident) {
-    this.router.navigate(['/incident/edit/' + inc.id]);
+    this.router.navigate(['/incident/agent-all/edit/' + inc.id]);
   }
   add() {
-    this.router.navigate(['/incident/add']);
+    this.router.navigate(['/incident/agent-all/add']);
   }
 
   loadData(req = {}) {
@@ -243,7 +247,7 @@ export class AgentIncidentComponent implements OnInit {
         "incidentNo": incidentNo == null ? '' : incidentNo,
         "title": title == null ? '' : title,
         "status": status == null ? '' : status,
-        "assignedUserId": status == null ? '' : assignedUserId,
+        "assignedUserId": assignedUserId == null ? '' : assignedUserId,
         "priorityId": status == null ? '' : priorityId,
         "subModuleId": subModuleId == null ? '' : subModuleId,
         "moduleId": moduleId == null ? '' : moduleId,

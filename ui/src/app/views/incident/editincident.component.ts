@@ -53,6 +53,7 @@ export class EditIncidentComponent implements OnInit {
   hasAgentPermission: boolean;
   mngrDtl: UserVO;
   draftData: any = { "new": null, "existing": [] };
+  referer: string;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -72,7 +73,6 @@ export class EditIncidentComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-
     this.incident = new Incident();
     this.incident.status = this.defaultStatus;
     this.hasAgentPermission = false;
@@ -107,6 +107,10 @@ export class EditIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.referer = this.route.snapshot.paramMap.get('referer');
+      console.log(this.referer);
+    });
     for (let item in IncidentStatus) {
       if (item != "ALL") {
         this.statusList.push({ "key": item, "value": IncidentStatus[item] });
@@ -289,8 +293,10 @@ export class EditIncidentComponent implements OnInit {
       }
       if (sts === "DRAFT") {
         let returnPath = '/incident/user';
-        if (this.hasAgentPermission) {
-          returnPath = '/incident/agent';
+        if (this.referer === 'agent-all') {
+          returnPath = '/incident/agent/all';
+        } else if (this.referer === 'agent-mine') {
+          returnPath = '/incident/agent/mine';
         }
         let inc = new Incident();
         let ic = new IncidentCommunication();
@@ -406,8 +412,10 @@ export class EditIncidentComponent implements OnInit {
 
   callSaveIncidentService() {
     let returnPath = '/incident/user';
-    if (this.hasAgentPermission) {
-      returnPath = '/incident/agent';
+    if (this.referer === 'agent-all') {
+      returnPath = '/incident/agent/all';
+    } else if (this.referer === 'agent-mine') {
+      returnPath = '/incident/agent/mine';
     }
     this.incidentService
       .saveIncidentService(this.incident)
