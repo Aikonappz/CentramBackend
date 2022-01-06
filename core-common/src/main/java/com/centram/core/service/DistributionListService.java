@@ -100,7 +100,7 @@ public class DistributionListService {
     @Transactional(readOnly = true)
     public PaginatedList<DistributionList> getDistributionLists(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<DistributionList>(distributionListRepository.getMapDLByOrganisation(loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<DistributionList>(distributionListRepository.getByOrganisation(loggedInUser.getOrganisationId(), pageable));
     }
 
     /**

@@ -7,9 +7,11 @@ import { EditDlComponent } from './editdl.component';
 import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 import { EditLocationComponent } from './editlocation.component';
 import { EditPriorityComponent } from './editpriority.component';
+import { EditVendorComponent } from './editvendor.component';
 import { HolidayCalenderComponent } from './holidaycalender.component';
 import { LocationComponent } from './location.component';
 import { PriorityComponent } from './priority.component';
+import { VendorComponent } from './vendor.component';
 
 const routes: Routes = [
   {
@@ -140,6 +142,30 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Edit Distribution List'
+        }
+      },
+      {
+        path: 'vendor',
+        component: VendorComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Vendor'
+        },
+      },
+      {
+        path: 'vendor/add',
+        component: EditVendorComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Vendor'
+        }
+      },
+      {
+        path: 'vendor/edit/:id',
+        component: EditVendorComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Vendor'
         }
       },
     ]

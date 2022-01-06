@@ -136,6 +136,12 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = false, value = "")
     @Valid
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id", nullable = true, referencedColumnName = "id")
+    private Vendor vendor;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")

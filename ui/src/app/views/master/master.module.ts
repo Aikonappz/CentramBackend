@@ -16,6 +16,8 @@ import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { DistributionListComponent } from './distributionlist.component';
 import { EditDlComponent } from './editdl.component';
+import { EditVendorComponent } from './editvendor.component';
+import { VendorComponent } from './vendor.component';
 
 
 
@@ -30,7 +32,9 @@ import { EditDlComponent } from './editdl.component';
     LocationComponent,
     EditLocationComponent,
     DistributionListComponent,
-    EditDlComponent
+    EditDlComponent,
+    VendorComponent,
+    EditVendorComponent,
   ],
   imports: [
     CommonModule,

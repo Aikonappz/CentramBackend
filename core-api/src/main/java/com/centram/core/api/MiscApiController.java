@@ -6,13 +6,11 @@ import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.common.vo.CommonResponse;
-import com.centram.common.vo.NotificationVO;
 import com.centram.core.service.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -82,6 +80,9 @@ public class MiscApiController {
 
     @Autowired
     private ModuleService moduleService;
+
+    @Autowired
+    private VendorService vendorService;
 
     @ApiOperation(value = "Demo Request Api", nickname = "requestDemo", notes = "Demo Request Api", tags = {"misc",})
     @ApiResponses(value = {
@@ -374,7 +375,7 @@ public class MiscApiController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find mapdl by id", nickname = "getById", notes = "Find mapdl by id", response = Department.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find mapdl by id", nickname = "getDistributionListById", notes = "Find mapdl by id", response = Department.class, tags = {"misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -383,7 +384,7 @@ public class MiscApiController {
     @RequestMapping(value = "/distribution-list/{dlid}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','READ',authentication.principal)")
     @JsonView({Views.DetailView.class,})
-    public ResponseEntity<DistributionList> getById(@ApiParam(value = "id of mapdl", required = true) @PathVariable("dlid") BigInteger dlid) {
+    public ResponseEntity<DistributionList> getDistributionListById(@ApiParam(value = "id of mapdl", required = true) @PathVariable("dlid") BigInteger dlid) {
         return new ResponseEntity<DistributionList>(distributionListService.getById(dlid), HttpStatus.OK);
     }
 
@@ -410,12 +411,48 @@ public class MiscApiController {
         return new ResponseEntity<DistributionList>(distributionListService.save(body), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/notification/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find vendor by id", nickname = "getVendorById", notes = "Find vendor by id", response = Department.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Department.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "MapDl not found")
+    })
+    @RequestMapping(value = "/vendor/{vendorId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR','READ',authentication.principal)")
+    @JsonView({Views.DetailView.class,})
+    public ResponseEntity<Vendor> getVendorById(@ApiParam(value = "id of vendor", required = true) @PathVariable("vendorId") BigInteger vendorId) {
+        return new ResponseEntity<Vendor>(vendorService.getById(vendorId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all vendor", nickname = "getVendors", notes = "Get all vendor", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-vendor", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR','READ',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<PaginatedList<Vendor>> getVendors(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a vendor", nickname = "saveVendor", notes = "Add a vendor", tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @RequestMapping(value = "/vendor", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR','WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<Vendor> saveVendor(@ApiParam(value = "Vendor object", required = true) @Valid @RequestBody Vendor body) {
+        return new ResponseEntity<Vendor>(vendorService.save(body), HttpStatus.OK);
+    }
+
+    /*@RequestMapping(value = "/notification/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity generateDummyNotification(
             @ApiParam(value = "NotificationVO list object", required = true) @Valid @RequestBody NotificationVO body
     ) throws JsonProcessingException {
         log.info("Consumed message: " + objectMapper.writeValueAsString(body));
         simpMessagingTemplate.convertAndSend("/topic/notification/" + body.getUserId(), objectMapper.writeValueAsString(body));
         return new ResponseEntity(body, HttpStatus.OK);
-    }
+    }*/
 }

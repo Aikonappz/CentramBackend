@@ -21,5 +21,5 @@ public interface DistributionListRepository extends JpaRepository<DistributionLi
     List<DistributionList> getByModuleIdAndSubModuleId(@Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId, @Param("organisationId") BigInteger organisationId);
 
     @Query("select mdl from DistributionList mdl join mdl.organisation org where org.id = (:organisationId)")
-    Page getMapDLByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+    Page getByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
 }

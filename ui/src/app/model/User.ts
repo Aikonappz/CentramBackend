@@ -3,6 +3,7 @@ import { Department } from "./Department";
 import { Status } from "./enumerator/Status";
 import { LocationVO } from "./LocationVO";
 import { Organisation } from "./Organisation";
+import { Vendor } from "./Vendor";
 
 export class User extends Base {
     id: number;
@@ -17,6 +18,7 @@ export class User extends Base {
     projectCode: string;
     roles: number[];
     status: any;
+    vendor: Vendor;
     location: LocationVO;
     department: Department;
     organisation: Organisation;
@@ -36,6 +38,7 @@ export class User extends Base {
         this.roles = [];
         this.status = Status.ACTIVE;
         this.location = new LocationVO();
+        this.vendor = new Vendor();
         this.department = new Department();
         this.organisation = new Organisation();
     }

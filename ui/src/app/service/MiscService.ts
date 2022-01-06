@@ -12,6 +12,7 @@ import { Notification, NotificationList } from '../model/Notification';
 import { MapDLVO, MapDLVOList } from '../model/MapDLVO';
 import { DistributionList, DistributionListList } from '../model/DistributionList';
 import { Module } from '../model/Module';
+import { Vendor, VendorList } from '../model/Vendor';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -102,5 +103,14 @@ export class MiscService {
     }
     modulesService(request?: any): Observable<Module[]> {
         return this.http.get('/v1/misc/all-module', { "params": request });
+    }
+    saveVendorService(vendor: Vendor): Observable<Vendor> {
+        return this.http.post('/v1/misc/vendor', vendor);
+    }
+    vendorsService(request?: any): Observable<VendorList> {
+        return this.http.get('/v1/misc/all-vendor', { "params": request });
+    }
+    vendorService(id: number, request?: any): Observable<Vendor> {
+        return this.http.get('/v1/misc/vendor/' + id, { "params": request });
     }
 }

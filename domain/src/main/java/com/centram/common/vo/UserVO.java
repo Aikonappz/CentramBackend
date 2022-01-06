@@ -39,6 +39,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     private BigInteger locationId;
     private String location;
     private BigInteger departmentId;
+    private BigInteger vendorId;
     private String department;
     private LicenseType licenseType;
 
@@ -66,6 +67,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.managerId = (user.getManagerId() != null) ? user.getManagerId() : null;
         this.timeZone = (user.getLocation() != null) ? user.getLocation().getTimezone() : "Asia/Kolkata";
         this.licenseType = (user.getOrganisation() != null) ? user.getOrganisation().getLicenseType() : null;
+        this.vendorId = (user.getVendor() != null) ? user.getVendor().getId() : null;
     }
 
     @Override

@@ -11,6 +11,7 @@ import { MiscService } from '../../service/MiscService';
 import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { Vendor } from '../../model/Vendor';
 declare var $: any;
 
 @Component({
@@ -35,6 +36,7 @@ export class EditUserComponent implements OnInit {
   locationList: any[];
   departmentList: any[];
   usrList: any[];
+  vendorList: any[];
   c: number = 0;
   angForm = new FormGroup({
     firstName: new FormControl('', [
@@ -70,6 +72,9 @@ export class EditUserComponent implements OnInit {
       //Validators.required
     ]),
     location: new FormControl('', [
+      //Validators.required
+    ]),
+    vendorId: new FormControl('', [
       //Validators.required
     ]),
     status: new FormControl(true, [
@@ -165,6 +170,19 @@ export class EditUserComponent implements OnInit {
                 if (this.departments[indx].status == 1) {
                   this.departmentList[this.c++] = Object.assign({ "id": this.departments[indx].id, "name": this.departments[indx].name });
                 }
+              }
+            }
+          });
+        this.miscService
+          .vendorsService()
+          .subscribe((data: any) => {
+            let vendors = data.content;
+            this.c = 0;
+            this.vendorList = [];
+            for (let indx = 0; indx < vendors.length; indx++) {
+              if (String(vendors[indx].status) == 'ACTIVE') {
+                this.vendorList[this.c++] = vendors[indx];
+                //Object.assign({ "id": vendors[indx].id, "version": vendors[indx].version, "name": vendors[indx].name });
               }
             }
           });
@@ -297,6 +315,19 @@ export class EditUserComponent implements OnInit {
                             this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
                           }
                         }
+                        this.miscService
+                          .vendorsService()
+                          .subscribe((data: any) => {
+                            let vendors = data.content;
+                            this.c = 0;
+                            this.vendorList = [];
+                            for (let indx = 0; indx < vendors.length; indx++) {
+                              if (String(vendors[indx].status) == 'ACTIVE') {
+                                this.vendorList[this.c++] = vendors[indx];
+                                //Object.assign({ "id": vendors[indx].id, "version": vendors[indx].version, "name": vendors[indx].name });
+                              }
+                            }
+                          });
                         if (this.route.snapshot.paramMap.has('id')) {
                           if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
                             //console.log("load provided id data...");
@@ -341,6 +372,7 @@ export class EditUserComponent implements OnInit {
       this.user.employeeId = this.angForm.controls['employeeId'].value;
       this.user.managerId = this.angForm.controls['managerId'].value;
       this.user.projectCode = this.angForm.controls['projectCode'].value;
+      this.user.projectCode = this.angForm.controls['projectCode'].value;
       this.user.roles = this.angForm.controls['roles'].value;
       this.user.employeeId = this.user.employeeId == null ? null : this.user.employeeId.replace(/\s/g, "");
       this.user.projectCode = this.user.projectCode == null ? null : this.user.projectCode.replace(/\s/g, "")
@@ -362,6 +394,23 @@ export class EditUserComponent implements OnInit {
         dept.id = department.split("__")[0];
         this.user.department = dept;
       }
+      let vendorId = this.angForm.controls['vendorId'].value;
+      if (vendorId != '') {
+        let vendor = new Vendor();
+        for (let i in this.vendorList) {
+          if (this.vendorList[i].id == vendorId) {
+            vendor = this.vendorList[i];
+            vendor.organisation = null;
+            vendor.status = Status.ACTIVE;
+            break;
+          }
+        }
+        //console.log(vendor);
+        this.user.vendor = vendor;
+      } else {
+        this.user.vendor = null;
+      }
+
       /* process department and location */
       this.user.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user);
@@ -404,6 +453,8 @@ export class EditUserComponent implements OnInit {
         this.user.password = data.password;
         this.user.managerId = data.managerId;
         this.user.secContactNo = data.secContactNo;
+        this.user.vendor = new Vendor();
+        this.user.vendor.id = data.vendorId;
         //console.log(JSON.stringify(this.user));
 
         this.angForm.get('firstName').setValue(this.user.firstName);
@@ -415,6 +466,9 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('projectCode').setValue(this.user.projectCode);
         this.angForm.get('roles').setValue(this.user.roles.map(String));
         this.angForm.get('managerId').setValue(this.user.managerId);
+        if (this.user.vendor.id != null) {
+          this.angForm.get('vendorId').setValue(this.user.vendor.id);
+        }
         if (!this.loggedInUserService.appManager()) {
           if (typeof this.departments !== 'undefined') {
             for (var i = 0; i < this.departments.length; i++) {
