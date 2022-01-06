@@ -13,6 +13,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { tap } from 'rxjs/operators';
 import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
+import { Label, MultiDataSet } from 'ng2-charts';
+import { ChartType } from 'chart.js';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -22,6 +24,17 @@ export class DashboardComponent implements OnInit {
   loggedInUser: LoggedInUser;
   adminDashboard: AdminDashboard;
   modalRef: BsModalRef;
+
+  public doughnutChartLabels: Label[] = [];
+  public doughnutChartData: MultiDataSet = [];
+  public doughnutChartType: ChartType = 'doughnut';
+  public chartColors: any[] = [{
+    backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f", "#6062ce", "#fd72e6"]
+  }];
+  public doughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
 
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -65,10 +78,35 @@ export class DashboardComponent implements OnInit {
         .appAdminDashboard()
         .subscribe((data: AdminDashboard) => {
           this.adminDashboard = data;
+          let dataPoints = [];
+          dataPoints.push(this.adminDashboard.activeCompanies);
+          dataPoints.push(this.adminDashboard.inactiveCompanies);
+          dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
+          dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
+          dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
+          this.doughnutChartLabels = [
+            "Active Organization",
+            "Inactive Organization",
+            "All License Type Organization",
+            "Asset License Type Organization",
+            "Incident License Type Organization",
+          ];
+          this.doughnutChartData = [
+            dataPoints
+          ];
+          this.doughnutChartType = 'doughnut';
         });
     } else {
 
     }
+  }
+
+  chartHovered(element: any) {
+    console.log("Hovered....");
+  }
+
+  chartClicked(element: any) {
+    console.log("Clicked....");
   }
 
   view(element: any) {

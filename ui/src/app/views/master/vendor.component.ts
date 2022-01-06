@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 import { DistributionList } from '../../model/DistributionList';
 import { Status } from '../../model/enumerator/Status';
 import { Priority } from '../../model/Priority';
+import { Vendor } from '../../model/Vendor';
 import { DistributionListDataSource } from '../../service/datasource/DistributionListDataSource';
 import { VendorDataSource } from '../../service/datasource/VendorDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
@@ -19,7 +20,7 @@ import { MiscService } from '../../service/MiscService';
 export class VendorComponent implements OnInit {
   moduleName: string = "VENDOR";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['name', 'status', 'action'];
+  displayedColumns = ['name', 'allocationType', 'status', 'action'];
   datasource: VendorDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
@@ -78,13 +79,13 @@ export class VendorComponent implements OnInit {
     this.router.navigate(['/master/vendor/add']);
   }
 
-  updateStatus(prty: Priority) {
+  updateStatus(vendor: Vendor) {
     let res = window.confirm("Are you sure?")
     if (res) {
-      let elm = document.getElementById("id-status-" + prty.id);
+      let elm = document.getElementById("id-status-" + vendor.id);
       let val = ((elm.getAttribute("data-label") == 'ACTIVE') ? Status.INACTIVE : Status.ACTIVE);
       this.service
-        .updatePrioritiesStatusService([prty.id], val, {})
+        .updatePrioritiesStatusService([vendor.id], val, {})
         .subscribe((data: any) => {
           elm.setAttribute("data-label", Status[val]);
           elm.textContent = Status[val];

@@ -1,13 +1,13 @@
-import { IncidentTicketAllocationType } from "./enumerator/IncidentTicketAllocationType";
+import { TicketAllocationType } from "./enumerator/TicketAllocationType";
 
 export class Setting {
-    ticketAllocationType: IncidentTicketAllocationType;
+    ticketAllocationType: TicketAllocationType;
     incidentPrefix: string;
     assetPrefix: string;
 
     constructor() {
         this.incidentPrefix = '';
         this.assetPrefix = '';
-        this.ticketAllocationType = IncidentTicketAllocationType.GENERIC;
+        this.ticketAllocationType = TicketAllocationType.GENERIC;
     }
 }

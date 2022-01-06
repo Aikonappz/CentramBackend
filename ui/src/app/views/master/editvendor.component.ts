@@ -11,6 +11,7 @@ import { DistributionListModule } from '../../model/DistributionListModule';
 import { Vendor } from '../../model/Vendor';
 import { VendorModule } from '../../model/VendorModule';
 import { Status } from '../../model/enumerator/Status';
+import { TicketAllocationType } from '../../model/enumerator/TicketAllocationType';
 declare var $: any;
 
 @Component({
@@ -33,6 +34,7 @@ export class EditVendorComponent implements OnInit {
   vendor: Vendor;
   vendorModules: VendorModule[];
   angForm: FormGroup;
+  ticketAllocationTypes: any;
   constructor(
     private fb: FormBuilder,
     private loggedInUserService: LoggedInUserService,
@@ -49,7 +51,10 @@ export class EditVendorComponent implements OnInit {
       }
     });
     this.vendor = new Vendor();
-    //this.dept.status = this.defaultStatus;
+    this.vendor.status = this.defaultStatus;
+    this.ticketAllocationTypes = Object.values(TicketAllocationType)
+      .filter((value) => typeof value === "string")
+      .map((value) => (value as string));
   }
 
   hasPermission(action: string): boolean {
@@ -78,6 +83,9 @@ export class EditVendorComponent implements OnInit {
       name: new FormControl('', [
         Validators.required,
         Validators.maxLength(255),
+      ]),
+      ticketAllocationType: new FormControl('', [
+        Validators.required,
       ]),
       status: new FormControl('ACTIVE', [
       ]),
@@ -124,6 +132,7 @@ export class EditVendorComponent implements OnInit {
       this.vendor.name = this.angForm.controls['name'].value;
       this.vendor.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       this.submoduleIds = this.angForm.controls['dlSubModuleId'].value;
+      this.vendor.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value;
       this.vendorModules = [];
       for (let i in this.submoduleIds) {
         this.vendorModules[i] = new DistributionListModule(
@@ -162,6 +171,7 @@ export class EditVendorComponent implements OnInit {
         this.vendor.status = data.status;
         this.vendor.version = data.version;
         this.vendor.vendorModules = data.vendorModules;
+        this.vendor.ticketAllocationType = data.ticketAllocationType;
         //console.log(JSON.stringify(this.user));
 
         this.submoduleIds = [];
@@ -174,6 +184,7 @@ export class EditVendorComponent implements OnInit {
         this.angForm.get('name').setValue(this.vendor.name);
         this.angForm.get('dlModuleId').setValue(moduleId);
         this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));
+        this.angForm.get('ticketAllocationType').setValue(this.vendor.ticketAllocationType);
         this.statusFlag = String(this.vendor.status) == 'ACTIVE' ? true : false;
         this.angForm.markAllAsTouched();
       });

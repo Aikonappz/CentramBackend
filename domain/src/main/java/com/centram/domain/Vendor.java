@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.enumarator.IncidentAllocationType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
@@ -81,6 +82,14 @@ public class Vendor extends BaseEntity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private Status status;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "ticket_allocation_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private IncidentAllocationType ticketAllocationType;
 
     public Vendor(@NotNull BigInteger id) {
         this.id = id;

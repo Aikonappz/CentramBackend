@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import { MiscService } from '../../service/MiscService';
 import { Setting } from '../../model/Setting';
 import { OrganisationService } from '../../service/OrganisationService';
-import { IncidentTicketAllocationType } from '../../model/enumerator/IncidentTicketAllocationType';
+import { TicketAllocationType } from '../../model/enumerator/TicketAllocationType';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { LoggedInUser } from '../../model/LoggedInUser';
 
@@ -42,7 +42,7 @@ export class OrgSettingsComponent implements OnInit {
       }
     });
     this.setting = new Setting();
-    this.ticketAllocationTypes = Object.values(IncidentTicketAllocationType)
+    this.ticketAllocationTypes = Object.values(TicketAllocationType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
@@ -103,7 +103,7 @@ export class OrgSettingsComponent implements OnInit {
   callsetOrganisationSettingService() {
     this.setting.assetPrefix = this.angForm.controls['assetPrefix'].value;
     this.setting.incidentPrefix = this.angForm.controls['incidentPrefix'].value;
-    this.setting.ticketAllocationType = IncidentTicketAllocationType[String(this.angForm.controls['ticketAllocationType'].value)];
+    this.setting.ticketAllocationType = TicketAllocationType[String(this.angForm.controls['ticketAllocationType'].value)];
     this.service
       .setOrganisationSettingService(this.setting)
       .subscribe((data: any) => {

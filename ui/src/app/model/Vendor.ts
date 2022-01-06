@@ -1,4 +1,5 @@
 import { Base } from "./Base";
+import { TicketAllocationType } from "./enumerator/TicketAllocationType";
 import { Organisation } from "./Organisation";
 import { VendorModule } from "./VendorModule";
 
@@ -8,6 +9,7 @@ export class Vendor extends Base {
     status: any;
     vendorModules: VendorModule[];
     organisation: Organisation;
+    ticketAllocationType: TicketAllocationType;
 
     constructor() {
         super();
@@ -16,6 +18,7 @@ export class Vendor extends Base {
         this.status = 'ACTIVE';
         this.vendorModules = [];
         this.organisation = new Organisation();
+        this.ticketAllocationType = TicketAllocationType.GENERIC;
     }
 }
 

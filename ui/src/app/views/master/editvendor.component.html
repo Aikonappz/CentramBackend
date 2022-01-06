@@ -52,6 +52,21 @@
               </div>
             </div>
             <div class="row row-margin-05">
+              <div [ngClass]="{ col : true}">
+                <label class="form-col-form-label" for="ticketAllocationType">Ticket Allocation
+                  Type</label>
+                <select class="form-control" formControlName="ticketAllocationType" ngModel id="ticketAllocationType"
+                  name="ticketAllocationType">
+                  <option value="">-- Select Ticket Allocation Type --</option>
+                  <option *ngFor="let e of ticketAllocationTypes" [value]="e" [label]="e"></option>
+                </select>
+                <div *ngIf="f.ticketAllocationType.touched && f.ticketAllocationType.invalid"
+                  class="alert alert-danger-custom">
+                  <div *ngIf="f.ticketAllocationType.errors?.required">
+                    Ticket Allocation is required.
+                  </div>
+                </div>
+              </div>
               <div class="col">
                 <label class="col-md-3 col-form-label" for="status">Status</label>
                 <div class="col-md-9 col-form-label">
@@ -68,6 +83,7 @@
                   </div>
                 </div>
               </div>
+              <div class="col"></div>
             </div>
           </div>
           <div class="card-footer">
