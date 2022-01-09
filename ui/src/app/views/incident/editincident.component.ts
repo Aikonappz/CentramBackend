@@ -54,6 +54,7 @@ export class EditIncidentComponent implements OnInit {
   mngrDtl: UserVO;
   draftData: any = { "new": null, "existing": [] };
   referer: string;
+  mode: string;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -109,7 +110,9 @@ export class EditIncidentComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.referer = this.route.snapshot.paramMap.get('referer');
-      console.log(this.referer);
+      //console.log(this.referer);
+      this.mode = this.route.snapshot.paramMap.get('mode');
+      //console.log(this.mode);
     });
     for (let item in IncidentStatus) {
       if (item != "ALL") {
@@ -165,15 +168,17 @@ export class EditIncidentComponent implements OnInit {
                 if (logedinUser.userId != result.content[i].id)
                   this.users.push(result.content[i]);
               }
-              if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
+              if (this.mode === 'draft' && this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
                 this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
-                this.populateSubmodule(this.draftData.new.moduleId);
-                this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
-                this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
-                this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
-                this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
-                this.angForm.get('title').setValue(this.draftData.new.title);
-                this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
+                if (this.draftData.new != null) {
+                  this.populateSubmodule(this.draftData.new.moduleId);
+                  this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
+                  this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
+                  this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
+                  this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                  this.angForm.get('title').setValue(this.draftData.new.title);
+                  this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
+                }
               }
               this.preapareSelect();
             });
@@ -206,12 +211,15 @@ export class EditIncidentComponent implements OnInit {
       this.callIncidentService(this.entityId);
       if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
         this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
-        for (let k in this.draftData.existing) {
-          if (this.draftData.existing[k].id == this.entityId) {
-            this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
-            break;
-          } else {
-            continue;
+        //console.log(this.draftData);
+        if (this.draftData.existing.length > 0) {
+          for (let k in this.draftData.existing) {
+            if (this.draftData.existing[k].id == this.entityId) {
+              this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
+              break;
+            } else {
+              continue;
+            }
           }
         }
       }
@@ -329,13 +337,18 @@ export class EditIncidentComponent implements OnInit {
           inc.id = this.incident.id;
           if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
             this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+            let hasDraftData = false;
             for (let k in this.draftData.existing) {
               if (this.draftData.existing[k].id == this.incident.id) {
                 this.draftData.existing[k] = inc;
+                hasDraftData = true;
                 break;
               } else {
                 continue;
               }
+            }
+            if (!hasDraftData) {
+              this.draftData.existing.push(inc);
             }
           } else {
             this.draftData.existing.push(inc);
@@ -408,7 +421,31 @@ export class EditIncidentComponent implements OnInit {
     }
   }
 
-  goBack() { this._location.back(); }
+  handleDraftData() {
+    //console.log(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+    this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+    if (this.newEntity) {
+      this.draftData.new = null;
+    } else {
+      let existingData = [];
+      for (let k in this.draftData.existing) {
+        if (this.draftData.existing[k].id != this.entityId) {
+          existingData.push(this.draftData.existing[k]);
+        }
+      }
+      this.draftData.existing = existingData;
+    }
+    this.clientStorageService.set(AppUtility.APP_INCIDENT_DRAFT_KEY, JSON.stringify(this.draftData));
+  }
+
+  goBack() {
+    this.handleDraftData();
+    this._location.back();
+  }
+
+  makeTitleCase(str: string): string {
+    return AppUtility.toTitleCase(str);
+  }
 
   callSaveIncidentService() {
     let returnPath = '/incident/user';
@@ -421,8 +458,7 @@ export class EditIncidentComponent implements OnInit {
       .saveIncidentService(this.incident)
       .subscribe((data: Incident) => {
         //console.log(data);
-        this.draftData = { "new": null, "existing": [] };
-        this.clientStorageService.remove(AppUtility.APP_INCIDENT_DRAFT_KEY);
+        this.handleDraftData();
         if (typeof this.selectedFiles != "undefined") {
           if (this.selectedFiles.length > 0) {
             const formData: FormData = new FormData();
@@ -466,6 +502,8 @@ export class EditIncidentComponent implements OnInit {
         this.incident.raisedAt = data.raisedAt;
         this.incident.status = data.status;
         this.incident.holdAt = data.holdAt;
+        this.incident.moduleName = data.moduleName;
+        this.incident.subModuleName = data.subModuleName;
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
         this.populateSubmodule(this.incident.moduleId);

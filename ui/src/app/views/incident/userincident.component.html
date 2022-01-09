@@ -13,7 +13,13 @@
                                         class="caret"></span></button>
                                 <ul *dropdownMenu class="dropdown-menu" role="menu">
                                     <li role="menuitem">
-                                        <a class="dropdown-item" (click)="add()" *ngIf="hasPermission('WRITE')"
+                                        <a class="dropdown-item" (click)="add('draft')" *ngIf="hasPermission('WRITE')"
+                                            href="javascript:void(0);">
+                                            <i class="icon-pencil"></i> Drafted Incident
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a class="dropdown-item" (click)="add('new')" *ngIf="hasPermission('WRITE')"
                                             href="javascript:void(0);">
                                             <i class="icon-plus"></i> Create an Incident
                                         </a>

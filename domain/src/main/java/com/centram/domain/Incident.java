@@ -61,11 +61,19 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger moduleId;
 
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String moduleName;
+
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "sub_module_id", nullable = false)
     @JsonView(Views.BasicView.class)
     private BigInteger subModuleId;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String subModuleName;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull

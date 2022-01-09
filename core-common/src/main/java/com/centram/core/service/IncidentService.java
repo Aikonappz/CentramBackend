@@ -209,6 +209,8 @@ public class IncidentService {
             descSortedCommunicationSet.add(incidentCommunication);
         }
         incident.get().setCommunications(descSortedCommunicationSet);
+        incident.get().setModuleName(moduleService.getModuleById(incident.get().getModuleId()).getCustomerModuleName());
+        incident.get().setSubModuleName(moduleService.getModuleById(incident.get().getSubModuleId()).getCustomerModuleName());
         return incident.get();
     }
 

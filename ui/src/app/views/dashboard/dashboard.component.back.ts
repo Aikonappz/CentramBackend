@@ -6,7 +6,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { DashboardService } from '../../service/DashboardService';
-import { AdminDashboard } from '../../model/AdminDashboard';
+import { AdminDashboardVO } from '../../model/AdminDashboardVO';
 import { FormBuilder } from '@angular/forms';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { OrganisationService } from '../../service/OrganisationService';
@@ -22,7 +22,7 @@ import { AppUtility } from '../../config/AppUtility';
 export class DashboardComponent implements OnInit {
   role: string;
   loggedInUser: LoggedInUser;
-  adminDashboard: AdminDashboard;
+  adminDashboard: AdminDashboardVO;
   modalRef: BsModalRef;
 
   radioModel: string = 'Month';
@@ -44,7 +44,7 @@ export class DashboardComponent implements OnInit {
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     if (this.loggedInUser.appManager === true) {
       this.role = "APP_ADMIN";
-      this.adminDashboard = new AdminDashboard();
+      this.adminDashboard = new AdminDashboardVO();
     }
   }
 
@@ -441,7 +441,7 @@ export class DashboardComponent implements OnInit {
     if (this.role == 'APP_ADMIN') {
       this.service
         .appAdminDashboard()
-        .subscribe((data: AdminDashboard) => {
+        .subscribe((data: AdminDashboardVO) => {
           this.adminDashboard = data;
         });
     } else {
