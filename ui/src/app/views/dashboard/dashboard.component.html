@@ -1,109 +1,231 @@
-<div *ngIf="role=='APP_ADMIN'" class="animated fadeIn">
-  <div class="card">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-sm-6 col-lg-4">
-          <div class="card text-white bg-info">
-            <div class="card-body pb-0">
-              <button type="button" (click)='view({"status": "ALL"})' class="btn btn-transparent p-0 float-right">
-                <i class="icon-eye"></i>
-              </button>
-              <div class="text-value">{{adminDashboard.totalCompanies}}</div>
-              <div>Total Organization</div>
+<div class="animated fadeIn">
+  <tabset>
+    <tab *ngIf="roles.includes('APP_ADMIN')" (selectTab)="loadAppAdminData()" heading="App Admin">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-info">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{adminDashboard.totalCompanies}}</div>
+                  <div>Total Organization</div>
+                </div>
+              </div>
             </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-primary">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{adminDashboard.activeCompanies}}</div>
+                  <div>Active Organization</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-warning">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{adminDashboard.inactiveCompanies}}</div>
+                  <div>Inactive Organization</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+          </div>
+          <!--/.row-->
+          <div class="row">
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-danger">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{adminDashboard.allLicenceTypeCompanies}}</div>
+                  <div>Organization (Licence Type All)</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-success">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{adminDashboard.incidentLicenceTypeCompanies}}</div>
+                  <div>Organization (Licence Type Incident)</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-facebook">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{adminDashboard.assetLicenceTypeCompanies}}</div>
+                  <div>Organization (Licence Type Asset)</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
           </div>
         </div>
-        <!--/.col-->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card text-white bg-primary">
-            <div class="card-body pb-0">
-              <button type="button" (click)='view({"status": "ACTIVE"})' class="btn btn-transparent p-0 float-right">
-                <i class="icon-eye"></i>
-              </button>
-              <div class="text-value">{{adminDashboard.activeCompanies}}</div>
-              <div>Active Organization</div>
-            </div>
-          </div>
-        </div>
-        <!--/.col-->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card text-white bg-warning">
-            <div class="card-body pb-0">
-              <button type="button" (click)='view({"status": "INACTIVE"})' class="btn btn-transparent p-0 float-right">
-                <i class="icon-eye"></i>
-              </button>
-              <div class="text-value">{{adminDashboard.inactiveCompanies}}</div>
-              <div>Inactive Organization</div>
-            </div>
-          </div>
-        </div>
-        <!--/.col-->
       </div>
-      <!--/.row-->
-      <div class="row">
-        <div class="col-sm-6 col-lg-4">
-          <div class="card text-white bg-danger">
-            <div class="card-body pb-0">
-              <button type="button" (click)='view({"status": "ALL", "licenseType": "ALL"})'
-                class="btn btn-transparent p-0 float-right">
-                <i class="icon-eye"></i>
-              </button>
-              <div class="text-value">{{adminDashboard.allLicenceTypeCompanies}}</div>
-              <div>Organization (Licence Type All)</div>
-            </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)" [colors]="adminChartColors" [data]="adminDoughnutChartData"
+              [labels]="adminDoughnutChartLabels" [chartType]="adminDoughnutChartType"
+              [options]="adminDoughnutChartOptions" [legend]="true">
+            </canvas>
           </div>
         </div>
-        <!--/.col-->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card text-white bg-success">
-            <div class="card-body pb-0">
-              <button type="button" (click)='view({"status": "ALL", "licenseType": "INCIDENT"})'
-                class="btn btn-transparent p-0 float-right">
-                <i class="icon-eye"></i>
-              </button>
-              <div class="text-value">{{adminDashboard.incidentLicenceTypeCompanies}}</div>
-              <div>Organization (Licence Type Incident)</div>
-            </div>
-          </div>
-        </div>
-        <!--/.col-->
-        <!--/.col-->
-        <div class="col-sm-6 col-lg-4">
-          <div class="card text-white bg-facebook">
-            <div class="card-body pb-0">
-              <button type="button" (click)='view({"status": "ALL", "licenseType": "ASSET"})'
-                class="btn btn-transparent p-0 float-right">
-                <i class="icon-eye"></i>
-              </button>
-              <div class="text-value">{{adminDashboard.assetLicenceTypeCompanies}}</div>
-              <div>Organization (Licence Type Asset)</div>
-            </div>
-          </div>
-        </div>
-        <!--/.col-->
       </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-body">
-      <div class="row">
-        <canvas 
-          width="2" height="1"
-          baseChart 
-          (chartHover)="chartHovered($event)"
-          (chartClick)="chartClicked($event)"
-          [colors]="chartColors" 
-          [data]="doughnutChartData" 
-          [labels]="doughnutChartLabels" 
-          [chartType]="doughnutChartType"
-          [options]="doughnutChartOptions"
-          [legend]="true"
-          >
-        </canvas>
+    </tab>
+    <tab *ngIf="roles.includes('ORG_ADMIN')" (selectTab)="loadOrgAdminData()" heading="Organization Admin">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-info">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{orgAdminDashboardVO.activeEmployees}}</div>
+                  <div>Active Employees</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-primary">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{orgAdminDashboardVO.inHouseAgents}}</div>
+                  <div>In House Agents</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-warning">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{orgAdminDashboardVO.outSourcedAgents}}</div>
+                  <div>Out Sourced Agents</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+          </div>
+          <!--/.row-->
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-<div *ngIf="role!='APP_ADMIN'" class="animated fadeIn">
-  <h1>WIP...</h1>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)" [colors]="orgAdminChartColors" [data]="orgAdminDoughnutChartData"
+              [labels]="orgAdminDoughnutChartLabels" [chartType]="orgAdminDoughnutChartType"
+              [options]="orgAdminDoughnutChartOptions" [legend]="true">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </tab>
+    <tab *ngIf="hasUserRole()" (selectTab)="loadUserData()" heading="User">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-info">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewUser({status:"OPEN"})' class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{userDashboardVO.openIncidents}}</div>
+                  <div>Open Incidents</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-primary">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewUser({status:"ASSIGNED"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{userDashboardVO.assignedIncidents}}</div>
+                  <div>Assigned Incidents</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+            <div class="col-sm-6 col-lg-4">
+              <div class="card text-white bg-warning">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewUser({status:"CLOSED"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{userDashboardVO.closedIncidents}}</div>
+                  <div>Closed Incidents</div>
+                </div>
+              </div>
+            </div>
+            <!--/.col-->
+          </div>
+          <!--/.row-->
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)" [colors]="userChartColors" [data]="userDoughnutChartData"
+              [labels]="userDoughnutChartLabels" [chartType]="userDoughnutChartType"
+              [options]="userDoughnutChartOptions" [legend]="true">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </tab>
+    <tab *ngIf="!roles.includes('ORG_ADMIN')&&!roles.includes('APP_ADMIN')&&!hasUserRole()" heading="ELSE">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <h1>WIP...</h1>
+          </div>
+        </div>
+      </div>
+    </tab>
+  </tabset>
 </div>

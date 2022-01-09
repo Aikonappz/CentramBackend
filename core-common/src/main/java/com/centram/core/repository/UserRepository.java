@@ -1,6 +1,7 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.vo.OrgAdminDashboardVO;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
@@ -54,11 +55,11 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query("select u from User u where u.id = (:id)")
     User getUserById(@Param("id") BigInteger id);
 
-    @Query("select u from User u where 1 = 1 and " +
+    @Query(value = "select * from user u where 1 = 1 and " +
             " ( " +
-            "   ((:organisationId) is not null and u.organisation.id = (:organisationId)) " +
+            "   ((:organisationId) is not null and u.organisation_id = (:organisationId)) " +
             "   OR " +
-            "   ((:organisationId) is null and u.organisation.id is null) " +
+            "   ((:organisationId) is null and u.organisation_id is null) " +
             " ) and " +
             " ( " +
             "   ((:status) <> 2 and u.status = (:status)) " +
@@ -71,23 +72,57 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             "   ((:email) is null) " +
             " ) and " +
             " ( " +
-            "   ((:employeeId) is not null and upper(u.employeeId) like (:employeeId)) " +
+            "   ((:filterType) = 'USER' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_USER_%') > 0 and u.status = 1) " +
+            "   OR " +
+            "   ((:filterType) = 'AGENT' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_AGENT_%') > 0 and u.vendor_id is null and u.status = 1) " +
+            "   OR " +
+            "   ((:filterType) = 'AGENT_VENDOR' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_AGENT_%') > 0 and u.vendor_id is not null and u.status = 1) " +
+            "   OR " +
+            "   ((:filterType) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:employeeId) is not null and upper(u.employee_id) like (:employeeId)) " +
             "   OR " +
             "   ((:employeeId) is null)" +
-            " )"
+            " )", nativeQuery = true
     )
     Page<User> getUsers(
             @Param("organisationId") BigInteger organisationId,
             @Param("email") String email,
             @Param("employeeId") String employeeId,
             @Param("status") Integer status,
+            @Param("filterType") String filterType,
             Pageable pageable
     );
 
-    //@Query("select u from User u where u.organisation.id = (:organisationId)")
-    //Page<User> getUsers(@Param("organisationId") BigInteger organisationId, Pageable pageable);
-
-    //@Query("select u from User u where u.organisation.id is null")
-    //Page<User> getAppUsers(Pageable pageable);
-
+    @Query(value = "select " +
+            " sum( " +
+            "  case when " +
+            "   u.status = 1 and " +
+            "   (select count(r.name) from role r where FIND_IN_SET(r.id, u.roles) > 0 and r.name like '%_USER_%') > 0 " +
+            "   THEN 1 " +
+            "   ELSE 0 " +
+            "   END " +
+            " ) as activeEmployees, " +
+            " sum( " +
+            "  case when " +
+            "   u.vendor_id is null and " +
+            "   (select count(r.name) from role r where FIND_IN_SET(r.id, u.roles) > 0 and r.name like '%_AGENT_%') > 0 " +
+            "   THEN 1 " +
+            "   ELSE 0 " +
+            "   END " +
+            " ) as inHouseAgents, " +
+            " sum( " +
+            "  case when " +
+            "   u.vendor_id is not null and " +
+            "   (select count(r.name) from role r where FIND_IN_SET(r.id, u.roles) > 0 and r.name like '%_AGENT_%') > 0 " +
+            "   THEN 1 " +
+            "   ELSE 0 " +
+            "   END " +
+            " ) as outSourcedAgents " +
+            "from " +
+            " user u " +
+            " where " +
+            " u.organisation_id =  (:organisationId) ", nativeQuery = true)
+    OrgAdminDashboardVO orgAdminDashboardData(@Param("organisationId") BigInteger organisationId);
 }

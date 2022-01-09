@@ -12,11 +12,13 @@ import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.PermissionVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.UserRepository;
+import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.*;
+import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +99,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private MiscService miscService;
+
+    @Autowired
+    private ModuleService moduleService;
 
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
@@ -241,14 +246,25 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, Pageable pageable) {
+    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, String filterType, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         email = (!email.equals("")) ? "%" + email.toUpperCase() + "%" : null;
         employeeId = (!employeeId.equals("")) ? "%" + employeeId.toUpperCase() + "%" : null;
-        Page<User> page = userRepository.getUsers(loggedInUser.getOrganisationId(), email, employeeId, status.ordinal(), pageable);
+        filterType = (!filterType.equals("")) ? filterType.toUpperCase(Locale.ROOT) : null;
+        Page<User> page = userRepository.getUsers(
+                loggedInUser.getOrganisationId(),
+                email,
+                employeeId,
+                status.ordinal(),
+                filterType,
+                pageable
+        );
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         List<String> roleNames = null;
+        List<Permission> permissions = null;
+        List<Module> modules = null;
+        List<Module> subModules = null;
         for (User user : page.getContent()) {
             userVO = new UserVO(user);
             roleNames = new ArrayList<>();
@@ -256,6 +272,26 @@ public class UserService implements UserDetailsService {
                 roleNames.add(roleService.getById(roleId).getName());
             }
             userVO.setRoleNames(roleNames);
+            // prepare category & subcategory access list
+            permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
+            modules = permissions.stream()
+                    .filter(i -> {
+                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() == null;
+                    })
+                    .map(Permission::getModule)
+                    .collect(Collectors.toList());
+            subModules = permissions.stream()
+                    .filter(i -> {
+                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() != null;
+                    })
+                    .map(Permission::getModule)
+                    .collect(Collectors.toList());
+            userVO.setCategories(modules.stream().map(Module::getCustomerModuleName).map(i -> {
+                return WordUtils.capitalizeFully(i);
+            }).collect(Collectors.toSet()));
+            userVO.setSubCategories(subModules.stream().map(Module::getCustomerModuleName).map(i -> {
+                return WordUtils.capitalizeFully(i);
+            }).collect(Collectors.toSet()));
             userVOS.add(userVO);
         }
         return new PaginatedList<UserVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), userVOS);
@@ -359,6 +395,7 @@ public class UserService implements UserDetailsService {
                 null,
                 null,
                 Status.ALL.ordinal(),
+                null,
                 Pageable.unpaged()
         );
         for (User user : page.getContent()) {

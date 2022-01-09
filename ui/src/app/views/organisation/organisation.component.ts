@@ -27,8 +27,8 @@ export class OrganisationComponent implements OnInit, OnDestroy {
   angForm: FormGroup;
   org: Organisation;
   defaultStatus: any = 'ALL';
-  statusFlag: boolean = true;
-  status: { isOpen: boolean } = { isOpen: false };
+  statusFlag: string = 'ALL';
+  drStatus: { isOpen: boolean } = { isOpen: false };
   disabled: boolean = false;
   isDropup: boolean = true;
   autoClose: boolean = false;
@@ -72,11 +72,11 @@ export class OrganisationComponent implements OnInit, OnDestroy {
   toggleDropdown($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
-    this.status.isOpen = !this.status.isOpen;
+    this.drStatus.isOpen = !this.drStatus.isOpen;
   }
 
   change(value: boolean): void {
-    this.status.isOpen = value;
+    this.drStatus.isOpen = value;
   }
 
   hasPermission(action: string): boolean {
@@ -100,7 +100,7 @@ export class OrganisationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.status.isOpen = false;
+    this.drStatus.isOpen = false;
   }
 
   ngAfterViewInit() {
@@ -156,10 +156,16 @@ export class OrganisationComponent implements OnInit, OnDestroy {
 
   get f() { return this.angForm.controls; }
 
+  @ViewChild("status") status;
+  onChange(inp: string) {
+    this.statusFlag = inp;
+  }
+
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.org.name = this.angForm.controls['orgName'].value;
+      this.org.status = this.statusFlag;
       this.loadData({ "name": this.org.name == null ? '' : this.org.name, "status": this.org.status });
       //console.log(JSON.stringify(this.org));
     } else {

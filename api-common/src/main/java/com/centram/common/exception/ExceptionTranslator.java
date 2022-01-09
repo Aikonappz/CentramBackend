@@ -53,8 +53,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         ClientError digest = new ClientError(GenericErrorCode.UNKNOWN_ERROR.getCode(), ex.getMessage());
         return new ResponseEntity<ClientError>(digest, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }*/
-
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({Throwable.class})
     public ResponseEntity<ClientError> handleAllExceptions(Exception ex, WebRequest request) {
         LOG.error(ex.getMessage());
         ClientError digest = new ClientError(GenericErrorCode.UNKNOWN_ERROR.getCode(), GenericErrorCode.UNKNOWN_ERROR.getTemplate());

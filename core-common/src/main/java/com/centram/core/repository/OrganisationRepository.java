@@ -70,9 +70,4 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
             " sum(case when license_type = 2 then 1 else 0 end) as assetLicenceTypeCompanies " +
             " from organisation ", nativeQuery = true)
     AdminDashboardVO appAdminDashboardData();
-
-    /*@Query("select new com.erp.common.vo.OrganisationVO(o.createdDate, o.modifiedDate, o.version, o.modifiedBy, o.createdBy,o.id,o.name,o.mnemonic,o.setting,o.addresses,o.contacts,o.bankDetails,o.status) from Organisation o where o.id = (:id)")
-    OrganisationVO getById(@Param("id") BigInteger id);*/
-
-    //Organisation findByMnemonic(@Param("mnemonic") String mnemonic);
 }

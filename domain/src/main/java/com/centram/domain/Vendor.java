@@ -91,6 +91,13 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private IncidentAllocationType ticketAllocationType;
 
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "in_house")
+    @JsonView(Views.BasicView.class)
+    private Boolean inHouse;
+
     public Vendor(@NotNull BigInteger id) {
         this.id = id;
     }

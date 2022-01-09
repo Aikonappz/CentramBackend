@@ -12,6 +12,7 @@ import { User } from '../../model/User';
 import { Status } from '../../model/enumerator/Status';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { Vendor } from '../../model/Vendor';
+import { LoggedInUser } from '../../model/LoggedInUser';
 declare var $: any;
 
 @Component({
@@ -38,6 +39,8 @@ export class EditUserComponent implements OnInit {
   usrList: any[];
   vendorList: any[];
   c: number = 0;
+  rolesList: string[];
+  loggedInUser: LoggedInUser;
   angForm = new FormGroup({
     firstName: new FormControl('', [
       Validators.required,
@@ -60,7 +63,7 @@ export class EditUserComponent implements OnInit {
       Validators.required,
     ]),
     managerId: new FormControl('NA', [
-      Validators.required,
+      //Validators.required,
     ]),
     projectCode: new FormControl('NA', [
       //Validators.required
@@ -98,6 +101,8 @@ export class EditUserComponent implements OnInit {
     });
     this.user = new User();
     this.user.status = this.defaultStatus;
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    this.rolesList = this.loggedInUser.roles;
   }
 
   hasPermission(action: string): boolean {
@@ -199,6 +204,7 @@ export class EditUserComponent implements OnInit {
               this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
             }
           }
+          this.preapareSelect();
           //console.log(JSON.stringify(this.usrList));
         });
     } else {
@@ -248,7 +254,6 @@ export class EditUserComponent implements OnInit {
                     this.callGetUserService(this.entityId);
                   }
                 }
-
               });
           });
       } else {
@@ -344,25 +349,42 @@ export class EditUserComponent implements OnInit {
     }
   }
 
+  preapareSelect() {
+    $(document).ready(function () {
+      $('#managerId').selectize({
+        maxItems: 1,
+        onItemAdd: function (value, $item) {
+        },
+        onItemRemove: function (value) {
+        }
+      });
+    })
+  }
 
   ngAfterViewInit() { }
 
   ngAfterContentInit() {
-    this.initSelectBoxes();
-  }
-
-  initSelectBoxes() {
-    //$('#managerId').editableSelect();
-    // $('#roles').editableSelect();
-    // $('#department').editableSelect();
-
   }
 
   get f() { return this.angForm.controls; }
 
   formSubmit() {
     //console.log(this.angForm);
+    let managerId = $('#managerId').val();
+    if (managerId == '') {
+      $('#managerId-error').removeClass('d-none');
+      return false;
+    } else {
+      $('#managerId-error').addClass('d-none');
+    }
+    //console.log(managerId);
     if (this.angForm.valid) {
+      if (this.statusFlag === false) {
+        let res = window.confirm("Are you sure?")
+        if (!res) {
+          return;
+        }
+      }
       //console.log(this.angForm);
       this.user.firstName = this.angForm.controls['firstName'].value;
       this.user.lastName = this.angForm.controls['lastName'].value;
@@ -370,7 +392,7 @@ export class EditUserComponent implements OnInit {
       this.user.contactNo = this.angForm.controls['contactNo'].value;
       this.user.secContactNo = this.angForm.controls['secContactNo'].value;
       this.user.employeeId = this.angForm.controls['employeeId'].value;
-      this.user.managerId = this.angForm.controls['managerId'].value;
+      this.user.managerId = managerId;
       this.user.projectCode = this.angForm.controls['projectCode'].value;
       this.user.projectCode = this.angForm.controls['projectCode'].value;
       this.user.roles = this.angForm.controls['roles'].value;
@@ -489,7 +511,7 @@ export class EditUserComponent implements OnInit {
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         this.angForm.markAllAsTouched();
-        this.initSelectBoxes();
+        this.preapareSelect();
       });
   }
 

@@ -7,6 +7,7 @@ export class Vendor extends Base {
     id: number;
     name: string;
     status: any;
+    inHouse: boolean;
     vendorModules: VendorModule[];
     organisation: Organisation;
     ticketAllocationType: TicketAllocationType;
@@ -19,6 +20,7 @@ export class Vendor extends Base {
         this.vendorModules = [];
         this.organisation = new Organisation();
         this.ticketAllocationType = TicketAllocationType.GENERIC;
+        this.inHouse = true;
     }
 }
 

@@ -92,7 +92,7 @@ public class IncidentSLANotification extends RouteBuilder {
                         ZonedDateTime sla60MinutesPassed = incident.getSlaAt().atZone(ZoneId.of(timeZone));
                         sla60MinutesPassed.plusMinutes(60);
 
-                        if (currentDatetime.isAfter(wip50PercentPassed) && currentDatetime.isBefore(wip75PercentPassed)) {
+                        /*if (currentDatetime.isAfter(wip50PercentPassed) && currentDatetime.isBefore(wip75PercentPassed)) {
                             targetRouter = CaseUtils.toCamelCase(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name(), false, '_');
                             producerTemplate.requestBodyAndHeader("direct:".concat(targetRouter), incident, "route", targetRouter);
                         } else if (currentDatetime.isAfter(wip75PercentPassed)) {
@@ -106,7 +106,7 @@ public class IncidentSLANotification extends RouteBuilder {
                             producerTemplate.requestBodyAndHeader("direct:".concat(targetRouter), incident, "route", targetRouter);
                         } else {
                             producerTemplate.requestBodyAndHeader("skipIncident", null, "route", "skipIncident");
-                        }
+                        }*/
                     }
                 })
                 //.toD("direct:${header.next-route}")

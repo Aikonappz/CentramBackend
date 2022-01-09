@@ -8,8 +8,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserSettingsComponent } from './usersettings.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
-import { RouterModule } from '@angular/router';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 

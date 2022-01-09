@@ -11,6 +11,7 @@ import { User } from '../../model/User';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { LoggedInUser } from '../../model/LoggedInUser';
 
 @Component({
   selector: 'app-user',
@@ -27,11 +28,13 @@ export class UserComponent implements OnInit, OnDestroy {
   angForm: FormGroup;
   usr: User;
   defaultStatus: any = 'ALL';
-  statusFlag: boolean = true;
-  status: { isOpen: boolean } = { isOpen: false };
+  statusFlag: string = 'ALL';
+  drStatus: { isOpen: boolean } = { isOpen: false };
   disabled: boolean = false;
   isDropup: boolean = true;
   autoClose: boolean = false;
+  roles: string[];
+  loggedInUser: LoggedInUser;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -58,6 +61,8 @@ export class UserComponent implements OnInit, OnDestroy {
     });
     this.usr = new User();
     this.usr.status = this.defaultStatus;
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    this.roles = this.loggedInUser.roles;
   }
 
   hasPermission(action: string): boolean {
@@ -77,15 +82,15 @@ export class UserComponent implements OnInit, OnDestroy {
   toggleDropdown($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
-    this.status.isOpen = !this.status.isOpen;
+    this.drStatus.isOpen = !this.drStatus.isOpen;
   }
 
   change(value: boolean): void {
-    this.status.isOpen = value;
+    this.drStatus.isOpen = value;
   }
 
   ngOnDestroy() {
-    this.status.isOpen = false;
+    this.drStatus.isOpen = false;
   }
 
   getTitle(state, parent) {
@@ -181,11 +186,17 @@ export class UserComponent implements OnInit, OnDestroy {
 
   get f() { return this.angForm.controls; }
 
+  @ViewChild("status") status;
+  onChange(inp: string) {
+    this.statusFlag = inp;
+  }
+
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.usr.email = this.angForm.controls['userEmail'].value;
       this.usr.employeeId = this.angForm.controls['userEmployeeId'].value;
+      this.usr.status = this.statusFlag;
       this.loadData({
         "email": this.usr.email == null ? '' : this.usr.email,
         "employeeId": this.usr.employeeId == null ? '' : this.usr.employeeId,

@@ -350,6 +350,12 @@ export class EditOrganisationComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
+      if (this.statusFlag === false) {
+        let res = window.confirm("Are you sure?")
+        if (!res) {
+          return;
+        }
+      }
       //console.log(this.angForm);
       this.org.name = this.angForm.controls['name'].value;
       this.org.add1 = this.angForm.controls['add1'].value;
@@ -388,7 +394,7 @@ export class EditOrganisationComponent implements OnInit {
         this.user.employeeId = this.user.employeeId == null ? null : this.user.employeeId.replace(/\s/g, "");
         this.user.projectCode = this.user.projectCode == null ? null : this.user.projectCode.replace(/\s/g, "")
         this.user.organisation = null;
-        this.user.employeeId = "0001";
+        this.user.employeeId = "EMP0001";
         /* process department and location */
         let location = this.angForm.controls['location'].value;
         let department = this.angForm.controls['department'].value;

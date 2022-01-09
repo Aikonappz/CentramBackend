@@ -1,6 +1,7 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.vo.UserDashboardVO;
 import com.centram.domain.Incident;
 import com.centram.domain.enumarator.IncidentStatus;
 import org.springframework.data.domain.Page;
@@ -113,5 +114,21 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
 
     @Query("select i from Incident i join i.raisedUser ru join ru.organisation o where i.status in (:statuses) and o.id = (:organisationId) order by i.id asc")
     List<Incident> getIncidentsByOrganisationAndStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
+
+    @Query(value = " select " +
+            " sum(case when i.status = 0 then 1 else 0 end ) as openIncidents, " +
+            " sum(case when i.status = 1 then 1 else 0 end ) as assignedIncidents, " +
+            " sum(case when i.status = 4 then 1 else 0 end ) as closedIncidents " +
+            " from " +
+            " incident i " +
+            " WHERE " +
+            " i.created_date BETWEEN (:start) and (:end) " +
+            " and " +
+            " i.raised_user_id = (:userId) ", nativeQuery = true)
+    UserDashboardVO userDashboardData(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("userId") BigInteger userId
+    );
 
 }

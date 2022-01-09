@@ -89,6 +89,8 @@ export class EditVendorComponent implements OnInit {
       ]),
       status: new FormControl('ACTIVE', [
       ]),
+      inHouse: new FormControl('1', [
+      ]),
     });
     if (!this.route.snapshot.paramMap.has('id')) {
       this.miscService
@@ -129,6 +131,7 @@ export class EditVendorComponent implements OnInit {
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
+      this.vendor.inHouse = (this.angForm.controls['inHouse'].value == true) ? true : false;
       this.vendor.name = this.angForm.controls['name'].value;
       this.vendor.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       this.submoduleIds = this.angForm.controls['dlSubModuleId'].value;
@@ -172,6 +175,7 @@ export class EditVendorComponent implements OnInit {
         this.vendor.version = data.version;
         this.vendor.vendorModules = data.vendorModules;
         this.vendor.ticketAllocationType = data.ticketAllocationType;
+        this.vendor.inHouse = data.inHouse;
         //console.log(JSON.stringify(this.user));
 
         this.submoduleIds = [];
@@ -181,6 +185,7 @@ export class EditVendorComponent implements OnInit {
           moduleId = this.vendor.vendorModules[k].moduleId;
         }
         this.populateSubmodule(moduleId);
+        this.angForm.get('inHouse').setValue(this.vendor.inHouse);
         this.angForm.get('name').setValue(this.vendor.name);
         this.angForm.get('dlModuleId').setValue(moduleId);
         this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));

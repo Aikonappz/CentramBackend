@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -33,6 +34,8 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     private String projectCode;
     private List<BigInteger> roles;
     private List<String> roleNames;
+    private Set<String> categories;
+    private Set<String> subCategories;
     private Status status;
     private BigInteger organisationId;
     private String organisation;

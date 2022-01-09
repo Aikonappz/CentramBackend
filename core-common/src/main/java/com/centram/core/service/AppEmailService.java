@@ -174,7 +174,7 @@ public class AppEmailService {
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         log.info("EMAIL TITLE: {}", mailSubject);
         log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        emailService.sendMail(mailMap);
+        //emailService.sendMail(mailMap);
     }
 
     /**
