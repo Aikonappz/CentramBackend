@@ -72,7 +72,7 @@ export const navItems: INavData[] = [
     children: [
       {
         name: 'Create Incident',
-        url: '/incident/add',
+        url: '/incident/user/add/new',
         icon: 'fa fa-plus',
         attributes: { "moduleName": "MY INCIDENTS" }
       },

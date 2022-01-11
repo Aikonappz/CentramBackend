@@ -129,8 +129,8 @@ export class UserIncidentComponent implements OnInit {
     }
   }
 
-  add() {
-    this.router.navigate(['/incident/user/add']);
+  add(mode: string) {
+    this.router.navigate(['/incident/user/add/' + mode]);
   }
 
   loadData(req?: Object) {

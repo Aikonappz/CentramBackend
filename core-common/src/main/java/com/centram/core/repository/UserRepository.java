@@ -1,7 +1,6 @@
 package com.centram.core.repository;
 
 
-import com.centram.common.vo.OrgAdminDashboardVO;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
@@ -96,33 +95,10 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     );
 
     @Query(value = "select " +
-            " sum( " +
-            "  case when " +
-            "   u.status = 1 and " +
-            "   (select count(r.name) from role r where FIND_IN_SET(r.id, u.roles) > 0 and r.name like '%_USER_%') > 0 " +
-            "   THEN 1 " +
-            "   ELSE 0 " +
-            "   END " +
-            " ) as activeEmployees, " +
-            " sum( " +
-            "  case when " +
-            "   u.vendor_id is null and " +
-            "   (select count(r.name) from role r where FIND_IN_SET(r.id, u.roles) > 0 and r.name like '%_AGENT_%') > 0 " +
-            "   THEN 1 " +
-            "   ELSE 0 " +
-            "   END " +
-            " ) as inHouseAgents, " +
-            " sum( " +
-            "  case when " +
-            "   u.vendor_id is not null and " +
-            "   (select count(r.name) from role r where FIND_IN_SET(r.id, u.roles) > 0 and r.name like '%_AGENT_%') > 0 " +
-            "   THEN 1 " +
-            "   ELSE 0 " +
-            "   END " +
-            " ) as outSourcedAgents " +
-            "from " +
+            " sum(case when u.vendor_id is null then 1 else 0 end)" +
+            " from " +
             " user u " +
             " where " +
-            " u.organisation_id =  (:organisationId) ", nativeQuery = true)
-    OrgAdminDashboardVO orgAdminDashboardData(@Param("organisationId") BigInteger organisationId);
+            " u.organisation_id =  (:organisationId) and u.status = 1", nativeQuery = true)
+    long orgAdminUserDashboardData(@Param("organisationId") BigInteger organisationId);
 }

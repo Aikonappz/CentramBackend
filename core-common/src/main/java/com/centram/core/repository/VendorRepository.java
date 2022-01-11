@@ -1,6 +1,7 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.vo.OrgAdminDashboardVO;
 import com.centram.domain.Vendor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,18 @@ public interface VendorRepository extends JpaRepository<Vendor, BigInteger> {
 
     @Query("select v from Vendor v join v.organisation org where org.id = (:organisationId)")
     Page getByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+
+    @Query(value = "select " +
+            " new com.centram.common.vo.OrgAdminDashboardVO(" +
+            " sum(case when v.inHouse = true then 1 else 0 end), " +
+            " sum(case when v.inHouse = true then 0 else 1 end) " +
+            " ) " +
+            " from " +
+            " Vendor v " +
+            " join v.organisation o on (o.id = v.organisation.id)" +
+            " where " +
+            " o.id =  (:organisationId) ", nativeQuery = false)
+    OrgAdminDashboardVO orgAdminVendorDashboardData(
+            @Param("organisationId") BigInteger organisationId
+    );
 }

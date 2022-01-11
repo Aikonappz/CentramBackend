@@ -37,7 +37,8 @@
                                 </div>
                                 <div class="row row-margin-05">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="moduleId">Module</label>
+                                        <label class="form-col-form-label required-control-label"
+                                            for="moduleId">Category</label>
                                         <select #moduleId (change)="populateSubmodule($event.target.value)"
                                             class="form-control" formControlName="moduleId" ngModel id="moduleId"
                                             name="moduleId">
@@ -45,10 +46,16 @@
                                             <option *ngFor="let e of moduleList" value="{{e.moduleId}}">
                                                 {{e.customerModuleName}}</option>
                                         </select>
+                                        <div *ngIf="f.moduleId.touched && f.moduleId.invalid"
+                                            class="alert alert-danger-custom">
+                                            <div *ngIf="f.moduleId.errors?.required">
+                                                Category is required.
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label" for="subModuleId">Sub
-                                            Module</label>
+                                        <label class="form-col-form-label required-control-label" for="subModuleId">Sub
+                                            Category</label>
                                         <select class="form-control" #subModuleId
                                             (change)="populateUser($event.target.value)" formControlName="subModuleId"
                                             ngModel id="subModuleId" name="subModuleId">
@@ -57,6 +64,12 @@
                                                 {{e.customerModuleName}}
                                             </option>
                                         </select>
+                                        <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid"
+                                            class="alert alert-danger-custom">
+                                            <div *ngIf="f.subModuleId.errors?.required">
+                                                Sub Category is required.
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="priorityId">Priority</label>

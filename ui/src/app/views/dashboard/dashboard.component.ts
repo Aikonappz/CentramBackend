@@ -21,6 +21,7 @@ import { UserService } from '../../service/UserService';
 import { UserDashboardVO } from '../../model/UserDashboardVO';
 import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
+import { IncidentStatusVO } from '../../model/IncidentStatusVO';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -36,22 +37,34 @@ export class DashboardComponent implements OnInit {
 
   public adminDoughnutChartLabels: Label[] = [];
   public adminDoughnutChartData: MultiDataSet = [];
-  public adminDoughnutChartType: ChartType = 'doughnut';
-  public adminChartColors: any[] = [{
-    backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f", "#6062ce", "#fd72e6"]
-  }];
-  public adminDoughnutChartOptions: any = {
-    responsive: true,
-    boxWidth: 1,
-  };
+  public adminDoughnutChartType: ChartType = 'pie';
+  public adminChartColors: any[] = [{ backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f"] }];
+  public adminDoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
+
+  public admin1DoughnutChartLabels: Label[] = [];
+  public admin1DoughnutChartData: MultiDataSet = [];
+  public admin1DoughnutChartType: ChartType = 'pie';
+  public admin1ChartColors: any[] = [{ backgroundColor: ["#adff2f", "#fd72e6", "#6062ce", "#6FC8CE",] }];
+  public admin1DoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
 
   public orgAdminDoughnutChartLabels: Label[] = [];
   public orgAdminDoughnutChartData: MultiDataSet = [];
-  public orgAdminDoughnutChartType: ChartType = 'doughnut';
+  public orgAdminDoughnutChartType: ChartType = 'pie';
   public orgAdminChartColors: any[] = [{
     backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f", "#6062ce", "#fd72e6"]
   }];
   public orgAdminDoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public orgAdmin1DoughnutChartLabels: Label[] = [];
+  public orgAdmin1DoughnutChartData: MultiDataSet = [];
+  public orgAdmin1DoughnutChartType: ChartType = 'pie';
+  public orgAdmin1ChartColors: any[] = [{
+    backgroundColor: ["#FF7360", "#6FC8CE", "#6610f2", "#adff2f", "#6062ce", "#fd72e6", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6f42c1"]
+  }];
+  public orgAdmin1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
   };
@@ -109,22 +122,32 @@ export class DashboardComponent implements OnInit {
         .subscribe((data: AdminDashboardVO) => {
           this.adminDashboard = data;
           let dataPoints = [];
+          let total = this.adminDashboard.activeCompanies + this.adminDashboard.inactiveCompanies;
+          dataPoints.push(total);
           dataPoints.push(this.adminDashboard.activeCompanies);
           dataPoints.push(this.adminDashboard.inactiveCompanies);
+          this.adminDoughnutChartLabels = [
+            "Total",
+            "Active",
+            "Inactive",
+          ];
+          this.adminDoughnutChartData = [dataPoints];
+          this.adminDoughnutChartType = 'pie';
+
+          dataPoints = [];
+          total = this.adminDashboard.allLicenceTypeCompanies + this.adminDashboard.assetLicenceTypeCompanies + this.adminDashboard.incidentLicenceTypeCompanies;
+          dataPoints.push(total);
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
-          this.adminDoughnutChartLabels = [
-            "Active Organization",
-            "Inactive Organization",
-            "All License Type Organization",
-            "Asset License Type Organization",
-            "Incident License Type Organization",
+          this.admin1DoughnutChartLabels = [
+            "Total",
+            "All License Type",
+            "Asset License Type",
+            "Incident License Type",
           ];
-          this.adminDoughnutChartData = [
-            dataPoints
-          ];
-          this.adminDoughnutChartType = 'doughnut';
+          this.admin1DoughnutChartData = [dataPoints];
+          this.admin1DoughnutChartType = 'pie';
         });
       this.firstTabLoaded = true;
     }
@@ -135,19 +158,30 @@ export class DashboardComponent implements OnInit {
           .orgAdminDashboard()
           .subscribe((data: OrgAdminDashboardVO) => {
             this.orgAdminDashboardVO = data;
+            this.populateIncidentsData(this.orgAdminDashboardVO);
             let dataPoints = [];
             dataPoints.push(this.orgAdminDashboardVO.activeEmployees);
-            dataPoints.push(this.orgAdminDashboardVO.inHouseAgents);
-            dataPoints.push(this.orgAdminDashboardVO.outSourcedAgents);
+            dataPoints.push(this.orgAdminDashboardVO.inHouseVendors);
+            dataPoints.push(this.orgAdminDashboardVO.outSourcedVendors);
             this.orgAdminDoughnutChartLabels = [
               "Active Employees",
-              "In House Agents",
-              "Out Sourced Agents",
+              "In House Vendors",
+              "Out Sourced Vendors",
             ];
             this.orgAdminDoughnutChartData = [
               dataPoints
             ];
-            this.orgAdminDoughnutChartType = 'doughnut';
+            this.orgAdminDoughnutChartType = 'pie';
+            dataPoints = [];
+            let lebel = [];
+            for (let i in this.orgAdminDashboardVO.incidents) {
+              dataPoints.push(this.orgAdminDashboardVO.incidents[i].count);
+              this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.incidents[i].statusName);
+            }
+            this.orgAdmin1DoughnutChartData = [
+              dataPoints
+            ];
+            this.orgAdmin1DoughnutChartType = 'pie';
           });
       }
     }
@@ -183,22 +217,32 @@ export class DashboardComponent implements OnInit {
         .subscribe((data: AdminDashboardVO) => {
           this.adminDashboard = data;
           let dataPoints = [];
+          let total = this.adminDashboard.activeCompanies + this.adminDashboard.inactiveCompanies;
+          dataPoints.push(total);
           dataPoints.push(this.adminDashboard.activeCompanies);
           dataPoints.push(this.adminDashboard.inactiveCompanies);
+          this.adminDoughnutChartLabels = [
+            "Total",
+            "Active",
+            "Inactive",
+          ];
+          this.adminDoughnutChartData = [dataPoints];
+          this.adminDoughnutChartType = 'pie';
+
+          dataPoints = [];
+          total = this.adminDashboard.allLicenceTypeCompanies + this.adminDashboard.assetLicenceTypeCompanies + this.adminDashboard.incidentLicenceTypeCompanies;
+          dataPoints.push(total);
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
-          this.adminDoughnutChartLabels = [
-            "Active Organization",
-            "Inactive Organization",
-            "All License Type Organization",
-            "Asset License Type Organization",
-            "Incident License Type Organization",
+          this.admin1DoughnutChartLabels = [
+            "Total",
+            "All License Type",
+            "Asset License Type",
+            "Incident License Type",
           ];
-          this.adminDoughnutChartData = [
-            dataPoints
-          ];
-          this.adminDoughnutChartType = 'doughnut';
+          this.admin1DoughnutChartData = [dataPoints];
+          this.admin1DoughnutChartType = 'pie';
         });
     }
   }
@@ -209,19 +253,20 @@ export class DashboardComponent implements OnInit {
         .orgAdminDashboard()
         .subscribe((data: OrgAdminDashboardVO) => {
           this.orgAdminDashboardVO = data;
+          this.populateIncidentsData(this.orgAdminDashboardVO);
           let dataPoints = [];
           dataPoints.push(this.orgAdminDashboardVO.activeEmployees);
-          dataPoints.push(this.orgAdminDashboardVO.inHouseAgents);
-          dataPoints.push(this.orgAdminDashboardVO.outSourcedAgents);
+          dataPoints.push(this.orgAdminDashboardVO.inHouseVendors);
+          dataPoints.push(this.orgAdminDashboardVO.outSourcedVendors);
           this.orgAdminDoughnutChartLabels = [
             "Active Employees",
-            "In House Agents",
-            "Out Sourced Agents",
+            "In House Vendors",
+            "Out Sourced Vendors",
           ];
           this.orgAdminDoughnutChartData = [
             dataPoints
           ];
-          this.orgAdminDoughnutChartType = 'doughnut';
+          this.orgAdminDoughnutChartType = 'pie';
         });
     }
   }
@@ -276,23 +321,60 @@ export class DashboardComponent implements OnInit {
     return false;
   }
 
-  chartHovered(e: any) {
-    if (e.active.length > 0) {
-      const chart = e.active[0]._chart;
-      const activePoints = chart.getElementAtEvent(e.event);
-      if (activePoints.length > 0) {
-        // get the internal index of slice in pie chart
-        const clickedElementIndex = activePoints[0]._index;
-        const label = chart.data.labels[clickedElementIndex];
-        // get value by index
-        const value = chart.data.datasets[0].data[clickedElementIndex];
-        console.log(clickedElementIndex, label, value);
-
+  public populateIncidentsData(orgAdminDashboardVO: OrgAdminDashboardVO) {
+    let incidents = orgAdminDashboardVO.incidents;
+    for (let k in incidents) {
+      if (incidents[k].status == 'FINANCE_APPLICATIONS') {
+        orgAdminDashboardVO.financeApplications = incidents[k].count;
+      } else if (incidents[k].status == 'HR_APPLICATIONS') {
+        orgAdminDashboardVO.hrApplications = incidents[k].count;
+      } else if (incidents[k].status == 'HR_QUERIES') {
+        orgAdminDashboardVO.hrQueries = incidents[k].count;
+      } else if (incidents[k].status == 'IT_INFRASTRUCTURE') {
+        orgAdminDashboardVO.itInfrastructure = incidents[k].count;
+      } else if (incidents[k].status == 'PERSONAL_COMPUTING') {
+        orgAdminDashboardVO.personalComputing = incidents[k].count;
+      } else if (incidents[k].status == 'SALES_APPLICATIONS') {
+        orgAdminDashboardVO.salesApplications = incidents[k].count;
+      } else if (incidents[k].status == 'SOFTWARE_REQUESTS') {
+        orgAdminDashboardVO.softwareRequests = incidents[k].count;
+      } else if (incidents[k].status == 'VEHICLE_PASS') {
+        orgAdminDashboardVO.vehiclePass = incidents[k].count;
       }
     }
   }
 
-  chartClicked(e: any) {
+  chartHovered(e: any) {
+    this.getChartSegmentData(e);
+  }
+
+  appAdminChart1SegmentClicked(e: any) {
+    if (this.getChartSegmentData(e) === "Total") {
+      this.viewSiteAdmin({ "status": "ALL" });
+    } else if (this.getChartSegmentData(e) === "Active") {
+      this.viewSiteAdmin({ "status": "ACTIVE" })
+    } else if (this.getChartSegmentData(e) === "Inactive") {
+      this.viewSiteAdmin({ "status": "INACTIVE" })
+    } else {
+      this.viewSiteAdmin({ "status": "ALL" });
+    }
+  }
+
+  appAdminChart2SegmentClicked(e: any) {
+    if (this.getChartSegmentData(e) === "Total") {
+      this.viewSiteAdmin({ "status": "ALL" });
+    } else if (this.getChartSegmentData(e) === "All License Type") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ALL" })
+    } else if (this.getChartSegmentData(e) === "Asset License Type") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ASSET" })
+    } else if (this.getChartSegmentData(e) === "Incident License Type") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "INCIDENT" })
+    } else {
+      this.viewSiteAdmin({ "status": "ALL" });
+    }
+  }
+
+  getChartSegmentData(e: any) {
     if (e.active.length > 0) {
       const chart = e.active[0]._chart;
       const activePoints = chart.getElementAtEvent(e.event);
@@ -302,8 +384,8 @@ export class DashboardComponent implements OnInit {
         const label = chart.data.labels[clickedElementIndex];
         // get value by index
         const value = chart.data.datasets[0].data[clickedElementIndex];
-        console.log(clickedElementIndex, label, value);
-
+        //console.log(clickedElementIndex, label, value);
+        return label;
       }
     }
   }
@@ -465,63 +547,70 @@ export class ViewAppAdminDashboardDetails implements OnInit {
   template: `<div class="modal-header">
   <h6 class="modal-title pull-left"><i class="icon-eye"></i> View Employees/Agent</h6>
   <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
+    <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
   <div class="row">
-      <div class="col-sm-12">
-          <div class="card ">
-              <table class="table table-bordered" mat-table [dataSource]="datasource">
-                  <ng-container matColumnDef="name">
-                      <th class="w-20" mat-header-cell *matHeaderCellDef> Name </th>
-                      <td mat-cell *matCellDef="let element">
-                        {{element.firstName}} {{element.lastName}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="email">
-                      <th class="w-20" mat-header-cell *matHeaderCellDef> Email </th>
-                      <td mat-cell *matCellDef="let element">
-                        {{element.email}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="contact">
-                      <th class="w-20" mat-header-cell *matHeaderCellDef> Contact Dtl. </th>
-                      <td mat-cell *matCellDef="let element">
-                        <b>{{element.contactNo}}</b><br />
-                        {{element.secContactNo}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="categories">
-                      <th class="w-20" mat-header-cell *matHeaderCellDef> Category Access </th>
-                      <td mat-cell *matCellDef="let element">
-                        {{element.categories.join(',')}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="subCategories">
-                      <th class="w-20" mat-header-cell *matHeaderCellDef> Sub Category Access </th>
-                      <td mat-cell *matCellDef="let element">
-                        {{element.subCategories.join(',')}}
-                      </td>
-                  </ng-container>
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;"
-                      [ngClass]="{gray: even}"></tr>
-                  <tr class="mat-row" *matNoDataRow>
-                      <td class="mat-cell" align="center" colspan="9999">
-                          No data found!
-                      </td>
-                  </tr>
-              </table>
-              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
+    <div class="col-sm-12">
+      <div class="card ">
+        <div class="row">
+          <div class=" col col-sm-5">
+            <label class="form-col-form-label" for="moduleId">Vendor</label>
+            <!-- <select class="form-control" formControlName="moduleId" ngModel id="moduleId" name="moduleId"> -->
+            <select class="form-control" id="moduleId" name="moduleId">
+            <option value="" selected>ALL</option>
+            </select>
           </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <table class="table table-bordered" mat-table [dataSource]="datasource">
+              <ng-container matColumnDef="name">
+                <th class="w-20" mat-header-cell *matHeaderCellDef> Name </th>
+                <td mat-cell *matCellDef="let element">
+                  {{element.firstName}} {{element.lastName}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="email">
+                <th class="w-20" mat-header-cell *matHeaderCellDef> Email </th>
+                <td mat-cell *matCellDef="let element">
+                  {{element.email}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="contact">
+                <th class="w-20" mat-header-cell *matHeaderCellDef> Contact Dtl. </th>
+                <td mat-cell *matCellDef="let element">
+                  <b>{{element.contactNo}}</b><br />
+                  {{element.secContactNo}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="categories">
+                <th class="w-20" mat-header-cell *matHeaderCellDef> Category Access </th>
+                <td mat-cell *matCellDef="let element">
+                  {{element.categories.join(',')}}
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;" [ngClass]="{gray: even}">
+              </tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" align="center" colspan="9999">
+                  No data found!
+                </td>
+              </tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
+          </div>
+        </div>
       </div>
+    </div>
   </div>
 </div>`
 })
 export class ViewOrgAdminDashboardDetails implements OnInit {
   params: any;
-  displayedColumns = ['name', 'email', 'contact', 'categories', 'subCategories'];
+  displayedColumns = ['name', 'email', 'contact', 'categories',];
   private datasource: UserDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(

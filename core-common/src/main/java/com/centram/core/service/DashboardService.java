@@ -8,6 +8,7 @@ import com.centram.common.vo.UserDashboardVO;
 import com.centram.core.repository.IncidentRepository;
 import com.centram.core.repository.OrganisationRepository;
 import com.centram.core.repository.UserRepository;
+import com.centram.core.repository.VendorRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class DashboardService {
     @Autowired
     private IncidentRepository incidentRepository;
 
+    @Autowired
+    private VendorRepository vendorRepository;
+
     @Transactional(readOnly = true)
     public AdminDashboardVO appAdminDashboard() {
         return organisationRepository.appAdminDashboardData();
@@ -44,7 +48,10 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public OrgAdminDashboardVO orgAdminDashboard() {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.orgAdminDashboardData(loggedInUser.getOrganisationId());
+        OrgAdminDashboardVO orgAdminDashboardVO = vendorRepository.orgAdminVendorDashboardData(loggedInUser.getOrganisationId());
+        orgAdminDashboardVO.setActiveEmployees(userRepository.orgAdminUserDashboardData(loggedInUser.getOrganisationId()));
+        orgAdminDashboardVO.setIncidents(incidentRepository.orgStatusWiseIncidentDashboardData(loggedInUser.getOrganisationId()));
+        return orgAdminDashboardVO;
     }
 
     @Transactional(readOnly = true)

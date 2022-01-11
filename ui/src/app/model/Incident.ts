@@ -13,6 +13,8 @@ export class Incident extends Base {
     incidentNo: string;
     priority: Priority;
     watchList: string[];
+    moduleName: string;
+    subModuleName: string;
     prevStatus: any;
     status: any;
     raisedUser: User;

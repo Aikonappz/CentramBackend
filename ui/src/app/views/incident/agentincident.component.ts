@@ -79,8 +79,10 @@ export class AgentIncidentComponent implements OnInit {
       incidentNo: new FormControl(null, [
       ]),
       moduleId: new FormControl(null, [
+        Validators.required,
       ]),
       subModuleId: new FormControl(null, [
+        Validators.required,
       ]),
       priorityId: new FormControl(null, [
       ]),
@@ -205,6 +207,8 @@ export class AgentIncidentComponent implements OnInit {
     $(function () {
     });
   }
+
+  get f() { return this.angForm.controls; }
 
   edit(inc: Incident) {
     this.router.navigate(['/incident/agent-all/edit/' + inc.id]);

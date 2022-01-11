@@ -41,7 +41,7 @@ const routes: Routes = [
         }
       },
       {
-        path: ':referer/add',
+        path: ':referer/add/:mode',
         component: EditIncidentComponent,
         pathMatch: 'full',
         data: {
