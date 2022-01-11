@@ -33,12 +33,13 @@
                   </div>
                 </div>
                 <div class="col" *ngIf="hasAgentPermission">
-                  <label class="form-col-form-label required-control-label" for="status">Status</label>
-                  <select class="form-control" formControlName="status" id="status" name="status">
+                  <label class="form-col-form-label" for="newStatus">New Status</label>
+                  <select class="form-control" formControlName="newStatus" id="newStatus" name="newStatus">
+                    <option value="">-- Change Status --</option>
                     <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
                   </select>
-                  <div *ngIf="f.status.touched && f.status.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.status.errors?.required">
+                  <div *ngIf="f.newStatus.touched && f.newStatus.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.newStatus.errors?.required">
                       Status is required.
                     </div>
                   </div>

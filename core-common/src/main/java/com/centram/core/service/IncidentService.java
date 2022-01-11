@@ -266,6 +266,7 @@ public class IncidentService {
         Iterable<Incident> incidents = incidentRepository.findAllById(ids);
         for (Incident incident : incidents) {
             incident.setStatus(IncidentStatus.valueOf(status));
+            incident.setReOpened(true);
             //incident.setAssignedUser(null);
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());

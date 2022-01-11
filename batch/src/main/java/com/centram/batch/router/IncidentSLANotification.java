@@ -14,7 +14,6 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.commons.text.CaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,7 +181,8 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("SLA_JUST_BREACHED BODY {}", incident);
-                        incidentService.changeIncidentsStatus(IncidentStatus.SLA_BREACHED.name(), Collections.singletonList(incident.getId()));
+                        incident.setStatus(IncidentStatus.SLA_BREACHED);
+                        incident.setSlaBreached(true);
                         miscService.notifySlaBreached(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })

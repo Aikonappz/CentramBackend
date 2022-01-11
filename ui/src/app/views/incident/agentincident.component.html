@@ -149,6 +149,8 @@
                                 <span [ngClass]="{
                                     'badge-sla-about-to-breach':element.status=='SLA_ABOUT_TO_BREACH' ,
                                     'badge-sla-breached':element.status=='SLA_BREACHED' ,
+                                    'badge-sla-breached':element.slaBreached==true ,
+                                    'badge-re-opened':element.reOpened==true ,
                                     'badge-closed':element.status=='CLOSED' ,
                                     'badge':true
                                     }">{{element.incidentNo}}</span><br />

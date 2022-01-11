@@ -115,7 +115,9 @@ export class EditIncidentComponent implements OnInit {
       //console.log(this.mode);
     });
     for (let item in IncidentStatus) {
-      if (item != "ALL") {
+      if (item != "ALL" && item != "OPEN"
+        && item != "ASSIGNED" && item != "SLA_ABOUT_TO_BREACH"
+        && item != "SLA_BREACHED" && item != "CLARIFICATION_PROVIDED") {
         this.statusList.push({ "key": item, "value": IncidentStatus[item] });
       }
     }
@@ -188,8 +190,8 @@ export class EditIncidentComponent implements OnInit {
         priorityId: new FormControl('', [
           Validators.required,
         ]),
-        status: new FormControl('', [
-          Validators.required,
+        newStatus: new FormControl('', [
+          //Validators.required,
         ]),
         fileInput: new FormControl(null, [
           //Validators.required,
@@ -209,20 +211,6 @@ export class EditIncidentComponent implements OnInit {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callIncidentService(this.entityId);
-      if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
-        this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
-        //console.log(this.draftData);
-        if (this.draftData.existing.length > 0) {
-          for (let k in this.draftData.existing) {
-            if (this.draftData.existing[k].id == this.entityId) {
-              this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
-              break;
-            } else {
-              continue;
-            }
-          }
-        }
-      }
     }
   }
 
@@ -333,6 +321,10 @@ export class EditIncidentComponent implements OnInit {
         } else {
           ic = new IncidentCommunication();
           ic.message = this.angForm.controls['message'].value;
+          if (this.hasAgentPermission) {
+            inc.priority = priority;
+            inc.status = this.angForm.controls['newStatus'].value;
+          }
           inc.communications.push(ic);
           inc.id = this.incident.id;
           if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
@@ -378,7 +370,9 @@ export class EditIncidentComponent implements OnInit {
           this.incident.status = this.defaultStatus;
         } else {
           this.incident.priority = priority;
-          this.incident.status = this.angForm.controls['status'].value;
+          if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
+            this.incident.status = this.angForm.controls['newStatus'].value;
+          }
         }
         // prepare incidentCommunication object
         this.incidentCommunication = new IncidentCommunication();
@@ -413,7 +407,6 @@ export class EditIncidentComponent implements OnInit {
         file.setErrors(null);
         this.selectedFiles = event.target.files;
       }
-
       console.log('Name: ' + name + "\n" +
         'Type: ' + type + "\n" +
         'Last-Modified-Date: ' + modifiedDate + "\n" +
@@ -424,18 +417,20 @@ export class EditIncidentComponent implements OnInit {
   handleDraftData() {
     //console.log(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
     this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
-    if (this.newEntity) {
-      this.draftData.new = null;
-    } else {
-      let existingData = [];
-      for (let k in this.draftData.existing) {
-        if (this.draftData.existing[k].id != this.entityId) {
-          existingData.push(this.draftData.existing[k]);
+    if (this.draftData != null) {
+      if (this.newEntity) {
+        this.draftData.new = null;
+      } else {
+        let existingData = [];
+        for (let k in this.draftData.existing) {
+          if (this.draftData.existing[k].id != this.entityId) {
+            existingData.push(this.draftData.existing[k]);
+          }
         }
+        this.draftData.existing = existingData;
       }
-      this.draftData.existing = existingData;
+      this.clientStorageService.set(AppUtility.APP_INCIDENT_DRAFT_KEY, JSON.stringify(this.draftData));
     }
-    this.clientStorageService.set(AppUtility.APP_INCIDENT_DRAFT_KEY, JSON.stringify(this.draftData));
   }
 
   goBack() {
@@ -444,7 +439,10 @@ export class EditIncidentComponent implements OnInit {
   }
 
   makeTitleCase(str: string): string {
-    return AppUtility.toTitleCase(str);
+    if (str != '' && typeof str != "undefined") {
+      return AppUtility.toTitleCase(str);
+    }
+    return '';
   }
 
   callSaveIncidentService() {
@@ -521,7 +519,7 @@ export class EditIncidentComponent implements OnInit {
             this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'RAISE INCIDENT')
           )
         ) {
-          console.log("has permission!");
+          //console.log("has permission!");
         } else {
           this.goBack();
         }
@@ -551,7 +549,7 @@ export class EditIncidentComponent implements OnInit {
           this.hasAgentPermission = false;
         }
         this.angForm.get('priorityId').setValue(this.incident.priority.id);
-        this.angForm.get('status').setValue(this.incident.status);
+        //this.angForm.get('status').setValue(this.incident.status);
         //console.log(JSON.stringify(this.incident));
         //this.angForm.markAllAsTouched();
         this.userService
@@ -559,6 +557,23 @@ export class EditIncidentComponent implements OnInit {
           .subscribe((data: any) => {
             this.mngrDtl = data;
           });
+        if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
+          this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
+          if (this.draftData.existing.length > 0) {
+            for (let k in this.draftData.existing) {
+              if (this.draftData.existing[k].id == this.entityId) {
+                if (this.hasAgentPermission) {
+                  this.angForm.get('priorityId').setValue(this.draftData.existing[k].priority.id);
+                  this.angForm.get('newStatus').setValue(this.draftData.existing[k].status);
+                }
+                this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
+                break;
+              } else {
+                continue;
+              }
+            }
+          }
+        }
       });
   }
 
