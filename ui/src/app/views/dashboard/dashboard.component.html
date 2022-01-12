@@ -3,106 +3,120 @@
     <tab *ngIf="roles.includes('APP_ADMIN')" (selectTab)="loadAppAdminData()" heading="App Admin">
       <div class="card">
         <div class="card-body">
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-info">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Organizations By Status</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{adminDashboard.totalCompanies}}</div>
-                  <div>Total Organization</div>
+                  </button> -->
+                    <div class="text-value">{{adminDashboard.totalCompanies}}</div>
+                    <div>Total Organization</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-primary">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{adminDashboard.activeCompanies}}</div>
-                  <div>Active Organization</div>
+                  </button> -->
+                    <div class="text-value">{{adminDashboard.activeCompanies}}</div>
+                    <div>Active Organization</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-warning">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{adminDashboard.inactiveCompanies}}</div>
-                  <div>Inactive Organization</div>
+                  </button> -->
+                    <div class="text-value">{{adminDashboard.inactiveCompanies}}</div>
+                    <div>Inactive Organization</div>
+                  </div>
                 </div>
               </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-          </div>
+          </fieldset>
           <!--/.row-->
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-danger">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Organizations By Licence Types</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-danger">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{adminDashboard.allLicenceTypeCompanies}}</div>
-                  <div>Organization (Licence Type All)</div>
+                  </button> -->
+                    <div class="text-value">{{adminDashboard.allLicenceTypeCompanies}}</div>
+                    <div>Organization (Licence Type All)</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-success">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-success">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{adminDashboard.incidentLicenceTypeCompanies}}</div>
-                  <div>Organization (Licence Type Incident)</div>
+                  </button> -->
+                    <div class="text-value">{{adminDashboard.incidentLicenceTypeCompanies}}</div>
+                    <div>Organization (Licence Type Incident)</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-facebook">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
+              <!--/.col-->
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-facebook">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{adminDashboard.assetLicenceTypeCompanies}}</div>
-                  <div>Organization (Licence Type Asset)</div>
+                  </button> -->
+                    <div class="text-value">{{adminDashboard.assetLicenceTypeCompanies}}</div>
+                    <div>Organization (Licence Type Asset)</div>
+                  </div>
                 </div>
               </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-          </div>
+          </fieldset>
         </div>
       </div>
       <div class="card">
         <div class="card-body">
           <div class="row">
             <div class="col col-sm-6">
-              <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="appAdminChart1SegmentClicked($event)"
-                [colors]="adminChartColors" [data]="adminDoughnutChartData" [labels]="adminDoughnutChartLabels"
-                [chartType]="adminDoughnutChartType" [options]="adminDoughnutChartOptions" [legend]="true">
-              </canvas>
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Organizations By Status</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="appAdminChart1SegmentClicked($event)" [colors]="adminChartColors"
+                  [data]="adminDoughnutChartData" [labels]="adminDoughnutChartLabels"
+                  [chartType]="adminDoughnutChartType" [options]="adminDoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
             </div>
             <div class="col col-sm-6">
-              <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="appAdminChart2SegmentClicked($event)"
-                [colors]="admin1ChartColors" [data]="admin1DoughnutChartData" [labels]="admin1DoughnutChartLabels"
-                [chartType]="admin1DoughnutChartType" [options]="admin1DoughnutChartOptions" [legend]="true">
-              </canvas>
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Organizations By Licence Types</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="appAdminChart2SegmentClicked($event)" [colors]="admin1ChartColors"
+                  [data]="admin1DoughnutChartData" [labels]="admin1DoughnutChartLabels"
+                  [chartType]="admin1DoughnutChartType" [options]="admin1DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
             </div>
           </div>
         </div>
@@ -111,158 +125,163 @@
     <tab *ngIf="roles.includes('ORG_ADMIN')" (selectTab)="loadOrgAdminData()" heading="Organization Admin">
       <div class="card">
         <div class="card-body">
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-info">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Employees & Vendors</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.activeEmployees}}</div>
-                  <div>Active Employees</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.activeEmployees}}</div>
+                    <div>Active Employees</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-primary cyan">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary cyan">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.inHouseVendors}}</div>
-                  <div>In House Vendors</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.inHouseVendors}}</div>
+                    <div>In House Vendors</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-warning">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors}}</div>
-                  <div>Out Sourced Vendors</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors}}</div>
+                    <div>Out Sourced Vendors</div>
+                  </div>
                 </div>
               </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-          </div>
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-info teal">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+          </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info teal">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.financeApplications}}</div>
-                  <div>Finance Applications</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.financeApplications}}</div>
+                    <div>Finance Applications</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-primary pink">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.hrApplications}}</div>
-                  <div>HR Applications</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.hrApplications}}</div>
+                    <div>HR Applications</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-warning green">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.hrQueries}}</div>
-                  <div>HR Queries</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.hrQueries}}</div>
+                    <div>HR Queries</div>
+                  </div>
                 </div>
               </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-          </div>
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-info purple">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.itInfrastructure}}</div>
-                  <div>IT Infrastructure</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.itInfrastructure}}</div>
+                    <div>IT Infrastructure</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-primary orange">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary orange">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.personalComputing}}</div>
-                  <div>Personal Computing</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.personalComputing}}</div>
+                    <div>Personal Computing</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-warning indigo">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning indigo">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.salesApplications}}</div>
-                  <div>Sales Applications</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.salesApplications}}</div>
+                    <div>Sales Applications</div>
+                  </div>
                 </div>
               </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-          </div>
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-info red">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info red">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.softwareRequests}}</div>
-                  <div>Software Requests</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.softwareRequests}}</div>
+                    <div>Software Requests</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-primary cyan">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary cyan">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{orgAdminDashboardVO.vehiclePass}}</div>
-                  <div>Vehicle Pass</div>
+                  </button> -->
+                    <div class="text-value">{{orgAdminDashboardVO.vehiclePass}}</div>
+                    <div>Vehicle Pass</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <!-- <div class="card text-white bg-warning">
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning">
                 <div class="card-body pb-0">
                   <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -272,27 +291,29 @@
                   <div>Sales Applications</div>
                 </div>
               </div> -->
+              </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-          </div>
+          </fieldset>
         </div>
       </div>
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col col-sm-6">
-              <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-                (chartClick)="chartClicked($event)" [colors]="orgAdminChartColors" [data]="orgAdminDoughnutChartData"
-                [labels]="orgAdminDoughnutChartLabels" [chartType]="orgAdminDoughnutChartType"
-                [options]="orgAdminDoughnutChartOptions" [legend]="true">
-              </canvas>
-            </div>
-            <div class="col col-sm-6">
-              <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-                (chartClick)="chartClicked($event)" [colors]="orgAdmin1ChartColors" [data]="orgAdmin1DoughnutChartData"
-                [labels]="orgAdmin1DoughnutChartLabels" [chartType]="orgAdmin1DoughnutChartType"
-                [options]="orgAdmin1DoughnutChartOptions" [legend]="true">
-              </canvas>
+            <!-- <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)" [colors]="orgAdminChartColors" [data]="orgAdminDoughnutChartData"
+              [labels]="orgAdminDoughnutChartLabels" [chartType]="orgAdminDoughnutChartType"
+              [options]="orgAdminDoughnutChartOptions" [legend]="true">
+            </canvas> -->
+            <div class="col ">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="chartClicked($event)" [colors]="orgAdmin1ChartColors"
+                  [data]="orgAdmin1DoughnutChartData" [labels]="orgAdmin1DoughnutChartLabels"
+                  [chartType]="orgAdmin1DoughnutChartType" [options]="orgAdmin1DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
             </div>
           </div>
         </div>
@@ -301,66 +322,725 @@
     <tab *ngIf="hasUserRole()" (selectTab)="loadUserData()" heading="User">
       <div class="card">
         <div class="card-body">
-          <div class="row">
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-info">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewUser({status:"OPEN"})' class="btn btn-transparent p-0 float-right">
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info teal">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{userDashboardVO.openIncidents}}</div>
-                  <div>Open Incidents</div>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.financeApplications||0}}</div>
+                    <div>Finance Applications</div>
+                  </div>
                 </div>
               </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.hrApplications||0}}</div>
+                    <div>HR Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.hrQueries||0}}</div>
+                    <div>HR Queries</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-primary">
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.itInfrastructure||0}}</div>
+                    <div>IT Infrastructure</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary orange">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.personalComputing||0}}</div>
+                    <div>Personal Computing</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning indigo">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.salesApplications||0}}</div>
+                    <div>Sales Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info red">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.softwareRequests||0}}</div>
+                    <div>Software Requests</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary cyan">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{userDashboardVO.vehiclePass||0}}</div>
+                    <div>Vehicle Pass</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning">
                 <div class="card-body pb-0">
-                  <button type="button" (click)='viewUser({status:"ASSIGNED"})'
+                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button>
-                  <div class="text-value">{{userDashboardVO.assignedIncidents}}</div>
-                  <div>Assigned Incidents</div>
+                  <div class="text-value">{{orgAdminDashboardVO.salesApplications}}</div>
+                  <div>Sales Applications</div>
                 </div>
+              </div> -->
               </div>
+              <!--/.col-->
             </div>
-            <!--/.col-->
-            <div class="col-sm-6 col-lg-4">
-              <div class="card text-white bg-warning">
-                <div class="card-body pb-0">
-                  <button type="button" (click)='viewUser({status:"CLOSED"})'
-                    class="btn btn-transparent p-0 float-right">
-                    <i class="icon-eye"></i>
-                  </button>
-                  <div class="text-value">{{userDashboardVO.closedIncidents}}</div>
-                  <div>Closed Incidents</div>
-                </div>
-              </div>
-            </div>
-            <!--/.col-->
-          </div>
-          <!--/.row-->
+          </fieldset>
         </div>
       </div>
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-              (chartClick)="chartClicked($event)" [colors]="userChartColors" [data]="userDoughnutChartData"
-              [labels]="userDoughnutChartLabels" [chartType]="userDoughnutChartType"
-              [options]="userDoughnutChartOptions" [legend]="true">
-            </canvas>
+            <div class="col">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="chartClicked($event)" [colors]="userChartColors" [data]="userDoughnutChartData"
+                  [labels]="userDoughnutChartLabels" [chartType]="userDoughnutChartType"
+                  [options]="userDoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
           </div>
         </div>
       </div>
     </tab>
-    <tab *ngIf="!roles.includes('ORG_ADMIN')&&!roles.includes('APP_ADMIN')&&!hasUserRole()" heading="ELSE">
+    <tab *ngIf="hasAgentRole()" (selectTab)="loadAgentData()" heading="Agent">
+      <div class="card">
+        <div class="card-body">
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info teal">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.p1||0}}</div>
+                    <div>P1</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.p2||0}}</div>
+                    <div>P2</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.p3||0}}</div>
+                    <div>P3</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.p4||0}}</div>
+                    <div>P4</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-primary pink">
+                <div class="card-body pb-0">
+                   <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> 
+                  <div class="text-value">{{agentDashboardVO.hrApplications}}</div>
+                  <div>HR Applications</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning green">
+                <div class="card-body pb-0">
+                   <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> 
+                  <div class="text-value">{{agentDashboardVO.hrQueries}}</div>
+                  <div>HR Queries</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+            </div>
+          </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info teal">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.financeApplications||0}}</div>
+                    <div>Finance Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.hrApplications||0}}</div>
+                    <div>HR Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.hrQueries||0}}</div>
+                    <div>HR Queries</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.itInfrastructure||0}}</div>
+                    <div>IT Infrastructure</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary orange">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.personalComputing||0}}</div>
+                    <div>Personal Computing</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning indigo">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.salesApplications||0}}</div>
+                    <div>Sales Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info red">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.softwareRequests||0}}</div>
+                    <div>Software Requests</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary cyan">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{agentDashboardVO.vehiclePass||0}}</div>
+                    <div>Vehicle Pass</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{orgAdminDashboardVO.salesApplications}}</div>
+                  <div>Sales Applications</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+            </div>
+          </fieldset>
+        </div>
+      </div>
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <h1>WIP...</h1>
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
+                  [colors]="agentChartColors" [data]="agentDoughnutChartData" [labels]="agentDoughnutChartLabels"
+                  [chartType]="agentDoughnutChartType" [options]="agentDoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
+                  [colors]="agent1ChartColors" [data]="agent1DoughnutChartData" [labels]="agent1DoughnutChartLabels"
+                  [chartType]="agent1DoughnutChartType" [options]="agent1DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </div>
+    </tab>
+    <tab *ngIf="hasCategoryAdminRole()" (selectTab)="loadCategoryAdminData()" heading="Category Admin">
+      <div class="card">
+        <div class="card-body">
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info orange">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.aging5||0}}</div>
+                    <div><strong> > 5 Days </strong></div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.aging10||0}}</div>
+                    <div><strong> > 10 Days </strong></div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.aging20||0}}</div>
+                    <div><strong> > 20 Days </strong></div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.aging30||0}}</div>
+                    <div><strong> > 30 Days </strong></div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary indigo">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>  -->
+                    <div class="text-value">{{categoryAdminDashboardVO.aging60||0}}</div>
+                    <div><strong> > 60 Days </strong></div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning green">
+                <div class="card-body pb-0">
+                   <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> 
+                  <div class="text-value">{{agentDashboardVO.hrQueries}}</div>
+                  <div>HR Queries</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+            </div>
+          </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info teal">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.p1||0}}</div>
+                    <div>P1</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.p2||0}}</div>
+                    <div>P2</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.p3||0}}</div>
+                    <div>P3</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.p4||0}}</div>
+                    <div>P4</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-primary pink">
+                <div class="card-body pb-0">
+                   <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> 
+                  <div class="text-value">{{agentDashboardVO.hrApplications}}</div>
+                  <div>HR Applications</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning green">
+                <div class="card-body pb-0">
+                   <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> 
+                  <div class="text-value">{{agentDashboardVO.hrQueries}}</div>
+                  <div>HR Queries</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+            </div>
+          </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info teal">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.financeApplications||0}}</div>
+                    <div>Finance Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary pink">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.hrApplications||0}}</div>
+                    <div>HR Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning green">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.hrQueries||0}}</div>
+                    <div>HR Queries</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info purple">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.itInfrastructure||0}}</div>
+                    <div>IT Infrastructure</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary orange">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.personalComputing||0}}</div>
+                    <div>Personal Computing</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-warning indigo">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.salesApplications||0}}</div>
+                    <div>Sales Applications</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+            </div>
+            <div class="row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-info red">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.softwareRequests||0}}</div>
+                    <div>Software Requests</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <div class="card text-white bg-primary cyan">
+                  <div class="card-body pb-0">
+                    <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button> -->
+                    <div class="text-value">{{categoryAdminDashboardVO.vehiclePass||0}}</div>
+                    <div>Vehicle Pass</div>
+                  </div>
+                </div>
+              </div>
+              <!--/.col-->
+              <div class="col-sm-6 col-lg-4">
+                <!-- <div class="card text-white bg-warning">
+                <div class="card-body pb-0">
+                  <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
+                    class="btn btn-transparent p-0 float-right">
+                    <i class="icon-eye"></i>
+                  </button>
+                  <div class="text-value">{{orgAdminDashboardVO.salesApplications}}</div>
+                  <div>Sales Applications</div>
+                </div>
+              </div> -->
+              </div>
+              <!--/.col-->
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
+                  [colors]="ca2ChartColors" [data]="ca2DoughnutChartData" [labels]="ca2DoughnutChartLabels"
+                  [chartType]="ca2DoughnutChartType" [options]="ca2DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
+                  [colors]="caChartColors" [data]="caDoughnutChartData" [labels]="caDoughnutChartLabels"
+                  [chartType]="caDoughnutChartType" [options]="caDoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
+                  [colors]="ca1ChartColors" [data]="ca1DoughnutChartData" [labels]="ca1DoughnutChartLabels"
+                  [chartType]="ca1DoughnutChartType" [options]="ca1DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
           </div>
         </div>
       </div>

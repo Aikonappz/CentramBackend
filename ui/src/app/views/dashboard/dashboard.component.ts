@@ -21,7 +21,8 @@ import { UserService } from '../../service/UserService';
 import { UserDashboardVO } from '../../model/UserDashboardVO';
 import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
-import { IncidentStatusVO } from '../../model/IncidentStatusVO';
+import { AgentDashboardVO } from '../../model/AgentDashboardVO';
+import { CategoryAdminDashboardVO } from '../../model/CategoryAdminDashboardVO';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -30,8 +31,10 @@ export class DashboardComponent implements OnInit {
   roles: string[];
   loggedInUser: LoggedInUser;
   adminDashboard: AdminDashboardVO = new AdminDashboardVO();
-  orgAdminDashboardVO: OrgAdminDashboardVO = new OrgAdminDashboardVO();
-  userDashboardVO: UserDashboardVO = new UserDashboardVO();
+  orgAdminDashboardVO: OrgAdminDashboardVO = new OrgAdminDashboardVO(null);
+  userDashboardVO: UserDashboardVO = new UserDashboardVO(null);
+  agentDashboardVO: AgentDashboardVO = new AgentDashboardVO(null);
+  categoryAdminDashboardVO: CategoryAdminDashboardVO = new CategoryAdminDashboardVO(null);
   modalRef: BsModalRef;
   firstTabLoaded: boolean = false;
 
@@ -71,11 +74,66 @@ export class DashboardComponent implements OnInit {
 
   public userDoughnutChartLabels: Label[] = [];
   public userDoughnutChartData: MultiDataSet = [];
-  public userDoughnutChartType: ChartType = 'doughnut';
+  public userDoughnutChartType: ChartType = 'pie';
   public userChartColors: any[] = [{
-    backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f", "#6062ce", "#fd72e6"]
+    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
   }];
   public userDoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public agentDoughnutChartLabels: Label[] = [];
+  public agentDoughnutChartData: MultiDataSet = [];
+  public agentDoughnutChartType: ChartType = 'pie';
+  public agentChartColors: any[] = [{
+    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+  }];
+  public agentDoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public agent1DoughnutChartLabels: Label[] = [];
+  public agent1DoughnutChartData: MultiDataSet = [];
+  public agent1DoughnutChartType: ChartType = 'pie';
+  public agent1ChartColors: any[] = [{
+    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+  }];
+  public agent1DoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public caDoughnutChartLabels: Label[] = [];
+  public caDoughnutChartData: MultiDataSet = [];
+  public caDoughnutChartType: ChartType = 'pie';
+  public caChartColors: any[] = [{
+    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+  }];
+  public caDoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public ca1DoughnutChartLabels: Label[] = [];
+  public ca1DoughnutChartData: MultiDataSet = [];
+  public ca1DoughnutChartType: ChartType = 'pie';
+  public ca1ChartColors: any[] = [{
+    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+  }];
+  public ca1DoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public ca2DoughnutChartLabels: Label[] = [];
+  public ca2DoughnutChartData: MultiDataSet = [];
+  public ca2DoughnutChartType: ChartType = 'pie';
+  public ca2ChartColors: any[] = [{
+    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+  }];
+  public ca2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
   };
@@ -96,8 +154,6 @@ export class DashboardComponent implements OnInit {
     });
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.roles = this.loggedInUser.roles;
-    this.adminDashboard = new AdminDashboardVO();
-    this.orgAdminDashboardVO = new OrgAdminDashboardVO();
   }
 
   getTitle(state, parent) {
@@ -157,8 +213,7 @@ export class DashboardComponent implements OnInit {
         this.service
           .orgAdminDashboard()
           .subscribe((data: OrgAdminDashboardVO) => {
-            this.orgAdminDashboardVO = data;
-            this.populateIncidentsData(this.orgAdminDashboardVO);
+            this.orgAdminDashboardVO = new OrgAdminDashboardVO(data);
             let dataPoints = [];
             dataPoints.push(this.orgAdminDashboardVO.activeEmployees);
             dataPoints.push(this.orgAdminDashboardVO.inHouseVendors);
@@ -191,20 +246,89 @@ export class DashboardComponent implements OnInit {
         this.service
           .userDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
           .subscribe((data: UserDashboardVO) => {
-            this.userDashboardVO = data;
+            this.userDashboardVO = new UserDashboardVO(data);
             let dataPoints = [];
-            dataPoints.push(this.userDashboardVO.openIncidents);
-            dataPoints.push(this.userDashboardVO.assignedIncidents);
-            dataPoints.push(this.userDashboardVO.closedIncidents);
-            this.userDoughnutChartLabels = [
-              "Open Incidents",
-              "Assign Incidents",
-              "Closed Incidents",
-            ];
+            for (let i in this.userDashboardVO.incidents) {
+              dataPoints.push(this.userDashboardVO.incidents[i].count);
+              this.userDoughnutChartLabels.push(this.userDashboardVO.incidents[i].statusName);
+            }
             this.userDoughnutChartData = [
               dataPoints
             ];
-            this.userDoughnutChartType = 'doughnut';
+            this.userDoughnutChartType = 'pie';
+          });
+      }
+    }
+    if (this.hasAgentRole()) {
+      if (this.firstTabLoaded === false) {
+        this.firstTabLoaded = true;
+        this.service
+          .agentDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
+          .subscribe((data: AgentDashboardVO) => {
+            this.agentDashboardVO = new AgentDashboardVO(data);
+            let dataPoints = [];
+            for (let i in this.agentDashboardVO.statusIncidents) {
+              dataPoints.push(this.agentDashboardVO.statusIncidents[i].count);
+              this.agentDoughnutChartLabels.push(this.agentDashboardVO.statusIncidents[i].statusName);
+            }
+            this.agentDoughnutChartData = [
+              dataPoints
+            ];
+            this.agentDoughnutChartType = 'pie';
+            dataPoints = [];
+            for (let i in this.agentDashboardVO.priorityIncidents) {
+              dataPoints.push(this.agentDashboardVO.priorityIncidents[i].count);
+              this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityIncidents[i].priority);
+            }
+            this.agent1DoughnutChartData = [
+              dataPoints
+            ];
+            this.agent1DoughnutChartType = 'pie';
+          });
+      }
+    }
+    if (this.hasCategoryAdminRole()) {
+      if (this.firstTabLoaded === false) {
+        this.firstTabLoaded = true;
+        this.service
+          .categoryAdminDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
+          .subscribe((data: CategoryAdminDashboardVO) => {
+            this.categoryAdminDashboardVO = new CategoryAdminDashboardVO(data);
+            let dataPoints = [];
+            for (let i in this.categoryAdminDashboardVO.statusIncidents) {
+              dataPoints.push(this.categoryAdminDashboardVO.statusIncidents[i].count);
+              this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.statusIncidents[i].statusName);
+            }
+            this.caDoughnutChartData = [
+              dataPoints
+            ];
+            this.caDoughnutChartType = 'pie';
+            dataPoints = [];
+            for (let i in this.categoryAdminDashboardVO.priorityIncidents) {
+              dataPoints.push(this.categoryAdminDashboardVO.priorityIncidents[i].count);
+              this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityIncidents[i].priority);
+            }
+            this.ca1DoughnutChartData = [
+              dataPoints
+            ];
+            this.ca1DoughnutChartType = 'pie';
+            dataPoints = [];
+            dataPoints.push(this.categoryAdminDashboardVO.aging5);
+            dataPoints.push(this.categoryAdminDashboardVO.aging10);
+            dataPoints.push(this.categoryAdminDashboardVO.aging20);
+            dataPoints.push(this.categoryAdminDashboardVO.aging30);
+            dataPoints.push(this.categoryAdminDashboardVO.aging60);
+            this.ca2DoughnutChartData = [
+              dataPoints
+            ];
+            this.ca2DoughnutChartLabels = [
+              " > 5 Days",
+              " > 10 Days",
+              " > 20 Days",
+              " > 30 Days",
+              " > 60 Days",
+            ];
+            this.ca2DoughnutChartType = 'pie';
           });
       }
     }
@@ -252,8 +376,7 @@ export class DashboardComponent implements OnInit {
       this.service
         .orgAdminDashboard()
         .subscribe((data: OrgAdminDashboardVO) => {
-          this.orgAdminDashboardVO = data;
-          this.populateIncidentsData(this.orgAdminDashboardVO);
+          this.orgAdminDashboardVO = new OrgAdminDashboardVO(data);
           let dataPoints = [];
           dataPoints.push(this.orgAdminDashboardVO.activeEmployees);
           dataPoints.push(this.orgAdminDashboardVO.inHouseVendors);
@@ -267,29 +390,108 @@ export class DashboardComponent implements OnInit {
             dataPoints
           ];
           this.orgAdminDoughnutChartType = 'pie';
+          dataPoints = [];
+          let lebel = [];
+          for (let i in this.orgAdminDashboardVO.incidents) {
+            dataPoints.push(this.orgAdminDashboardVO.incidents[i].count);
+            this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.incidents[i].statusName);
+          }
+          this.orgAdmin1DoughnutChartData = [
+            dataPoints
+          ];
+          this.orgAdmin1DoughnutChartType = 'pie';
         });
     }
   }
 
   loadUserData() {
-    if (this.userDashboardVO.openIncidents < 0) {
+    if (this.userDashboardVO.incidents.length == 0) {
       this.service
         .userDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
         .subscribe((data: UserDashboardVO) => {
-          this.userDashboardVO = data;
+          this.userDashboardVO = new UserDashboardVO(data);
           let dataPoints = [];
-          dataPoints.push(this.userDashboardVO.openIncidents);
-          dataPoints.push(this.userDashboardVO.assignedIncidents);
-          dataPoints.push(this.userDashboardVO.closedIncidents);
-          this.userDoughnutChartLabels = [
-            "Open Incidents",
-            "Assign Incidents",
-            "Closed Incidents",
-          ];
+          for (let i in this.userDashboardVO.incidents) {
+            dataPoints.push(this.userDashboardVO.incidents[i].count);
+            this.userDoughnutChartLabels.push(this.userDashboardVO.incidents[i].statusName);
+          }
           this.userDoughnutChartData = [
             dataPoints
           ];
-          this.userDoughnutChartType = 'doughnut';
+          this.userDoughnutChartType = 'pie';
+        });
+    }
+  }
+
+  loadAgentData() {
+    if (this.agentDashboardVO.statusIncidents.length == 0) {
+      this.service
+        .agentDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
+        .subscribe((data: AgentDashboardVO) => {
+          this.agentDashboardVO = new AgentDashboardVO(data);
+          let dataPoints = [];
+          for (let i in this.agentDashboardVO.statusIncidents) {
+            dataPoints.push(this.agentDashboardVO.statusIncidents[i].count);
+            this.agentDoughnutChartLabels.push(this.agentDashboardVO.statusIncidents[i].statusName);
+          }
+          this.agentDoughnutChartData = [
+            dataPoints
+          ];
+          this.agentDoughnutChartType = 'pie';
+          dataPoints = [];
+          for (let i in this.agentDashboardVO.priorityIncidents) {
+            dataPoints.push(this.agentDashboardVO.priorityIncidents[i].count);
+            this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityIncidents[i].priority);
+          }
+          this.agent1DoughnutChartData = [
+            dataPoints
+          ];
+          this.agent1DoughnutChartType = 'pie';
+        });
+    }
+  }
+
+  loadCategoryAdminData() {
+    if (this.categoryAdminDashboardVO.statusIncidents.length == 0) {
+      this.service
+        .categoryAdminDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
+        .subscribe((data: CategoryAdminDashboardVO) => {
+          this.categoryAdminDashboardVO = new CategoryAdminDashboardVO(data);
+          let dataPoints = [];
+          for (let i in this.categoryAdminDashboardVO.statusIncidents) {
+            dataPoints.push(this.categoryAdminDashboardVO.statusIncidents[i].count);
+            this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.statusIncidents[i].statusName);
+          }
+          this.caDoughnutChartData = [
+            dataPoints
+          ];
+          this.caDoughnutChartType = 'pie';
+          dataPoints = [];
+          for (let i in this.categoryAdminDashboardVO.priorityIncidents) {
+            dataPoints.push(this.categoryAdminDashboardVO.priorityIncidents[i].count);
+            this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityIncidents[i].priority);
+          }
+          this.ca1DoughnutChartData = [
+            dataPoints
+          ];
+          this.ca1DoughnutChartType = 'pie';
+          dataPoints = [];
+          dataPoints.push(this.categoryAdminDashboardVO.aging5);
+          dataPoints.push(this.categoryAdminDashboardVO.aging10);
+          dataPoints.push(this.categoryAdminDashboardVO.aging20);
+          dataPoints.push(this.categoryAdminDashboardVO.aging30);
+          dataPoints.push(this.categoryAdminDashboardVO.aging60);
+          this.ca2DoughnutChartData = [
+            dataPoints
+          ];
+          this.ca2DoughnutChartLabels = [
+            " > 5 Days",
+            " > 10 Days",
+            " > 20 Days",
+            " > 30 Days",
+            " > 60 Days",
+          ];
+          this.ca2DoughnutChartType = 'pie';
         });
     }
   }
@@ -319,29 +521,6 @@ export class DashboardComponent implements OnInit {
       }
     }
     return false;
-  }
-
-  public populateIncidentsData(orgAdminDashboardVO: OrgAdminDashboardVO) {
-    let incidents = orgAdminDashboardVO.incidents;
-    for (let k in incidents) {
-      if (incidents[k].status == 'FINANCE_APPLICATIONS') {
-        orgAdminDashboardVO.financeApplications = incidents[k].count;
-      } else if (incidents[k].status == 'HR_APPLICATIONS') {
-        orgAdminDashboardVO.hrApplications = incidents[k].count;
-      } else if (incidents[k].status == 'HR_QUERIES') {
-        orgAdminDashboardVO.hrQueries = incidents[k].count;
-      } else if (incidents[k].status == 'IT_INFRASTRUCTURE') {
-        orgAdminDashboardVO.itInfrastructure = incidents[k].count;
-      } else if (incidents[k].status == 'PERSONAL_COMPUTING') {
-        orgAdminDashboardVO.personalComputing = incidents[k].count;
-      } else if (incidents[k].status == 'SALES_APPLICATIONS') {
-        orgAdminDashboardVO.salesApplications = incidents[k].count;
-      } else if (incidents[k].status == 'SOFTWARE_REQUESTS') {
-        orgAdminDashboardVO.softwareRequests = incidents[k].count;
-      } else if (incidents[k].status == 'VEHICLE_PASS') {
-        orgAdminDashboardVO.vehiclePass = incidents[k].count;
-      }
-    }
   }
 
   chartHovered(e: any) {

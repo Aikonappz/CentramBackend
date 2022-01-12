@@ -1,7 +1,7 @@
 package com.centram.core.repository;
 
 
-import com.centram.common.vo.IncidentAgingVO;
+import com.centram.common.vo.CategoryAdminDashboardVO;
 import com.centram.common.vo.IncidentPriorityVO;
 import com.centram.common.vo.IncidentStatusVO;
 import com.centram.common.vo.UserDashboardVO;
@@ -143,11 +143,28 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " incident i " +
             " join module m on (m.app_module = 0 and m.parent_module_id is null and m.id = i.module_id) " +
             " join user u on (u.id = i.raised_user_id) " +
-            " where u.organisation_id =  (:organisationId) " +
+            " where u.organisation_id =  (:organisationId) and " +
+            "  ( " +
+            "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
+            "    OR " +
+            "    ((:roleFilter) = false) " +
+            "  ) " +
+            " and i.created_date BETWEEN (:start) and (:end) " +
+            " and " +
+            " (((:userFilter) = true and i.raised_user_id = (:userId)) " +
+            " OR " +
+            " ((:userFilter) = false)) " +
             " group by m.name, CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) " +
             " order by 1 asc ", nativeQuery = true)
     Set<IncidentStatusVO> orgStatusWiseIncidentDashboardData(
-            @Param("organisationId") BigInteger organisationId
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("roleFilter") Boolean roleFilter,
+            @Param("userModules") List<BigInteger> userModules,
+            @Param("userSubModules") List<BigInteger> userSubModules,
+            @Param("organisationId") BigInteger organisationId,
+            @Param("userFilter") Boolean userFilter,
+            @Param("userId") BigInteger userId
     );
 
     @Query(value = " select " +
@@ -155,27 +172,33 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " sum(1) as count " +
             " FROM " +
             " incident i " +
+            " join user u on (u.id = i.raised_user_id) " +
             " join priority p on (p.id = i.priority_id) " +
-            " where p.organisation_id =  (:organisationId) " +
-            "group by p.name " +
+            " where p.organisation_id =  (:organisationId) and " +
+            "  ( " +
+            "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
+            "    OR " +
+            "    ((:roleFilter) = false) " +
+            "  ) " +
+            " and i.created_date BETWEEN (:start) and (:end) " +
+            " group by p.name " +
             " order by 1 asc ", nativeQuery = true)
     Set<IncidentPriorityVO> orgPriorityWiseIncidentDashboardData(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("roleFilter") Boolean roleFilter,
+            @Param("userModules") List<BigInteger> userModules,
+            @Param("userSubModules") List<BigInteger> userSubModules,
             @Param("organisationId") BigInteger organisationId
     );
 
-    @Query(value = " SELECT " +
-            " sum(case when date_differnce >= 5 && date_differnce < 10 then 1 else 0 end) as aging5, " +
-            " sum(case when date_differnce >= 10 && date_differnce < 20 then 1 else 0 end) as aging10, " +
-            " sum(case when date_differnce >= 20 && date_differnce < 30 then 1 else 0 end) as aging20, " +
-            " sum(case when date_differnce >= 30 && date_differnce < 60 then 1 else 0 end) as aging30, " +
-            " sum(case when date_differnce > 60 then 1 else 0 end) as aging60 " +
-            " from " +
-            " ( " +
-            "  select datediff(SYSDATE() ,i.created_date) as date_differnce from  incident i " +
-            "  join user u on (u.id = i.raised_user_id) " +
-            "  where u.organisation_id = (:organisationId) " +
-            " ) tab ", nativeQuery = true)
-    IncidentAgingVO orgAgingWiseIncidentDashboardData(
+    @Query(nativeQuery = true)
+    CategoryAdminDashboardVO agingWiseIncidentDashboardData(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("roleFilter") Boolean roleFilter,
+            @Param("userModules") List<BigInteger> userModules,
+            @Param("userSubModules") List<BigInteger> userSubModules,
             @Param("organisationId") BigInteger organisationId
     );
 }

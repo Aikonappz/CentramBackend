@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.common.vo.CategoryAdminDashboardVO;
 import com.centram.domain.converter.WatchListConverter;
 import com.centram.domain.enumarator.IncidentStatus;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -28,6 +29,36 @@ import java.util.Set;
 @ApiModel(description = "Incident")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+@NamedNativeQuery(name = "Incident.agingWiseIncidentDashboardData",
+        query = " SELECT " +
+                " sum(case when date_differnce >= 5 && date_differnce < 10 then 1 else 0 end) as aging5, " +
+                " sum(case when date_differnce >= 10 && date_differnce < 20 then 1 else 0 end) as aging10, " +
+                " sum(case when date_differnce >= 20 && date_differnce < 30 then 1 else 0 end) as aging20, " +
+                " sum(case when date_differnce >= 30 && date_differnce < 60 then 1 else 0 end) as aging30, " +
+                " sum(case when date_differnce > 60 then 1 else 0 end) as aging60 " +
+                " from " +
+                " ( " +
+                "  select datediff(SYSDATE() ,i.created_date) as date_differnce from  incident i " +
+                "  join user u on (u.id = i.raised_user_id) " +
+                "  where u.organisation_id = (:organisationId) and " +
+                "  ( " +
+                "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
+                "    OR " +
+                "    ((:roleFilter) = false) " +
+                "  ) " +
+                " and i.created_date BETWEEN (:start) and (:end) " +
+                " ) tab ",
+        resultSetMapping = "Mapping.CategoryAdminDashboardVO")
+@SqlResultSetMapping(name = "Mapping.CategoryAdminDashboardVO",
+        classes = @ConstructorResult(
+                targetClass = CategoryAdminDashboardVO.class,
+                columns = {
+                        @ColumnResult(name = "aging5", type = Integer.class),
+                        @ColumnResult(name = "aging10", type = Integer.class),
+                        @ColumnResult(name = "aging20", type = Integer.class),
+                        @ColumnResult(name = "aging30", type = Integer.class),
+                        @ColumnResult(name = "aging60", type = Integer.class)
+                }))
 @Getter
 @Setter
 @NoArgsConstructor

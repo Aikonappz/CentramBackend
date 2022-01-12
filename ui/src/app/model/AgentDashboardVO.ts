@@ -1,10 +1,15 @@
+import { IncidentPriorityVO } from "./IncidentPriorityVO";
 import { IncidentStatusVO } from "./IncidentStatusVO";
 
-export class OrgAdminDashboardVO {
-    activeEmployees: number;
-    inHouseVendors: number;
-    outSourcedVendors: number;
-    incidents: IncidentStatusVO[];
+export class AgentDashboardVO {
+    priorityIncidents: IncidentPriorityVO[];
+    statusIncidents: IncidentStatusVO[];
+
+    p1: number;
+    p2: number;
+    p3: number;
+    p4: number;
+    p5: number;
 
     financeApplications: number;
     hrApplications: number;
@@ -17,10 +22,7 @@ export class OrgAdminDashboardVO {
 
     constructor(data: any) {
         if (data == null) {
-            this.activeEmployees = -1;
-            this.inHouseVendors = -1;
-            this.outSourcedVendors = -1;
-            this.incidents = [];
+            this.statusIncidents = [];
             this.financeApplications = -1;
             this.hrApplications = -1;
             this.hrQueries = -1;
@@ -29,12 +31,28 @@ export class OrgAdminDashboardVO {
             this.salesApplications = -1;
             this.softwareRequests = -1;
             this.vehiclePass = -1;
+            this.p1 = -1;
+            this.p2 = -1;
+            this.p3 = -1;
+            this.p4 = -1;
+            this.p5 = -1;
         } else {
-            this.activeEmployees = data.activeEmployees;
-            this.inHouseVendors = data.inHouseVendors;
-            this.outSourcedVendors = data.outSourcedVendors;
-            this.incidents = data.incidents;
-            let incidents = data.incidents;
+            this.statusIncidents = data.statusIncidents;
+            this.priorityIncidents = data.priorityIncidents;
+            for (let k in this.priorityIncidents) {
+                if (this.priorityIncidents[k].priority.toLocaleLowerCase() == "p1") {
+                    this.p1 = this.priorityIncidents[k].count;
+                } else if (this.priorityIncidents[k].priority.toLocaleLowerCase() == "p2") {
+                    this.p2 = this.priorityIncidents[k].count;
+                } if (this.priorityIncidents[k].priority.toLocaleLowerCase() == "p3") {
+                    this.p3 = this.priorityIncidents[k].count;
+                } if (this.priorityIncidents[k].priority.toLocaleLowerCase() == "p4") {
+                    this.p4 = this.priorityIncidents[k].count;
+                } if (this.priorityIncidents[k].priority.toLocaleLowerCase() == "p5") {
+                    this.p5 = this.priorityIncidents[k].count;
+                }
+            }
+            let incidents = this.statusIncidents;
             for (let k in incidents) {
                 if (incidents[k].status == 'FINANCE_APPLICATIONS') {
                     this.financeApplications = incidents[k].count;

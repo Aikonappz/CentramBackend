@@ -10,6 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class UserDashboardVO {
-    private Set<IncidentStatusVO> incidents;
+public class AgentDashboardVO {
+    private Set<IncidentPriorityVO> priorityIncidents;
+    private Set<IncidentStatusVO> statusIncidents;
 }
