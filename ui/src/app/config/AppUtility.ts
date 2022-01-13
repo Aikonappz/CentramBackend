@@ -14,7 +14,7 @@ export class AppUtility {
     public static APP_LOGOUT_WARNING_MODAL_STATUS_KEY = 'warningModalOpened';
     public static APP_LAST_ACTION_KEY = 'lastAction';
     public static APP_ACTIVITY_CHECK_INTERVAL = 15000;
-    public static APP_LOGOUT_WARNING_INTERVAL = 7;
+    public static APP_LOGOUT_WARNING_INTERVAL = 5;
     public static APP_NON_ACTIVITY_LOGOUT_INTERVAL = 10;
 
     public static EDITOR_CONFIG = {
@@ -87,14 +87,14 @@ export class AppUtility {
         );
     }
 
-    static compare( a, b ) {
-        if ( a.last_nom < b.last_nom ){
-          return -1;
+    static compare(a, b) {
+        if (a.last_nom < b.last_nom) {
+            return -1;
         }
-        if ( a.last_nom > b.last_nom ){
-          return 1;
+        if (a.last_nom > b.last_nom) {
+            return 1;
         }
         return 0;
-      }
+    }
 }
 

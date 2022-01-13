@@ -106,7 +106,7 @@ export class DefaultLayoutComponent implements OnInit {
     this.pushNotifications.requestPermission();
     this.unreadNotifications = 0;
     this.service.notificationsService({
-      status: "PULLED"
+      status: "PUSHED"
     }).subscribe((data: NotificationList) => {
       if (typeof data.content != "undefined" && data.content.length > 0) {
         data.content = data.content.concat(this.notifications);
@@ -152,17 +152,18 @@ export class DefaultLayoutComponent implements OnInit {
       //console.log("warningTimeleft => " + warningTimeleft);
       //TODO: need to handle setinterval
       //console.log("diff => " + diff);
+      //console.log("getModalsCount -", " ", diff, this.modalService.getModalsCount());
       if (!isTimeout && warningTimeleft - now < 0) {
-        let modalOpened = (this.clientStorageService.get(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY) == "1") ? true : false;
-        //console.log(modalOpened);
-        if (!modalOpened) {
+        if (this.modalService.getModalsCount() == 0) {
           this.openLogoutWarningModal();
         }
       } else if (isTimeout) {
-        this.modalRef.hide();
-        this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "0");
-        clearInterval(this.timerHandler);
-        this.router.navigate(['/sign-out']);
+        if (this.modalService.getModalsCount() > 0) {
+          this.modalRef.hide();
+          this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "0");
+          clearInterval(this.timerHandler);
+          this.router.navigate(['/sign-out']);
+        }
       }
     }
   }
@@ -283,7 +284,7 @@ export class DefaultLayoutComponent implements OnInit {
         <div class="card-body">
           <div class="row">
             <div class="col">
-              <h6>You are about to sign out, do you want to continue?</h6>
+              <h6>The session is going to expire. Do you want to continue?</h6>
             </div>
           </div>
         </div>
@@ -315,11 +316,11 @@ export class LogoutWarningComponent implements OnInit {
     private clientStorageService: ClientStorageService,
   ) {
     this.handler = this.options.initialState.valueOf();
-    //console.log(this.handler.handler);
+    console.log(this.handler.handler);
   }
-  signOut() {
-    this.close();
+  signOut() {    
     clearInterval(this.handler.handler);
+    this.close();
     this.router.navigate(['/sign-out']);
   }
   close() {

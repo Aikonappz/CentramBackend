@@ -22,7 +22,7 @@ public interface NotificationRepository extends JpaRepository<Notification, BigI
 
     @Query("select n from Notification n where n.user.id = (:id) and " +
             " ( " +
-            "   ((:status) <> 2 and n.status <> (:status)) " +
+            "   ((:status) <> 2 and n.status = (:status)) " +
             "   OR " +
             "   ((:status) = 2) " +
             " ) "

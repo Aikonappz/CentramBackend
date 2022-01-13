@@ -269,7 +269,11 @@ public class MiscService {
             if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
                 incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
             } else {
-                incidentEmailVO.setTo(dlEmails.toArray(new String[0]));
+                if (dlEmails.size() > 0) {
+                    incidentEmailVO.setTo(dlEmails.toArray(new String[0]));
+                } else {
+                    return;
+                }
             }
             incidentEmailVO.setMailToType("AGENT");
             incidentEmailVO.setCc(new String[]{loggedInUser.getEmail()});
@@ -419,12 +423,32 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
+        List<DistributionList> distributionLists = new ArrayList<DistributionList>();
+        List<String> dlEmails = new ArrayList<String>();
+        if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
+                    incidentEmailVO.getModuleId(),
+                    incidentEmailVO.getSubModuleId(),
+                    incidentEmailVO.getOrganisationId()
+            );
+            dlEmails = distributionLists.stream()
+                    .map(DistributionList::getDlEmail)
+                    .collect(Collectors.toList());
+        }
         List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
                 Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
                 incidentEmailVO.getOrganisationId()
         );
         incidentEmailVO.setMailToType("AGENT");
-        incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
+        } else {
+            if (dlEmails.size() > 0) {
+                incidentEmailVO.setTo(dlEmails.toArray(new String[0]));
+            } else {
+                return;
+            }
+        }
         incidentEmailVO.setCc(new String[]{});
         incidentEmailVO.setBcc(new String[]{});
         incidentEmailVO.setReplyTo(appReplyToEmail);
@@ -432,14 +456,16 @@ public class MiscService {
         incidentEmailVO.setSubCategory(subCategory);
         incidentEmailVO.setUserVOS(userVOS);
         incidentEmailVO.populateEscalationMatrices();
-        //agent notifications
-        List<Notification> userNotifications = new ArrayList<Notification>() {{
-            String title = incidentEmailVO.getIncidentNo();
-            String body = incidentEmailVO.getIncidentNo().concat(" 50% time passed! Please complete within SLA.");
-            add(new Notification(title, body, new User(incidentEmailVO.getAgentVersion(), incidentEmailVO.getAgentId()), Status.PUSHED, NotificationType.INFO));
-        }};
-        //save notifications
-        notificationService.save(userNotifications);
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            //agent notifications
+            List<Notification> userNotifications = new ArrayList<Notification>() {{
+                String title = incidentEmailVO.getIncidentNo();
+                String body = incidentEmailVO.getIncidentNo().concat(" 50% time passed! Please complete within SLA.");
+                add(new Notification(title, body, new User(incidentEmailVO.getAgentVersion(), incidentEmailVO.getAgentId()), Status.PUSHED, NotificationType.INFO));
+            }};
+            //save notifications
+            notificationService.save(userNotifications);
+        }
         appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
         /*need data for email*/
     }
@@ -455,12 +481,32 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
+        List<DistributionList> distributionLists = new ArrayList<DistributionList>();
+        List<String> dlEmails = new ArrayList<String>();
+        if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
+                    incidentEmailVO.getModuleId(),
+                    incidentEmailVO.getSubModuleId(),
+                    incidentEmailVO.getOrganisationId()
+            );
+            dlEmails = distributionLists.stream()
+                    .map(DistributionList::getDlEmail)
+                    .collect(Collectors.toList());
+        }
         List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
                 Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
                 incidentEmailVO.getOrganisationId()
         );
         incidentEmailVO.setMailToType("AGENT");
-        incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
+        } else {
+            if (dlEmails.size() > 0) {
+                incidentEmailVO.setTo(dlEmails.toArray(new String[0]));
+            } else {
+                return;
+            }
+        }
         incidentEmailVO.setCc(new String[]{});
         incidentEmailVO.setBcc(new String[]{});
         incidentEmailVO.setReplyTo(appReplyToEmail);
@@ -468,14 +514,16 @@ public class MiscService {
         incidentEmailVO.setSubCategory(subCategory);
         incidentEmailVO.setUserVOS(userVOS);
         incidentEmailVO.populateEscalationMatrices();
-        //agent notifications
-        List<Notification> userNotifications = new ArrayList<Notification>() {{
-            String title = incidentEmailVO.getIncidentNo();
-            String body = incidentEmailVO.getIncidentNo().concat(" 75% time passed! Please complete within SLA.");
-            add(new Notification(title, body, new User(incidentEmailVO.getAgentVersion(), incidentEmailVO.getAgentId()), Status.PUSHED, NotificationType.INFO));
-        }};
-        //save notifications
-        notificationService.save(userNotifications);
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            //agent notifications
+            List<Notification> userNotifications = new ArrayList<Notification>() {{
+                String title = incidentEmailVO.getIncidentNo();
+                String body = incidentEmailVO.getIncidentNo().concat(" 75% time passed! Please complete within SLA.");
+                add(new Notification(title, body, new User(incidentEmailVO.getAgentVersion(), incidentEmailVO.getAgentId()), Status.PUSHED, NotificationType.INFO));
+            }};
+            //save notifications
+            notificationService.save(userNotifications);
+        }
         appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
         /*need data for email*/
     }
@@ -491,15 +539,35 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        UserVO agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
+        List<DistributionList> distributionLists = new ArrayList<DistributionList>();
+        List<String> dlEmails = new ArrayList<String>();
+        if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
+                    incidentEmailVO.getModuleId(),
+                    incidentEmailVO.getSubModuleId(),
+                    incidentEmailVO.getOrganisationId()
+            );
+            dlEmails = distributionLists.stream()
+                    .map(DistributionList::getDlEmail)
+                    .collect(Collectors.toList());
+        }
+        UserVO agentManagerUserVO = null;
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA") && incidentEmailVO.getAgentManagerId() != null) {
+            agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
+        }
         List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
                 Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
                 incidentEmailVO.getOrganisationId()
         );
-        userVOS.add(agentManagerUserVO);
-        List<String> userEmails = new ArrayList<String>() {{
-            add(incidentEmailVO.getAgentEmail());
-        }};
+        if (agentManagerUserVO != null) {
+            userVOS.add(agentManagerUserVO);
+        }
+        List<String> userEmails = new ArrayList<String>();
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            userEmails.add(incidentEmailVO.getAgentEmail());
+        } else {
+            userEmails.addAll(dlEmails);
+        }
         Set<UserVO> userVOSet = new HashSet<UserVO>();
         for (UserVO userVO : userVOS) {
             List<String> roles = userVO.getRoleNames();
@@ -547,15 +615,35 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        UserVO agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
+        List<DistributionList> distributionLists = new ArrayList<DistributionList>();
+        List<String> dlEmails = new ArrayList<String>();
+        if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
+                    incidentEmailVO.getModuleId(),
+                    incidentEmailVO.getSubModuleId(),
+                    incidentEmailVO.getOrganisationId()
+            );
+            dlEmails = distributionLists.stream()
+                    .map(DistributionList::getDlEmail)
+                    .collect(Collectors.toList());
+        }
+        UserVO agentManagerUserVO = null;
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA") && incidentEmailVO.getAgentManagerId() != null) {
+            agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
+        }
         List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
                 Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
                 incidentEmailVO.getOrganisationId()
         );
-        userVOS.add(agentManagerUserVO);
-        List<String> userEmails = new ArrayList<String>() {{
-            add(incidentEmailVO.getAgentEmail());
-        }};
+        if (agentManagerUserVO != null) {
+            userVOS.add(agentManagerUserVO);
+        }
+        List<String> userEmails = new ArrayList<String>();
+        if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
+            userEmails.add(incidentEmailVO.getAgentEmail());
+        } else {
+            userEmails.addAll(dlEmails);
+        }
         Set<UserVO> userVOSet = new HashSet<UserVO>();
         for (UserVO userVO : userVOS) {
             List<String> roles = userVO.getRoleNames();

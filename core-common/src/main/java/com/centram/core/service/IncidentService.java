@@ -230,17 +230,38 @@ public class IncidentService {
     }
 
     /**
-     * assign incident to agent
+     * save all incidents
      *
-     * @param incident
-     * @param userVO
+     * @param incidents
+     * @return
      */
     @Transactional(readOnly = false)
-    public void assignIncidentViaBatch(Incident incident, UserVO userVO) {
-        incident.setAssignedUser(new User(userVO));
-        incident.setStatus(IncidentStatus.ASSIGNED);
-        incident = incidentRepository.save(incident);
-        miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appLocalDateTimeFormat, null));
+    public List<Incident> saveAll(List<Incident> incidents) {
+        Iterable<Incident> source = incidentRepository.saveAll(incidents);
+        List<Incident> target = new ArrayList<Incident>();
+        source.iterator().forEachRemaining(target::add);
+        return target;
+    }
+
+    /**
+     * @param incidents
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public Incident update(Incident incidents) {
+        return incidentRepository.save(incidents);
+    }
+
+    /**
+     * assign incident to agent via batch
+     *
+     * @param incidents
+     */
+    @Transactional(readOnly = false)
+    public void assignIncidentViaBatch(List<Incident> incidents) {
+        for (Incident incident : incidents) {
+            miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appLocalDateTimeFormat, null));
+        }
     }
 
     /**

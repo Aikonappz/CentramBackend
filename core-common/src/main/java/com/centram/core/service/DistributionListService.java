@@ -5,6 +5,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.core.repository.DistributionListModuleRepository;
 import com.centram.core.repository.DistributionListRepository;
 import com.centram.domain.ActivityLog;
 import com.centram.domain.DistributionList;
@@ -19,10 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class DistributionListService {
@@ -31,6 +31,9 @@ public class DistributionListService {
 
     @Autowired
     private DistributionListRepository distributionListRepository;
+
+    @Autowired
+    private DistributionListModuleRepository distributionListModuleRepository;
 
     @Autowired
     private OrganisationService organisationService;
@@ -65,6 +68,17 @@ public class DistributionListService {
     public List<DistributionList> getByModuleIdAndSubModuleId(BigInteger moduleId, BigInteger subModuleId) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, loggedInUser.getOrganisationId());
+    }
+
+    /**
+     * get DL list by module and submodule and organisation wise
+     *
+     * @param moduleId
+     * @param subModuleId
+     * @return
+     */
+    public List<DistributionList> getByModuleIdAndSubModuleIdAndOrganisation(BigInteger moduleId, BigInteger subModuleId, BigInteger organisationId) {
+        return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, organisationId);
     }
 
     /**
@@ -113,7 +127,7 @@ public class DistributionListService {
     public DistributionList save(DistributionList distributionList) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         distributionList.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        Set<DistributionListModule> distributionListModules = new HashSet<DistributionListModule>();
+        List<DistributionListModule> distributionListModules = new ArrayList<DistributionListModule>();
         for (DistributionListModule distributionListModule : distributionList.getDistributionListModules()) {
             distributionListModule.setDistributionList(distributionList);
             distributionListModules.add(distributionListModule);

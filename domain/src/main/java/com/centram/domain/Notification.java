@@ -1,7 +1,9 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -41,17 +43,20 @@ public class Notification extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
+    @JsonView(Views.BasicView.class)
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "notification_title", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String notificationTitle;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Lob
     @Column(name = "notification_body", nullable = false, columnDefinition = "TEXT")
+    @JsonView(Views.BasicView.class)
     private String notificationBody;
 
     @ApiModelProperty(required = true, value = "")
@@ -59,6 +64,7 @@ public class Notification extends BaseEntity implements Serializable {
     @Valid
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
     private User user;
 
     @ApiModelProperty(required = true, value = "")
@@ -66,6 +72,7 @@ public class Notification extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
     private Status status;
 
     @ApiModelProperty(required = true, value = "")
@@ -73,6 +80,7 @@ public class Notification extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "notification_type")
     @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
     private NotificationType notificationType;
 
     public Notification(@NotNull BigInteger id) {

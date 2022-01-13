@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class VendorService {
@@ -111,7 +108,7 @@ public class VendorService {
     public Vendor save(Vendor vendor) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         vendor.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        Set<VendorModule> vendorModules = new HashSet<VendorModule>();
+        List<VendorModule> vendorModules = new ArrayList<VendorModule>();
         for (VendorModule vendorModule : vendor.getVendorModules()) {
             vendorModule.setVendor(vendor);
             vendorModules.add(vendorModule);

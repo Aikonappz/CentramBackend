@@ -48,7 +48,7 @@ export class LogoutComponent implements OnInit {
     this.userService
       .signOutService()
       .subscribe((data: any) => {
-        clearInterval();
+        //clearInterval();
         this.clientStorageService.remove(AppUtility.LOGGED_IN_PROFILE);
         this.clientStorageService.remove(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY);
         this.clientStorageService.remove(AppUtility.APP_LAST_ACTION_KEY);
@@ -58,7 +58,10 @@ export class LogoutComponent implements OnInit {
         //this.toggleStockAddMode();
         //window.location.reload();
         this.websocketService.disconnect();
-        this.router.navigate(['/']);
+        this.router.navigate(['/'])
+          .then(() => {
+            window.location.reload();
+          });
       });
   }
 

@@ -174,7 +174,7 @@ public class AppEmailService {
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         log.info("EMAIL TITLE: {}", mailSubject);
         log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        //emailService.sendMail(mailMap);
+        emailService.sendMail(mailMap);
     }
 
     /**
@@ -302,7 +302,7 @@ public class AppEmailService {
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         log.info("INCIDENT EMAIL TITLE: {}", mailSubject);
         log.info("INCIDENT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        //emailService.sendMail(mailMap);
+        emailService.sendMail(mailMap);
     }
 
     @Async("asyncExecutor")
@@ -352,7 +352,7 @@ public class AppEmailService {
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         log.info("ASSIGN EMAIL TITLE: {}", mailSubject);
         log.info("ASSIGN EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        //emailService.sendMail(mailMap);
+        emailService.sendMail(mailMap);
     }
 
     /*public CommonResponse confirmEmail(AuthRequestDTO authRequestDTO) {

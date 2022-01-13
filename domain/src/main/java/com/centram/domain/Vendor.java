@@ -20,7 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Vendor
@@ -63,9 +63,9 @@ public class Vendor extends BaseEntity implements Serializable {
     @Valid
     //@NotNull
     @Fetch(FetchMode.JOIN)
-    @OneToMany(mappedBy = "vendor", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vendor", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
-    private Set<VendorModule> vendorModules;
+    private List<VendorModule> vendorModules;
 
     @ApiModelProperty(required = false, value = "")
     @Valid

@@ -218,6 +218,7 @@ export class EditIncidentComponent implements OnInit {
     $(document).ready(function () {
       let v = [];
       $('#watchList').selectize({
+        plugins: ["remove_button"],
         //maxItems: 3
         onItemAdd: function (value, $item) {
           let selected = value.split(":");
@@ -415,10 +416,9 @@ export class EditIncidentComponent implements OnInit {
   }
 
   handleDraftData() {
-    //console.log(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
     this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
     if (this.draftData != null) {
-      if (this.newEntity) {
+      if (this.newEntity && this.mode == "draft") {
         this.draftData.new = null;
       } else {
         let existingData = [];

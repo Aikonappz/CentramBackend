@@ -332,6 +332,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @RequestMapping(value = "/all-notifications", produces = {"application/json"}, method = RequestMethod.GET)
+    @JsonView(Views.ListView.class)
     public ResponseEntity<PaginatedList<Notification>> getNotifications(
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable

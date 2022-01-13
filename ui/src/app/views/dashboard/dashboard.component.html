@@ -135,7 +135,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.activeEmployees}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.activeEmployees||0}}</div>
                     <div>Active Employees</div>
                   </div>
                 </div>
@@ -148,7 +148,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.inHouseVendors}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.inHouseVendors||0}}</div>
                     <div>In House Vendors</div>
                   </div>
                 </div>
@@ -161,7 +161,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors||0}}</div>
                     <div>Out Sourced Vendors</div>
                   </div>
                 </div>
@@ -179,7 +179,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.financeApplications}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.financeApplications||0}}</div>
                     <div>Finance Applications</div>
                   </div>
                 </div>
@@ -192,7 +192,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.hrApplications}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.hrApplications||0}}</div>
                     <div>HR Applications</div>
                   </div>
                 </div>
@@ -205,7 +205,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.hrQueries}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.hrQueries||0}}</div>
                     <div>HR Queries</div>
                   </div>
                 </div>
@@ -220,7 +220,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.itInfrastructure}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.itInfrastructure||0}}</div>
                     <div>IT Infrastructure</div>
                   </div>
                 </div>
@@ -233,7 +233,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.personalComputing}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.personalComputing||0}}</div>
                     <div>Personal Computing</div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.salesApplications}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.salesApplications||0}}</div>
                     <div>Sales Applications</div>
                   </div>
                 </div>
@@ -261,7 +261,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.softwareRequests}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.softwareRequests||0}}</div>
                     <div>Software Requests</div>
                   </div>
                 </div>
@@ -274,7 +274,7 @@
                     class="btn btn-transparent p-0 float-right">
                     <i class="icon-eye"></i>
                   </button> -->
-                    <div class="text-value">{{orgAdminDashboardVO.vehiclePass}}</div>
+                    <div class="text-value">{{orgAdminDashboardVO.vehiclePass||0}}</div>
                     <div>Vehicle Pass</div>
                   </div>
                 </div>
@@ -297,7 +297,7 @@
           </fieldset>
         </div>
       </div>
-      <div class="card">
+      <div *ngIf="orgAdminDashboardVO.incidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <!-- <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
@@ -450,7 +450,7 @@
           </fieldset>
         </div>
       </div>
-      <div class="card">
+      <div *ngIf="userDashboardVO.incidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col">
@@ -683,7 +683,7 @@
           </fieldset>
         </div>
       </div>
-      <div class="card">
+      <div *ngIf="agentDashboardVO.statusIncidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col col-sm-6">
@@ -1009,7 +1009,7 @@
           </fieldset>
         </div>
       </div>
-      <div class="card">
+      <div *ngIf="categoryAdminDashboardVO.statusIncidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col col-sm-6">

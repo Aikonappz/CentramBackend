@@ -142,7 +142,20 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " from " +
             " incident i " +
             " join module m on (m.app_module = 0 and m.parent_module_id is null and m.id = i.module_id) " +
-            " join user u on (u.id = i.raised_user_id) " +
+            " join user u on " +
+            "  ( " +
+            "    ((:userType) = 'USER' and u.id = i.raised_user_id) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_LEAD' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_MANAGER' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'CATEGORY_ADMIN' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
+            "  ) " +
             " where u.organisation_id =  (:organisationId) and " +
             "  ( " +
             "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
@@ -151,7 +164,20 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "  ) " +
             " and i.created_date BETWEEN (:start) and (:end) " +
             " and " +
-            " (((:userFilter) = true and i.raised_user_id = (:userId)) " +
+            " ((:userFilter) = true and " +
+            "  ( " +
+            "    ((:userType) = 'USER' and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_LEAD') " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_MANAGER') " +
+            "    OR " +
+            "    ((:userType) = 'CATEGORY_ADMIN') " +
+            "    OR " +
+            "    ((:userType) = 'ORG_ADMIN') " +
+            "  ) " +
             " OR " +
             " ((:userFilter) = false)) " +
             " group by m.name, CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) " +
@@ -163,6 +189,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("userModules") List<BigInteger> userModules,
             @Param("userSubModules") List<BigInteger> userSubModules,
             @Param("organisationId") BigInteger organisationId,
+            @Param("userType") String userType,
             @Param("userFilter") Boolean userFilter,
             @Param("userId") BigInteger userId
     );
@@ -172,7 +199,20 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " sum(1) as count " +
             " FROM " +
             " incident i " +
-            " join user u on (u.id = i.raised_user_id) " +
+            " join user u on " +
+            "  ( " +
+            "    ((:userType) = 'USER' and u.id = i.raised_user_id) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_LEAD' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_MANAGER' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'CATEGORY_ADMIN' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
+            "  ) " +
             " join priority p on (p.id = i.priority_id) " +
             " where p.organisation_id =  (:organisationId) and " +
             "  ( " +
@@ -180,6 +220,23 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:roleFilter) = false) " +
             "  ) " +
+            " and " +
+            " ((:userFilter) = true and " +
+            "  ( " +
+            "    ((:userType) = 'USER' and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_LEAD') " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_MANAGER') " +
+            "    OR " +
+            "    ((:userType) = 'CATEGORY_ADMIN') " +
+            "    OR " +
+            "    ((:userType) = 'ORG_ADMIN') " +
+            "  ) " +
+            " OR " +
+            " ((:userFilter) = false)) " +
             " and i.created_date BETWEEN (:start) and (:end) " +
             " group by p.name " +
             " order by 1 asc ", nativeQuery = true)
@@ -189,7 +246,10 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("roleFilter") Boolean roleFilter,
             @Param("userModules") List<BigInteger> userModules,
             @Param("userSubModules") List<BigInteger> userSubModules,
-            @Param("organisationId") BigInteger organisationId
+            @Param("organisationId") BigInteger organisationId,
+            @Param("userType") String userType,
+            @Param("userFilter") Boolean userFilter,
+            @Param("userId") BigInteger userId
     );
 
     @Query(nativeQuery = true)

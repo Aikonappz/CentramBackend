@@ -23,7 +23,7 @@
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <select class="form-control" formControlName="priorityId" id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
-                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
+                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}} ({{e.description}})
                     </option>
                   </select>
                   <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
@@ -159,7 +159,7 @@
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <select class="form-control" formControlName="priorityId" ngModel id="priorityId" name="priorityId">
                     <option value="">-- Select Priority --</option>
-                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
+                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}} ({{e.description}})
                     </option>
                   </select>
                   <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">

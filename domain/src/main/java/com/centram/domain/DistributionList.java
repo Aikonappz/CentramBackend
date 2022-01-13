@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -68,9 +69,9 @@ public class DistributionList extends BaseEntity implements Serializable {
     @Valid
     //@NotNull
     @Fetch(FetchMode.JOIN)
-    @OneToMany(mappedBy = "distributionList", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "distributionList", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
-    private Set<DistributionListModule> distributionListModules;
+    private List<DistributionListModule> distributionListModules;
 
     @ApiModelProperty(required = false, value = "")
     @Valid

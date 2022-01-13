@@ -67,6 +67,7 @@ public class DashboardService {
                 null,
                 null,
                 loggedInUser.getOrganisationId(),
+                "ORG_ADMIN",
                 false,
                 null
         ));
@@ -104,6 +105,7 @@ public class DashboardService {
                 userModules,
                 userSubModules,
                 loggedInUser.getOrganisationId(),
+                "USER",
                 true,
                 loggedInUser.getUserId()
         ));
@@ -133,6 +135,16 @@ public class DashboardService {
                     return permission.getModule().getId();
                 })
                 .collect(Collectors.toList());
+        String userType = "AGENT";
+        if (permissions.stream().filter(i -> {
+            return (i.getRole().getId().compareTo(BigInteger.valueOf(Long.valueOf("5"))) == 0);
+        }).count() > 0) {
+            userType = "AGENT_LEAD";
+        } else if (permissions.stream().filter(i -> {
+            return (i.getRole().getId().compareTo(BigInteger.valueOf(Long.valueOf("6"))) == 0);
+        }).count() > 0) {
+            userType = "AGENT_MANAGER";
+        }
         AgentDashboardVO agentDashboardVO = new AgentDashboardVO();
         agentDashboardVO.setStatusIncidents(
                 incidentRepository.orgStatusWiseIncidentDashboardData(
@@ -142,6 +154,7 @@ public class DashboardService {
                         userModules,
                         userSubModules,
                         loggedInUser.getOrganisationId(),
+                        userType,
                         true,
                         loggedInUser.getUserId()
                 )
@@ -153,7 +166,10 @@ public class DashboardService {
                         true,
                         userModules,
                         userSubModules,
-                        loggedInUser.getOrganisationId()
+                        loggedInUser.getOrganisationId(),
+                        userType,
+                        true,
+                        loggedInUser.getUserId()
                 )
         );
         return agentDashboardVO;
@@ -199,6 +215,7 @@ public class DashboardService {
                         userModules,
                         userSubModules,
                         loggedInUser.getOrganisationId(),
+                        "CATEGORY_ADMIN",
                         false,
                         null
                 )
@@ -210,7 +227,10 @@ public class DashboardService {
                         true,
                         userModules,
                         userSubModules,
-                        loggedInUser.getOrganisationId()
+                        loggedInUser.getOrganisationId(),
+                        "CATEGORY_ADMIN",
+                        false,
+                        null
                 )
         );
         return categoryAdminDashboardVO;

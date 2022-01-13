@@ -6,6 +6,8 @@ import com.centram.core.service.*;
 import com.centram.domain.Incident;
 import com.centram.domain.Organisation;
 import com.centram.domain.Role;
+import com.centram.domain.User;
+import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -19,14 +21,14 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class IncidentAssign extends RouteBuilder {
-
     private static final Logger log = LoggerFactory.getLogger(IncidentAssign.class);
-    private final String interval = "0 0/5 * * * ?";
+    private final String interval = "0 0/3 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")
@@ -94,15 +96,20 @@ public class IncidentAssign extends RouteBuilder {
                         List<Incident> incidents = incidentService.getOpenIncidents(organisation.getId());
                         Integer max = users.size();
                         Integer counter = 0;
+                        List<Incident> assignedIncidents = new ArrayList<Incident>();
                         for (Incident incident : incidents) {
                             if (counter < max) {
                                 log.info("INCIDENT NO {} -- USER ID {} ", incident.getIncidentNo(), users.get(counter).getId());
-                                incidentService.assignIncidentViaBatch(incident, users.get(counter));
+                                incident.setAssignedUser(new User(users.get(counter)));
+                                incident.setStatus(IncidentStatus.ASSIGNED);
+                                assignedIncidents.add(incident);
                                 counter++;
                             } else {
                                 counter = 0;
                             }
                         }
+                        assignedIncidents  = incidentService.saveAll(assignedIncidents);
+                        incidentService.assignIncidentViaBatch(assignedIncidents);
                     }
                 })
                 .end()

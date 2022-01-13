@@ -14,24 +14,22 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.commons.text.CaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class IncidentSLANotification extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(IncidentSLANotification.class);
-    private final String interval = "0 0/10 * * * ?";
+    private final String interval = "0 0/2 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")
@@ -77,35 +75,34 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         List<Incident> nonBlockedIncidents = (List<Incident>) exchange.getIn().getBody();
                         Incident incident = nonBlockedIncidents.get((int) exchange.getProperty("CamelLoopIndex"));
-
                         String targetRouter = null;
                         String timeZone = incident.getRaisedUser().getLocation().getTimezone();
-                        ZonedDateTime currentDatetime = LocalDateTime.now().atZone(ZoneId.of(timeZone));
-                        ZonedDateTime startDatetime = incident.getCreatedDate().atZone(ZoneId.of(timeZone));
-                        ZonedDateTime endDatetime = incident.getSlaAt().atZone(ZoneId.of(timeZone));
-                        Long difference = endDatetime.toEpochSecond() - startDatetime.toEpochSecond();
-                        ZonedDateTime wip50PercentPassed = incident.getCreatedDate().atZone(ZoneId.of(timeZone));
-                        wip50PercentPassed.plus((difference * 50 / 100), ChronoUnit.SECONDS);
-                        ZonedDateTime wip75PercentPassed = incident.getCreatedDate().atZone(ZoneId.of(timeZone));
-                        wip75PercentPassed.plus((difference * 75 / 100), ChronoUnit.SECONDS);
-                        ZonedDateTime sla60MinutesPassed = incident.getSlaAt().atZone(ZoneId.of(timeZone));
-                        sla60MinutesPassed.plusMinutes(60);
 
-                        /*if (currentDatetime.isAfter(wip50PercentPassed) && currentDatetime.isBefore(wip75PercentPassed)) {
+                        ZonedDateTime currentDatetime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.of(timeZone));
+                        ZonedDateTime startDatetime = ZonedDateTime.of(incident.getCreatedDate(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
+                        ZonedDateTime endDatetime = ZonedDateTime.of(incident.getSlaAt(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
+                        Duration duration = Duration.between(startDatetime, endDatetime);
+                        ZonedDateTime wip50PercentPassed = ZonedDateTime.of(incident.getCreatedDate(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
+                        wip50PercentPassed = wip50PercentPassed.plus(duration.toSeconds() * 50 / 100, ChronoUnit.SECONDS);
+                        ZonedDateTime wip75PercentPassed = ZonedDateTime.of(incident.getCreatedDate(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
+                        wip75PercentPassed = wip75PercentPassed.plus(duration.toSeconds() * 75 / 100, ChronoUnit.SECONDS);
+                        ZonedDateTime sla60MinutesPassed = ZonedDateTime.of(incident.getSlaAt(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
+                        sla60MinutesPassed = sla60MinutesPassed.plusMinutes(60);
+                        if (currentDatetime.isAfter(wip50PercentPassed) && currentDatetime.isBefore(wip75PercentPassed)) {
                             targetRouter = CaseUtils.toCamelCase(IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED.name(), false, '_');
                             producerTemplate.requestBodyAndHeader("direct:".concat(targetRouter), incident, "route", targetRouter);
-                        } else if (currentDatetime.isAfter(wip75PercentPassed)) {
+                        } else if (currentDatetime.isAfter(wip75PercentPassed) && currentDatetime.isBefore(endDatetime)) {
                             targetRouter = CaseUtils.toCamelCase(IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED.name(), false, '_');
                             producerTemplate.requestBodyAndHeader("direct:".concat(targetRouter), incident, "route", targetRouter);
-                        } else if (currentDatetime.isBefore(sla60MinutesPassed) && currentDatetime.isAfter(endDatetime)) {
+                        } else if (currentDatetime.isAfter(endDatetime) && currentDatetime.isBefore(sla60MinutesPassed)) {
                             targetRouter = CaseUtils.toCamelCase(IncidentNotificationType.SLA_JUST_BREACHED.name(), false, '_');
                             producerTemplate.requestBodyAndHeader("direct:".concat(targetRouter), incident, "route", targetRouter);
                         } else if (currentDatetime.isAfter(sla60MinutesPassed)) {
                             targetRouter = CaseUtils.toCamelCase(IncidentNotificationType.SLA_BREACHED_60_MINUTES_PASSED.name(), false, '_');
                             producerTemplate.requestBodyAndHeader("direct:".concat(targetRouter), incident, "route", targetRouter);
                         } else {
-                            producerTemplate.requestBodyAndHeader("skipIncident", null, "route", "skipIncident");
-                        }*/
+                            producerTemplate.requestBodyAndHeader("direct:skipIncident", null, "route", "skipIncident");
+                        }
                     }
                 })
                 //.toD("direct:${header.next-route}")
@@ -124,6 +121,7 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("WIP_50_PERCENT_TIME_PASSED BODY {}", incident);
+                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED, LocalDateTime.now()));
                         miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
                     }
                 })
@@ -152,7 +150,9 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("WIP_75_PERCENT_TIME_PASSED BODY {}", incident);
-                        incidentService.changeIncidentsStatus(IncidentStatus.SLA_ABOUT_TO_BREACH.name(), Collections.singletonList(incident.getId()));
+                        incident.setStatus(IncidentStatus.SLA_ABOUT_TO_BREACH);
+                        incident = incidentService.update(incident);
+                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED, LocalDateTime.now()));
                         miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 75% time passed! Please complete within SLA.")));
                     }
                 })
@@ -183,6 +183,8 @@ public class IncidentSLANotification extends RouteBuilder {
                         log.info("SLA_JUST_BREACHED BODY {}", incident);
                         incident.setStatus(IncidentStatus.SLA_BREACHED);
                         incident.setSlaBreached(true);
+                        incident = incidentService.update(incident);
+                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_JUST_BREACHED, LocalDateTime.now()));
                         miscService.notifySlaBreached(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
@@ -211,6 +213,10 @@ public class IncidentSLANotification extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("SLA_BREACHED_60_MINUTES_PASSED BODY {}", incident);
+                        //incident.setStatus(IncidentStatus.SLA_BREACHED);
+                        //incident.setSlaBreached(true);
+                        //incident = incidentService.update(incident);
+                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_BREACHED_60_MINUTES_PASSED, LocalDateTime.now()));
                         miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })

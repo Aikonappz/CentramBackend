@@ -9,6 +9,7 @@ import { Status } from '../../model/enumerator/Status';
 import { AppUtility } from '../../config/AppUtility';
 import { Priority } from '../../model/Priority';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-editpriority',
@@ -58,7 +59,22 @@ export class EditPriorityComponent implements OnInit {
     });
     this.prty = new Priority();
     this.prty.status = this.defaultStatus;
-    this.timeList = AppUtility.getSlaList(500);
+    if (environment.production == false) {
+      this.timeList.push("00:05");
+      this.timeList.push("00:07");
+      this.timeList.push("00:10");
+      this.timeList.push("00:13");
+      this.timeList.push("00:15");
+      this.timeList.push("00:18");
+      this.timeList.push("00:20");
+      this.timeList.push("00:25");
+    }
+    let tmList = AppUtility.getSlaList(500);
+    for (let k = 0; k < tmList.length; k++) {
+      if (k != 0) {
+        this.timeList.push(tmList[k]);
+      }
+    }
     for (let k = 1; k <= 10; k++) {
       this.nameList.push("P" + k);
     }
