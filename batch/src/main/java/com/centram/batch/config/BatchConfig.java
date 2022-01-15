@@ -7,11 +7,24 @@ import org.apache.camel.component.quartz.QuartzComponent;
 import org.apache.camel.spi.ThreadPoolProfile;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.apache.camel.util.concurrent.ThreadPoolRejectedPolicy;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.stream.StreamSupport;
 
 @Configuration
 public class BatchConfig {
@@ -34,12 +47,17 @@ public class BatchConfig {
     private String dateFormat;
     @Value("${camel.integrator.context-path}")
     private String contextPath;
+//    @Value("${app.batch.config.location}")
+//    private String appBatchConfigLocation;
 
+    @Autowired
+    private ConfigurableEnvironment environment;
+
+    @Lazy
     @Bean
     public CamelContextConfiguration contextConfiguration(
-            IncidentSLANotification incidentSlaNotification,
             IncidentAssign incidentAssign,
-            QuartzComponent quartzComponent
+            IncidentSLANotification incidentSLANotification
     ) {
         return new CamelContextConfiguration() {
             @Override
@@ -57,9 +75,9 @@ public class BatchConfig {
             @Override
             public void afterApplicationStart(CamelContext camelContext) {
                 try {
-                    //camelContext.addComponent("quartzComponent", quartzComponent);
-                    camelContext.addRoutes(incidentSlaNotification);
-                    camelContext.addRoutes(incidentAssign);
+                    //camelContext.addComponent("quartzComponent", quartzComponent(schedulerFactory));
+                    //camelContext.addRoutes(incidentSLANotification);
+                    //camelContext.addRoutes(incidentAssign);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -68,9 +86,53 @@ public class BatchConfig {
     }
 
     @Bean
+    public SchedulerFactory schedulerFactory() throws SchedulerException {
+        StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        Properties properties = new Properties();
+        MutablePropertySources propertySources = environment.getPropertySources();
+        StreamSupport.stream(propertySources.spliterator(), false)
+                .filter(ps -> {
+                    return ps instanceof EnumerablePropertySource;
+                })
+                .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
+                .flatMap(Arrays::stream)
+                .filter(i -> {
+                    return i.startsWith("default.org.quartz.");
+                })
+                .forEach(propName -> {
+                    properties.setProperty(propName.replace("default.org.quartz.","org.quartz."), environment.getProperty(propName));
+                });
+        schedulerFactory.initialize(properties);
+        return schedulerFactory;
+    }
+
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean(SchedulerFactory schedulerFactory) throws Exception {
+        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        schedulerFactoryBean.setSchedulerFactory(schedulerFactory);
+        return schedulerFactoryBean;
+    }
+
+    @Bean
     public QuartzComponent quartzComponent() {
         QuartzComponent quartz = new QuartzComponent();
-        quartz.setPropertiesFile("quartz.properties");
+        Properties properties = new Properties();
+        MutablePropertySources propertySources = environment.getPropertySources();
+        StreamSupport.stream(propertySources.spliterator(), false)
+                .filter(ps -> {
+                    return ps instanceof EnumerablePropertySource;
+                })
+                .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
+                .flatMap(Arrays::stream)
+                .filter(i -> {
+                    return i.startsWith("org.quartz.");
+                })
+                .forEach(propName -> {
+                    properties.setProperty(propName, environment.getProperty(propName));
+                });
+        quartz.setProperties(properties);
+        //quartz.setSchedulerFactory(schedulerFactory);
+        //quartz.setPropertiesFile("quartz.properties");
         return quartz;
     }
 

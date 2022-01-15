@@ -16,51 +16,78 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Order(1)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
+    @Configuration
+    @Order(1)
+    public static class ApiSecurity extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private RequestFilter requestFilter;
 
-    @Autowired
-    private RequestFilter requestFilter;
+        @Autowired
+        @Qualifier("userService")
+        private UserDetailsService userService;
 
-    @Autowired
-    @Qualifier("userService")
-    private UserDetailsService userService;
+        @Autowired
+        private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+        }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+        /*@Bean
+        public AuthenticationFailureHandler authenticationFailureHandler() {
+            return new CustomAuthenticationFailureHandler();
+        }*/
+
+        @Bean
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+        @Override
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+            httpSecurity
+                    .antMatcher("/api/**")
+                    .cors().and().csrf().disable()
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .antMatchers("/app-ws-notification", "/app-ws-notification/**", "/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
+                    //.antMatchers("/**").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                    .exceptionHandling()
+                    .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                    .and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            httpSecurity.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
+        }
     }
 
-    /*@Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler();
-    }*/
+    @Configuration
+    @Order(2)
+    public static class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+        @Override
+        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.authenticationProvider(new ActuatorAuthProvider());
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().and().csrf().disable()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/actuator", "/actuator/**", "/app-ws-notification", "/app-ws-notification/**", "/api/v1/misc/notification/dummy", "/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
-                //.antMatchers("/**").permitAll()
-                .anyRequest().authenticated().and()
-                .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint()).and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        httpSecurity.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .antMatcher("/actuator/**")
+                    .csrf().disable()
+                    .authorizeRequests()
+                    .anyRequest()
+                    .authenticated()
+                    .and()
+                    .httpBasic();
+        }
     }
 }
