@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -19,17 +20,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-@EnableSpringDataWebSupport
+/*@EnableSpringDataWebSupport
 @EnableTransactionManagement
 @EnableJpaRepositories(
+        repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class,
         entityManagerFactoryRef = "reportEntityManagerFactory",
         transactionManagerRef = "reportTransactionManager",
         basePackages = {"com.centram.report.repository"}
 )
-@Configuration
+@Configuration*/
 public class ReportDbConfig {
 
-    @Bean("reportHikariConfig")
+    /*@Bean("reportHikariConfig")
     @ConfigurationProperties(prefix = "report.spring.datasource.hikari")
     public HikariConfig reportHikariConfig() {
         return new HikariConfig();
@@ -65,5 +67,5 @@ public class ReportDbConfig {
             @Qualifier("reportEntityManagerFactory") EntityManagerFactory reportEntityManagerFactory
     ) {
         return reportEntityManagerFactory.createEntityManager();
-    }
+    }*/
 }

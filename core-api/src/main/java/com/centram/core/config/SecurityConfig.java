@@ -73,9 +73,13 @@ public class SecurityConfig {
     @Configuration
     @Order(2)
     public static class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        private ActuatorAuthProvider actuatorAuthProvider;
+
         @Override
         public void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.authenticationProvider(new ActuatorAuthProvider());
+            auth.authenticationProvider(actuatorAuthProvider);
         }
 
         @Override
@@ -89,5 +93,6 @@ public class SecurityConfig {
                     .and()
                     .httpBasic();
         }
+
     }
 }

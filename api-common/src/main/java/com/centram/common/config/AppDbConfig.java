@@ -9,6 +9,7 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -20,16 +21,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-@EnableSpringDataWebSupport
+/*@EnableSpringDataWebSupport
 @EnableTransactionManagement
 @EnableJpaRepositories(
+        repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class,
         entityManagerFactoryRef = "entityManagerFactory",
         basePackages = {"com.centram.core.repository"}
 )
-@Configuration
+@Configuration*/
 public class AppDbConfig {
 
-    @Primary
+    /*@Primary
     @Bean("appHikariConfig")
     @ConfigurationProperties(prefix = "spring.datasource.hikari")
     public HikariConfig appHikariConfig() {
@@ -69,5 +71,5 @@ public class AppDbConfig {
             @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory
     ) {
         return entityManagerFactory.createEntityManager();
-    }
+    }*/
 }

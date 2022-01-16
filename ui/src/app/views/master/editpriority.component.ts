@@ -113,6 +113,12 @@ export class EditPriorityComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
+      if (this.statusFlag === false) {
+        let res = window.confirm("Do you really want to change the status?")
+        if (!res) {
+          return;
+        }
+      }
       //console.log(this.angForm);      
       this.prty.name = this.angForm.controls['name'].value;
       this.prty.description = this.angForm.controls['description'].value;

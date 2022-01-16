@@ -68,7 +68,7 @@ public class OrganisationService {
     private RestTemplate restTemplate;
 
     @Autowired
-    @Qualifier("appEntityManager")
+    /*@Qualifier("appEntityManager")*/
     private EntityManager entityManager;
 
     /**
