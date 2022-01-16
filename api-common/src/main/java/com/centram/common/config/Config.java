@@ -15,18 +15,20 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -50,6 +52,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
@@ -61,15 +64,17 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
 
-@Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableAsync
+@EnableCaching
+@Configuration
 public class Config implements AsyncConfigurer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Config.class);
@@ -100,6 +105,59 @@ public class Config implements AsyncConfigurer {
 
     @Value("${spring.application.name}")
     private String appName;
+
+    @Autowired(required = false)
+    private StandaloneRedisConfig standaloneRedisConfig;
+
+    @Autowired(required = false)
+    private ClusterRedisConfig clusterRedisConfig;
+
+    /**
+     * jedis config
+     *
+     * @return
+     */
+    @Bean
+    public JedisConnectionFactory jedisConnectionFactory() {
+        JedisConnectionFactory factory = null;
+        if (standaloneRedisConfig != null) {
+            RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(standaloneRedisConfig.getHost(), standaloneRedisConfig.getPort());
+            //configuration.setPassword(standaloneRedisConfig.getPassword());
+            factory = new JedisConnectionFactory(configuration);
+
+            return factory;
+        }
+        if (clusterRedisConfig != null) {
+            JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+            RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration(Arrays.asList(clusterRedisConfig.getNodes().split(",")));
+            redisClusterConfiguration.setMaxRedirects(clusterRedisConfig.getMaxRedirects());
+            redisClusterConfiguration.setPassword(clusterRedisConfig.getPassword());
+            factory = new JedisConnectionFactory(redisClusterConfiguration, jedisPoolConfig);
+        }
+        factory.afterPropertiesSet();
+        return factory;
+    }
+
+    /**
+     * redis config
+     *
+     * @param factory
+     * @param objectMapper
+     * @return
+     */
+    @Bean
+    public CacheManager redisCacheManager(RedisConnectionFactory factory, ObjectMapper objectMapper) {
+        RedisSerializationContext.SerializationPair<Object> jsonSerializer = RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        return RedisCacheManager
+                .RedisCacheManagerBuilder
+                .fromConnectionFactory(factory)
+                .cacheDefaults(
+                        RedisCacheConfiguration.defaultCacheConfig()
+                        //.entryTtl(Duration.ofDays(1))
+                        //.serializeValuesWith(jsonSerializer)
+                )
+                .build();
+    }
 
     /**
      * jasypt config
@@ -210,42 +268,6 @@ public class Config implements AsyncConfigurer {
     @Bean
     public TerminateBean getTerminateBean() {
         return new TerminateBean();
-    }
-
-    /**
-     * jedis config
-     *
-     * @return
-     */
-    @Bean
-    protected JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHostName, redisPort);
-        //configuration.setPassword(redisPassword);
-        JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder().usePooling().build();
-        JedisConnectionFactory factory = new JedisConnectionFactory(configuration, jedisClientConfiguration);
-        factory.afterPropertiesSet();
-        return factory;
-    }
-
-    /**
-     * redis config
-     *
-     * @param factory
-     * @param objectMapper
-     * @return
-     */
-    @Bean
-    public CacheManager redisCacheManager(RedisConnectionFactory factory, ObjectMapper objectMapper) {
-        RedisSerializationContext.SerializationPair<Object> jsonSerializer = RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
-        return RedisCacheManager
-                .RedisCacheManagerBuilder
-                .fromConnectionFactory(factory)
-                .cacheDefaults(
-                        RedisCacheConfiguration.defaultCacheConfig()
-                        //.entryTtl(Duration.ofDays(1))
-                        //.serializeValuesWith(jsonSerializer)
-                )
-                .build();
     }
 
     /**

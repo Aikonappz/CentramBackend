@@ -12,19 +12,15 @@ import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import java.util.Arrays;
 import java.util.Properties;
-import java.util.stream.StreamSupport;
 
 @Configuration
 public class BatchConfig {
@@ -47,18 +43,10 @@ public class BatchConfig {
     private String dateFormat;
     @Value("${camel.integrator.context-path}")
     private String contextPath;
-//    @Value("${app.batch.config.location}")
-//    private String appBatchConfigLocation;
-
-    @Autowired
-    private ConfigurableEnvironment environment;
 
     @Lazy
     @Bean
-    public CamelContextConfiguration contextConfiguration(
-            IncidentAssign incidentAssign,
-            IncidentSLANotification incidentSLANotification
-    ) {
+    public CamelContextConfiguration contextConfiguration() {
         return new CamelContextConfiguration() {
             @Override
             public void beforeApplicationStart(CamelContext context) {
@@ -88,21 +76,7 @@ public class BatchConfig {
     @Bean
     public SchedulerFactory schedulerFactory() throws SchedulerException {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        Properties properties = new Properties();
-        MutablePropertySources propertySources = environment.getPropertySources();
-        StreamSupport.stream(propertySources.spliterator(), false)
-                .filter(ps -> {
-                    return ps instanceof EnumerablePropertySource;
-                })
-                .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
-                .flatMap(Arrays::stream)
-                .filter(i -> {
-                    return i.startsWith("default.org.quartz.");
-                })
-                .forEach(propName -> {
-                    properties.setProperty(propName.replace("default.org.quartz.","org.quartz."), environment.getProperty(propName));
-                });
-        schedulerFactory.initialize(properties);
+        schedulerFactory.initialize("default-quartz.properties");
         return schedulerFactory;
     }
 
@@ -113,23 +87,15 @@ public class BatchConfig {
         return schedulerFactoryBean;
     }
 
+    @Bean("quartzProperties")
+    @ConfigurationProperties(prefix = "app.batch")
+    public Properties quartzProperties() {
+        return new Properties();
+    }
+
     @Bean
-    public QuartzComponent quartzComponent() {
+    public QuartzComponent quartzComponent(@Qualifier("quartzProperties") Properties properties) {
         QuartzComponent quartz = new QuartzComponent();
-        Properties properties = new Properties();
-        MutablePropertySources propertySources = environment.getPropertySources();
-        StreamSupport.stream(propertySources.spliterator(), false)
-                .filter(ps -> {
-                    return ps instanceof EnumerablePropertySource;
-                })
-                .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
-                .flatMap(Arrays::stream)
-                .filter(i -> {
-                    return i.startsWith("org.quartz.");
-                })
-                .forEach(propName -> {
-                    properties.setProperty(propName, environment.getProperty(propName));
-                });
         quartz.setProperties(properties);
         //quartz.setSchedulerFactory(schedulerFactory);
         //quartz.setPropertiesFile("quartz.properties");

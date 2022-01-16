@@ -3,37 +3,23 @@ package com.centram.core;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
-@EnableSwagger2
-@ComponentScan(basePackages = {
-        "com.centram.core",
-        "com.centram.common",
-        "com.centram.domain",
-        "com.centram.batch"
-})
-@EntityScan(basePackages = {"com.centram.domain"})
+/*@EntityScan(basePackages = {"com.centram.domain"})
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class, basePackages = {"com.centram.core.repository"})
-@SpringBootApplication(scanBasePackages = {
-        "com.centram.core",
-        "com.centram.common",
-        "com.centram.domain",
-        "com.centram.batch"
-})
 @EnableTransactionManagement
-@EnableAutoConfiguration
-@EnableCaching
-@EnableSpringDataWebSupport
+@EnableAutoConfiguration*/
+@EnableSwagger2
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
+@ComponentScan(basePackages = {"com.centram.core", "com.centram.common", "com.centram.domain", "com.centram.batch"})
+@SpringBootApplication(scanBasePackages = {"com.centram.core", "com.centram.common", "com.centram.domain", "com.centram.batch"})
 public class CoreApp {
     private static final String DATE_FORMAT = "dd-M-yyyy hh:mm:ss a";
 

@@ -2,6 +2,11 @@ http://localhost:7001/swagger-ui.html
 https://docs.google.com/spreadsheets/d/1kyYGpGP9wGIvuRPw-J-uXNg6LBOA9f5lSOE56uC-GJs/edit#gid=542979276
 
 
+SET GLOBAL validate_password_length = 4;
+SET GLOBAL validate_password_policy=LOW;
+CREATE USER 'redonlyusr'@'%' IDENTIFIED BY 'sam_coder';
+GRANT SELECT, SHOW VIEW ON centram.* TO 'redonlyusr'@'%' IDENTIFIED BY 'sam_coder';
+FLUSH PRIVILEGES;
 mysqldump -u root -p centram > /home/sumit/Documents/ramesh/app/centram/db/centram.sql
 mysql -u root -p centram
 drop database centram;
