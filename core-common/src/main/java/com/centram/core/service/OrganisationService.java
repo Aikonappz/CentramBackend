@@ -20,7 +20,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,6 +67,9 @@ public class OrganisationService {
     private RestTemplate restTemplate;
 
     @Autowired
+    private MiscService miscService;
+
+    @Autowired
     /*@Qualifier("appEntityManager")*/
     private EntityManager entityManager;
 
@@ -85,10 +87,12 @@ public class OrganisationService {
             organisation.setStatus(Status.ACTIVE);
             organisation.setSetting(new Setting(IncidentAllocationType.GENERIC));
             newOrganisation = organisationRepository.save(organisation);
-            activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.ORGANISATION_ONBOARD));
+            miscService.organisationUpdate(newOrganisation, true);
         } else {
             newOrganisation = organisationRepository.save(organisation);
-            activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
+            if (newOrganisation.getStatus() == Status.INACTIVE) {
+                miscService.organisationUpdate(newOrganisation, false);
+            }
         }
         return newOrganisation;
     }

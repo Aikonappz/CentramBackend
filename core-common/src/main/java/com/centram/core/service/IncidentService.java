@@ -288,6 +288,7 @@ public class IncidentService {
         for (Incident incident : incidents) {
             incident.setStatus(IncidentStatus.valueOf(status));
             incident.setReOpened(true);
+            incident.setAssignedUser(null);
             //incident.setAssignedUser(null);
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());
@@ -308,7 +309,7 @@ public class IncidentService {
         }
         incidents = incidentRepository.saveAll(incidents);
         for (Incident incident : incidents) {
-            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appLocalDateTimeFormat, "Incident Reopened!"));
+            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appLocalDateTimeFormat, "Incident Reopened again!"));
         }
     }
 

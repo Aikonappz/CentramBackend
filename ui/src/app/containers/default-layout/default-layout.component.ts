@@ -161,6 +161,7 @@ export class DefaultLayoutComponent implements OnInit {
         if (this.modalService.getModalsCount() > 0) {
           this.modalRef.hide();
           this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "0");
+          this.clientStorageService.set(AppUtility.APP_SESSION_TIMEOUT_KEY, "1");
           clearInterval(this.timerHandler);
           this.router.navigate(['/sign-out']);
         }

@@ -130,6 +130,12 @@ export class EditVendorComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
+      if (this.statusFlag === false) {
+        let res = window.confirm("Do you really want to change the status?")
+        if (!res) {
+          return;
+        }
+      }
       //console.log(this.angForm);
       this.vendor.inHouse = (this.angForm.controls['inHouse'].value == true) ? true : false;
       this.vendor.name = this.angForm.controls['name'].value;

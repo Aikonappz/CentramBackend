@@ -12,7 +12,7 @@ import { UserService } from '../../service/UserService';
   styleUrls: ['./logout.component.scss']
 })
 export class LogoutComponent implements OnInit {
-
+  mode: string = "logOut";
   constructor(
     private titleService: Title,
     private router: Router,
@@ -50,15 +50,20 @@ export class LogoutComponent implements OnInit {
       .subscribe((data: any) => {
         //clearInterval();
         this.clientStorageService.remove(AppUtility.LOGGED_IN_PROFILE);
+        this.clientStorageService.remove(AppUtility.LOGGED_IN_LAST_VISIT);
         this.clientStorageService.remove(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY);
         this.clientStorageService.remove(AppUtility.APP_LAST_ACTION_KEY);
+        this.clientStorageService.remove(AppUtility.APP_INCIDENT_DRAFT_KEY);
+        if (this.clientStorageService.get(AppUtility.APP_SESSION_TIMEOUT_KEY)) {
+          this.mode = "sessionTimeOut";
+        }
         this.clientStorageService.clear();
         //console.log(data);
         //this.angForm.reset();
         //this.toggleStockAddMode();
         //window.location.reload();
         this.websocketService.disconnect();
-        this.router.navigate(['/'])
+        this.router.navigate(['/sign-in/' + this.mode])
           .then(() => {
             window.location.reload();
           });

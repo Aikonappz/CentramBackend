@@ -351,7 +351,7 @@ export class EditOrganisationComponent implements OnInit {
   formSubmit() {
     if (this.angForm.valid) {
       if (this.statusFlag === false) {
-        let res = window.confirm("Are you sure?")
+        let res = window.confirm("Do you really want to change the status?")
         if (!res) {
           return;
         }
@@ -439,7 +439,10 @@ export class EditOrganisationComponent implements OnInit {
   callAddUserService(id: number, version: number) {
     this.user.organisation = new Organisation();
     this.user.organisation.id = id;
+    this.user.status = Status['ACTIVE'];
     this.user.organisation.version = version;
+    this.user.organisation.status = Status['ACTIVE'];
+    this.user.vendor = null;
     this.userService
       .saveUserService(this.user)
       .subscribe((data: UserVO) => {

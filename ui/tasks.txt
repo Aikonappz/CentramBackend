@@ -134,3 +134,7 @@ My Notifications
 15. Expand here + symbol -> coler redis -d
 16. Incident Status should be in ascending order -d
 17. Need clarification should change automatically to provided clarification
+
+
+1. time shift can be 8p.m to 4.am next day.
+2. vendor 

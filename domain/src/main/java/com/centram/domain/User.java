@@ -89,7 +89,7 @@ public class User extends BaseEntity implements Serializable {
     private String contactNo;
 
     @ApiModelProperty(required = false, value = "")
-    @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255) not null")
+    @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String secContactNo;
 

@@ -29,7 +29,7 @@ import java.util.Optional;
 public class IncidentSLANotification extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(IncidentSLANotification.class);
-    private final String interval = "0 0/2 * * * ?";
+    private final String interval = "0 0/59 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")

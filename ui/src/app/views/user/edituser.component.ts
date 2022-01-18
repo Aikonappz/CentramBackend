@@ -380,7 +380,7 @@ export class EditUserComponent implements OnInit {
     //console.log(managerId);
     if (this.angForm.valid) {
       if (this.statusFlag === false) {
-        let res = window.confirm("Are you sure?")
+        let res = window.confirm("Do you really want to change the status?")
         if (!res) {
           return;
         }

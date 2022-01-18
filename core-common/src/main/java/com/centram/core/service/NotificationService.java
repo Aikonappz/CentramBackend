@@ -114,7 +114,7 @@ public class NotificationService {
      *
      * @param notifications
      */
-    @Transactional
+    @Transactional(readOnly = false)
     public void save(List<Notification> notifications) {
         notifications = notificationRepository.saveAll(notifications);
         this.pushNotifications(notifications);

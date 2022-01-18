@@ -26,15 +26,10 @@ public interface VendorRepository extends JpaRepository<Vendor, BigInteger> {
 
     @Query(value = "select " +
             " new com.centram.common.vo.OrgAdminDashboardVO(" +
-            " sum(case when v.inHouse = true then 1 else 0 end), " +
-            " sum(case when v.inHouse = true then 0 else 1 end) " +
+            " sum(case when v.inHouse = true and v.organisation.id =  (:organisationId) then 1 else 0 end), " +
+            " sum(case when v.inHouse = false and v.organisation.id =  (:organisationId) then 1 else 0 end) " +
             " ) " +
             " from " +
-            " Vendor v " +
-            " join v.organisation o on (o.id = v.organisation.id)" +
-            " where " +
-            " o.id =  (:organisationId) ", nativeQuery = false)
-    OrgAdminDashboardVO orgAdminVendorDashboardData(
-            @Param("organisationId") BigInteger organisationId
-    );
+            " Vendor v ", nativeQuery = false)
+    OrgAdminDashboardVO orgAdminVendorDashboardData(@Param("organisationId") BigInteger organisationId);
 }

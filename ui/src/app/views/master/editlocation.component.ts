@@ -116,6 +116,12 @@ export class EditLocationComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
+      if (this.statusFlag === false) {
+        let res = window.confirm("Do you really want to change the status?")
+        if (!res) {
+          return;
+        }
+      }
       //console.log(this.angForm);
       this.loc.country = this.angForm.controls['country'].value;
       this.loc.timezone = this.angForm.controls['timezone'].value;

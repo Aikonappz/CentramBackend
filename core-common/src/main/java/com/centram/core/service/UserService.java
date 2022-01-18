@@ -303,7 +303,7 @@ public class UserService implements UserDetailsService {
      * @param user
      * @return
      */
-    @Transactional
+    @Transactional(readOnly = false)
     public UserVO save(User user) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Boolean newOnboard = user.getId() == null;
@@ -332,11 +332,10 @@ public class UserService implements UserDetailsService {
         }
         userVO.setRoleNames(roleNames);
         if (newOnboard) {
-            Map<String, String> mailValues = new HashMap<>();
+            Map<String, Object> mailValues = new HashMap<>();
             mailValues.put("password", password);
             miscService.sendOnboardMail(userVO, mailValues);
         }
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, (newOnboard) ? ActivityType.ADD_USER : ActivityType.UPDATE_USER));
         return userVO;
     }
 

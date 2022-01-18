@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class IncidentAssign extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(IncidentAssign.class);
-    private final String interval = "0 0/3 * * * ?";
+    private final String interval = "0 0/58 * * * ?";
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")

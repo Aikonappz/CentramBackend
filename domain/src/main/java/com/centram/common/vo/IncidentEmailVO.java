@@ -1,6 +1,7 @@
 package com.centram.common.vo;
 
 import com.centram.domain.Incident;
+import com.centram.domain.Notification;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,6 +21,7 @@ public class IncidentEmailVO implements Serializable {
     private String[] to;
     private String[] cc;
     private String[] bcc;
+    private String categoryAdminEmail;
     private String mailToType;
     private String replyTo;
     private BigInteger incidentId;
@@ -55,6 +57,7 @@ public class IncidentEmailVO implements Serializable {
     private BigInteger organisationId;
     private List<UserVO> userVOS;
     private Boolean newIncident;
+    private List<Notification> notifications;
 
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment) {
