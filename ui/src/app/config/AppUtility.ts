@@ -13,6 +13,7 @@ export class AppUtility {
     public static APP_INCIDENT_DRAFT_KEY = 'incidentDraft';
     public static APP_LOGOUT_WARNING_MODAL_STATUS_KEY = 'warningModalOpened';
     public static APP_SESSION_TIMEOUT_KEY = 'appSessionTimeout';
+    public static APP_LOGGEDIN_USR_ROLES = 'userRoles';
     public static APP_LAST_ACTION_KEY = 'lastAction';
     public static APP_ACTIVITY_CHECK_INTERVAL = 15000;
     public static APP_LOGOUT_WARNING_INTERVAL = 10;

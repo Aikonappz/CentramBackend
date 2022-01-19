@@ -32,6 +32,7 @@ export class EditLocationComponent implements OnInit {
   entityId: number;
   loc: LocationVO;
   countries = countryWithTimeZones;
+  uniqueCountries: any[] = [];
   filterdCountry: CountryWithTimeZone[];
   timeList: string[];
   angForm: FormGroup;
@@ -81,6 +82,9 @@ export class EditLocationComponent implements OnInit {
     this.loc = new LocationVO();
     this.loc.status = this.defaultStatus;
     this.timeList = AppUtility.getDayHourList(30);
+    const uniqueCountryList = [...new Set(this.countries.map(item => item.country_name))];
+    //console.log(uniqueCountryList);
+    this.uniqueCountries = uniqueCountryList;
   }
 
   hasPermission(action: string): boolean {

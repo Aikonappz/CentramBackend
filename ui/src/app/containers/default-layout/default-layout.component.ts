@@ -39,6 +39,8 @@ export class DefaultLayoutComponent implements OnInit {
   private unreadNotifications: number;
   private menuAttributes: any;
   modalRef: BsModalRef;
+  roles: string[] = [];
+  userRoles: string[] = [];
 
   timerHandler: any;
   constructor(
@@ -59,6 +61,17 @@ export class DefaultLayoutComponent implements OnInit {
     this.currentYear = m.format('YYYY');
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
+    this.roles = this.loggedInUser.roles;
+    if (this.hasUserRole()) {
+      this.userRoles.push("EMP");
+    }
+    if (this.hasAgentRole()) {
+      this.userRoles.push("AGENT");
+    }
+    if (this.hasCategoryAdminRole()) {
+      this.userRoles.push("CATEGORY_ADMIN");
+    }
+    this.clientStorageService.set(AppUtility.APP_LOGGEDIN_USR_ROLES, this.userRoles);
     //console.log(JSON.stringify(this.loggedInUser));
     this.permissions = this.loggedInUser.modulePermissions;
     // this.permissions.forEach(function (itm) {
@@ -200,6 +213,13 @@ export class DefaultLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.connect();
+    //console.log(this.clientStorageService.get(AppUtility.APP_LOGGEDIN_USR_ROLES));
+    var roles = this.clientStorageService.get(AppUtility.APP_LOGGEDIN_USR_ROLES);
+    $(function () {
+      if (!roles.includes('EMP') && roles.includes('AGENT')) {
+        $('.nav-item').removeClass('highlighted-yellow');
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -268,6 +288,33 @@ export class DefaultLayoutComponent implements OnInit {
     }
   }
 
+  hasUserRole() {
+    for (let k in this.roles) {
+      if (this.roles[k].match(/.*_USER_.*/)) {
+        return true
+      }
+    }
+    return false;
+  }
+
+  hasAgentRole() {
+    for (let k in this.roles) {
+      if (this.roles[k].match(/.*_AGENT_.*/)) {
+        return true
+      }
+    }
+    return false;
+  }
+
+  hasCategoryAdminRole() {
+    for (let k in this.roles) {
+      if (this.roles[k].match(/.*_CATEGORY_ADMIN.*/)) {
+        return true
+      }
+    }
+    return false;
+  }
+
 }
 
 @Component({
@@ -319,7 +366,7 @@ export class LogoutWarningComponent implements OnInit {
     this.handler = this.options.initialState.valueOf();
     console.log(this.handler.handler);
   }
-  signOut() {    
+  signOut() {
     clearInterval(this.handler.handler);
     this.close();
     this.router.navigate(['/sign-out']);

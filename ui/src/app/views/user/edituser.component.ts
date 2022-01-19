@@ -41,49 +41,7 @@ export class EditUserComponent implements OnInit {
   c: number = 0;
   rolesList: string[];
   loggedInUser: LoggedInUser;
-  angForm = new FormGroup({
-    firstName: new FormControl('', [
-      Validators.required,
-    ]),
-    lastName: new FormControl('', [
-      Validators.required,
-    ]),
-    email: new FormControl('', [
-      Validators.required,
-      Validators.email,
-    ]),
-    contactNo: new FormControl('', [
-      Validators.required,
-      Validators.pattern(this.phoneRegex),
-    ]),
-    secContactNo: new FormControl('', [
-      Validators.pattern(this.phoneRegex),
-    ]),
-    employeeId: new FormControl('NA', [
-      Validators.required,
-    ]),
-    managerId: new FormControl('NA', [
-      //Validators.required,
-    ]),
-    projectCode: new FormControl('NA', [
-      //Validators.required
-    ]),
-    roles: new FormControl('', [
-      Validators.required
-    ]),
-    department: new FormControl('', [
-      //Validators.required
-    ]),
-    location: new FormControl('', [
-      //Validators.required
-    ]),
-    vendorId: new FormControl('', [
-      //Validators.required
-    ]),
-    status: new FormControl(true, [
-
-    ]),
-  });
+  angForm: FormGroup;
   constructor(
     private route: ActivatedRoute,
     private _location: Location,
@@ -103,6 +61,102 @@ export class EditUserComponent implements OnInit {
     this.user.status = this.defaultStatus;
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.rolesList = this.loggedInUser.roles;
+
+    if (this.rolesList.includes('APP_ADMIN')) {
+      this.angForm = new FormGroup({
+        firstName: new FormControl('', [
+          Validators.required,
+        ]),
+        lastName: new FormControl('', [
+          Validators.required,
+        ]),
+        email: new FormControl('', [
+          Validators.required,
+          Validators.email,
+        ]),
+        contactNo: new FormControl('', [
+          Validators.required,
+          Validators.pattern(this.phoneRegex),
+        ]),
+        secContactNo: new FormControl('', [
+          Validators.pattern(this.phoneRegex),
+        ]),
+        employeeId: new FormControl('NA', [
+          Validators.required,
+        ]),
+        managerId: new FormControl('NA', [
+          //Validators.required,
+        ]),
+        projectCode: new FormControl('NA', [
+          //Validators.required
+        ]),
+        roles: new FormControl('', [
+          Validators.required
+        ]),
+        department: new FormControl('', [
+          //Validators.required
+        ]),
+        location: new FormControl('', [
+          //Validators.required
+        ]),
+        vendorId: new FormControl('', [
+          //Validators.required
+        ]),
+        status: new FormControl(true, [
+
+        ]),
+        userType: new FormControl(true, [
+
+        ]),
+      });
+    } else {
+      this.angForm = new FormGroup({
+        firstName: new FormControl('', [
+          Validators.required,
+        ]),
+        lastName: new FormControl('', [
+          Validators.required,
+        ]),
+        email: new FormControl('', [
+          Validators.required,
+          Validators.email,
+        ]),
+        contactNo: new FormControl('', [
+          Validators.required,
+          Validators.pattern(this.phoneRegex),
+        ]),
+        secContactNo: new FormControl('', [
+          Validators.pattern(this.phoneRegex),
+        ]),
+        employeeId: new FormControl('NA', [
+          Validators.required,
+        ]),
+        managerId: new FormControl('NA', [
+          //Validators.required,
+        ]),
+        projectCode: new FormControl('NA', [
+          //Validators.required
+        ]),
+        roles: new FormControl('', [
+          Validators.required
+        ]),
+        department: new FormControl('', [
+          //Validators.required
+        ]),
+        location: new FormControl('', [
+          Validators.required
+        ]),
+        vendorId: new FormControl('', [
+          //Validators.required
+        ]),
+        status: new FormControl(true, [
+
+        ]),
+        userType: new FormControl(true, [
+
+        ]),
+      });
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -347,6 +401,17 @@ export class EditUserComponent implements OnInit {
           });
       }
     }
+
+    $(function () {
+      $('#userType').change(function () {
+        if ($(this).val() == 'Employee') {
+          $('.vendor-col').addClass('d-none');
+          $('#vendorId').val('');
+        } else if ($(this).val() == 'Agent') {
+          $('.vendor-col').removeClass('d-none');
+        }
+      });
+    });
   }
 
   preapareSelect() {
@@ -417,7 +482,7 @@ export class EditUserComponent implements OnInit {
         this.user.department = dept;
       }
       let vendorId = this.angForm.controls['vendorId'].value;
-      if (vendorId != '') {
+      if (vendorId != '' && this.angForm.controls['userType'].value == 'Agent') {
         let vendor = new Vendor();
         for (let i in this.vendorList) {
           if (this.vendorList[i].id == vendorId) {
@@ -490,6 +555,15 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('managerId').setValue(this.user.managerId);
         if (this.user.vendor.id != null) {
           this.angForm.get('vendorId').setValue(this.user.vendor.id);
+          $(function () {
+            $('#userType').val('Agent');
+            $('.vendor-col').removeClass('d-none');
+          });
+        } else {
+          $(function () {
+            $('#userType').val('Employee');
+            $('.vendor-col').addClass('d-none');
+          });
         }
         if (!this.loggedInUserService.appManager()) {
           if (typeof this.departments !== 'undefined') {
