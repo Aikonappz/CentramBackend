@@ -399,7 +399,8 @@ export class EditIncidentComponent implements OnInit {
       if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan2MB) {
         return;
       }
-      let validMimeTpes = ["text/plain", "application/x-msexcel", "application/x-excel", "application/vnd.ms-excel", "application/excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingm", "image/jpeg", "image/pjpeg", "image/png"];
+      let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain", "application/x-msexcel", "application/x-excel", "application/vnd.ms-excel", "application/excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingm", "image/jpeg", "image/pjpeg", "image/png"];
       if (!validMimeTpes.includes(type)) {
         file.setErrors({ validAttachments: true, mustBeLessThan2MB: false });
       } else if (size > (3145728)) {

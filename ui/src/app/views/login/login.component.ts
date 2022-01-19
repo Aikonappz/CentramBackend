@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AppUtility } from '../../config/AppUtility';
 import { AuthRequest } from '../../model/AuthRequest';
 import { LoggedInUser } from '../../model/LoggedInUser';
@@ -16,6 +16,7 @@ import { UserService } from '../../service/UserService';
   styleUrls: ['login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  sessionTimeOut: boolean = false;
   authRequest: AuthRequest;
   angForm = new FormGroup({
     email: new FormControl('', [
@@ -30,11 +31,15 @@ export class LoginComponent implements OnInit {
   });
 
   constructor(
+    private route: ActivatedRoute,
     private titleService: Title,
     private router: Router,
     private userService: UserService,
     private clientStorageService: ClientStorageService,
   ) {
+    this.route.params.subscribe(params => {
+      this.sessionTimeOut = this.route.snapshot.paramMap.get('mode') === 'sessionTimeOut' ? true : false;
+    });
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');

@@ -17,7 +17,21 @@ import { environment } from '../environments/environment';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'sign-in',
+    resolve: { myData: CheckLoggedInOuter },
+    pathMatch: 'full',
+  },
+  {
     path: 'sign-in',
+    component: LoginComponent,
+    resolve: { myData: CheckLoggedInOuter },
+    data: {
+      title: environment.appName + ' - ' + 'Sign In'
+    }
+  },
+  {
+    path: 'sign-in/:mode',
     component: LoginComponent,
     resolve: { myData: CheckLoggedInOuter },
     data: {
@@ -55,12 +69,6 @@ export const routes: Routes = [
     data: {
       title: environment.appName + ' - ' + 'Sign Out'
     }
-  },
-  {
-    path: '',
-    redirectTo: 'sign-in',
-    resolve: { myData: CheckLoggedInOuter },
-    pathMatch: 'full',
   },
   {
     path: '404',

@@ -86,12 +86,14 @@ export const navItems: INavData[] = [
         name: 'My Group Incidents',
         url: '/incident/agent/all',
         icon: 'fa fa-ticket',
+        class: 'highlighted-yellow',
         attributes: { "moduleName": "MY GROUP INCIDENTS" }
       },
       {
         name: 'Assigned Incidents',
         url: '/incident/agent/mine',
         icon: 'fa fa-space-shuttle',
+        class: 'highlighted-yellow',
         attributes: { "moduleName": "MY GROUP INCIDENTS" }
       },
     ]

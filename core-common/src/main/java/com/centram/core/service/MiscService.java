@@ -294,7 +294,7 @@ public class MiscService {
             if (incidentEmailVO.getNewIncident()) {
                 incidentEmailVO.setMailToType("EMP");
                 incidentEmailVO.setTo(new String[]{incidentEmailVO.getUserEmail()});
-                incidentEmailVO.setCc(incidentEmailVO.getWatchList().split(",").clone());
+                incidentEmailVO.setCc(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? incidentEmailVO.getWatchList().split(",").clone() : new String[]{});
                 incidentEmailVO.setBcc(new String[]{});
                 incidentEmailVO.setReplyTo(appReplyToEmail);
                 incidentEmailVO.setCategory(category);
