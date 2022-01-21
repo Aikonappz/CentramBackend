@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class IncidentEmailVO implements Serializable {
     private static final long serialVersionUID = -6554446908157662441L;
+    private String mailSubjectKey;
+    private String mailBodyKey;
     private String[] to;
     private String[] cc;
     private String[] bcc;
@@ -87,7 +89,7 @@ public class IncidentEmailVO implements Serializable {
             this.agentId = incident.getAssignedUser().getId();
             this.agentVersion = incident.getAssignedUser().getVersion();
             this.agentManagerId = incident.getAssignedUser().getManagerId();
-            this.agentName = incident.getAssignedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
+            this.agentName = incident.getAssignedUser().getFirstName().concat(" ").concat(incident.getAssignedUser().getLastName());
             this.agentEmail = incident.getAssignedUser().getEmail();
             this.agentContactNo = incident.getAssignedUser().getContactNo();
         }

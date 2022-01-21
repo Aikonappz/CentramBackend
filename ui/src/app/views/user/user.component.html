@@ -13,8 +13,13 @@
                                         class="caret"></span></button>
                                 <ul *dropdownMenu class="dropdown-menu" role="menu">
                                     <li role="menuitem">
-                                        <a *ngIf="hasPermission('WRITE')" class="dropdown-item"
-                                            href="assets/downloads/users.csv"><i class="icon-arrow-up-circle"></i>
+                                        <a *ngIf="hasPermission('WRITE')&&!roles.includes('APP_ADMIN')"
+                                            class="dropdown-item" href="assets/downloads/users.csv"><i
+                                                class="icon-arrow-up-circle"></i>
+                                            Upload(Template)</a>
+                                        <a *ngIf="hasPermission('WRITE')&&roles.includes('APP_ADMIN')"
+                                            class="dropdown-item" href="assets/downloads/admin/users.csv"><i
+                                                class="icon-arrow-up-circle"></i>
                                             Upload(Template)</a>
                                     </li>
                                     <li role="menuitem">
@@ -49,12 +54,6 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-3">
-                                        <label class="form-col-form-label" for="userEmail">Email</label>
-                                        <input type="text" formControlName="userEmail" ngModel id="userEmail"
-                                            name="userEmail" class="form-control" placeholder="Email"
-                                            aria-label="Email">
-                                    </div>
-                                    <div class="col-sm-3">
                                         <label class="form-col-form-label" for="userEmployeeId">Employee
                                             Id.</label>
                                         <input type="text" formControlName="userEmployeeId" ngModel id="userEmployeeId"
@@ -80,6 +79,38 @@
                                                 <label class="form-check-label" for="INACTIVE">Inactive</label>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="d-none">
+                                            <label class="form-col-form-label" for="userEmail">Email</label>
+                                            <input type="text" formControlName="userEmail" ngModel id="userEmail"
+                                                name="userEmail" class="form-control" placeholder="Email"
+                                                aria-label="Email">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="!roles.includes('APP_ADMIN')" class="row row-margin-05">
+                                    <div class="col-sm-3">
+                                        <label class="form-col-form-label" for="location">User Type</label>
+                                        <select data-live-search="true" data-style="btn-primary" formControlName="userType"
+                                            ngModel class="form-control" id="userType" name="userType">
+                                            <option value="">ALL</option>
+                                            <option value="USER">Employee</option>
+                                            <option value="AGENT">Agent</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class=" vendor-col">
+                                            <label class="form-col-form-label " for="vendorId">Vendor</label>
+                                            <select class="form-control" formControlName="vendorId" ngModel
+                                                id="vendorId" name="vendorId">
+                                                <option value="">-- Select Vendor --</option>
+                                                <option *ngFor="let e of vendorList" value="{{e.id}}">{{e.name}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
                                     </div>
                                 </div>
                             </div>

@@ -9,19 +9,60 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * App utility
  */
 public class Utility {
     private final static String requestIdPrefix = "REQ";
-    public static String requestNo(){
+
+    /*public static void main(String[] args) {
+        List<String> incidents = new ArrayList<String>();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 10000; i++) {
+            Runnable worker = new Runnable() {
+                @Override
+                public void run() {
+                    incidents.add(incidentNo("INC"));
+                }
+            };
+            executor.execute(worker);
+        }
+        executor.shutdown();
+
+        while (!executor.isTerminated()) {}
+        System.out.println("\nFinished all threads");
+        System.out.println(incidents.size());
+        if(incidents.size()>0){
+            for (String s : incidents){
+                if(Collections.frequency(incidents, s) > 1){
+                    System.out.println(s);
+                }
+            }
+        }
+    }*/
+
+    public static String requestNo() {
         return uniqueId(requestIdPrefix);
     }
-    public static String incidentNo(String incidentNoPrefix){
-        return uniqueId(incidentNoPrefix);
+
+    public static String incidentNo(String incidentNoPrefix) {
+        return incidentNoPrefix.concat(String.valueOf(generateUniqueID()));
+    }
+
+    public static Long generateUniqueID() {
+        final String DATE_FORMATTER = "yyMMddHHmmss";
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMATTER);
+        String currentDateTime = localDateTime.format(dateTimeFormatter);
+        Integer randomNumber = new SecureRandom().nextInt((9999999 - 1) + 1) + 1;
+        String id = currentDateTime.concat(randomNumber.toString());
+        return Long.parseLong(id);
     }
 
     public static String uniqueId(final String prefix) {

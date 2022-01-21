@@ -33,8 +33,8 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="email">Email</label>
-                <input type="text" formControlName="email" ngModel id="email" name="email" class="form-control"
-                  placeholder="Last name" aria-label="Last name">
+                <input type="text" [readonly]="!newEntity" formControlName="email" ngModel id="email" name="email"
+                  class="form-control" placeholder="Last name" aria-label="Last name">
                 <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.email.errors?.required">
                     Email is required.

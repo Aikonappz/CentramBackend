@@ -229,6 +229,10 @@ public class AppEmailService {
         } else if (!incidentEmailVO.getNewIncident() && incidentEmailVO.getMailToType().equalsIgnoreCase("AGENT_DL")) {
             recipientName = "DL";
         }
+        if (incidentEmailVO.getMailSubjectKey() != null && incidentEmailVO.getMailBodyKey() != null) {
+            mailSubject = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailSubjectKey()).toString();
+            mailBody = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailBodyKey()).toString();
+        }
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();

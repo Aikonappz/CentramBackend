@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
@@ -130,20 +131,20 @@ public class IncidentService {
     }
 
     /**
-     * get all open incidents
+     * get all open incidents by category subcategory and organisation
      *
      * @param organisationId
      * @return
      */
-    public List<Incident> getOpenIncidents(BigInteger organisationId) {
-        List<Incident> incidents = this.getIncidentsByOrganisationAndStatus(organisationId, new ArrayList<IncidentStatus>() {{
-            add(IncidentStatus.OPEN);
-        }});
-        List<Incident> filterd = new ArrayList<>();
-        for (int k = 0; k < incidents.size(); k++) {
-            filterd.add(incidents.get(k));
-        }
-        return filterd;
+    public List<Incident> getOpenIncidentsByCategoryAndSubCategoryAndOrganisation(BigInteger category, BigInteger subCategory, BigInteger organisationId) {
+        return incidentRepository.getIncidentsByOrganisationAndStatusAndCategoryAndSubCategory(
+                category,
+                subCategory,
+                organisationId,
+                new ArrayList<IncidentStatus>() {{
+                    add(IncidentStatus.OPEN);
+                }}
+        );
     }
 
     /**
@@ -235,7 +236,7 @@ public class IncidentService {
      * @param incidents
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public List<Incident> saveAll(List<Incident> incidents) {
         Iterable<Incident> source = incidentRepository.saveAll(incidents);
         List<Incident> target = new ArrayList<Incident>();

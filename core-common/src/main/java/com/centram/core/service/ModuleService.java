@@ -57,4 +57,14 @@ public class ModuleService {
         }
         return modules;
     }
+
+    @Transactional(readOnly = true)
+    public List<Module> getCategories() {
+        return moduleRepository.getCategories();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Module> getSubCategories(BigInteger parentModuleId) {
+        return moduleRepository.getSubCategories(parentModuleId);
+    }
 }

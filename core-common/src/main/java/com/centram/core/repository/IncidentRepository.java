@@ -119,6 +119,14 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     @Query("select i from Incident i join i.raisedUser ru join ru.organisation o where i.status in (:statuses) and o.id = (:organisationId) order by i.id asc")
     List<Incident> getIncidentsByOrganisationAndStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
 
+    @Query("select i from Incident i join i.raisedUser ru join ru.organisation o where i.moduleId = (:categoryId) and i.subModuleId = (:subCategoryId) and i.status in (:statuses) and o.id = (:organisationId) order by i.id asc")
+    List<Incident> getIncidentsByOrganisationAndStatusAndCategoryAndSubCategory(
+            @Param("categoryId") BigInteger categoryId,
+            @Param("subCategoryId") BigInteger subCategoryId,
+            @Param("organisationId") BigInteger organisationId,
+            @Param("statuses") List<IncidentStatus> statuses
+    );
+
     @Query(value = " select " +
             " sum(case when i.status = 0 then 1 else 0 end ) as openIncidents, " +
             " sum(case when i.status = 1 then 1 else 0 end ) as assignedIncidents, " +

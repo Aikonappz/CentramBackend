@@ -246,7 +246,7 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, String filterType, Pageable pageable) {
+    public PaginatedList<UserVO> getUsers(String email, String employeeId, Status status, String filterType, BigInteger vendorId, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         email = (!email.equals("")) ? "%" + email.toUpperCase() + "%" : null;
         employeeId = (!employeeId.equals("")) ? "%" + employeeId.toUpperCase() + "%" : null;
@@ -257,6 +257,7 @@ public class UserService implements UserDetailsService {
                 employeeId,
                 status.ordinal(),
                 filterType,
+                vendorId,
                 pageable
         );
         List<UserVO> userVOS = new ArrayList<UserVO>();
@@ -395,6 +396,7 @@ public class UserService implements UserDetailsService {
                 null,
                 Status.ALL.ordinal(),
                 null,
+                null,
                 Pageable.unpaged()
         );
         for (User user : page.getContent()) {
@@ -459,6 +461,27 @@ public class UserService implements UserDetailsService {
         String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
         roles = ",(".concat(roles).concat("),");
         List<User> users = userRepository.getUsersByRoleIds(roles, loggedInUser.getOrganisationId());
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        List<String> roleNames = new ArrayList<>();
+        UserVO userVO = null;
+        for (User user : users) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
+        }
+        return userVOS;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserVO> getAgentsByModuleAndActionAndOrganisation(List<BigInteger> moduleIds, String actionName, BigInteger organisationId) {
+        List<BigInteger> roleIds = permissionService.getRoleIdsByModuleAndAction(moduleIds, actionName);
+        String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
+        roles = ",(".concat(roles).concat("),");
+        List<User> users = userRepository.getAgentsByRoleIds(roles, organisationId);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;

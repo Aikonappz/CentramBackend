@@ -171,9 +171,10 @@ public class UserApiController {
             @ApiParam(value = "User EmployeeId", defaultValue = "", required = false) @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Filter Type", defaultValue = "", required = false) @RequestParam(value = "filterType", defaultValue = "", required = false) String filterType,
+            @ApiParam(value = "Vendor Id for Filter ", defaultValue = "", required = false) @RequestParam(value = "vendorId", defaultValue = "", required = false) BigInteger vendorId,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), filterType, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), filterType, vendorId, pageable), HttpStatus.OK);
     }
 
     /**

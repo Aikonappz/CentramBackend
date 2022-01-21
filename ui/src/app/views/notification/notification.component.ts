@@ -16,7 +16,7 @@ import { MiscService } from '../../service/MiscService';
 export class NotificationComponent implements OnInit {
   notification: Notification;
   modalRef: BsModalRef;
-  displayedColumns = ['notificationTitle', 'notificationBody', 'notificationType', 'status', 'action'];
+  displayedColumns = ['notificationTitle', 'notificationBody', 'notificationType', 'action'];
   private datasource: NotificationDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
@@ -87,11 +87,28 @@ export class NotificationComponent implements OnInit {
     this.service.notificationService(id, {})
       .subscribe((data: Notification) => {
         //console.log("completed....");
+        // const initialState = {
+        //   notification: data,
+        // };
+        // this.modalRef = this.modalService.show(NotificationViewComponent, { initialState });
+        // this.modalRef.content.closeBtnName = 'Close';
+
+        const config: ModalOptions = {
+          backdrop: 'static',
+          keyboard: false,
+          animated: true,
+          ignoreBackdropClick: true,
+          class: data.notificationBody.length > 100 ? 'modal-bg' : 'modal-bg',
+        };
         const initialState = {
           notification: data,
         };
-        this.modalRef = this.modalService.show(NotificationViewComponent, { initialState });
-        this.modalRef.content.closeBtnName = 'Close';
+        this.modalRef = this.modalService.show(NotificationViewComponent,
+          Object.assign({}, config, { initialState })
+        );
+
+
+
       });
   }
 }

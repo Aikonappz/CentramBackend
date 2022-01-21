@@ -119,7 +119,7 @@ export class DefaultLayoutComponent implements OnInit {
     this.pushNotifications.requestPermission();
     this.unreadNotifications = 0;
     this.service.notificationsService({
-      status: "PUSHED"
+      status: "PUSHED",
     }).subscribe((data: NotificationList) => {
       if (typeof data.content != "undefined" && data.content.length > 0) {
         data.content = data.content.concat(this.notifications);

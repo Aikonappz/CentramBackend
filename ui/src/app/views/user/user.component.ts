@@ -12,6 +12,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { LoggedInUser } from '../../model/LoggedInUser';
+import { MiscService } from '../../service/MiscService';
 
 @Component({
   selector: 'app-user',
@@ -35,12 +36,15 @@ export class UserComponent implements OnInit, OnDestroy {
   autoClose: boolean = false;
   roles: string[];
   loggedInUser: LoggedInUser;
+  vendorList: any[];
+  c: number = 0;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
     private userService: UserService,
+    private miscService: MiscService,
     private modalService: BsModalService,
   ) {
     router.events.subscribe(event => {
@@ -58,11 +62,30 @@ export class UserComponent implements OnInit, OnDestroy {
       ]),
       status: new FormControl('ALL', [
       ]),
+      vendorId: new FormControl('', [
+      ]),
+      userType: new FormControl("ALL", [
+      ]),
     });
     this.usr = new User();
     this.usr.status = this.defaultStatus;
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.roles = this.loggedInUser.roles;
+    if (!this.roles.includes('APP_ADMIN')) {
+      this.miscService
+        .vendorsService()
+        .subscribe((data: any) => {
+          let vendors = data.content;
+          this.c = 0;
+          this.vendorList = [];
+          for (let indx = 0; indx < vendors.length; indx++) {
+            if (String(vendors[indx].status) == 'ACTIVE') {
+              this.vendorList[this.c++] = vendors[indx];
+              //Object.assign({ "id": vendors[indx].id, "version": vendors[indx].version, "name": vendors[indx].name });
+            }
+          }
+        });
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -194,13 +217,17 @@ export class UserComponent implements OnInit, OnDestroy {
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
+      let vendorId = this.angForm.controls['vendorId'].value;
+      let userType = this.angForm.controls['userType'].value;
       this.usr.email = this.angForm.controls['userEmail'].value;
       this.usr.employeeId = this.angForm.controls['userEmployeeId'].value;
       this.usr.status = this.statusFlag;
       this.loadData({
         "email": this.usr.email == null ? '' : this.usr.email,
         "employeeId": this.usr.employeeId == null ? '' : this.usr.employeeId,
-        "status": this.usr.status
+        "status": this.usr.status,
+        "filterType": userType,
+        "vendorId": vendorId,
       });
       //console.log(JSON.stringify(this.org));
     } else {

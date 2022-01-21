@@ -30,7 +30,7 @@ export class NotificationDataSource implements DataSource<Notification>{
 
     load(pageNumber = 0, pageSize = 10, req = {}) {
         this.loadingSubject.next(true);
-        let defaultParam = { page: pageNumber, size: pageSize };
+        let defaultParam = { page: pageNumber, size: pageSize, sort: "id,desc", };
         let params = Object.assign(
             req,
             defaultParam

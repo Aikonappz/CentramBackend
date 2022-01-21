@@ -346,6 +346,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Invalid name supplied"),
             @ApiResponse(code = 404, message = "holiday calender not found")
     })
+    @JsonView(Views.BasicView.class)
     @RequestMapping(value = "/notification/{notificationId}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Notification> getNotificationById(@ApiParam(value = "id of notification", required = true) @PathVariable("notificationId") BigInteger notificationId) {
         return new ResponseEntity<Notification>(notificationService.getById(notificationId), HttpStatus.OK);

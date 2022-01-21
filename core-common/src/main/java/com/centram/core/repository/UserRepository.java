@@ -51,6 +51,9 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query(value = "select * from user u where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
     List<User> getUsersByRoleIds(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
 
+    @Query(value = "select u.* from user u left join vendor v on(v.id=u.vendor_id and v.ticket_allocation_type=1) where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
+    List<User> getAgentsByRoleIds(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
+
     @Query("select u from User u where u.id = (:id)")
     User getUserById(@Param("id") BigInteger id);
 
@@ -59,6 +62,11 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             "   ((:organisationId) is not null and u.organisation_id = (:organisationId)) " +
             "   OR " +
             "   ((:organisationId) is null and u.organisation_id is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:vendorId) is not null and u.vendor_id = (:vendorId)) " +
+            "   OR " +
+            "   ((:vendorId) is null) " +
             " ) and " +
             " ( " +
             "   ((:status) <> 2 and u.status = (:status)) " +
@@ -71,9 +79,9 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             "   ((:email) is null) " +
             " ) and " +
             " ( " +
-            "   ((:filterType) = 'USER' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_USER_%') > 0 and u.status = 1) " +
+            "   ((:filterType) = 'USER' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_USER_%') > 0) " +
             "   OR " +
-            "   ((:filterType) = 'AGENT' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_AGENT_%') > 0 and u.vendor_id is null and u.status = 1) " +
+            "   ((:filterType) = 'AGENT' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_AGENT_%') > 0) " +
             "   OR " +
             "   ((:filterType) = 'AGENT_VENDOR' and (select count(r.name) from role r where FIND_IN_SET(r.id,u.roles) > 0 and r.name like '%_AGENT_%') > 0 and u.vendor_id is not null and u.status = 1) " +
             "   OR " +
@@ -83,7 +91,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             "   ((:employeeId) is not null and upper(u.employee_id) like (:employeeId)) " +
             "   OR " +
             "   ((:employeeId) is null)" +
-            " )", nativeQuery = true
+            " ) ", nativeQuery = true
     )
     Page<User> getUsers(
             @Param("organisationId") BigInteger organisationId,
@@ -91,6 +99,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             @Param("employeeId") String employeeId,
             @Param("status") Integer status,
             @Param("filterType") String filterType,
+            @Param("vendorId") BigInteger vendorId,
             Pageable pageable
     );
 
