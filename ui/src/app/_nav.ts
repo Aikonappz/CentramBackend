@@ -104,6 +104,44 @@ export const navItems: INavData[] = [
     icon: 'icon-info',
     attributes: { "moduleName": "MY NOTIFICATIONS" }
   },
+  {
+    name: 'Report',
+    url: '/report',
+    icon: 'fa fa-folder',
+    attributes: { "moduleName": "REPORT" },
+    children: [
+      {
+        name: 'Admin Report',
+        url: '/admin-report',
+        icon: 'fa fa-folder-open',
+        attributes: { "moduleName": "SITE ADMIN REPORT" }
+      },
+      {
+        name: 'Reopen Report',
+        url: '/reopen-report',
+        icon: 'fa fa-folder-open',
+        attributes: { "moduleName": "REOPEN REPORT" }
+      },
+      {
+        name: 'Aging Report',
+        url: '/aging-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "AGING REPORT" }
+      },
+      {
+        name: 'Incident Report',
+        url: '/incident-report',
+        icon: 'fa fa-file',
+        attributes: { "moduleName": "INCIDENT REPORT" }
+      },
+      {
+        name: 'Escalation Report',
+        url: '/escalation-report',
+        icon: 'fa fa-file-excel-o',
+        attributes: { "moduleName": "ESCALATION REPORT" }
+      },
+    ]
+  },
 ];
 
 

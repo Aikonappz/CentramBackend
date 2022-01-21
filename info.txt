@@ -1,6 +1,25 @@
 http://localhost:7001/swagger-ui.html
 https://docs.google.com/spreadsheets/d/1kyYGpGP9wGIvuRPw-J-uXNg6LBOA9f5lSOE56uC-GJs/edit#gid=542979276
 
+SELECT CONCAT("truncate table ",table_name,";") FROM information_schema.tables
+WHERE table_schema = 'centram' and TABLE_NAME  like '%_aud%';
+
+truncate table app_configuration_aud;
+truncate table department_aud;
+truncate table distribution_list_aud;
+truncate table distribution_list_module_aud;
+truncate table form_template_aud;
+truncate table holiday_calender_aud;
+truncate table incident_aud;
+truncate table incident_communication_aud;
+truncate table location_aud;
+truncate table notification_aud;
+truncate table organisation_aud;
+truncate table priority_aud;
+truncate table user_aud;
+truncate table vendor_aud;
+truncate table vendor_module_aud;
+
 
 SET GLOBAL validate_password_length = 4;
 SET GLOBAL validate_password_policy=LOW;
