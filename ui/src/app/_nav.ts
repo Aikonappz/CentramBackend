@@ -112,33 +112,33 @@ export const navItems: INavData[] = [
     children: [
       {
         name: 'Admin Report',
-        url: '/admin-report',
+        url: '/report/admin-report',
         icon: 'fa fa-folder-open',
         attributes: { "moduleName": "SITE ADMIN REPORT" }
       },
       {
-        name: 'Reopen Report',
-        url: '/reopen-report',
-        icon: 'fa fa-folder-open',
-        attributes: { "moduleName": "REOPEN REPORT" }
-      },
-      {
-        name: 'Aging Report',
-        url: '/aging-report',
-        icon: 'fa fa-file-text',
-        attributes: { "moduleName": "AGING REPORT" }
-      },
-      {
         name: 'Incident Report',
-        url: '/incident-report',
+        url: '/report/incident-report',
         icon: 'fa fa-file',
         attributes: { "moduleName": "INCIDENT REPORT" }
       },
       {
         name: 'Escalation Report',
-        url: '/escalation-report',
+        url: '/report/escalation-report',
         icon: 'fa fa-file-excel-o',
         attributes: { "moduleName": "ESCALATION REPORT" }
+      },
+      {
+        name: 'Reopen Report',
+        url: '/report/reopen-report',
+        icon: 'fa fa-folder-open',
+        attributes: { "moduleName": "REOPEN REPORT" }
+      },
+      {
+        name: 'Aging Report',
+        url: '/report/aging-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "AGING REPORT" }
       },
     ]
   },

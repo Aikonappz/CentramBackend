@@ -2,24 +2,30 @@ package com.centram.core.api;
 
 
 import com.centram.common.utility.AppSecurityUtilityService;
-import com.centram.common.vo.*;
-import com.centram.core.service.DashboardService;
-import com.centram.domain.Department;
+import com.centram.common.utility.PaginatedList;
+import com.centram.core.service.ReportService;
+import com.centram.domain.Organisation;
+import com.centram.domain.enumarator.LicenseType;
+import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "report", description = "Report API")
@@ -32,69 +38,42 @@ public class ReportApiController {
     private String dateFormat;
     @Autowired
     private AppSecurityUtilityService appSecurityUtilityService;
-
     @Autowired
-    private DashboardService dashboardService;
+    private ReportService reportService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "app admin dashboard", nickname = "appAdminDashboard", notes = "app admin dashboard", response = AdminDashboardVO.class, tags = {"dashboard",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "organisation report", nickname = "organisationReport", notes = "organisation report", response = PaginatedList.class, tags = {"report",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Department.class)
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/app-admin", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal) && (@appSecurityUtilityService.hasAppAdminAccess(authentication.principal) || @appSecurityUtilityService.hasBusinessLeadAccess(authentication.principal))")
-    public ResponseEntity<AdminDashboardVO> appAdminDashboard() {
-        return new ResponseEntity<AdminDashboardVO>(dashboardService.appAdminDashboard(), HttpStatus.OK);
-    }
-
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "org admin dashboard", nickname = "orgAdminDashboard", notes = "user dashboard", response = OrgAdminDashboardVO.class, tags = {"dashboard",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Department.class)
-    })
-    @RequestMapping(value = "/org-admin", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
-    public ResponseEntity<OrgAdminDashboardVO> orgAdminDashboard() {
-        return new ResponseEntity<OrgAdminDashboardVO>(dashboardService.orgAdminDashboard(), HttpStatus.OK);
-    }
-
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "user dashboard", nickname = "userDashboard", notes = "org admin dashboard", response = UserDashboardVO.class, tags = {"dashboard",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Department.class)
-    })
-    @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
-    public ResponseEntity<UserDashboardVO> userDashboard(
-            @ApiParam(value = "Current date", defaultValue = "", required = true)
-            @RequestParam(value = "currentDate", defaultValue = "", required = true)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    @RequestMapping(value = "/organisation", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('SITE ADMIN REPORT','READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<Organisation>> organisationReport(
+            @ApiParam(value = "Organisation Name", defaultValue = "", required = false) @RequestParam(value = "name", defaultValue = "", required = false) String name,
+            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
+            @ApiParam(value = "License Type", defaultValue = "ALL_TYPE", required = false) @RequestParam(value = "licenseType", defaultValue = "ALL_TYPE", required = false) String licenseType,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<UserDashboardVO>(dashboardService.userDashboard(currentDate), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Organisation>>(reportService.organisationReport(name, Status.valueOf(status), LicenseType.valueOf(licenseType), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "agent dashboard", nickname = "agentDashboard", notes = "agent dashboard", response = AgentDashboardVO.class, tags = {"dashboard",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "organisation report download", nickname = "organisationReportDownload", notes = "organisation report download", response = PaginatedList.class, tags = {"report",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Department.class)
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
     })
-    @RequestMapping(value = "/agent", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
-    public ResponseEntity<AgentDashboardVO> agentDashboard(
-            @ApiParam(value = "Current date", defaultValue = "", required = true)
-            @RequestParam(value = "currentDate", defaultValue = "", required = true)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    @RequestMapping(value = "/organisation/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('SITE ADMIN REPORT','READ',authentication.principal)")
+    public ResponseEntity<Resource> organisationReportDownload(
+            @ApiParam(value = "Organisation Name", defaultValue = "", required = false) @RequestParam(value = "name", defaultValue = "", required = false) String name,
+            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
+            @ApiParam(value = "License Type", defaultValue = "ALL_TYPE", required = false) @RequestParam(value = "licenseType", defaultValue = "ALL_TYPE", required = false) String licenseType
     ) {
-        return new ResponseEntity<AgentDashboardVO>(dashboardService.agentDashboard(currentDate), HttpStatus.OK);
+        final InputStreamResource resource = new InputStreamResource(reportService.downloadOrganisationReport(name, Status.valueOf(status), LicenseType.valueOf(licenseType)));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "organization-" + System.currentTimeMillis() + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "category admin dashboard", nickname = "agentDashboard", notes = "category admin dashboard", response = Department.class, tags = {"dashboard",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Department.class)
-    })
-    @RequestMapping(value = "/category-admin", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
-    public ResponseEntity<CategoryAdminDashboardVO> categoryAdminDashboard(
-            @ApiParam(value = "Current date", defaultValue = "", required = true)
-            @RequestParam(value = "currentDate", defaultValue = "", required = true)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
-    ) {
-        return new ResponseEntity<CategoryAdminDashboardVO>(dashboardService.categoryAdminDashboard(currentDate), HttpStatus.OK);
-    }
 }

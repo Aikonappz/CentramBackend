@@ -26,8 +26,8 @@ export const environment = {
 //   appDevName: 'Centram Dev',
 //   appLandingPage: '/',
 //   appName: 'Centram',
-//   appServiceEndpoint: 'http://3.111.47.178:7001/api',
-//   appWSServiceEndpoint: 'http://3.111.47.178:7001/app-ws-notification',
+//   appServiceEndpoint: 'http://3.108.58.220:7001/api',
+//   appWSServiceEndpoint: 'http://3.108.58.220:7001/app-ws-notification',
 //   appWSNotificationTopic: '/topic/notification',
 //   appWSCred: {
 //     "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",

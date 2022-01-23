@@ -121,6 +121,11 @@ export const routes: Routes = [
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/incident/incident.module').then(m => m.IncidentModule),
       },
+      {
+        path: 'report',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/report/report.module').then(m => m.ReportModule),
+      },
     ]
   },
   { path: '**', component: P404Component }
