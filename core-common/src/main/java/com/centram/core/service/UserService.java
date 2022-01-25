@@ -481,7 +481,7 @@ public class UserService implements UserDetailsService {
         List<BigInteger> roleIds = permissionService.getRoleIdsByModuleAndAction(moduleIds, actionName);
         String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
         roles = ",(".concat(roles).concat("),");
-        List<User> users = userRepository.getAgentsByRoleIds(roles, organisationId);
+        List<User> users = userRepository.getAgentsByRoleIds(roles, roleIds, organisationId);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;

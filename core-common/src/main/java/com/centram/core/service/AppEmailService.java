@@ -445,7 +445,7 @@ public class AppEmailService {
         mailSubject = templateEngine.process(mailSubject, context);
         mailBody = templateEngine.process(mailBody, context);
         context = new Context(Locale.ENGLISH);
-        context.setVariable("recipient_name", userVO.getFirstName().concat(","));
+        context.setVariable("recipient_name", userVO.getFullName().concat(","));
         context.setVariable("app_url", appBaseUrl);
         context.setVariable("team", fromName);
         context.setVariable("mail_body", mailBody);

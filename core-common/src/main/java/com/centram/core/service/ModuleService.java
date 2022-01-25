@@ -4,6 +4,7 @@ package com.centram.core.service;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.CategoryVO;
 import com.centram.core.repository.ModuleRepository;
 import com.centram.domain.Module;
 import org.slf4j.Logger;
@@ -66,5 +67,10 @@ public class ModuleService {
     @Transactional(readOnly = true)
     public List<Module> getSubCategories(BigInteger parentModuleId) {
         return moduleRepository.getSubCategories(parentModuleId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryVO> getCategorySubCategories() {
+        return moduleRepository.getCategorySubCategories();
     }
 }

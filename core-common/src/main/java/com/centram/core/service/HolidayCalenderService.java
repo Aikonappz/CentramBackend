@@ -160,7 +160,7 @@ public class HolidayCalenderService {
     @Transactional(readOnly = true)
     public List<Holiday> getHolidaysByYear(String year) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(loggedInUser.getOrganisationId(), year);
+        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(loggedInUser.getOrganisationId(), year, loggedInUser.getLocationId());
         if (holidayCalender == null) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }

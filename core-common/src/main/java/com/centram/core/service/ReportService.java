@@ -4,7 +4,10 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.domain.Incident;
+import com.centram.domain.IncidentCommunication;
 import com.centram.domain.Organisation;
+import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import org.apache.commons.csv.CSVFormat;
@@ -23,10 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -38,6 +41,11 @@ public class ReportService {
     @Autowired
     private OrganisationService organisationService;
 
+    @Autowired
+    private IncidentService incidentService;
+
+    @Autowired
+    private ModuleService moduleService;
 
     @Transactional(readOnly = true)
     public PaginatedList<Organisation> organisationReport(String name, Status status, LicenseType licenseType, Pageable pageable) {
@@ -45,11 +53,25 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
+    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
+        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
+        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
+        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+        if (start == null || end == null) {
+            end = LocalDateTime.now();
+            start = end.minusDays(90);
+        }
+        return incidentService.incidentReport(mId, smId, pId, intStatus, start, end, pageable);
+    }
+
+
+    @Transactional(readOnly = true)
     public ByteArrayInputStream downloadOrganisationReport(String name, Status status, LicenseType licenseType) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
-        PaginatedList<Organisation> page = organisationService.getOrganisations(name, status, licenseType, Pageable.unpaged());
+        PaginatedList<Organisation> page = this.organisationReport(name, status, licenseType, Pageable.unpaged());
         List<Organisation> organisations = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(
@@ -85,6 +107,74 @@ public class ReportService {
                         organisation.getLicenseStart().format(DateTimeFormatter.ofPattern(dateFormat)),
                         organisation.getLicenseEnd().format(DateTimeFormatter.ofPattern(dateFormat)),
                         organisation.getStatus().name()
+                );
+                csvPrinter.printRecord(data);
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public ByteArrayInputStream downloadIncidentReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+        List<String> data = new ArrayList<String>();
+        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
+        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
+        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
+        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+        if (start == null || end == null) {
+            end = LocalDateTime.now();
+            start = end.minusDays(90);
+        }
+        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged());
+        List<Incident> incidents = page.getContent();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList(
+                    "Incident Number",
+                    "Incident Title",
+                    "Incident Description",
+                    "Category",
+                    "Sub Category",
+                    "Incident Raised Date",
+                    "Priority",
+                    "Requested By",
+                    "Requester Name",
+                    "Assigned to",
+                    "Vendor Name",
+                    "SLA Overdue?",
+                    "Resolve by Date",
+                    "Current Status"
+            );
+            csvPrinter.printRecord(data);
+            for (Incident incident : incidents) {
+                TreeSet<IncidentCommunication> ascSortedCommunicationSet = new TreeSet<IncidentCommunication>(new Comparator<IncidentCommunication>() {
+                    @Override
+                    public int compare(IncidentCommunication ic1, IncidentCommunication ic2) {
+                        return ic1.getId().compareTo(ic2.getId());
+                    }
+                });
+                for (IncidentCommunication incidentCommunication : incident.getCommunications()) {
+                    ascSortedCommunicationSet.add(incidentCommunication);
+                }
+                incident.setCommunications(ascSortedCommunicationSet);
+                data = Arrays.asList(
+                        incident.getIncidentNo(),
+                        incident.getTitle(),
+                        incident.getCommunications().iterator().next().getMessage(),
+                        moduleService.getModuleById(incident.getModuleId()).getName(),
+                        moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
+                        incident.getPriority().getName(),
+                        incident.getRaisedUser().getEmployeeId(),
+                        incident.getRaisedUser().getFirstName() + " " + incident.getRaisedUser().getLastName(),
+                        (incident.getAssignedUser() != null) ? incident.getAssignedUser().getFirstName() + " " + incident.getAssignedUser().getLastName() : "",
+                        (incident.getAssignedUser() != null && incident.getAssignedUser().getVendor() != null) ? incident.getAssignedUser().getVendor().getName() : "",
+                        incident.getSlaBreached() ? "YES" : "NO",
+                        incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateFormat)),
+                        incident.getStatus().name()
                 );
                 csvPrinter.printRecord(data);
             }

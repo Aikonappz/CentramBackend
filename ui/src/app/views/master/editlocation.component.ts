@@ -85,6 +85,11 @@ export class EditLocationComponent implements OnInit {
     const uniqueCountryList = [...new Set(this.countries.map(item => item.country_name))];
     //console.log(uniqueCountryList);
     this.uniqueCountries = uniqueCountryList;
+    this.uniqueCountries.sort(function (a, b) {
+      if (b.country_name > a.country_name) return -1;
+      if (a.country_name > b.country_name) return 1;
+      return 0;
+    });
   }
 
   hasPermission(action: string): boolean {

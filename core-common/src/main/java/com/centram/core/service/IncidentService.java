@@ -116,6 +116,48 @@ public class IncidentService {
     }
 
     /**
+     * @param moduleId
+     * @param subModuleId
+     * @param priorityId
+     * @param status
+     * @param start
+     * @param end
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> roles = loggedInUser.getAuthorities().stream()
+                .map(i -> i.getAuthority())
+                .collect(Collectors.toList());
+        List<BigInteger> modSubModIds = new ArrayList<BigInteger>();
+        Boolean modFilter = true;
+        if (roles.contains("ORG_ADMIN") || roles.contains("ORG_INCIDENT_AGENT_LEAD") || roles.contains("ORG_INCIDENT_AGENT_MANAGER")) {
+            modFilter = false;
+        } else {
+            List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
+            modSubModIds = permissions.stream()
+                    .filter(i -> !i.getModule().getAppModule())
+                    .map(i -> i.getModule().getId())
+                    .collect(Collectors.toList());
+            modFilter = true;
+        }
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(
+                moduleId,
+                subModuleId,
+                priorityId,
+                status,
+                start,
+                end,
+                modFilter,
+                modSubModIds,
+                loggedInUser.getOrganisationId(),
+                pageable
+        ));
+    }
+
+    /**
      * get all non bocked incidents to process in background
      *
      * @return

@@ -1,10 +1,10 @@
 package com.centram.batch.router;
 
 import com.centram.batch.aggregator.OrganisationAggregator;
+import com.centram.common.vo.CategoryVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.service.*;
 import com.centram.domain.Incident;
-import com.centram.domain.Module;
 import com.centram.domain.Organisation;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.IncidentStatus;
@@ -82,44 +82,44 @@ public class IncidentAssign extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         List<Organisation> organisations = (List<Organisation>) exchange.getIn().getBody();
                         Organisation organisation = organisations.get((int) exchange.getProperty("CamelLoopIndex"));
-                        List<Module> categories = moduleService.getCategories();
-                        List<Module> subCategories = new ArrayList<Module>();
                         List<BigInteger> mods = new ArrayList<BigInteger>();
                         List<UserVO> users = new ArrayList<UserVO>();
                         List<Incident> incidents = new ArrayList<Incident>();
                         List<Incident> assignedIncidents = new ArrayList<Incident>();
                         Integer max = 0;
                         Integer counter = 0;
-                        for (Module category : categories) {
-                            subCategories = moduleService.getSubCategories(category.getId());
-                            for (Module subCategory : subCategories) {
-                                mods = new ArrayList<BigInteger>() {{
-                                    add(category.getId());
-                                    add(subCategory.getId());
-                                }};
+                        List<CategoryVO> categoryVOS = moduleService.getCategorySubCategories();
+                        for (CategoryVO categoryVO : categoryVOS) {
+                            mods = new ArrayList<BigInteger>() {{
+                                add(categoryVO.getCategoryId());
+                                add(categoryVO.getSubCategoryId());
+                            }};
+                            incidents = incidentService.getOpenIncidentsByCategoryAndSubCategoryAndOrganisation(categoryVO.getCategoryId(), categoryVO.getSubCategoryId(), organisation.getId());
+                            if (incidents.size() > 0) {
                                 users = userService.getAgentsByModuleAndActionAndOrganisation(mods, "SOLVE", organisation.getId());
-                                Collections.sort(users);
-                                incidents = incidentService.getOpenIncidentsByCategoryAndSubCategoryAndOrganisation(
-                                        category.getId(),
-                                        subCategory.getId(),
-                                        organisation.getId()
-                                );
-                                max = users.size();
-                                counter = 0;
-                                assignedIncidents = new ArrayList<Incident>();
-                                for (Incident incident : incidents) {
-                                    if (counter < max) {
-                                        log.info("{} assigned to {} ", incident.getIncidentNo(), users.get(counter).getFullName());
-                                        incident.setAssignedUser(new User(users.get(counter)));
-                                        incident.setStatus(IncidentStatus.ASSIGNED);
-                                        assignedIncidents.add(incident);
-                                        counter++;
-                                    } else {
-                                        counter = 0;
+                                if (users.size() > 0) {
+                                    Collections.sort(users);
+                                    max = users.size();
+                                    counter = 0;
+                                    assignedIncidents = new ArrayList<Incident>();
+                                    for (Incident incident : incidents) {
+                                        if (counter < max) {
+                                            log.info("{} assigned to {} ", incident.getIncidentNo(), users.get(counter).getFullName());
+                                            incident.setAssignedUser(new User(users.get(counter)));
+                                            incident.setStatus(IncidentStatus.ASSIGNED);
+                                            assignedIncidents.add(incident);
+                                            counter++;
+                                        } else {
+                                            counter = 0;
+                                        }
                                     }
+                                    assignedIncidents = incidentService.saveAll(assignedIncidents);
+                                    incidentService.assignIncidentViaBatch(assignedIncidents);
+                                } else {
+                                    continue;
                                 }
-                                assignedIncidents = incidentService.saveAll(assignedIncidents);
-                                incidentService.assignIncidentViaBatch(assignedIncidents);
+                            } else {
+                                continue;
                             }
                         }
                     }

@@ -1,9 +1,13 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
 import com.centram.domain.converter.HolidayConverter;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,7 +31,9 @@ import java.util.List;
 @EqualsAndHashCode
 @Audited
 @Entity
-@Table(name = "holiday_calender", indexes = {@Index(name = "year_idx", columnList = "year", unique = true)})
+@Table(name = "holiday_calender", indexes = {
+        @Index(name = "year_loc_org_idx", columnList = "year,location_id,organisation_id", unique = true)
+})
 public class HolidayCalender extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -1039150309367452581L;
 
@@ -55,4 +61,12 @@ public class HolidayCalender extends BaseEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
     private Organisation organisation;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @OneToOne
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
+    private Location location;
 }

@@ -55,4 +55,13 @@ export class LoggedInUserService {
         this.loggedInUser = this.getLoggedInUser();
         return this.loggedInUser.modulePermissions;
     }
+    public isOrgAdmin(): boolean {
+        return this.getRoles().includes('ORG_ADMIN');
+    }
+    public isAgentManager(): boolean {
+        return this.getRoles().includes('ORG_INCIDENT_AGENT_MANAGER');
+    }
+    public isAgentLead(): boolean {
+        return this.getRoles().includes('ORG_INCIDENT_AGENT_LEAD');
+    }
 }

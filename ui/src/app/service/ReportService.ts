@@ -14,5 +14,11 @@ export class ReportService {
     downloadOrganisationReport(request?: any): Observable<any> {
         return this.http.get('/v1/report/organisation/download', { "params": request, responseType: 'blob' });
     }
+    incidentReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident', { "params": request });
+    }
+    downloadIncidentReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident/download', { "params": request, responseType: 'blob' });
+    }
 
 }

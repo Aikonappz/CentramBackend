@@ -40,8 +40,9 @@
                     </div>
                   </div>
                 </div>
-                <div
-                  [ngClass]="{'d-none': loggedInUser.licenseType!='ALL'&&loggedInUser.licenseType!='INCIDENT', col : true}">
+                <!-- <div class="d-none"
+                  [ngClass]="{'d-none': loggedInUser.licenseType!='ALL'&&loggedInUser.licenseType!='INCIDENT', col : true}"> -->
+                <div class="d-none">
                   <label class="form-col-form-label" for="ticketAllocationType">Incident Allocation
                     Type</label>
                   <select class="form-control" formControlName="ticketAllocationType" ngModel id="ticketAllocationType"

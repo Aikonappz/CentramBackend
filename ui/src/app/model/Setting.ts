@@ -8,6 +8,6 @@ export class Setting {
     constructor() {
         this.incidentPrefix = '';
         this.assetPrefix = '';
-        this.ticketAllocationType = TicketAllocationType.GENERIC;
+        this.ticketAllocationType = TicketAllocationType.ROUND_ROBIN;
     }
 }

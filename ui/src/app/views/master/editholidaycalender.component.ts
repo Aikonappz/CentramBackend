@@ -6,6 +6,7 @@ import { Location } from '@angular/common';
 import { MiscService } from '../../service/MiscService';
 import { HolidayCalender } from '../../model/HolidayCalender';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { LocationVO } from '../../model/LocationVO';
 
 @Component({
   selector: 'app-editholidaycalender',
@@ -23,6 +24,9 @@ export class EditHolidayCalenderComponent implements OnInit {
   yearList: number[];
   angForm: FormGroup;
   selectedFiles?: FileList;
+  locations: LocationVO[];
+  locationList: any[] = [];
+  c: number = 0;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -39,6 +43,9 @@ export class EditHolidayCalenderComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
+      location: new FormControl('', [
+        Validators.required,
+      ]),
       year: new FormControl('', [
         Validators.required,
       ]),
@@ -47,11 +54,6 @@ export class EditHolidayCalenderComponent implements OnInit {
       ]),
     });
     this.hc = new HolidayCalender();
-    let c = 0;
-    this.yearList = [];
-    for (let i = 2021; i <= 2099; i++) {
-      this.yearList.push(i);
-    }
   }
 
   hasPermission(action: string): boolean {
@@ -98,12 +100,45 @@ export class EditHolidayCalenderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.route.snapshot.paramMap.has('id')) {
+    let c = 0;
+    this.yearList = [];
+    for (let i = 2021; i <= 2099; i++) {
+      this.yearList.push(i);
+    }
 
+    if (!this.route.snapshot.paramMap.has('id')) {
+      this.miscService
+        .locationsService()
+        .subscribe((data: any) => {
+          //console.log("load locations");
+          if (typeof data.content !== 'undefined') {
+            this.locations = data.content;
+            this.c = 0;
+            for (let indx = 0; indx < this.locations.length; indx++) {
+              if (this.locations[indx].status == "ACTIVE") {
+                this.locationList[this.c++] = Object.assign({ "version": this.locations[indx].version, "id": this.locations[indx].id, "name": this.locations[indx].name });
+              }
+            }
+          }
+        });
     } else {
-      this.newEntity = false;
-      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-      this.callholidayCalenderService(this.entityId);
+      this.miscService
+        .locationsService()
+        .subscribe((data: any) => {
+          //console.log("load locations");
+          if (typeof data.content !== 'undefined') {
+            this.locations = data.content;
+            this.c = 0;
+            for (let indx = 0; indx < this.locations.length; indx++) {
+              if (this.locations[indx].status == "ACTIVE") {
+                this.locationList[this.c++] = Object.assign({ "version": this.locations[indx].version, "id": this.locations[indx].id, "name": this.locations[indx].name });
+              }
+            }
+          }
+          this.newEntity = false;
+          this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+          this.callholidayCalenderService(this.entityId);
+        });
     }
   }
 
@@ -115,6 +150,11 @@ export class EditHolidayCalenderComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
+      for (let i in this.locationList) {
+        if (this.locationList[i].id == this.angForm.controls['location'].value) {
+          this.hc.location = this.locationList[i];
+        }
+      }
       this.hc.year = this.angForm.controls['year'].value;
       this.hc.holidays = [];
       const file: File | null = this.selectedFiles.item(0);
@@ -153,11 +193,13 @@ export class EditHolidayCalenderComponent implements OnInit {
         //console.log(JSON.stringify(data));
         this.hc.id = data.id;
         this.hc.year = data.year;
+        this.hc.location = data.location;
         this.hc.holidays = data.holidays;
         // this.hc.status = data.status;
         this.hc.version = data.version;
         //console.log(JSON.stringify(this.user));
         this.angForm.get('year').setValue(this.hc.year);
+        this.angForm.get('location').setValue(this.hc.location.id);
         this.angForm.get('year').disable();
         //this.angForm.markAllAsTouched();
       });

@@ -138,3 +138,6 @@ My Notifications
 
 1. time shift can be 8p.m to 4.am next day.
 2. vendor 
+
+1. Once in a week Monday 7 a.m.
+2. Background jobs like assigning incident/trigger notification should run every minute.

@@ -103,7 +103,8 @@ export class OrgSettingsComponent implements OnInit {
   callsetOrganisationSettingService() {
     this.setting.assetPrefix = this.angForm.controls['assetPrefix'].value;
     this.setting.incidentPrefix = this.angForm.controls['incidentPrefix'].value;
-    this.setting.ticketAllocationType = TicketAllocationType[String(this.angForm.controls['ticketAllocationType'].value)];
+    //this.setting.ticketAllocationType = TicketAllocationType[String(this.angForm.controls['ticketAllocationType'].value)];
+    this.setting.ticketAllocationType = 1;
     this.service
       .setOrganisationSettingService(this.setting)
       .subscribe((data: any) => {

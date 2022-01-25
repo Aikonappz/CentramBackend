@@ -3,10 +3,13 @@ package com.centram.core.api;
 
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.view.Views;
 import com.centram.core.service.ReportService;
+import com.centram.domain.Incident;
 import com.centram.domain.Organisation;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +30,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDateTime;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "report", description = "Report API")
@@ -72,6 +78,48 @@ public class ReportApiController {
         final InputStreamResource resource = new InputStreamResource(reportService.downloadOrganisationReport(name, Status.valueOf(status), LicenseType.valueOf(licenseType)));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "organization-" + System.currentTimeMillis() + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident report", nickname = "incidentReport", notes = "organisation report", response = PaginatedList.class, tags = {"report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @JsonView(Views.ListView.class)
+    @RequestMapping(value = "/incident", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('INCIDENT REPORT','READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<Incident>> incidentReport(
+            @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
+            @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
+            @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
+            @ApiParam(value = "Incident Status", defaultValue = "", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
+            @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
+            @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident report download", nickname = "organisationReportDownload", notes = "incident report download", response = PaginatedList.class, tags = {"report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/incident/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('INCIDENT REPORT','READ',authentication.principal)")
+    public ResponseEntity<Resource> incidentReportDownload(
+            @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
+            @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
+            @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
+            @ApiParam(value = "Incident Status", defaultValue = "", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
+            @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
+            @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
+    ) {
+        final InputStreamResource resource = new InputStreamResource(reportService.downloadIncidentReport(moduleId, subModuleId, priorityId, status, start, end));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(resource);
     }

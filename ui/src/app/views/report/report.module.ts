@@ -8,13 +8,15 @@ import { ReportRoutingModule } from './report-routing.module';
 import { ReportComponent } from './report.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AdminReportComponent } from './adminreport.component';
+import { IncidentReportComponent } from './incidentreport.component';
 
 
 
 @NgModule({
   declarations: [
     ReportComponent,
-    AdminReportComponent
+    AdminReportComponent,
+    IncidentReportComponent,
   ],
   imports: [
     CommonModule,

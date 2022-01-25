@@ -101,7 +101,7 @@ export class MiscService {
     distributionListService(id: number, request?: any): Observable<DistributionList> {
         return this.http.get('/v1/misc/distribution-list/' + id, { "params": request });
     }
-    modulesService(request?: any): Observable<Module[]> {
+    modulesService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-module', { "params": request });
     }
     saveVendorService(vendor: Vendor): Observable<Vendor> {

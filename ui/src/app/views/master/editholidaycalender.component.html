@@ -12,6 +12,20 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
+                <label class="form-col-form-label required-control-label" for="location">Location</label>
+                <select data-live-search="true" data-style="btn-primary" class="form-control" formControlName="location"
+                  ngModel id="location" name="location">
+                  <option value="">-- Select Location --</option>
+                  <option *ngFor="let e of locations" data-tokens="{{e.name}}" value="{{e.id}}">
+                    {{e.name}}</option>
+                </select>
+                <div *ngIf="f.location.touched && f.location.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.location.errors?.required">
+                    Location is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
                 <label class="form-col-form-label required-control-label" for="year">Calender Year</label>
                 <select class="form-control" formControlName="year" ngModel id="year" name="year">
                   <option value="">-- Select Calender Year --</option>
@@ -40,7 +54,6 @@
                   </div>
                 </div>
               </div>
-              <div class="col"></div>
             </div>
           </div>
           <div class="card-footer">
