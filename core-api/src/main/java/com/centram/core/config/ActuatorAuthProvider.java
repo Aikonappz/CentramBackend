@@ -16,9 +16,11 @@ public class ActuatorAuthProvider implements AuthenticationProvider {
 
     @Value("${app.actuator.username}")
     public String username;
-
+    //dev-user
+    
     @Value("${app.actuator.password}")
     public String password;
+    //P@ssw0rd#456
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
