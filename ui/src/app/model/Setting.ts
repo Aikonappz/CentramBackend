@@ -6,7 +6,7 @@ export class Setting {
     assetPrefix: string;
 
     constructor() {
-        this.incidentPrefix = '';
+        this.incidentPrefix = '';   
         this.assetPrefix = '';
         this.ticketAllocationType = TicketAllocationType.ROUND_ROBIN;
     }

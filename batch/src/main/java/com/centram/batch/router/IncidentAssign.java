@@ -40,8 +40,6 @@ public class IncidentAssign extends RouteBuilder {
     @Autowired
     private ProducerTemplate producerTemplate;
     @Autowired
-    private IncidentNotificationService incidentNotificationService;
-    @Autowired
     private OrganisationService organisationService;
     @Autowired
     private UserService userService;

@@ -153,6 +153,90 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
+    @Query("select i from Incident i where " +
+            " (i.escalation1At is not null or i.escalation2At is not null) and " +
+            " i.raisedUser.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
+            " ( " +
+            "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
+            "   OR " +
+            "   ((:modFilter) = false) " +
+            " ) and " +
+            " ( " +
+            "   ((:status) <> 9 and i.status = (:status)) " +
+            "   OR " +
+            "   ((:status) = 9) " +
+            " ) and " +
+            " ( " +
+            "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +
+            "   OR " +
+            "   ((:moduleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:subModuleId) is not null and i.subModuleId = (:subModuleId)) " +
+            "   OR " +
+            "   ((:subModuleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:priorityId) is not null and i.priority.id = (:priorityId)) " +
+            "   OR " +
+            "   ((:priorityId) is null) " +
+            " ) "
+    )
+    Page<Incident> incidentEscalationReport(
+            @Param("moduleId") BigInteger moduleId,
+            @Param("subModuleId") BigInteger subModuleId,
+            @Param("priorityId") BigInteger priorityId,
+            @Param("status") Integer status,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("modFilter") Boolean modFilter,
+            @Param("modSubModIds") List<BigInteger> modSubModIds,
+            @Param("organisationId") BigInteger organisationId,
+            Pageable pageable
+    );
+
+    @Query("select i from Incident i where " +
+            " (i.reopenedAt is not null or i.reOpened = true) and " +
+            " i.raisedUser.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
+            " ( " +
+            "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
+            "   OR " +
+            "   ((:modFilter) = false) " +
+            " ) and " +
+            " ( " +
+            "   ((:status) <> 9 and i.status = (:status)) " +
+            "   OR " +
+            "   ((:status) = 9) " +
+            " ) and " +
+            " ( " +
+            "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +
+            "   OR " +
+            "   ((:moduleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:subModuleId) is not null and i.subModuleId = (:subModuleId)) " +
+            "   OR " +
+            "   ((:subModuleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:priorityId) is not null and i.priority.id = (:priorityId)) " +
+            "   OR " +
+            "   ((:priorityId) is null) " +
+            " ) "
+    )
+    Page<Incident> incidentReopenReport(
+            @Param("moduleId") BigInteger moduleId,
+            @Param("subModuleId") BigInteger subModuleId,
+            @Param("priorityId") BigInteger priorityId,
+            @Param("status") Integer status,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("modFilter") Boolean modFilter,
+            @Param("modSubModIds") List<BigInteger> modSubModIds,
+            @Param("organisationId") BigInteger organisationId,
+            Pageable pageable
+    );
+
     @Query("select i from Incident i where i.status in (:statuses) order by i.id asc")
     List<Incident> getIncidentsByStatus(@Param("statuses") List<IncidentStatus> statuses);
 

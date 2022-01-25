@@ -176,20 +176,45 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private LocalDateTime slaAt;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Column(name = "hold_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime holdAt;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "reopened_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime reopenedAt;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "agent_notification1_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime agentNotification1At;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "agent_notification2_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime agentNotification2At;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "escalation1_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime escalation1At;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "escalation2_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime escalation2At;
+
+    @ApiModelProperty(required = false, value = "")
     @Column(name = "sla_breached", nullable = true)
     @JsonView(Views.BasicView.class)
-    private Boolean slaBreached;
+    private Boolean slaBreached = false;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Column(name = "re_opened", nullable = true)
     @JsonView(Views.BasicView.class)
-    private Boolean reOpened;
+    private Boolean reOpened = false;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

@@ -41,13 +41,14 @@ export class DashboardComponent implements OnInit {
   public adminDoughnutChartLabels: Label[] = [];
   public adminDoughnutChartData: MultiDataSet = [];
   public adminDoughnutChartType: ChartType = 'pie';
-  public adminChartColors: any[] = [{ backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f"] }];
+  public adminChartColors: any[] = [{ backgroundColor: ["#63C2DE", "#FAC008", "#3DA8D8"] }];
   public adminDoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
 
   public admin1DoughnutChartLabels: Label[] = [];
   public admin1DoughnutChartData: MultiDataSet = [];
   public admin1DoughnutChartType: ChartType = 'pie';
-  public admin1ChartColors: any[] = [{ backgroundColor: ["#adff2f", "#fd72e6", "#6062ce", "#6FC8CE",] }];
+  //public admin1ChartColors: any[] = [{ backgroundColor: ["#adff2f", "#EE6A6C", "#5FBD74", "#3B5998",] }];
+  public admin1ChartColors: any[] = [{ backgroundColor: ["#EE6A6C", "#5FBD74", "#3B5998",] }];
   public admin1DoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
 
   public orgAdminDoughnutChartLabels: Label[] = [];
@@ -65,7 +66,7 @@ export class DashboardComponent implements OnInit {
   public orgAdmin1DoughnutChartData: MultiDataSet = [];
   public orgAdmin1DoughnutChartType: ChartType = 'pie';
   public orgAdmin1ChartColors: any[] = [{
-    backgroundColor: ["#FF7360", "#6FC8CE", "#6610f2", "#adff2f", "#6062ce", "#fd72e6", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6f42c1"]
+    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public orgAdmin1DoughnutChartOptions: any = {
     responsive: true,
@@ -76,7 +77,7 @@ export class DashboardComponent implements OnInit {
   public userDoughnutChartData: MultiDataSet = [];
   public userDoughnutChartType: ChartType = 'pie';
   public userChartColors: any[] = [{
-    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public userDoughnutChartOptions: any = {
     responsive: true,
@@ -87,7 +88,7 @@ export class DashboardComponent implements OnInit {
   public agentDoughnutChartData: MultiDataSet = [];
   public agentDoughnutChartType: ChartType = 'pie';
   public agentChartColors: any[] = [{
-    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public agentDoughnutChartOptions: any = {
     responsive: true,
@@ -98,7 +99,7 @@ export class DashboardComponent implements OnInit {
   public agent1DoughnutChartData: MultiDataSet = [];
   public agent1DoughnutChartType: ChartType = 'pie';
   public agent1ChartColors: any[] = [{
-    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+    backgroundColor: ["#3DA8D8", "#E9518B", "#FAC008", "#7048C1", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
   }];
   public agent1DoughnutChartOptions: any = {
     responsive: true,
@@ -109,7 +110,7 @@ export class DashboardComponent implements OnInit {
   public caDoughnutChartData: MultiDataSet = [];
   public caDoughnutChartType: ChartType = 'pie';
   public caChartColors: any[] = [{
-    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public caDoughnutChartOptions: any = {
     responsive: true,
@@ -120,7 +121,7 @@ export class DashboardComponent implements OnInit {
   public ca1DoughnutChartData: MultiDataSet = [];
   public ca1DoughnutChartType: ChartType = 'pie';
   public ca1ChartColors: any[] = [{
-    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+    backgroundColor: ["#3DA8D8", "#E9518B", "#FAC008", "#7048C1", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
   }];
   public ca1DoughnutChartOptions: any = {
     responsive: true,
@@ -131,7 +132,7 @@ export class DashboardComponent implements OnInit {
   public ca2DoughnutChartData: MultiDataSet = [];
   public ca2DoughnutChartType: ChartType = 'pie';
   public ca2ChartColors: any[] = [{
-    backgroundColor: ["#6f42c1", "#6062ce", "#f86c6b", "#adff2f", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
+    backgroundColor: ["#F8CB0F", "#E9528D", "#5FBE76", "#7249C2", "#3EA9D8", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
   }];
   public ca2DoughnutChartOptions: any = {
     responsive: true,
@@ -191,13 +192,18 @@ export class DashboardComponent implements OnInit {
           this.adminDoughnutChartType = 'pie';
 
           dataPoints = [];
-          total = this.adminDashboard.allLicenceTypeCompanies + this.adminDashboard.assetLicenceTypeCompanies + this.adminDashboard.incidentLicenceTypeCompanies;
-          dataPoints.push(total);
+          //total = this.adminDashboard.allLicenceTypeCompanies + this.adminDashboard.assetLicenceTypeCompanies + this.adminDashboard.incidentLicenceTypeCompanies;
+          //dataPoints.push(total);
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
+          // this.admin1DoughnutChartLabels = [
+          //   "Total",
+          //   "All License Type",
+          //   "Asset License Type",
+          //   "Incident License Type",
+          // ];
           this.admin1DoughnutChartLabels = [
-            "Total",
             "All License Type",
             "Asset License Type",
             "Incident License Type",
@@ -354,13 +360,12 @@ export class DashboardComponent implements OnInit {
           this.adminDoughnutChartType = 'pie';
 
           dataPoints = [];
-          total = this.adminDashboard.allLicenceTypeCompanies + this.adminDashboard.assetLicenceTypeCompanies + this.adminDashboard.incidentLicenceTypeCompanies;
-          dataPoints.push(total);
+          //total = this.adminDashboard.allLicenceTypeCompanies + this.adminDashboard.assetLicenceTypeCompanies + this.adminDashboard.incidentLicenceTypeCompanies;
+          //dataPoints.push(total);
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
           this.admin1DoughnutChartLabels = [
-            "Total",
             "All License Type",
             "Asset License Type",
             "Incident License Type",
@@ -524,33 +529,33 @@ export class DashboardComponent implements OnInit {
   }
 
   chartHovered(e: any) {
-    this.getChartSegmentData(e);
+    //this.getChartSegmentData(e);
   }
 
   appAdminChart1SegmentClicked(e: any) {
-    if (this.getChartSegmentData(e) === "Total") {
-      this.viewSiteAdmin({ "status": "ALL" });
-    } else if (this.getChartSegmentData(e) === "Active") {
-      this.viewSiteAdmin({ "status": "ACTIVE" })
-    } else if (this.getChartSegmentData(e) === "Inactive") {
-      this.viewSiteAdmin({ "status": "INACTIVE" })
-    } else {
-      this.viewSiteAdmin({ "status": "ALL" });
-    }
+    // if (this.getChartSegmentData(e) === "Total") {
+    //   this.viewSiteAdmin({ "status": "ALL" });
+    // } else if (this.getChartSegmentData(e) === "Active") {
+    //   this.viewSiteAdmin({ "status": "ACTIVE" })
+    // } else if (this.getChartSegmentData(e) === "Inactive") {
+    //   this.viewSiteAdmin({ "status": "INACTIVE" })
+    // } else {
+    //   this.viewSiteAdmin({ "status": "ALL" });
+    // }
   }
 
   appAdminChart2SegmentClicked(e: any) {
-    if (this.getChartSegmentData(e) === "Total") {
-      this.viewSiteAdmin({ "status": "ALL" });
-    } else if (this.getChartSegmentData(e) === "All License Type") {
-      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ALL" })
-    } else if (this.getChartSegmentData(e) === "Asset License Type") {
-      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ASSET" })
-    } else if (this.getChartSegmentData(e) === "Incident License Type") {
-      this.viewSiteAdmin({ "status": "ALL", "licenseType": "INCIDENT" })
-    } else {
-      this.viewSiteAdmin({ "status": "ALL" });
-    }
+    // if (this.getChartSegmentData(e) === "Total") {
+    //   this.viewSiteAdmin({ "status": "ALL" });
+    // } else if (this.getChartSegmentData(e) === "All License Type") {
+    //   this.viewSiteAdmin({ "status": "ALL", "licenseType": "ALL" })
+    // } else if (this.getChartSegmentData(e) === "Asset License Type") {
+    //   this.viewSiteAdmin({ "status": "ALL", "licenseType": "ASSET" })
+    // } else if (this.getChartSegmentData(e) === "Incident License Type") {
+    //   this.viewSiteAdmin({ "status": "ALL", "licenseType": "INCIDENT" })
+    // } else {
+    //   this.viewSiteAdmin({ "status": "ALL" });
+    // }
   }
 
   getChartSegmentData(e: any) {

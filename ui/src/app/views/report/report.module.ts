@@ -9,6 +9,9 @@ import { ReportComponent } from './report.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AdminReportComponent } from './adminreport.component';
 import { IncidentReportComponent } from './incidentreport.component';
+import { EscalationReportComponent } from './escalationreport.component';
+import { ReopenReportComponent } from './reopenreport.component';
+import { AgingReportComponent } from './agingreport.component';
 
 
 
@@ -17,6 +20,9 @@ import { IncidentReportComponent } from './incidentreport.component';
     ReportComponent,
     AdminReportComponent,
     IncidentReportComponent,
+    EscalationReportComponent,
+    ReopenReportComponent,
+    AgingReportComponent,
   ],
   imports: [
     CommonModule,

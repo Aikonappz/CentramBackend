@@ -20,5 +20,23 @@ export class ReportService {
     downloadIncidentReport(request?: any): Observable<any> {
         return this.http.get('/v1/report/incident/download', { "params": request, responseType: 'blob' });
     }
+    incidentEscalationReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident-escalation', { "params": request });
+    }
+    downloadIncidentEscalationReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident-escalation/download', { "params": request, responseType: 'blob' });
+    }
+    incidentReopenReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident-reopen', { "params": request });
+    }
+    downloadIncidentReopenReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident-reopen/download', { "params": request, responseType: 'blob' });
+    }
+    incidentAgingReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident-aging', { "params": request });
+    }
+    downloadIncidentAgingReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/incident-aging/download', { "params": request, responseType: 'blob' });
+    }
 
 }

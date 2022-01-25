@@ -84,16 +84,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getAgentIncidents(
-            String incidentNo,
-            String moduleId,
-            String subModuleId,
-            String priorityId,
-            String assignedUserId,
-            String title,
-            String status,
-            Pageable pageable
-    ) {
+    public PaginatedList<Incident> getAgentIncidents(String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
@@ -110,9 +101,7 @@ public class IncidentService {
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(
-                incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, pageable
-        ));
+        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, pageable));
     }
 
     /**
@@ -143,18 +132,69 @@ public class IncidentService {
                     .collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(
-                moduleId,
-                subModuleId,
-                priorityId,
-                status,
-                start,
-                end,
-                modFilter,
-                modSubModIds,
-                loggedInUser.getOrganisationId(),
-                pageable
-        ));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, loggedInUser.getOrganisationId(), pageable));
+    }
+
+    /**
+     * @param moduleId
+     * @param subModuleId
+     * @param priorityId
+     * @param status
+     * @param start
+     * @param end
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> incidentEscalationReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> roles = loggedInUser.getAuthorities().stream()
+                .map(i -> i.getAuthority())
+                .collect(Collectors.toList());
+        List<BigInteger> modSubModIds = new ArrayList<BigInteger>();
+        Boolean modFilter = true;
+        if (roles.contains("ORG_ADMIN") || roles.contains("ORG_INCIDENT_AGENT_LEAD") || roles.contains("ORG_INCIDENT_AGENT_MANAGER")) {
+            modFilter = false;
+        } else {
+            List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
+            modSubModIds = permissions.stream()
+                    .filter(i -> !i.getModule().getAppModule())
+                    .map(i -> i.getModule().getId())
+                    .collect(Collectors.toList());
+            modFilter = true;
+        }
+        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, loggedInUser.getOrganisationId(), pageable));
+    }
+
+    /**
+     * @param moduleId
+     * @param subModuleId
+     * @param priorityId
+     * @param status
+     * @param start
+     * @param end
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> incidentReopenReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> roles = loggedInUser.getAuthorities().stream()
+                .map(i -> i.getAuthority())
+                .collect(Collectors.toList());
+        List<BigInteger> modSubModIds = new ArrayList<BigInteger>();
+        Boolean modFilter = true;
+        if (roles.contains("ORG_ADMIN") || roles.contains("ORG_INCIDENT_AGENT_LEAD") || roles.contains("ORG_INCIDENT_AGENT_MANAGER")) {
+            modFilter = false;
+        } else {
+            List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
+            modSubModIds = permissions.stream()
+                    .filter(i -> !i.getModule().getAppModule())
+                    .map(i -> i.getModule().getId())
+                    .collect(Collectors.toList());
+            modFilter = true;
+        }
+        return new PaginatedList<Incident>(incidentRepository.incidentReopenReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
@@ -330,6 +370,7 @@ public class IncidentService {
         Iterable<Incident> incidents = incidentRepository.findAllById(ids);
         for (Incident incident : incidents) {
             incident.setStatus(IncidentStatus.valueOf(status));
+            incident.setReopenedAt(LocalDateTime.now());
             incident.setReOpened(true);
             incident.setAssignedUser(null);
             //incident.setAssignedUser(null);

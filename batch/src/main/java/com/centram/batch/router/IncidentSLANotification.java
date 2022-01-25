@@ -2,11 +2,9 @@ package com.centram.batch.router;
 
 import com.centram.batch.aggregator.IncidentAggregator;
 import com.centram.common.vo.IncidentEmailVO;
-import com.centram.core.service.IncidentNotificationService;
 import com.centram.core.service.IncidentService;
 import com.centram.core.service.MiscService;
 import com.centram.domain.Incident;
-import com.centram.domain.IncidentNotification;
 import com.centram.domain.enumarator.IncidentNotificationType;
 import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
@@ -24,7 +22,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 public class IncidentSLANotification extends RouteBuilder {
 
@@ -39,8 +36,6 @@ public class IncidentSLANotification extends RouteBuilder {
     private IncidentService incidentService;
     @Autowired
     private ProducerTemplate producerTemplate;
-    @Autowired
-    private IncidentNotificationService incidentNotificationService;
     @Autowired
     private MiscService miscService;
 
@@ -106,15 +101,15 @@ public class IncidentSLANotification extends RouteBuilder {
                 .choice()
                 .when(exchange -> {
                     Incident incident = (Incident) exchange.getIn().getBody();
-                    Optional<IncidentNotification> incidentNotification = Optional.ofNullable(incidentNotificationService.find(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED, LocalDateTime.now())));
-                    return !incidentNotification.isPresent();
+                    return incident.getAgentNotification1At() == null;
                 })
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("[{}] notification triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_50_PERCENT_TIME_PASSED, LocalDateTime.now()));
+                        incident.setAgentNotification1At(LocalDateTime.now());
+                        incident = incidentService.update(incident);
                         miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
                     }
                 })
@@ -137,8 +132,7 @@ public class IncidentSLANotification extends RouteBuilder {
                 .choice()
                 .when(exchange -> {
                     Incident incident = (Incident) exchange.getIn().getBody();
-                    Optional<IncidentNotification> incidentNotification = Optional.ofNullable(incidentNotificationService.find(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED, LocalDateTime.now())));
-                    return !incidentNotification.isPresent();
+                    return incident.getAgentNotification2At() == null;
                 })
                 .process(new Processor() {
                     @Override
@@ -146,8 +140,8 @@ public class IncidentSLANotification extends RouteBuilder {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("[{}] notification triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
                         incident.setStatus(IncidentStatus.SLA_ABOUT_TO_BREACH);
+                        incident.setAgentNotification2At(LocalDateTime.now());
                         incident = incidentService.update(incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.WIP_75_PERCENT_TIME_PASSED, LocalDateTime.now()));
                         miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 75% time passed! Please complete within SLA.")));
                     }
                 })
@@ -170,8 +164,7 @@ public class IncidentSLANotification extends RouteBuilder {
                 .choice()
                 .when(exchange -> {
                     Incident incident = (Incident) exchange.getIn().getBody();
-                    Optional<IncidentNotification> incidentNotification = Optional.ofNullable(incidentNotificationService.find(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_JUST_BREACHED, LocalDateTime.now())));
-                    return !incidentNotification.isPresent();
+                    return incident.getEscalation1At() == null;
                 })
                 .process(new Processor() {
                     @Override
@@ -180,8 +173,8 @@ public class IncidentSLANotification extends RouteBuilder {
                         log.info("[{}] notification triggered for sla-just-breached!", incident.getIncidentNo());
                         incident.setStatus(IncidentStatus.SLA_BREACHED);
                         incident.setSlaBreached(true);
+                        incident.setEscalation1At(LocalDateTime.now());
                         incident = incidentService.update(incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_JUST_BREACHED, LocalDateTime.now()));
                         miscService.notifySlaBreached(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
@@ -204,18 +197,15 @@ public class IncidentSLANotification extends RouteBuilder {
                 .choice()
                 .when(exchange -> {
                     Incident incident = (Incident) exchange.getIn().getBody();
-                    Optional<IncidentNotification> incidentNotification = Optional.ofNullable(incidentNotificationService.find(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_BREACHED_60_MINUTES_PASSED, LocalDateTime.now())));
-                    return !incidentNotification.isPresent();
+                    return incident.getEscalation2At() == null;
                 })
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("[{}] notification triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
-                        //incident.setStatus(IncidentStatus.SLA_BREACHED);
-                        //incident.setSlaBreached(true);
-                        //incident = incidentService.update(incident);
-                        incidentNotificationService.save(new IncidentNotification(incident.getId(), IncidentNotificationType.SLA_BREACHED_60_MINUTES_PASSED, LocalDateTime.now()));
+                        incident.setEscalation2At(LocalDateTime.now());
+                        incident = incidentService.update(incident);
                         miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })

@@ -20,7 +20,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-primary">
+                <div class="card text-white bg-warning">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
                     class="btn btn-transparent p-0 float-right">
@@ -33,7 +33,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning">
+                <div class="card text-white bg-primary ">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
                     class="btn btn-transparent p-0 float-right">
@@ -142,7 +142,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-primary cyan">
+                <div class="card text-white bg-warning">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
                     class="btn btn-transparent p-0 float-right">
@@ -155,7 +155,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning">
+                <div class="card text-white cyan">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -240,7 +240,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning indigo">
+                <div class="card text-white bg-facebook">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -315,6 +315,7 @@
                 </canvas>
               </fieldset>
             </div>
+            <div class="col "></div>
           </div>
         </div>
       </div>
@@ -393,7 +394,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning indigo">
+                <div class="card text-white bg-facebook">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -463,6 +464,7 @@
                 </canvas>
               </fieldset>
             </div>
+            <div class="col"></div>
           </div>
         </div>
       </div>
@@ -474,7 +476,7 @@
             <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
             <div class="row">
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-info teal">
+                <div class="card text-white bg-primary">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
                     class="btn btn-transparent p-0 float-right">
@@ -500,7 +502,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning green">
+                <div class="card text-white bg-warning">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -626,7 +628,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning indigo">
+                <div class="card text-white bg-facebook">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -769,7 +771,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-primary indigo">
+                <div class="card text-white bg-primary">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT"})'
                     class="btn btn-transparent p-0 float-right">
@@ -800,7 +802,7 @@
             <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
             <div class="row">
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-info teal">
+                <div class="card text-white bg-primary">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"USER"})'
                     class="btn btn-transparent p-0 float-right">
@@ -952,7 +954,7 @@
               </div>
               <!--/.col-->
               <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning indigo">
+                <div class="card text-white bg-facebook">
                   <div class="card-body pb-0">
                     <!-- <button type="button" (click)='viewOrgAdmin({filterType:"AGENT_VENDOR"})'
                     class="btn btn-transparent p-0 float-right">
@@ -1014,10 +1016,10 @@
           <div class="row">
             <div class="col col-sm-6">
               <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
                 <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
-                  [colors]="ca2ChartColors" [data]="ca2DoughnutChartData" [labels]="ca2DoughnutChartLabels"
-                  [chartType]="ca2DoughnutChartType" [options]="ca2DoughnutChartOptions" [legend]="true">
+                  [colors]="caChartColors" [data]="caDoughnutChartData" [labels]="caDoughnutChartLabels"
+                  [chartType]="caDoughnutChartType" [options]="caDoughnutChartOptions" [legend]="true">
                 </canvas>
               </fieldset>
             </div>
@@ -1025,8 +1027,8 @@
               <fieldset class="border p-2">
                 <legend class="w-auto dashboard-legend">Incidents By Priorities</legend>
                 <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
-                  [colors]="caChartColors" [data]="caDoughnutChartData" [labels]="caDoughnutChartLabels"
-                  [chartType]="caDoughnutChartType" [options]="caDoughnutChartOptions" [legend]="true">
+                  [colors]="ca1ChartColors" [data]="ca1DoughnutChartData" [labels]="ca1DoughnutChartLabels"
+                  [chartType]="ca1DoughnutChartType" [options]="ca1DoughnutChartOptions" [legend]="true">
                 </canvas>
               </fieldset>
             </div>
@@ -1034,12 +1036,13 @@
           <div class="row">
             <div class="col col-sm-6">
               <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
                 <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"
-                  [colors]="ca1ChartColors" [data]="ca1DoughnutChartData" [labels]="ca1DoughnutChartLabels"
-                  [chartType]="ca1DoughnutChartType" [options]="ca1DoughnutChartOptions" [legend]="true">
+                  [colors]="ca2ChartColors" [data]="ca2DoughnutChartData" [labels]="ca2DoughnutChartLabels"
+                  [chartType]="ca2DoughnutChartType" [options]="ca2DoughnutChartOptions" [legend]="true">
                 </canvas>
               </fieldset>
+
             </div>
           </div>
         </div>
