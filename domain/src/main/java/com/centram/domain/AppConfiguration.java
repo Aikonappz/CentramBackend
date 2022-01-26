@@ -24,10 +24,8 @@ import java.util.Map;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "app_configuration", indexes = {@Index(name = "config_key_idx", columnList = "configuration_key", unique = true)})
-@Audited
-public class AppConfiguration extends BaseEntity implements Serializable {
+public class AppConfiguration implements Serializable {
 
     private static final long serialVersionUID = 4216858740061734277L;
 

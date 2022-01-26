@@ -48,6 +48,9 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     and CONCAT(",", `roles`, ",") REGEXP ",(6|10),"
     and find_in_set('15',roles) <> 0*/
 
+    @Query(value = "select * from user u where 1 = 1 and u.organisation_id is null and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
+    List<User> getAdminUsers(@Param("roleExp") String roleExp);
+
     @Query(value = "select * from user u where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
     List<User> getUsersByRoleIds(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
 

@@ -414,6 +414,58 @@ public class AppEmailService {
         }
     }
 
+    @Transactional
+    //@Async("asyncExecutor")
+    public void organisationNotification(Map<String, Object> mailValues, Boolean expired) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ORGANISATION_UPDATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("ORGANISATION_UPDATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(expired ? "orgExpireSub" : "orgAboutToExpireSub").toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(expired ? "orgExpireBody" : "orgAboutToExpireBody").toString();
+        String link = appBaseUrl.concat("/sign-in");
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("link", link);
+        context.setVariable("org_name", mailValues.get("org_name"));
+        context.setVariable("adminTeamEmail", mailValues.get("adminTeamEmail"));
+        context.setVariable("expired_date", mailValues.get("expired_date"));
+        mailSubject = templateEngine.process(mailSubject, context);
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", mailValues.get("recipientType").toString().concat(","));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        String body = StringEscapeUtils.unescapeHtml4(baseEmailTemplate);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", ((List<String>) mailValues.get("recipients")).toArray(new String[0]));
+        mailMap.put("bcc", mailValues.get("recipientType").equals("Site Admin") ? new String[]{adminTeamEmail} : new String[]{});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", body);
+        log.info("ORGANISATION NOTIFICATION EMAIL TITLE: {}", mailSubject);
+        log.info("ORGANISATION NOTIFICATION EMAIL BODY: {}", body);
+        emailService.sendMail(mailMap);
+        if (mailValues.containsKey("userToNotify")) {
+            List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
+            for (UserVO uv : userVOS) {
+                notificationService.save(
+                        Collections.singletonList(
+                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
+                        )
+                );
+            }
+        }
+    }
+
     /**
      * Send welcome mail
      *

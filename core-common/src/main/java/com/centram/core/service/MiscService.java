@@ -863,6 +863,40 @@ public class MiscService {
 
     @Transactional
     @Async("asyncExecutor")
+    public void organisationNotification(Organisation organisation, Boolean expired) {
+        Map<String, Object> mailValues = new HashMap<String, Object>();
+        mailValues.put("org_name", organisation.getName());
+        mailValues.put("adminTeamEmail", appReplyToEmail);
+        mailValues.put("expired_date", organisation.getLicenseEnd().format(DateTimeFormatter.ofPattern(dateFormat)));
+        mailValues.put("recipientType", organisation.getName().concat(" Team"));
+        List<String> orgEmails = organisation.getContactPersons().stream()
+                .filter(i -> {
+                    return i.getEmail() != null;
+                })
+                .map(ContactPerson::getEmail)
+                .collect(Collectors.toList());
+        mailValues.put("recipients", orgEmails);
+        mailValues.put("userToNotify", new ArrayList<UserVO>());
+        appEmailService.organisationNotification(mailValues, expired);
+
+        mailValues.put("org_name", organisation.getName());
+        mailValues.put("adminTeamEmail", appReplyToEmail);
+        mailValues.put("expired_date", organisation.getLicenseEnd().format(DateTimeFormatter.ofPattern(dateFormat)));
+        mailValues.put("recipientType", "Site Admin");
+        List<UserVO> users = userService.getAdminUsers();
+        orgEmails = users.stream()
+                .filter(i -> {
+                    return i.getEmail() != null;
+                })
+                .map(UserVO::getEmail)
+                .collect(Collectors.toList());
+        mailValues.put("recipients", orgEmails);
+        mailValues.put("userToNotify", users);
+        appEmailService.organisationNotification(mailValues, expired);
+    }
+
+    @Transactional
+    @Async("asyncExecutor")
     public void sendOnboardMail(UserVO userVO, Map<String, Object> mailValues) {
         if (userVO.getRoles().contains(BigInteger.valueOf(Long.valueOf("3")))) {
             // if user org admin

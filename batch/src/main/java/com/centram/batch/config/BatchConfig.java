@@ -2,6 +2,7 @@ package com.centram.batch.config;
 
 import com.centram.batch.router.IncidentAssign;
 import com.centram.batch.router.IncidentSLANotification;
+import com.centram.batch.router.OrganisationNotification;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.quartz.QuartzComponent;
 import org.apache.camel.spi.ThreadPoolProfile;
@@ -110,6 +111,11 @@ public class BatchConfig {
     @Bean
     public IncidentAssign incidentAssign() {
         return new IncidentAssign();
+    }
+
+    @Bean
+    public OrganisationNotification organisationNotification() {
+        return new OrganisationNotification();
     }
 
     /*@Bean

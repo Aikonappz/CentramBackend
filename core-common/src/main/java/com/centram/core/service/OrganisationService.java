@@ -172,6 +172,11 @@ public class OrganisationService {
         return organisationDTO;
     }
 
+    @Transactional(readOnly = true)
+    public List<Organisation> getActiveOrganisations() {
+        return organisationRepository.findAll();
+    }
+
     /**
      * Get all organisation
      *

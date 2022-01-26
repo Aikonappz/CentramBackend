@@ -590,6 +590,24 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * get site admin users only
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<UserVO> getAdminUsers() {
+        List<BigInteger> roleIds = new ArrayList<BigInteger>() {{
+            add(BigInteger.valueOf(Long.valueOf("1")));
+        }};
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        List<User> users = userRepository.getAdminUsers(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")));
+        for (User user : users) {
+            userVOS.add(new UserVO(user));
+        }
+        return userVOS;
+    }
+
+    /**
      * get user by roles
      *
      * @param roles
