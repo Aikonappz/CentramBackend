@@ -64,7 +64,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and " +
+    @Query("select i from Incident i where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and " +
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
@@ -110,10 +110,11 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("modSubModIds") List<BigInteger> modSubModIds,
             @Param("title") String title,
             @Param("status") Integer status,
+            @Param("organisationId") BigInteger organisationId,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where 1=1 and i.raisedUser.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
+    @Query("select i from Incident i where 1=1 and i.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
             " ( " +
             "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
             "   OR " +
@@ -155,7 +156,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
 
     @Query("select i from Incident i where " +
             " (i.escalation1At is not null or i.escalation2At is not null) and " +
-            " i.raisedUser.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
+            " i.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
             " ( " +
             "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
             "   OR " +
@@ -197,7 +198,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
 
     @Query("select i from Incident i where " +
             " (i.reopenedAt is not null or i.reOpened = true) and " +
-            " i.raisedUser.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
+            " i.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
             " ( " +
             "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
             "   OR " +
@@ -237,13 +238,13 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where i.status in (:statuses) order by i.id asc")
-    List<Incident> getIncidentsByStatus(@Param("statuses") List<IncidentStatus> statuses);
+    @Query("select i from Incident i where i.organisation.id = (:organisationId) and i.status in (:statuses) order by i.id asc")
+    List<Incident> getIncidentsByStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
 
-    @Query("select i from Incident i join i.raisedUser ru join ru.organisation o where i.status in (:statuses) and o.id = (:organisationId) order by i.id asc")
+    @Query("select i from Incident i where i.status in (:statuses) and i.organisation.id = (:organisationId) order by i.id asc")
     List<Incident> getIncidentsByOrganisationAndStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
 
-    @Query("select i from Incident i join i.raisedUser ru join ru.organisation o where i.moduleId = (:categoryId) and i.subModuleId = (:subCategoryId) and i.status in (:statuses) and o.id = (:organisationId) order by i.id asc")
+    @Query("select i from Incident i where i.moduleId = (:categoryId) and i.subModuleId = (:subCategoryId) and i.status in (:statuses) and i.organisation.id = (:organisationId) order by i.id asc")
     List<Incident> getIncidentsByOrganisationAndStatusAndCategoryAndSubCategory(
             @Param("categoryId") BigInteger categoryId,
             @Param("subCategoryId") BigInteger subCategoryId,

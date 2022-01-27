@@ -9,11 +9,9 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * App utility
@@ -21,10 +19,10 @@ import java.util.stream.Collectors;
 public class Utility {
     private final static String requestIdPrefix = "REQ";
 
-    /*public static void main(String[] args) {
+    /*public static void main(String[] args) throws InterruptedException {
         List<String> incidents = new ArrayList<String>();
         ExecutorService executor = Executors.newFixedThreadPool(10);
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100; i++) {
             Runnable worker = new Runnable() {
                 @Override
                 public void run() {
@@ -34,13 +32,13 @@ public class Utility {
             executor.execute(worker);
         }
         executor.shutdown();
-
-        while (!executor.isTerminated()) {}
+        while (!executor.isTerminated()) {
+        }
         System.out.println("\nFinished all threads");
         System.out.println(incidents.size());
-        if(incidents.size()>0){
-            for (String s : incidents){
-                if(Collections.frequency(incidents, s) > 1){
+        if (incidents.size() > 0) {
+            for (String s : incidents) {
+                if (Collections.frequency(incidents, s) > 1) {
                     System.out.println(s);
                 }
             }
@@ -52,10 +50,10 @@ public class Utility {
     }
 
     public static String incidentNo(String incidentNoPrefix) {
-        return incidentNoPrefix.concat(String.valueOf(generateUniqueID()));
+        return incidentNoPrefix.concat(generateUniqueID());
     }
 
-    public static Long generateUniqueID() {
+    public static Long generateUniqueIDOld() {
         final String DATE_FORMATTER = "yyMMddHHmmss";
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMATTER);
@@ -63,6 +61,11 @@ public class Utility {
         Integer randomNumber = new SecureRandom().nextInt((9999999 - 1) + 1) + 1;
         String id = currentDateTime.concat(randomNumber.toString());
         return Long.parseLong(id);
+    }
+
+    public static String generateUniqueID() {
+        Integer randomNumber = ThreadLocalRandom.current().nextInt((99999999 - 1) + 1) + 1;
+        return String.format("%010d", randomNumber);
     }
 
     public static String uniqueId(final String prefix) {

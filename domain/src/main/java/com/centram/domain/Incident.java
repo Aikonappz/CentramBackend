@@ -216,6 +216,13 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Boolean reOpened = false;
 
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @OneToOne
+    @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
+    private Organisation organisation;
+
     public Incident(@NotNull BigInteger id) {
         this.id = id;
     }

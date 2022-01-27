@@ -73,6 +73,11 @@ public class OrganisationService {
     /*@Qualifier("appEntityManager")*/
     private EntityManager entityManager;
 
+    @Transactional
+    public Organisation saveViaBatch(Organisation organisation) {
+        return organisationRepository.save(organisation);
+    }
+
     /**
      * Create/Update new Organisation
      *

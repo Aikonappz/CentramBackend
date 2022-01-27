@@ -101,7 +101,7 @@ public class IncidentService {
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, pageable));
+        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
@@ -203,7 +203,8 @@ public class IncidentService {
      * @return
      */
     public List<Incident> getNonBlockedIncidents() {
-        return this.getIncidentsByStatus(new ArrayList<IncidentStatus>() {{
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return this.getIncidentsByStatus(loggedInUser.getOrganisationId(), new ArrayList<IncidentStatus>() {{
             add(IncidentStatus.OPEN);
             add(IncidentStatus.ASSIGNED);
             add(IncidentStatus.WORK_IN_PROGRESS);
@@ -236,8 +237,8 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Incident> getIncidentsByStatus(List<IncidentStatus> statusList) {
-        return incidentRepository.getIncidentsByStatus(statusList);
+    public List<Incident> getIncidentsByStatus(BigInteger organisationId, List<IncidentStatus> statusList) {
+        return incidentRepository.getIncidentsByStatus(organisationId, statusList);
     }
 
     @Transactional(readOnly = true)
@@ -411,6 +412,7 @@ public class IncidentService {
         ZonedDateTime currentDateTime = ZonedDateTime.now();
         currentDateTime = currentDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
         if (incident.getId() == null) {
+            incident.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
             incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
             Setting setting = organisationService.getOrganisationSettings();

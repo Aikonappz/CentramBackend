@@ -436,7 +436,7 @@ public class AppEmailService {
         context.setVariable("org_name", mailValues.get("org_name"));
         context.setVariable("adminTeamEmail", mailValues.get("adminTeamEmail"));
         context.setVariable("expired_date", mailValues.get("expired_date"));
-        mailSubject = templateEngine.process(mailSubject, context);
+        mailSubject = StringEscapeUtils.unescapeHtml4(templateEngine.process(mailSubject, context));
         mailBody = templateEngine.process(mailBody, context);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", mailValues.get("recipientType").toString().concat(","));

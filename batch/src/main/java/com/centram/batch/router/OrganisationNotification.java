@@ -68,7 +68,7 @@ public class OrganisationNotification extends RouteBuilder {
                             }
                         } else {
                             organisation.setStatus(Status.INACTIVE);
-                            organisation = organisationService.save(organisation);
+                            organisation = organisationService.saveViaBatch(organisation);
                             miscService.organisationNotification(organisation, true);
                         }
                     }
