@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,6 +65,8 @@ public class IncidentEmailVO implements Serializable {
 
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment) {
+        ZonedDateTime sla = incident.getSlaAt().atZone(ZoneId.systemDefault());
+        sla = sla.withZoneSameInstant(ZoneId.of(incident.getRaisedUser().getLocation().getTimezone()));
         this.watchList = incident.getWatchList().stream().map(String::toString).collect(Collectors.joining(","));
         this.moduleId = incident.getModuleId();
         this.subModuleId = incident.getSubModuleId();
@@ -74,7 +78,7 @@ public class IncidentEmailVO implements Serializable {
         this.description = (customComment == null) ? incident.getCommunications().iterator().next().getMessage() : customComment;
         this.watchList = incident.getWatchList().stream().map(String::toString).collect(Collectors.joining(","));
         this.priority = incident.getPriority().getName();
-        this.sla = incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateTimeFormat));
+        this.sla = sla.toLocalDateTime().format(DateTimeFormatter.ofPattern(dateTimeFormat));
         this.status = incident.getStatus().name();
         this.department = incident.getRaisedUser().getDepartment().getName();
         this.userManagerId = incident.getRaisedUser().getManagerId();

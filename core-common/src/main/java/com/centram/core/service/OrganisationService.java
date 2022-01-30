@@ -88,6 +88,8 @@ public class OrganisationService {
     public Organisation save(Organisation organisation) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Organisation newOrganisation = null;
+        organisation.setLicenseEnd(organisation.getLicenseEnd().toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));
+        organisation.setLicenseStart(organisation.getLicenseStart().toLocalDate().atStartOfDay().plusSeconds(1));
         if (organisation.getId() == null) {
             organisation.setStatus(Status.ACTIVE);
             organisation.setSetting(new Setting(IncidentAllocationType.GENERIC));

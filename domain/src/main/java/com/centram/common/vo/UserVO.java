@@ -41,6 +41,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     private String organisation;
     private BigInteger locationId;
     private String location;
+    private String locationOfficeName;
     private BigInteger departmentId;
     private BigInteger vendorId;
     private String department;
@@ -65,6 +66,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.organisationId = (user.getOrganisation() != null) ? user.getOrganisation().getId() : null;
         this.status = user.getStatus();
         this.location = (user.getLocation() != null) ? user.getLocation().getName() : null;
+        this.locationOfficeName = (user.getLocation() != null) ? user.getLocation().getOfficeName() : null;
         this.organisation = (user.getOrganisation() != null) ? user.getOrganisation().getName() : null;
         this.department = (user.getDepartment() != null) ? user.getDepartment().getName() : null;
         this.managerId = (user.getManagerId() != null) ? user.getManagerId() : null;

@@ -35,10 +35,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Query("update User set password = (:password), modifiedDate = (:modifiedDate) where id = (:userId)")
     Integer updatePassword(@Param("password") String password, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("userId") BigInteger userId);
 
-    @Query("select u from User u " +
-            "left join u.organisation o " +
-            "where u.email = (:email) and u.status = 1 " +
-            "and (u.organisation.id is null or o.status = 1)")
+    @Query("select u from User u left join u.organisation o where u.email = (:email)")
     User getUserByEmail(@Param("email") String email);
 
     @Query("select u from User u where u.id in (:ids)")
@@ -53,6 +50,13 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
 
     @Query(value = "select * from user u where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
     List<User> getUsersByRoleIds(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
+
+    @Query(value = "SELECT u.* FROM user u where " +
+            " (select count(r.name) from role r " +
+            " where FIND_IN_SET(r.id,u.roles) > 0 " +
+            " and r.name REGEXP (:roleExp)) > 0 " +
+            " and u.organisation_id = (:organisationId) ", nativeQuery = true)
+    List<User> getUsersByRoleNames(@Param("roleExp") String roleExp, @Param("organisationId") BigInteger organisationId);
 
     @Query(value = "select u.* from user u join vendor v on (v.id=u.vendor_id and v.ticket_allocation_type=1) " +
             " join vendor_module vm on (v.id = vm.vendor_id and vm.module_id in (:roleIds) and vm.sub_module_id in (:roleIds)) " +

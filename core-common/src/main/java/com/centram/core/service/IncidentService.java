@@ -70,6 +70,11 @@ public class IncidentService {
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
     private String appLocalDateTimeFormat;
 
+    @Value("${app.date.time.view.format}")
+    private String appDateTimeViewFormat;
+
+
+
     /**
      * get incidents for agent
      *
@@ -115,11 +120,15 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<String> roles = loggedInUser.getAuthorities().stream()
-                .map(i -> i.getAuthority())
-                .collect(Collectors.toList());
+    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+        List<String> roles = new ArrayList<String>();
+        if (viaBatch) {
+            roles = roleNames;
+        } else {
+            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            roles = loggedInUser.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toList());
+            organisationId = loggedInUser.getOrganisationId();
+        }
         List<BigInteger> modSubModIds = new ArrayList<BigInteger>();
         Boolean modFilter = true;
         if (roles.contains("ORG_ADMIN") || roles.contains("ORG_INCIDENT_AGENT_LEAD") || roles.contains("ORG_INCIDENT_AGENT_MANAGER")) {
@@ -132,7 +141,7 @@ public class IncidentService {
                     .collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**
@@ -146,11 +155,15 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentEscalationReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<String> roles = loggedInUser.getAuthorities().stream()
-                .map(i -> i.getAuthority())
-                .collect(Collectors.toList());
+    public PaginatedList<Incident> incidentEscalationReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+        List<String> roles = new ArrayList<String>();
+        if (viaBatch) {
+            roles = roleNames;
+        } else {
+            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            roles = loggedInUser.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toList());
+            organisationId = loggedInUser.getOrganisationId();
+        }
         List<BigInteger> modSubModIds = new ArrayList<BigInteger>();
         Boolean modFilter = true;
         if (roles.contains("ORG_ADMIN") || roles.contains("ORG_INCIDENT_AGENT_LEAD") || roles.contains("ORG_INCIDENT_AGENT_MANAGER")) {
@@ -163,7 +176,7 @@ public class IncidentService {
                     .collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**
@@ -177,11 +190,15 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReopenReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<String> roles = loggedInUser.getAuthorities().stream()
-                .map(i -> i.getAuthority())
-                .collect(Collectors.toList());
+    public PaginatedList<Incident> incidentReopenReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+        List<String> roles = new ArrayList<String>();
+        if (viaBatch) {
+            roles = roleNames;
+        } else {
+            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            roles = loggedInUser.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toList());
+            organisationId = loggedInUser.getOrganisationId();
+        }
         List<BigInteger> modSubModIds = new ArrayList<BigInteger>();
         Boolean modFilter = true;
         if (roles.contains("ORG_ADMIN") || roles.contains("ORG_INCIDENT_AGENT_LEAD") || roles.contains("ORG_INCIDENT_AGENT_MANAGER")) {
@@ -194,7 +211,7 @@ public class IncidentService {
                     .collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentReopenReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReopenReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**
@@ -203,8 +220,7 @@ public class IncidentService {
      * @return
      */
     public List<Incident> getNonBlockedIncidents() {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return this.getIncidentsByStatus(loggedInUser.getOrganisationId(), new ArrayList<IncidentStatus>() {{
+        return this.getAllIncidentsByStatus(new ArrayList<IncidentStatus>() {{
             add(IncidentStatus.OPEN);
             add(IncidentStatus.ASSIGNED);
             add(IncidentStatus.WORK_IN_PROGRESS);
@@ -228,6 +244,17 @@ public class IncidentService {
                     add(IncidentStatus.OPEN);
                 }}
         );
+    }
+
+    /**
+     * get incident by status
+     *
+     * @param statusList
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Incident> getAllIncidentsByStatus(List<IncidentStatus> statusList) {
+        return incidentRepository.getAllIncidentsByStatus(statusList);
     }
 
     /**
@@ -309,7 +336,7 @@ public class IncidentService {
         incidentRepository.assignIncidents(IncidentStatus.ASSIGNED, userId, LocalDateTime.now(), ids);
         Iterable<Incident> incidents = incidentRepository.findAllById(ids);
         for (Incident incident : incidents) {
-            miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appLocalDateTimeFormat, null));
+            miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appDateTimeViewFormat, null));
         }
     }
 
@@ -344,7 +371,7 @@ public class IncidentService {
     @Transactional(readOnly = false)
     public void assignIncidentViaBatch(List<Incident> incidents) {
         for (Incident incident : incidents) {
-            miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appLocalDateTimeFormat, null));
+            miscService.notifyIncidentAssignViaBatch(new IncidentEmailVO(incident, appDateTimeViewFormat, null));
         }
     }
 
@@ -394,7 +421,7 @@ public class IncidentService {
         }
         incidents = incidentRepository.saveAll(incidents);
         for (Incident incident : incidents) {
-            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appLocalDateTimeFormat, "Incident Reopened again!"));
+            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appDateTimeViewFormat, "Incident Reopened again!"));
         }
     }
 
@@ -411,8 +438,8 @@ public class IncidentService {
         UserVO userVO = userService.getUserById(loggedInUser.getUserId());
         ZonedDateTime currentDateTime = ZonedDateTime.now();
         currentDateTime = currentDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
+        incident.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         if (incident.getId() == null) {
-            incident.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
             incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
             Setting setting = organisationService.getOrganisationSettings();
@@ -483,7 +510,7 @@ public class IncidentService {
         }
         raisedIncident.setCommunications(descSortedCommunicationSet);
         //notify respected user
-        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appLocalDateTimeFormat, null));
+        miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appDateTimeViewFormat, null));
         return raisedIncident;
     }
 

@@ -171,6 +171,7 @@ public class User extends BaseEntity implements Serializable {
         this.location = new Location();
         this.location.setId(userVO.getLocationId());
         this.location.setName(userVO.getLocation());
+        this.location.setTimezone(userVO.getTimeZone());
         this.department = new Department();
         this.department.setId(userVO.getDepartmentId());
         this.department.setName(userVO.getDepartment());

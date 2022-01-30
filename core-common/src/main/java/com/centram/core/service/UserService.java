@@ -118,6 +118,12 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.getUserByEmail(email);
         if (user != null) {
+            if (user.getStatus() != Status.ACTIVE) {
+                throw new AppException(GenericErrorCode.PROFILE_INACTIVE);
+            }
+            if (user.getOrganisation() != null && user.getOrganisation().getStatus() != Status.ACTIVE) {
+                throw new AppException(GenericErrorCode.PROFILE_INACTIVE);
+            }
             UserVO userVO = new UserVO(user);
             userVO.setRoleNames(roleService.getByIds(userVO.getRoles()));
             List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
@@ -621,6 +627,30 @@ public class UserService implements UserDetailsService {
         List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
         List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), loggedInUser.getOrganisationId());
         List<String> roleNames = new ArrayList<>();
+        UserVO userVO = null;
+        for (User user : users) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVOS.add(userVO);
+        }
+        return userVOS;
+    }
+
+    /**
+     * get user by roles Like
+     *
+     * @param roles
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsersByRoleNames(List<String> roles, BigInteger organisationId) {
+        List<User> users = userRepository.getUsersByRoleNames(roles.stream().map(String::valueOf).collect(Collectors.joining("|")), organisationId);
+        List<String> roleNames = new ArrayList<>();
+        List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         for (User user : users) {
             userVO = new UserVO(user);

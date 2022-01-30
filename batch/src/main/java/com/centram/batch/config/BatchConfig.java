@@ -1,8 +1,9 @@
 package com.centram.batch.config;
 
-import com.centram.batch.router.IncidentAssign;
-import com.centram.batch.router.IncidentSLANotification;
-import com.centram.batch.router.OrganisationNotification;
+import com.centram.batch.router.Assign;
+import com.centram.batch.router.LicenseExpiry;
+import com.centram.batch.router.BatchReport;
+import com.centram.batch.router.SlaNotify;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.quartz.QuartzComponent;
 import org.apache.camel.spi.ThreadPoolProfile;
@@ -84,7 +85,10 @@ public class BatchConfig {
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(SchedulerFactory schedulerFactory) throws Exception {
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        schedulerFactoryBean.setAutoStartup(false);
         schedulerFactoryBean.setSchedulerFactory(schedulerFactory);
+        //schedulerFactoryBean.stop();
+        //schedulerFactoryBean.destroy();
         return schedulerFactoryBean;
     }
 
@@ -104,18 +108,23 @@ public class BatchConfig {
     }
 
     @Bean
-    public IncidentSLANotification incidentSLANotification() {
-        return new IncidentSLANotification();
+    public SlaNotify incidentSLANotification() {
+        return new SlaNotify();
     }
 
     @Bean
-    public IncidentAssign incidentAssign() {
-        return new IncidentAssign();
+    public Assign incidentAssign() {
+        return new Assign();
     }
 
     @Bean
-    public OrganisationNotification organisationNotification() {
-        return new OrganisationNotification();
+    public LicenseExpiry organisationNotification() {
+        return new LicenseExpiry();
+    }
+
+    @Bean
+    BatchReport report(){
+        return new BatchReport();
     }
 
     /*@Bean

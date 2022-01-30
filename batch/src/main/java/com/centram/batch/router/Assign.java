@@ -11,7 +11,6 @@ import com.centram.domain.enumarator.IncidentStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class IncidentAssign extends RouteBuilder {
-    private static final Logger log = LoggerFactory.getLogger(IncidentAssign.class);
+public class Assign extends RouteBuilder {
+    private static final Logger log = LoggerFactory.getLogger(Assign.class);
     @Value("${app.rr.assign.ticket.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
@@ -38,13 +37,9 @@ public class IncidentAssign extends RouteBuilder {
     @Autowired
     private IncidentService incidentService;
     @Autowired
-    private ProducerTemplate producerTemplate;
-    @Autowired
     private OrganisationService organisationService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private RoleService roleService;
     @Autowired
     private MiscService miscService;
     @Autowired
@@ -52,9 +47,9 @@ public class IncidentAssign extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incidentAssign/roundRobinAssignIncidents?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://incident/Assign?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
-                .routeId("incident-assign")
+                .routeId("assign")
                 .enrich("bean:organisationService?method=getRoundRobinOrganisations()", new OrganisationAggregator())
                 .process(new Processor() {
                     @Override
@@ -62,7 +57,7 @@ public class IncidentAssign extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "incident-assign started -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "assign started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:getOrganisationIncidents");
 
         from("direct:getOrganisationIncidents")
@@ -129,7 +124,7 @@ public class IncidentAssign extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "incident-assign completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "assign completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
     }
 }

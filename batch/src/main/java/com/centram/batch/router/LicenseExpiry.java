@@ -21,8 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
-public class OrganisationNotification extends RouteBuilder {
-    private static final Logger log = LoggerFactory.getLogger(OrganisationNotification.class);
+public class LicenseExpiry extends RouteBuilder {
+    private static final Logger log = LoggerFactory.getLogger(LicenseExpiry.class);
     @Value("${app.organisation.notification.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
@@ -38,9 +38,9 @@ public class OrganisationNotification extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://organisation/licenseExpiryNotification?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://organisation/licenseExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
-                .routeId("license-expiry-notification")
+                .routeId("license-expiry")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .process(new Processor() {
                     @Override
@@ -48,7 +48,7 @@ public class OrganisationNotification extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "license-expiry-notification started -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "license-expiry -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processOrganisationNotifications");
 
         from("direct:processOrganisationNotifications")
@@ -80,7 +80,7 @@ public class OrganisationNotification extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "license-expiry-notification completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "license-expiry completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
     }
 

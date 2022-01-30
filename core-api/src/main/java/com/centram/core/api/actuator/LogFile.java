@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Component
 @RestControllerEndpoint(id = "logtrack")
-public class LofFile {
+public class LogFile {
     @GetMapping("/")
     public @ResponseBody
     ResponseEntity customEndPoint() {

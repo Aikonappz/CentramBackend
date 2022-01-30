@@ -23,9 +23,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public class IncidentSLANotification extends RouteBuilder {
+public class SlaNotify extends RouteBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(IncidentSLANotification.class);
+    private static final Logger log = LoggerFactory.getLogger(SlaNotify.class);
     @Value("${app.sla.notification.ticket.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
@@ -38,19 +38,21 @@ public class IncidentSLANotification extends RouteBuilder {
     private ProducerTemplate producerTemplate;
     @Autowired
     private MiscService miscService;
+    @Value("${app.date.time.view.format}")
+    private String appDateTimeViewFormat;
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incidentSla/notifyIncidents?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://incident/slaNotify?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
-                .routeId("incident-sla")
+                .routeId("sla-notify")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "incident-sla started -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "sla-notify started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:getNonBlockedIncidents");
 
         from("direct:getNonBlockedIncidents")
@@ -110,7 +112,7 @@ public class IncidentSLANotification extends RouteBuilder {
                         log.info("[{}] notification triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
                         incident.setAgentNotification1At(LocalDateTime.now());
                         incident = incidentService.update(incident);
-                        miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
+                        miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
                     }
                 })
                 .endChoice()
@@ -142,7 +144,7 @@ public class IncidentSLANotification extends RouteBuilder {
                         incident.setStatus(IncidentStatus.SLA_ABOUT_TO_BREACH);
                         incident.setAgentNotification2At(LocalDateTime.now());
                         incident = incidentService.update(incident);
-                        miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" 75% time passed! Please complete within SLA.")));
+                        miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" 75% time passed! Please complete within SLA.")));
                     }
                 })
                 .endChoice()
@@ -175,7 +177,7 @@ public class IncidentSLANotification extends RouteBuilder {
                         incident.setSlaBreached(true);
                         incident.setEscalation1At(LocalDateTime.now());
                         incident = incidentService.update(incident);
-                        miscService.notifySlaBreached(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
+                        miscService.notifySlaBreached(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
                 .endChoice()
@@ -206,7 +208,7 @@ public class IncidentSLANotification extends RouteBuilder {
                         log.info("[{}] notification triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
                         incident.setEscalation2At(LocalDateTime.now());
                         incident = incidentService.update(incident);
-                        miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, dateTimeFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
+                        miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
                 .endChoice()
@@ -243,7 +245,7 @@ public class IncidentSLANotification extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "incident-sla completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "sla-notify completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
 
     }

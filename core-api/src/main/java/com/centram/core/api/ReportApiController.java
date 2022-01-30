@@ -117,7 +117,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.downloadIncidentReport(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.downloadIncidentReport(moduleId, subModuleId, priorityId, status, start, end, false, null, null));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -159,7 +159,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentEscalationReportDownload(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentEscalationReportDownload(moduleId, subModuleId, priorityId, status, start, end, false, null, null));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-escalation-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -201,7 +201,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentReopenReportDownload(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentReopenReportDownload(moduleId, subModuleId, priorityId, status, start, end, false, null, null));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-reopen-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -243,7 +243,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentAgingReportDownload(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentAgingReportDownload(moduleId, subModuleId, priorityId, status, start, end, false, null, null));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-reopen-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))

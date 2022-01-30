@@ -76,6 +76,12 @@ public class Location extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
+    @Column(name = "office_name", columnDefinition = "varchar(255) not null default 'NA'")
+    @JsonView(Views.BasicView.class)
+    private String officeName;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
     @Column(name = "ops_start_time", nullable = false)
     @JsonView(Views.BasicView.class)
     private LocalTime opsStartTime;

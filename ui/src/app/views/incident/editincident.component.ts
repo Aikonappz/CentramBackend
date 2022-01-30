@@ -381,6 +381,7 @@ export class EditIncidentComponent implements OnInit {
         this.incidentCommunication.communicatedBy = null;
         this.incidentCommunication.incident = null;
         this.incident.communications.push(this.incidentCommunication);
+        this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };
         //console.log(this.incident);
         this.callSaveIncidentService();
       }
@@ -506,6 +507,8 @@ export class EditIncidentComponent implements OnInit {
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
         this.populateSubmodule(this.incident.moduleId);
+        let org = data.organisation;
+        this.incident.organisation = { id: org.id, version: org.version };
 
         if (
           (

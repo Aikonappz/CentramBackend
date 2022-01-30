@@ -23,6 +23,7 @@ export class Incident extends Base {
     raisedAt: any;
     slaAt: any;
     holdAt: any;
+    organisation: any;
     constructor() {
         super();
         this.id = null;
