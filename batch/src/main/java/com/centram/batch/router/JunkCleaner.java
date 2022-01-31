@@ -54,9 +54,9 @@ public class JunkCleaner extends RouteBuilder {
                         Long diff = 0L;
                         for (File fl : files) {
                             diff = new Date().getTime() - fl.lastModified();
-                            //if (diff > cutOff) {
-                            fl.delete();
-                            //}
+                            if (diff > cutOff) {
+                                fl.delete();
+                            }
                         }
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }

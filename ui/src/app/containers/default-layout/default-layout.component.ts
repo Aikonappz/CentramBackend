@@ -42,6 +42,7 @@ export class DefaultLayoutComponent implements OnInit {
   roles: string[] = [];
   userRoles: string[] = [];
   timerHandler: any;
+  isProd: boolean = false;
   constructor(
     private service: MiscService,
     private pushNotifications: PushNotificationsService,
@@ -53,11 +54,11 @@ export class DefaultLayoutComponent implements OnInit {
     private modalService: BsModalService,
   ) {
     //console.log("default layout...");
-    let m = moment();
+    this.isProd = environment.production;
     this.appUrl = environment.appUrl;
     this.appBrandName = environment.appBrandName;
     this.appDevName = environment.appDevName;
-    this.currentYear = m.format('YYYY');
+    this.currentYear = moment().format('YYYY');
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
     this.roles = this.loggedInUser.roles;

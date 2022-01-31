@@ -4,7 +4,6 @@ https://docs.google.com/spreadsheets/d/1kyYGpGP9wGIvuRPw-J-uXNg6LBOA9f5lSOE56uC-
 SELECT CONCAT("truncate table ",table_name,";") FROM information_schema.tables
 WHERE table_schema = 'centram' and TABLE_NAME  like '%_aud%';
 
-truncate table app_configuration_aud;
 truncate table department_aud;
 truncate table distribution_list_aud;
 truncate table distribution_list_module_aud;
