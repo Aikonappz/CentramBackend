@@ -516,4 +516,49 @@ public class AppEmailService {
                 )
         );
     }
+
+    @Transactional
+    //@Async("asyncExecutor")
+    public void sendBatchReport(Map<String, Object> mailValues) {
+        UserVO userVO = (UserVO) mailValues.get("recipient");
+        List<String> mailTemplates = Arrays.asList("BASE_EMAIL_TEMPLATE", mailValues.get("mailTemplate").toString());
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(mailTemplates);
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals(mailValues.get("mailTemplate").toString()))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("mailSubject")).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("mailBody")).toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("start", mailValues.get("start"));
+        context.setVariable("end", mailValues.get("end"));
+        mailSubject = StringEscapeUtils.unescapeHtml4(templateEngine.process(mailSubject, context));
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", userVO.getFullName().concat(","));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", new String[]{userVO.getEmail()});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("file", mailValues.get("file"));
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("BATCH REPORT EMAIL TITLE: {}", mailSubject);
+        log.info("BATCH REPORT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
+        notificationService.save(
+                Collections.singletonList(
+                        new Notification(mailSubject, "Please check your email for details!", new User(userVO), Status.PUSHED, NotificationType.INFO)
+                )
+        );
+    }
 }

@@ -911,4 +911,9 @@ public class MiscService {
         }
         appEmailService.sendOnboardMail(userVO, mailValues);
     }
+
+    @Async("asyncExecutor")
+    public void sendBatchReport(Map<String, Object> mailValues) {
+        appEmailService.sendBatchReport(mailValues);
+    }
 }

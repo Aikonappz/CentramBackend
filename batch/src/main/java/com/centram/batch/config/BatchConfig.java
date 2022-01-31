@@ -1,9 +1,6 @@
 package com.centram.batch.config;
 
-import com.centram.batch.router.Assign;
-import com.centram.batch.router.LicenseExpiry;
-import com.centram.batch.router.BatchReport;
-import com.centram.batch.router.SlaNotify;
+import com.centram.batch.router.*;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.quartz.QuartzComponent;
 import org.apache.camel.spi.ThreadPoolProfile;
@@ -123,9 +120,16 @@ public class BatchConfig {
     }
 
     @Bean
-    BatchReport report(){
+    BatchReport batchReport() {
         return new BatchReport();
     }
+
+    @Bean
+    JunkCleaner junkCleaner() {
+        return new JunkCleaner();
+    }
+
+
 
     /*@Bean
     public ServletRegistrationBean camelServletRegistrationBean() {

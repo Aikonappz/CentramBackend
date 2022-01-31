@@ -1,15 +1,13 @@
-package com.centram.core.service;
+package com.centram.batch.service;
 
-import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.core.service.IncidentService;
+import com.centram.core.service.ModuleService;
 import com.centram.domain.Incident;
 import com.centram.domain.IncidentCommunication;
-import com.centram.domain.Organisation;
 import com.centram.domain.enumarator.IncidentStatus;
-import com.centram.domain.enumarator.LicenseType;
-import com.centram.domain.enumarator.Status;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -18,29 +16,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
-public class ReportService {
-    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
+public class BatchReportService {
+    private static final Logger log = LoggerFactory.getLogger(BatchReportService.class);
 
     @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
-
-    @Autowired
-    private OrganisationService organisationService;
 
     @Autowired
     private IncidentService incidentService;
@@ -49,128 +42,28 @@ public class ReportService {
     private ModuleService moduleService;
 
     @Transactional(readOnly = true)
-    public PaginatedList<Organisation> organisationReport(String name, Status status, LicenseType licenseType, Pageable pageable) {
-        return organisationService.getOrganisations(name, status, licenseType, pageable);
-    }
-
-    @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+    public void generateIncidentReport(
+            LocalDateTime start,
+            LocalDateTime end,
+            List<String> roleNames,
+            BigInteger organisationId,
+            String absoluteFilePath
+    ) {
         if (start == null || end == null) {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
-    }
-
-    @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentEscalationReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        if (start == null || end == null) {
-            end = LocalDateTime.now();
-            start = end.minusDays(90);
+        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        if (page.getNumberOfElements() == 0) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
-        return incidentService.incidentEscalationReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
-    }
-
-    @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReopenReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        if (start == null || end == null) {
-            end = LocalDateTime.now();
-            start = end.minusDays(90);
-        }
-        return incidentService.incidentReopenReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
-    }
-
-    @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentAgingReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        if (start == null || end == null) {
-            end = LocalDateTime.now();
-            start = end.minusDays(90);
-        }
-        return incidentService.incidentReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
-    }
-
-    @Transactional(readOnly = true)
-    public ByteArrayInputStream downloadOrganisationReport(String name, Status status, LicenseType licenseType) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
-        PaginatedList<Organisation> page = this.organisationReport(name, status, licenseType, Pageable.unpaged());
-        List<Organisation> organisations = page.getContent();
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
-            data = Arrays.asList(
-                    "Company Name",
-                    "Location",
-                    "Addr1",
-                    "Addr2",
-                    "Key Person 1 Name",
-                    "Key Person 1 Email",
-                    "Key Person 1 Contact Number",
-                    "Key Person 2 Name",
-                    "Key Person 2 Email",
-                    "Key Person 2 Contact Number",
-                    "License Type",
-                    "License Start Date",
-                    "License End Date",
-                    "Status"
-            );
-            csvPrinter.printRecord(data);
-            for (Organisation organisation : organisations) {
-                data = Arrays.asList(
-                        organisation.getName(),
-                        organisation.getCity(),
-                        organisation.getAdd1(),
-                        organisation.getAdd2(),
-                        organisation.getContactPersons().size() > 0 ? organisation.getContactPersons().get(0).getName() : "",
-                        organisation.getContactPersons().size() > 0 ? organisation.getContactPersons().get(0).getEmail() : "",
-                        organisation.getContactPersons().size() > 0 ? organisation.getContactPersons().get(0).getContactNo() : "",
-                        organisation.getContactPersons().size() > 1 ? organisation.getContactPersons().get(1).getName() : "",
-                        organisation.getContactPersons().size() > 1 ? organisation.getContactPersons().get(1).getEmail() : "",
-                        organisation.getContactPersons().size() > 1 ? organisation.getContactPersons().get(1).getContactNo() : "",
-                        organisation.getLicenseType().name(),
-                        organisation.getLicenseStart().format(DateTimeFormatter.ofPattern(dateFormat)),
-                        organisation.getLicenseEnd().format(DateTimeFormatter.ofPattern(dateFormat)),
-                        organisation.getStatus().name()
-                );
-                csvPrinter.printRecord(data);
-            }
-            csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
-        } catch (IOException e) {
-            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public ByteArrayInputStream downloadIncidentReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
-        List<String> data = new ArrayList<String>();
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        if (start == null || end == null) {
-            end = LocalDateTime.now();
-            start = end.minusDays(90);
-        }
-        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+        try (
+                CSVPrinter csvPrinter = CSVFormat.DEFAULT
+                        .withQuoteMode(QuoteMode.MINIMAL)
+                        .print(new File(absoluteFilePath), StandardCharsets.UTF_8)
+        ) {
             data = Arrays.asList(
                     "Incident Number",
                     "Incident Title",
@@ -217,28 +110,34 @@ public class ReportService {
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream incidentEscalationReportDownload(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
-        List<String> data = new ArrayList<String>();
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+    public void generateEscalatedIncidentReport(
+            LocalDateTime start,
+            LocalDateTime end,
+            List<String> roleNames,
+            BigInteger organisationId,
+            String absoluteFilePath
+    ) {
         if (start == null || end == null) {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentEscalationReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentEscalationReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        if (page.getNumberOfElements() == 0) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        List<String> data = new ArrayList<String>();
         List<Incident> incidents = page.getContent();
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+        try (
+                CSVPrinter csvPrinter = CSVFormat.DEFAULT
+                        .withQuoteMode(QuoteMode.MINIMAL)
+                        .print(new File(absoluteFilePath), StandardCharsets.UTF_8)
+        ) {
             data = Arrays.asList(
                     "Incident Number",
                     "Incident Title",
@@ -291,28 +190,34 @@ public class ReportService {
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream incidentReopenReportDownload(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
-        List<String> data = new ArrayList<String>();
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+    public void generateReopenedReport(
+            LocalDateTime start,
+            LocalDateTime end,
+            List<String> roleNames,
+            BigInteger organisationId,
+            String absoluteFilePath
+    ) {
         if (start == null || end == null) {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReopenReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReopenReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        if (page.getNumberOfElements() == 0) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        List<String> data = new ArrayList<String>();
         List<Incident> incidents = page.getContent();
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+        try (
+                CSVPrinter csvPrinter = CSVFormat.DEFAULT
+                        .withQuoteMode(QuoteMode.MINIMAL)
+                        .print(new File(absoluteFilePath), StandardCharsets.UTF_8)
+        ) {
             data = Arrays.asList(
                     "Incident Number",
                     "Incident Title",
@@ -361,28 +266,34 @@ public class ReportService {
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream incidentAgingReportDownload(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
-        List<String> data = new ArrayList<String>();
-        BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
-        BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
-        BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
-        int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
+    public void generateIncidentAgingReport(
+            LocalDateTime start,
+            LocalDateTime end,
+            List<String> roleNames,
+            BigInteger organisationId,
+            String absoluteFilePath
+    ) {
         if (start == null || end == null) {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        if (page.getNumberOfElements() == 0) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        List<String> data = new ArrayList<String>();
         List<Incident> incidents = page.getContent();
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+        try (
+                CSVPrinter csvPrinter = CSVFormat.DEFAULT
+                        .withQuoteMode(QuoteMode.MINIMAL)
+                        .print(new File(absoluteFilePath), StandardCharsets.UTF_8)
+        ) {
             data = Arrays.asList(
                     "Incident Number",
                     "Incident Title",
@@ -431,7 +342,6 @@ public class ReportService {
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
-            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }

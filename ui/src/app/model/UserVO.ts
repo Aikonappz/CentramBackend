@@ -22,6 +22,7 @@ export class UserVO {
     organisation: string;
     locationId: number;
     location: string;
+    locationOfficeName: string;
     departmentId: number;
     department: string;
     licenseType: LicenseType;

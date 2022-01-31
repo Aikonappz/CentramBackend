@@ -68,6 +68,10 @@ export class EditLocationComponent implements OnInit {
         Validators.required,
         Validators.maxLength(255),
       ]),
+      officeName: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(255),
+      ]),
       opsStartTime: new FormControl('', [
         Validators.required,
       ]),
@@ -139,6 +143,7 @@ export class EditLocationComponent implements OnInit {
       this.loc.name = this.angForm.controls['name'].value;
       this.loc.opsStartTime = this.angForm.controls['opsStartTime'].value;
       this.loc.opsEndTime = this.angForm.controls['opsEndTime'].value;
+      this.loc.officeName = this.angForm.controls['officeName'].value;
 
       /* process department and location */
       this.loc.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
@@ -175,6 +180,7 @@ export class EditLocationComponent implements OnInit {
         this.loc.city = data.city;
         this.loc.status = data.status;
         this.loc.version = data.version;
+        this.loc.officeName = data.officeName;
         //console.log(JSON.stringify(this.user));
 
         this.populateTimezone(this.loc.country);
@@ -185,6 +191,7 @@ export class EditLocationComponent implements OnInit {
         this.angForm.get('state').setValue(this.loc.state);
         this.angForm.get('city').setValue(this.loc.city);
         this.angForm.get('country').setValue(this.loc.country);
+        this.angForm.get('officeName').setValue(this.loc.officeName);
 
         this.statusFlag = String(this.loc.status) == 'ACTIVE' ? true : false;
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);

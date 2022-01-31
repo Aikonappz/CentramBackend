@@ -56,13 +56,20 @@ export class ApiHttpService {
         }
         //console.log(JSON.stringify(error));
         if (error.error instanceof ErrorEvent) {
-            errorMessage = `Error: ${error.error.message}`;
-            const initialState = {
-                title: "Something Went Wrong!",
-                message: "Please try after sometime!",
-            };
-            this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
-            this.bsModalRef.content.closeBtnName = 'Close';
+            let err = error;
+            if (typeof err.error.code !== 'undefined' && err.error.code == 'PROFILE_INACTIVE') {
+                const initialState = {
+                    title: err.error.code,
+                    message: err.error.message
+                };
+                this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
+            } else {
+                const initialState = {
+                    title: "Something Went Wrong!",
+                    message: "Please try after sometime!",
+                };
+                this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
+            }
         } else {
             if (typeof error.error.code !== 'undefined') {
                 const initialState = {
@@ -70,14 +77,12 @@ export class ApiHttpService {
                     message: error.error.message
                 };
                 this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
-                this.bsModalRef.content.closeBtnName = 'Close';
             } else {
                 const initialState = {
                     title: "Something Went Wrong!",
                     message: "Please try after sometime!",
                 };
                 this.bsModalRef = this.modalService.show(ErrormessageComponent, { initialState });
-                this.bsModalRef.content.closeBtnName = 'Close';
             }
         }
         //window.alert(errorMessage);

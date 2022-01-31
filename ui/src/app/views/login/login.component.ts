@@ -55,7 +55,6 @@ export class LoginComponent implements OnInit {
   }
 
   removeClientData() {
-    this.clientStorageService.remove(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY);
     this.clientStorageService.remove(AppUtility.APP_LAST_ACTION_KEY);
   }
 
@@ -95,17 +94,17 @@ export class LoginComponent implements OnInit {
           data.modulePermissions[i] = new Permission(data.modulePermissions[i]);
         }
         this.clientStorageService.set(AppUtility.LOGGED_IN_PROFILE, JSON.stringify(data));
-        this.router.navigate(['/dashboard']);
+        //console.log(this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT));
+        let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
+        if (lastVisitedPage != null) {
+          console.log(lastVisitedPage);
+          this.router.navigate([lastVisitedPage]);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
         //console.log(JSON.stringify(data));
         //localStorage.setItem(AppUtility.LOGGED_IN_PROFILE_JWT, btoa(data.jwtToken));
         //data.jwtToken = null;
-        //let lastVisitedPage = atob(localStorage.getItem(AppUtility.LOGED_IN_LAST_VISIT));
-        // if (lastVisitedPage != null) {
-        //   console.log(lastVisitedPage);
-        //   this.router.navigate(["#" + lastVisitedPage]);
-        // } else {
-        //   this.router.navigate(['/dashboard']);
-        // }
       });
   }
 }

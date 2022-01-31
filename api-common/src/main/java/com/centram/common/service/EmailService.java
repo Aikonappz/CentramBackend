@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -46,8 +47,10 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject(mailMap.get("subject").toString());
             helper.setText(mailMap.get("content").toString(), Boolean.TRUE);
-            /*FileSystemResource file = new FileSystemResource("C:\\log.txt");
-            helper.addAttachment(file.getFilename(), file);*/
+            if (mailMap.containsKey("file")) {
+                FileSystemResource file = new FileSystemResource(mailMap.get("file").toString());
+                helper.addAttachment(file.getFilename(), file);
+            }
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new MailParseException(e);
         }

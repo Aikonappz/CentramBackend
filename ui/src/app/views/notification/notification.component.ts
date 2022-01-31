@@ -16,7 +16,7 @@ import { MiscService } from '../../service/MiscService';
 export class NotificationComponent implements OnInit {
   notification: Notification;
   modalRef: BsModalRef;
-  displayedColumns = ['notificationTitle', 'notificationBody', 'notificationType', 'action'];
+  displayedColumns = ['notificationTitle', 'notificationBody', 'action'];
   private datasource: NotificationDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(

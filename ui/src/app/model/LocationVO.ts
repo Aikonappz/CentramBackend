@@ -9,6 +9,7 @@ export class LocationVO extends Base {
     city: string;
     timezone: string;
     name: string;
+    officeName: string;
     opsStartTime: string;
     opsEndTime: string;
     status: any;

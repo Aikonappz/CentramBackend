@@ -51,7 +51,6 @@ export class LogoutComponent implements OnInit {
         //clearInterval();
         this.clientStorageService.remove(AppUtility.LOGGED_IN_PROFILE);
         this.clientStorageService.remove(AppUtility.LOGGED_IN_LAST_VISIT);
-        this.clientStorageService.remove(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY);
         this.clientStorageService.remove(AppUtility.APP_LAST_ACTION_KEY);
         this.clientStorageService.remove(AppUtility.APP_INCIDENT_DRAFT_KEY);
         if (this.clientStorageService.get(AppUtility.APP_SESSION_TIMEOUT_KEY)) {

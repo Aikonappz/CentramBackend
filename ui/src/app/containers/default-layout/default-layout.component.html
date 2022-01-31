@@ -43,7 +43,9 @@
         <div class="dropdown-header text-center small"><strong>User Info</strong></div>
         <a class="dropdown-item small">
           <i class="fa fa-user"></i>{{loggedInUser.name}}
-          <!-- ({{loggedInUser.timeZone}}) -->
+        </a>
+        <a *ngIf="loggedInUser.orgName!=null" class="dropdown-item small">
+          <i class="fa fa-building"></i>{{loggedInUser.orgName}}
         </a>
         <div class="dropdown-header small text-center"><strong>Settings</strong></div>
         <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item small" [routerLink]="['organization/settings']"><i

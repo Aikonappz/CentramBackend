@@ -70,14 +70,13 @@ export class EditHolidayCalenderComponent implements OnInit {
       if (file.errors && !file.errors.mustBeCSVFile && !file.errors.mustBeLessThan2MB) {
         return;
       }
-      console.log(type != "text/csv");
-      if (type != "text/csv" && size > (3145728)) {
-        file.setErrors({ mustBeCSVFile: true, mustBeLessThan2MB: true });
-      } else if (type == "text/csv" && size > (3145728)) {
-        file.setErrors({ mustBeCSVFile: false, mustBeLessThan2MB: true });
-      } else if (type != "text/csv" && size <= (3145728)) {
+      //console.log(type != "text/csv");
+      let validMimeTpes = ["text/csv", "application/vnd.ms-excel",];
+      if (!validMimeTpes.includes(type)) {
         file.setErrors({ mustBeCSVFile: true, mustBeLessThan2MB: false });
-      } else if (type == "text/csv" && size <= (3145728)) {
+      } else if (size > (3145728)) {
+        file.setErrors({ mustBeCSVFile: false, mustBeLessThan2MB: true });
+      } else {
         file.setErrors(null);
         this.selectedFiles = event.target.files;
       }

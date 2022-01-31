@@ -41,7 +41,6 @@ export class DefaultLayoutComponent implements OnInit {
   modalRef: BsModalRef;
   roles: string[] = [];
   userRoles: string[] = [];
-
   timerHandler: any;
   constructor(
     private service: MiscService,
@@ -118,9 +117,7 @@ export class DefaultLayoutComponent implements OnInit {
     //ask to allow automatic notification
     this.pushNotifications.requestPermission();
     this.unreadNotifications = 0;
-    this.service.notificationsService({
-      status: "PUSHED",
-    }).subscribe((data: NotificationList) => {
+    this.service.notificationsService({ status: "PUSHED", }).subscribe((data: NotificationList) => {
       if (typeof data.content != "undefined" && data.content.length > 0) {
         data.content = data.content.concat(this.notifications);
         this.notifications = data.content;
@@ -132,7 +129,6 @@ export class DefaultLayoutComponent implements OnInit {
     this.initListener();
     this.initInterval();
     this.clientStorageService.set(AppUtility.APP_LAST_ACTION_KEY, Date.now().toString());
-    this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "0");
   }
 
   initListener() {
@@ -145,7 +141,9 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
   reset() {
-    this.setLastAction(Date.now());
+    if (this.modalService.getModalsCount() == 0) {
+      this.setLastAction(Date.now());
+    }
   }
 
   initInterval() {
@@ -165,15 +163,18 @@ export class DefaultLayoutComponent implements OnInit {
       //console.log("warningTimeleft => " + warningTimeleft);
       //TODO: need to handle setinterval
       //console.log("diff => " + diff);
+      //var tempTime = moment.duration(diff);
+      //var timeLeft = tempTime.hours() + ":" + tempTime.minutes() + ":" + tempTime.seconds();
+      //console.log(timeLeft);
       //console.log("getModalsCount -", " ", diff, this.modalService.getModalsCount());
       if (!isTimeout && warningTimeleft - now < 0) {
         if (this.modalService.getModalsCount() == 0) {
+          //this.modalOpenedFirstTime = true;
           this.openLogoutWarningModal();
         }
       } else if (isTimeout) {
         if (this.modalService.getModalsCount() > 0) {
           this.modalRef.hide();
-          this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "0");
           this.clientStorageService.set(AppUtility.APP_SESSION_TIMEOUT_KEY, "1");
           clearInterval(this.timerHandler);
           this.router.navigate(['/sign-out']);
@@ -191,12 +192,12 @@ export class DefaultLayoutComponent implements OnInit {
       class: 'modal-bg',
     };
     const initialState = {
-      handler: this.timerHandler
+      handler: this.timerHandler,
     };
     this.modalRef = this.modalService.show(LogoutWarningComponent,
       Object.assign({}, config, { initialState })
     );
-    this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "1");
+    this.setLastAction(this.getLastAction());
   }
 
   public getLastAction() {
@@ -332,7 +333,7 @@ export class DefaultLayoutComponent implements OnInit {
         <div class="card-body">
           <div class="row">
             <div class="col">
-              <h6>The session is going to expire. Do you want to continue?</h6>
+              <h6>The session is going to expire within {{timeLeft}}. Do you want to continue?</h6>
             </div>
           </div>
         </div>
@@ -356,6 +357,8 @@ export class DefaultLayoutComponent implements OnInit {
 })
 export class LogoutWarningComponent implements OnInit {
   handler: any;
+  localTimerHandler: any;
+  timeLeft: string;
   constructor(
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
@@ -364,18 +367,36 @@ export class LogoutWarningComponent implements OnInit {
     private clientStorageService: ClientStorageService,
   ) {
     this.handler = this.options.initialState.valueOf();
-    console.log(this.handler.handler);
+    //console.log(this.handler.handler);
+    this.localTimerHandler = setInterval(() => {
+      this.check();
+    }, 1000);
+  }
+  check() {
+    if (!isNaN(this.getLastAction())) {
+      const now = Date.now();
+      const timeleft = this.getLastAction() + AppUtility.APP_NON_ACTIVITY_LOGOUT_INTERVAL * 60 * 1000;
+      const warningTimeleft = this.getLastAction() + AppUtility.APP_LOGOUT_WARNING_INTERVAL * 60 * 1000;
+      const diff = timeleft - now;
+      const isTimeout = diff < 0;
+      var tempTime = moment.duration(diff);
+      this.timeLeft = tempTime.minutes() + ":" + tempTime.seconds();
+    }
   }
   signOut() {
     clearInterval(this.handler.handler);
+    clearInterval(this.localTimerHandler);
     this.close();
     this.router.navigate(['/sign-out']);
   }
   close() {
-    this.clientStorageService.set(AppUtility.APP_LOGOUT_WARNING_MODAL_STATUS_KEY, "0");
+    clearInterval(this.localTimerHandler);
     this.bsModalRef.hide();
   }
   ngOnInit() { }
   ngAfterViewInit() { }
   ngAfterContentInit() { }
+  public getLastAction() {
+    return parseInt(this.clientStorageService.get(AppUtility.APP_LAST_ACTION_KEY));
+  }
 }

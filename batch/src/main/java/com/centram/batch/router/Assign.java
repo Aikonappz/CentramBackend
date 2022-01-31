@@ -47,7 +47,7 @@ public class Assign extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incident/Assign?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://incident/assign?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
                 .routeId("assign")
                 .enrich("bean:organisationService?method=getRoundRobinOrganisations()", new OrganisationAggregator())
