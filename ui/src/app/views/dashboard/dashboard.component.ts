@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
   public adminDoughnutChartLabels: Label[] = [];
   public adminDoughnutChartData: MultiDataSet = [];
   public adminDoughnutChartType: ChartType = 'pie';
-  public adminChartColors: any[] = [{ backgroundColor: ["#63C2DE", "#FAC008", "#3DA8D8"] }];
+  public adminChartColors: any[] = [{ backgroundColor: ["#63C2DE", "#FAC008", "#7048C1"] }];
   public adminDoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
 
   public admin1DoughnutChartLabels: Label[] = [];

@@ -103,6 +103,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private ModuleService moduleService;
 
+    @Autowired
+    private UserAuthService userAuthService;
+
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
@@ -119,10 +122,10 @@ public class UserService implements UserDetailsService {
         User user = userRepository.getUserByEmail(email);
         if (user != null) {
             if (user.getStatus() != Status.ACTIVE) {
-                throw new AppException(GenericErrorCode.PROFILE_INACTIVE);
+                throw new RuntimeException(GenericErrorCode.PROFILE_INACTIVE.getCode());
             }
             if (user.getOrganisation() != null && user.getOrganisation().getStatus() != Status.ACTIVE) {
-                throw new AppException(GenericErrorCode.PROFILE_INACTIVE);
+                throw new RuntimeException(GenericErrorCode.PROFILE_INACTIVE.getCode());
             }
             UserVO userVO = new UserVO(user);
             userVO.setRoleNames(roleService.getByIds(userVO.getRoles()));
@@ -146,6 +149,8 @@ public class UserService implements UserDetailsService {
                 }
             }
             LoggedInUser loggedInUser = new LoggedInUser(userVO, modulePermissions);
+            UserAuth userAuth = userAuthService.save(new UserAuth(userVO.getId(), LocalDateTime.now(), null));
+            loggedInUser.setUserAuthId(userAuth.getId());
             //save data in redis
             redisTemplate.opsForValue().set(email, loggedInUser);
             activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.SIGNIN));
@@ -160,11 +165,15 @@ public class UserService implements UserDetailsService {
      *
      * @return
      */
+    @Transactional(readOnly = false)
     public CommonResponse signOut() {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String userName = jwtTokenUtil.getUsernameFromToken(loggedInUser.getAuthToken().replaceAll("(?i)".concat(jwtTokenPrefix), ""));
         CommonResponse commonResponse = null;
         if (redisTemplate.delete(userName)) {
+            UserAuth userAuth = userAuthService.getById(loggedInUser.getUserAuthId());
+            userAuth.setSignOutAt(LocalDateTime.now());
+            userAuthService.save(userAuth);
             commonResponse = new CommonResponse(Boolean.TRUE, "LOGGED_OUT_SUCCESS");
         } else {
             commonResponse = new CommonResponse(Boolean.FALSE, "LOGGED_OUT_FAILED");

@@ -5,19 +5,18 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 /**
- * Department
+ * User Auth
  */
-@ApiModel(description = "App Auth")
+@ApiModel(description = "User Auth")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
@@ -26,16 +25,14 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Audited
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(
-        name = "app_auth",
+        name = "user_auth",
         indexes = {
                 @Index(name = "user_idx", columnList = "user_id", unique = false),
         }
 )
-public class AppAuth extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 7161526376698505219L;
+public class UserAuth implements Serializable {
+    private static final long serialVersionUID = 7161521276698505219L;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
@@ -46,9 +43,24 @@ public class AppAuth extends BaseEntity implements Serializable {
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
-    @Valid
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @Column(name = "user_id", columnDefinition = "BIGINT")
+    @JsonView(Views.BasicView.class)
+    private BigInteger userId;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "sign_in_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime signInAt;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "sign_out_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime signOutAt;
+
+    public UserAuth(BigInteger userId, LocalDateTime signInAt, LocalDateTime signOutAt) {
+        this.userId = userId;
+        this.signInAt = signInAt;
+        this.signOutAt = signOutAt;
+    }
 }

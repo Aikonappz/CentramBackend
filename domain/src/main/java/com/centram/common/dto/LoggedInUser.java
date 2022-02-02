@@ -42,12 +42,15 @@ public class LoggedInUser implements UserDetails, Serializable {
     private List<PermissionVO> modulePermissions;
     @JsonProperty("licenseType")
     private LicenseType licenseType;
+    @JsonProperty("authId")
+    private BigInteger userAuthId;
 
 
     public LoggedInUser() {
     }
 
     public LoggedInUser(UserVO userVO, List<PermissionVO> modulePermissions) {
+        this.userAuthId = null;
         this.userId = userVO.getId();
         this.organisationId = (userVO.getOrganisationId() == null) ? null : userVO.getOrganisationId();
         this.locationId = (userVO.getLocationId() == null) ? null : userVO.getLocationId();
@@ -67,6 +70,14 @@ public class LoggedInUser implements UserDetails, Serializable {
                 .collect(Collectors.toList());
         this.appManager = userVO.getOrganisationId() == null;
         this.licenseType = (userVO.getDepartmentId() == null) ? null : userVO.getLicenseType();
+    }
+
+    public BigInteger getUserAuthId() {
+        return userAuthId;
+    }
+
+    public void setUserAuthId(BigInteger userAuthId) {
+        this.userAuthId = userAuthId;
     }
 
     public LicenseType getLicenseType() {

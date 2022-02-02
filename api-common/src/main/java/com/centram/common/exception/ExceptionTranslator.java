@@ -63,8 +63,23 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest webRequest) {
         LOG.error(ex.getMessage());
-        ClientError digest = new ClientError(GenericErrorCode.valueOf(ex.getMessage()).getCode(), GenericErrorCode.valueOf(ex.getMessage()).getTemplate());
-        return new ResponseEntity<>(digest, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+        String code = GenericErrorCode.UNAUTHORIZED.getCode();
+        String msg = GenericErrorCode.UNAUTHORIZED.getTemplate();
+        ClientError digest = null;
+        try {
+            if (ex.getMessage() != null) {
+                code = GenericErrorCode.valueOf(ex.getMessage()).getCode();
+                msg = GenericErrorCode.valueOf(ex.getMessage()).getTemplate();
+                digest = new ClientError(code, msg);
+                return new ResponseEntity<>(digest, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                digest = new ClientError(code, msg);
+                return new ResponseEntity<>(digest, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Throwable e) {
+            digest = new ClientError(code, msg);
+            return new ResponseEntity<>(digest, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+        }
     }
 }
 
