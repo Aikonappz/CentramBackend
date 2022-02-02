@@ -6,7 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.HolidayCalenderRepository;
-import com.centram.domain.ActivityLog;
+
 import com.centram.domain.Holiday;
 import com.centram.domain.HolidayCalender;
 import com.centram.domain.enumarator.ActivityType;
@@ -43,8 +43,7 @@ public class HolidayCalenderService {
     @Autowired
     private OrganisationService organisationService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     /**
      * get location
@@ -85,7 +84,7 @@ public class HolidayCalenderService {
     public HolidayCalender save(HolidayCalender holidayCalender) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         holidayCalender.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, holidayCalender.getId() != null ? ActivityType.ADD_CALENDER : ActivityType.UPDATE_CALENDER));
+
         return holidayCalenderRepository.save(holidayCalender);
     }
 
@@ -118,7 +117,7 @@ public class HolidayCalenderService {
             }
             holidayCalender.setHolidays(holidays);
             holidayCalender.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-            activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, holidayCalender.getId() != null ? ActivityType.ADD_CALENDER : ActivityType.UPDATE_CALENDER));
+
             return holidayCalenderRepository.save(holidayCalender);
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_PROCESSING_ISSUE);

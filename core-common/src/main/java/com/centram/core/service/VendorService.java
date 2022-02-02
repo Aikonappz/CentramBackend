@@ -6,7 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.VendorRepository;
-import com.centram.domain.ActivityLog;
+
 import com.centram.domain.Vendor;
 import com.centram.domain.VendorModule;
 import com.centram.domain.enumarator.ActivityType;
@@ -32,8 +32,7 @@ public class VendorService {
     @Autowired
     private OrganisationService organisationService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     /**
      * get vendor
@@ -114,7 +113,7 @@ public class VendorService {
             vendorModules.add(vendorModule);
         }
         vendor.setVendorModules(vendorModules);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, vendor.getId() != null ? ActivityType.ADD_LOCATION : ActivityType.UPDATE_LOCATION));
+
         return vendorRepository.save(vendor);
     }
 }

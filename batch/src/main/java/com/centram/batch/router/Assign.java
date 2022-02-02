@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Assign extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(Assign.class);
-    @Value("${app.rr.assign.ticket.cron}")
+    @Value("${app.round-robin.assign.ticket.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;

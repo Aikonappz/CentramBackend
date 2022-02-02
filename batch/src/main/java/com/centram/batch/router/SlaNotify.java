@@ -26,7 +26,7 @@ import java.util.List;
 public class SlaNotify extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(SlaNotify.class);
-    @Value("${app.sla.notification.ticket.cron}")
+    @Value("${app.incident.sla.notification.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;

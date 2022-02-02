@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class JunkCleaner extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(JunkCleaner.class);
     private final Integer cutOff = (7 * 24 * 60 * 60 * 1000);
-    @Value("${app.cleaner.junk.cron}")
+    @Value("${app.junk.cleaner.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
@@ -30,7 +30,7 @@ public class JunkCleaner extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://cleaner/junkCleaner?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        from("quartzComponent://junk/cleaner?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .autoStartup(true)
                 .routeId("junk-cleaner")
                 .process(new Processor() {

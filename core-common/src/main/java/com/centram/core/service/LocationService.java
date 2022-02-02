@@ -6,7 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.LocationRepository;
-import com.centram.domain.ActivityLog;
+
 import com.centram.domain.Location;
 import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
@@ -33,8 +33,6 @@ public class LocationService {
     @Autowired
     private OrganisationService organisationService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
 
     /**
      * get location
@@ -86,7 +84,7 @@ public class LocationService {
     public Location save(Location location) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         location.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, location.getId() != null ? ActivityType.ADD_LOCATION : ActivityType.UPDATE_LOCATION));
+
         return locationRepository.save(location);
     }
 
@@ -100,6 +98,6 @@ public class LocationService {
     public void updateLocationsStatus(Status status, List<BigInteger> userIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         locationRepository.updateStatus(status, userIds);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_LOCATION));
+
     }
 }

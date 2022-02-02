@@ -6,7 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.PriorityRepository;
-import com.centram.domain.ActivityLog;
+
 import com.centram.domain.Priority;
 import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
@@ -33,8 +33,7 @@ public class PriorityService {
     @Autowired
     private OrganisationService organisationService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     /**
      * get priority
@@ -75,7 +74,7 @@ public class PriorityService {
     public Priority save(Priority priority) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         priority.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, priority.getId() != null ? ActivityType.ADD_PRIORITY : ActivityType.UPDATE_PRIORITY));
+
         return priorityRepository.save(priority);
     }
 
@@ -89,6 +88,6 @@ public class PriorityService {
     public void updatePrioritiesStatus(Status status, List<BigInteger> userIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         priorityRepository.updateStatus(status, userIds);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_PRIORITY));
+
     }
 }

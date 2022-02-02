@@ -89,19 +89,6 @@ public class RedisService {
     }
     /*PERMISSION*/
 
-    /*ACTIVITY LOG*/
-    @CachePut(value = "activeLogs", key = "#userId")
-    public List<ActivityLog> redisOperation(BigInteger userId, List<ActivityLog> activityLogs) {
-        return activityLogs;
-    }
-
-    @Cacheable(value = "activeLogs", key = "#userId")
-    public List<ActivityLog> getCachedActivityLog(BigInteger userId) {
-        return null;
-    }
-    /*ACTIVITY LOG*/
-
-
     /*ORGANISATION*/
     @CachePut(value = "organisation", key = "#organisationId")
     public Organisation redisOperation(BigInteger organisationId, Organisation organisation) {

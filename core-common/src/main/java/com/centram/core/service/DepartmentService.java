@@ -6,7 +6,6 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.DepartmentRepository;
-import com.centram.domain.ActivityLog;
 import com.centram.domain.Department;
 import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
@@ -33,8 +32,7 @@ public class DepartmentService {
     @Autowired
     private OrganisationService organisationService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     /**
      * get department
@@ -86,7 +84,7 @@ public class DepartmentService {
     public Department save(Department department) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         department.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, department.getId() != null ? ActivityType.ADD_DEPARTMENT : ActivityType.UPDATE_DEPARTMENT));
+
         return departmentRepository.save(department);
     }
 
@@ -100,6 +98,6 @@ public class DepartmentService {
     public void updateDepartmentsStatus(Status status, List<BigInteger> userIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         departmentRepository.updateStatus(status, userIds);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_DEPARTMENT));
+
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 
 public class LicenseExpiry extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(LicenseExpiry.class);
-    @Value("${app.organisation.notification.cron}")
+    @Value("${app.org.notification.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;

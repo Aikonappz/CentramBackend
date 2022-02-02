@@ -7,7 +7,7 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.DistributionListModuleRepository;
 import com.centram.core.repository.DistributionListRepository;
-import com.centram.domain.ActivityLog;
+
 import com.centram.domain.DistributionList;
 import com.centram.domain.DistributionListModule;
 import com.centram.domain.enumarator.ActivityType;
@@ -38,8 +38,7 @@ public class DistributionListService {
     @Autowired
     private OrganisationService organisationService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     /**
      * get MapDL
@@ -133,7 +132,7 @@ public class DistributionListService {
             distributionListModules.add(distributionListModule);
         }
         distributionList.setDistributionListModules(distributionListModules);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, distributionList.getId() != null ? ActivityType.ADD_LOCATION : ActivityType.UPDATE_LOCATION));
+
         return distributionListRepository.save(distributionList);
     }
 }

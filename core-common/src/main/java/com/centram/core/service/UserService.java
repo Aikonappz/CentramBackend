@@ -76,8 +76,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     @Autowired
     private AppEmailService appEmailService;
@@ -153,7 +152,7 @@ public class UserService implements UserDetailsService {
             loggedInUser.setUserAuthId(userAuth.getId());
             //save data in redis
             redisTemplate.opsForValue().set(email, loggedInUser);
-            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.SIGNIN));
+
             return loggedInUser;
         } else {
             throw new UsernameNotFoundException("User not found with username: " + email);
@@ -178,7 +177,7 @@ public class UserService implements UserDetailsService {
         } else {
             commonResponse = new CommonResponse(Boolean.FALSE, "LOGGED_OUT_FAILED");
         }
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.SIGNOUT));
+
         return commonResponse;
     }
 
@@ -206,7 +205,7 @@ public class UserService implements UserDetailsService {
             log.info("uuid => {}", uuid);
             redisTemplate.opsForValue().set(uuid, userVO, Duration.ofHours(24));
             appEmailService.sendForgotPasswordMail(userVO, mailValues);
-            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.FORGOT_PASSWORD));
+
             commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_REQUEST_SUCCESS");
             //commonResponse = new CommonResponse(Boolean.TRUE, link);
         } else {
@@ -232,7 +231,7 @@ public class UserService implements UserDetailsService {
             userRepository.updatePassword(encodedPassword, LocalDateTime.now(), userVO.getId());
             Map<String, String> mailValues = new HashMap<>();
             appEmailService.sendResetPasswordMail(userVO, mailValues);
-            activityLogService.save(new ActivityLog(userVO.getId(), (userVO.getOrganisationId() != null) ? userVO.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
+
             commonResponse = new CommonResponse(Boolean.TRUE, "RESET_PASSWORD_SUCCESS");
             //commonResponse = new CommonResponse(Boolean.TRUE, link);
         } else {
@@ -251,7 +250,7 @@ public class UserService implements UserDetailsService {
     public void changePassword(UserDTO userDTO) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userRepository.updatePassword(passwordEncoder.encode(Utility.decode(userDTO.getNewPassword())), LocalDateTime.now(), loggedInUser.getUserId());
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.RESET_PASSWORD));
+
     }
 
     /**
@@ -365,7 +364,7 @@ public class UserService implements UserDetailsService {
     public void updateUsersStatus(Status status, List<BigInteger> userIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userRepository.updateStatus(status, LocalDateTime.now(), userIds);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_USER));
+
     }
 
     /**
@@ -598,7 +597,7 @@ public class UserService implements UserDetailsService {
             }
             //System.out.println(values);
             miscService.saveBulkUploadedData(values);
-            activityLogService.save(new ActivityLog(loggedInUserDTO.getUserId(), (loggedInUserDTO.getOrganisationId() != null) ? loggedInUserDTO.getOrganisationId() : null, ActivityType.BULK_UPLOAD_USER));
+
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }

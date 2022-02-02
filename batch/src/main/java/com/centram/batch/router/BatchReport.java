@@ -28,7 +28,7 @@ import java.util.Map;
 public class BatchReport extends RouteBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(BatchReport.class);
-    @Value("${app.incident.report.ticket.cron}")
+    @Value("${app.incident.report.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;

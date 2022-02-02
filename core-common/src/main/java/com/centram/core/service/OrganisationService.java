@@ -6,7 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.OrganisationRepository;
-import com.centram.domain.ActivityLog;
+
 import com.centram.domain.MediaFile;
 import com.centram.domain.Organisation;
 import com.centram.domain.Setting;
@@ -54,8 +54,7 @@ public class OrganisationService {
     @Autowired
     private MediaService mediaService;
 
-    @Autowired
-    private ActivityLogService activityLogService;
+
 
     @Autowired
     private OrganisationRepository organisationRepository;
@@ -114,7 +113,7 @@ public class OrganisationService {
     public void updateStatus(Status status, List<BigInteger> organisationIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         organisationRepository.updateStatus(status, LocalDateTime.now(), organisationIds);
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
+
     }
 
     /**
@@ -175,7 +174,7 @@ public class OrganisationService {
             throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
         }
         //organisationDTO.setMediaFile(mediaService.save(mediaFile));
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.ORGANISATION_LOGO_UPLOAD));
+
         return organisationDTO;
     }
 
@@ -246,7 +245,7 @@ public class OrganisationService {
     public Setting updateOrganisationSettings(Setting setting) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         organisationRepository.updateSetting(setting, LocalDateTime.now(), loggedInUser.getOrganisationId());
-        activityLogService.save(new ActivityLog(loggedInUser.getUserId(), (loggedInUser.getOrganisationId() != null) ? loggedInUser.getOrganisationId() : null, ActivityType.UPDATE_ORGANISATION));
+
         return setting;
     }
 
