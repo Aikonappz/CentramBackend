@@ -14,7 +14,6 @@ import com.centram.common.vo.UserVO;
 import com.centram.core.repository.UserRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
-import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.*;
@@ -75,7 +74,6 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
 
 
     @Autowired
@@ -495,7 +493,7 @@ public class UserService implements UserDetailsService {
         List<BigInteger> roleIds = permissionService.getRoleIdsByModuleAndAction(moduleIds, actionName);
         String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
         roles = ",(".concat(roles).concat("),");
-        List<User> users = userRepository.getAgentsByRoleIds(roles, roleIds, organisationId);
+        List<User> users = userRepository.getAgentsByRoleIds(moduleIds.get(0), moduleIds.get(1), roles, organisationId);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;

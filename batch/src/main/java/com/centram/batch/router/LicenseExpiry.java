@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,7 +61,8 @@ public class LicenseExpiry extends RouteBuilder {
                         Organisation organisation = organisations.get((int) exchange.getProperty("CamelLoopIndex"));
                         LocalDateTime currentDateTime = LocalDateTime.now();
                         if (currentDateTime.isBefore(organisation.getLicenseEnd())) {
-                            Long daysBetween = Duration.between(currentDateTime, organisation.getLicenseEnd()).get(ChronoUnit.DAYS);
+                            //Long daysBetween = Duration.between(currentDateTime, organisation.getLicenseEnd()).get(ChronoUnit.DAYS);
+                            Long daysBetween = Duration.between(currentDateTime, organisation.getLicenseEnd()).abs().toDays();
                             if (notifyOrganisation(daysBetween.intValue())) {
                                 miscService.organisationNotification(organisation, false);
                             }

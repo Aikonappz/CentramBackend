@@ -211,27 +211,12 @@ public class AppEmailService {
         AppConfiguration appConfiguration = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("INCIDENT_EMAIL_TEMPLATE"))
                 .findFirst().get();
-        String mailSubject = appConfiguration.getConfigurationProperties().get("oldMailSubject").toString();
-        String mailBody = appConfiguration.getConfigurationProperties().get("oldMailBody").toString();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailSubjectKey()).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailBodyKey()).toString();
         String referer = "agent-all";
-        String recipientName = incidentEmailVO.getAgentName();
-        if (incidentEmailVO.getNewIncident() && incidentEmailVO.getMailToType().equalsIgnoreCase("EMP")) {
-            mailSubject = appConfiguration.getConfigurationProperties().get("newEmpMailSubject").toString();
-            mailBody = appConfiguration.getConfigurationProperties().get("newEmpMailBody").toString();
+        String recipientName = incidentEmailVO.getRecipientName();
+        if (incidentEmailVO.getMailToType().equalsIgnoreCase("EMP")) {
             referer = "user";
-            recipientName = incidentEmailVO.getUserName();
-        } else if (incidentEmailVO.getNewIncident() && incidentEmailVO.getMailToType().equalsIgnoreCase("AGENT_DL")) {
-            mailSubject = appConfiguration.getConfigurationProperties().get("newDlMailSubject").toString();
-            mailBody = appConfiguration.getConfigurationProperties().get("newDlMailBody").toString();
-            recipientName = "DL";
-        } else if (!incidentEmailVO.getNewIncident() && incidentEmailVO.getMailToType().equalsIgnoreCase("EMP")) {
-            recipientName = incidentEmailVO.getUserName();
-        } else if (!incidentEmailVO.getNewIncident() && incidentEmailVO.getMailToType().equalsIgnoreCase("AGENT_DL")) {
-            recipientName = "DL";
-        }
-        if (incidentEmailVO.getMailSubjectKey() != null && incidentEmailVO.getMailBodyKey() != null) {
-            mailSubject = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailSubjectKey()).toString();
-            mailBody = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailBodyKey()).toString();
         }
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -303,7 +288,7 @@ public class AppEmailService {
         String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
         String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
         String referer = "agent-all";
-        String recipientName = incidentEmailVO.getAgentName();
+        String recipientName = incidentEmailVO.getRecipientName();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();

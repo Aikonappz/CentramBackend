@@ -74,7 +74,6 @@ public class IncidentService {
     private String appDateTimeViewFormat;
 
 
-
     /**
      * get incidents for agent
      *
@@ -224,6 +223,7 @@ public class IncidentService {
             add(IncidentStatus.OPEN);
             add(IncidentStatus.ASSIGNED);
             add(IncidentStatus.WORK_IN_PROGRESS);
+            add(IncidentStatus.CLARIFICATION_PROVIDED);
             add(IncidentStatus.SLA_ABOUT_TO_BREACH);
             add(IncidentStatus.SLA_BREACHED);
         }});
@@ -421,7 +421,7 @@ public class IncidentService {
         }
         incidents = incidentRepository.saveAll(incidents);
         for (Incident incident : incidents) {
-            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appDateTimeViewFormat, "Incident Reopened again!"));
+            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appDateTimeViewFormat, "Incident Reopened again!", true));
         }
     }
 

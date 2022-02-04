@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Assign extends RouteBuilder {
@@ -75,7 +76,7 @@ public class Assign extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         List<Organisation> organisations = (List<Organisation>) exchange.getIn().getBody();
                         Organisation organisation = organisations.get((int) exchange.getProperty("CamelLoopIndex"));
-                        List<BigInteger> mods = new ArrayList<BigInteger>();
+                        List<BigInteger> mods = new LinkedList<>();
                         List<UserVO> users = new ArrayList<UserVO>();
                         List<Incident> incidents = new ArrayList<Incident>();
                         List<Incident> assignedIncidents = new ArrayList<Incident>();
@@ -83,7 +84,7 @@ public class Assign extends RouteBuilder {
                         Integer counter = 0;
                         List<CategoryVO> categoryVOS = moduleService.getCategorySubCategories();
                         for (CategoryVO categoryVO : categoryVOS) {
-                            mods = new ArrayList<BigInteger>() {{
+                            mods = new LinkedList<>() {{
                                 add(categoryVO.getCategoryId());
                                 add(categoryVO.getSubCategoryId());
                             }};
