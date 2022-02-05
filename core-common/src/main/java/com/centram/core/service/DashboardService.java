@@ -65,10 +65,8 @@ public class DashboardService {
                 endDateTime,
                 false,
                 null,
-                null,
                 loggedInUser.getOrganisationId(),
                 "ORG_ADMIN",
-                false,
                 null
         ));
         return orgAdminDashboardVO;
@@ -82,20 +80,10 @@ public class DashboardService {
         List<Permission> permissions = permissionService.getPermissionByRoleIds(loggedInUser.getRoles());
         List<BigInteger> userModules = permissions.stream()
                 .filter(i -> {
-                    return (i.getModule().getAppModule() == false && i.getModule().getParentModuleId() == null);
+                    return (i.getModule().getAppModule() == false && i.getModule().getParentModuleId() != null && i.getAction().getId().compareTo(BigInteger.valueOf(Long.valueOf("9"))) == 0);
                 })
                 .map(permission -> {
-                    return permission.getModule().getId();
-                })
-                .collect(Collectors.toList());
-        List<BigInteger> userSubModules = permissions.stream()
-                .filter(i -> {
-                    return (i.getModule().getAppModule() == false && i.getModule().getParentModuleId() != null
-                            && i.getAction().getId().compareTo(BigInteger.valueOf(Long.valueOf("9"))) == 0
-                    );
-                })
-                .map(permission -> {
-                    return permission.getModule().getId();
+                    return permission.getModule().getParentModuleId();
                 })
                 .collect(Collectors.toList());
         return new UserDashboardVO(incidentRepository.orgStatusWiseIncidentDashboardData(
@@ -103,10 +91,8 @@ public class DashboardService {
                 endDateTime,
                 true,
                 userModules,
-                userSubModules,
                 loggedInUser.getOrganisationId(),
                 "USER",
-                true,
                 loggedInUser.getUserId()
         ));
     }
@@ -152,10 +138,8 @@ public class DashboardService {
                         endDateTime,
                         true,
                         userModules,
-                        userSubModules,
                         loggedInUser.getOrganisationId(),
                         userType,
-                        true,
                         loggedInUser.getUserId()
                 )
         );
@@ -213,10 +197,8 @@ public class DashboardService {
                         endDateTime,
                         true,
                         userModules,
-                        userSubModules,
                         loggedInUser.getOrganisationId(),
                         "CATEGORY_ADMIN",
-                        false,
                         null
                 )
         );

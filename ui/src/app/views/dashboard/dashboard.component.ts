@@ -23,6 +23,8 @@ import { IncidentDataSource } from '../../service/datasource/IncidentDataSource'
 import { IncidentService } from '../../service/IncidentService';
 import { AgentDashboardVO } from '../../model/AgentDashboardVO';
 import { CategoryAdminDashboardVO } from '../../model/CategoryAdminDashboardVO';
+import { ViewIncidentDetails } from './modal/ViewIncidentDetails';
+import { ViewAppAdminDashboardDetails } from './modal/ViewAppAdminDashboardDetails';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -37,6 +39,8 @@ export class DashboardComponent implements OnInit {
   categoryAdminDashboardVO: CategoryAdminDashboardVO = new CategoryAdminDashboardVO(null);
   modalRef: BsModalRef;
   firstTabLoaded: boolean = false;
+  userTilesData: any[] = [];
+  userChunkedTilesData: any[] = [];
 
   public adminDoughnutChartLabels: Label[] = [];
   public adminDoughnutChartData: MultiDataSet = [];
@@ -77,7 +81,7 @@ export class DashboardComponent implements OnInit {
   public userDoughnutChartData: MultiDataSet = [];
   public userDoughnutChartType: ChartType = 'pie';
   public userChartColors: any[] = [{
-    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
+    backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public userDoughnutChartOptions: any = {
     responsive: true,
@@ -155,6 +159,7 @@ export class DashboardComponent implements OnInit {
     });
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.roles = this.loggedInUser.roles;
+    //console.log(JSON.stringify(this.loggedInUser.modulePermissions));
   }
 
   getTitle(state, parent) {
@@ -255,12 +260,18 @@ export class DashboardComponent implements OnInit {
             this.userDashboardVO = new UserDashboardVO(data);
             let dataPoints = [];
             for (let i in this.userDashboardVO.incidents) {
+              this.userTilesData[i] = {
+                moduleId: this.userDashboardVO.incidents[i].moduleId,
+                name: this.userDashboardVO.incidents[i].statusName,
+                value: this.userDashboardVO.incidents[i].count || 0,
+                backgroundColour: this.userChartColors[0].backgroundColor[i],
+                detailDataParams: { moduleId: this.userDashboardVO.incidents[i].moduleId, raisedUserId: this.loggedInUser.userId }
+              };
               dataPoints.push(this.userDashboardVO.incidents[i].count);
               this.userDoughnutChartLabels.push(this.userDashboardVO.incidents[i].statusName);
             }
-            this.userDoughnutChartData = [
-              dataPoints
-            ];
+            this.userChunkedTilesData = this.chunk(this.userTilesData, 3);
+            this.userDoughnutChartData = [dataPoints];
             this.userDoughnutChartType = 'pie';
           });
       }
@@ -417,12 +428,18 @@ export class DashboardComponent implements OnInit {
           this.userDashboardVO = new UserDashboardVO(data);
           let dataPoints = [];
           for (let i in this.userDashboardVO.incidents) {
+            this.userTilesData[i] = {
+              moduleId: this.userDashboardVO.incidents[i].moduleId,
+              name: this.userDashboardVO.incidents[i].statusName,
+              value: this.userDashboardVO.incidents[i].count || 0,
+              backgroundColour: this.userChartColors[0].backgroundColor[i],
+              detailDataParams: { moduleId: this.userDashboardVO.incidents[i].moduleId, raisedUserId: this.loggedInUser.userId }
+            };
             dataPoints.push(this.userDashboardVO.incidents[i].count);
             this.userDoughnutChartLabels.push(this.userDashboardVO.incidents[i].statusName);
           }
-          this.userDoughnutChartData = [
-            dataPoints
-          ];
+          this.userChunkedTilesData = this.chunk(this.userTilesData, 3);
+          this.userDoughnutChartData = [dataPoints];
           this.userDoughnutChartType = 'pie';
         });
     }
@@ -501,6 +518,14 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  chunk(arr, size) {
+    var newArr = [];
+    for (var i = 0; i < arr.length; i += size) {
+      newArr.push(arr.slice(i, i + size));
+    }
+    return newArr;
+  }
+
   hasUserRole() {
     for (let k in this.roles) {
       if (this.roles[k].match(/.*_USER_.*/)) {
@@ -533,29 +558,39 @@ export class DashboardComponent implements OnInit {
   }
 
   appAdminChart1SegmentClicked(e: any) {
-    // if (this.getChartSegmentData(e) === "Total") {
-    //   this.viewSiteAdmin({ "status": "ALL" });
-    // } else if (this.getChartSegmentData(e) === "Active") {
-    //   this.viewSiteAdmin({ "status": "ACTIVE" })
-    // } else if (this.getChartSegmentData(e) === "Inactive") {
-    //   this.viewSiteAdmin({ "status": "INACTIVE" })
-    // } else {
-    //   this.viewSiteAdmin({ "status": "ALL" });
-    // }
+    if (this.getChartSegmentData(e) === "Total") {
+      this.viewSiteAdmin({ "status": "ALL" });
+    } else if (this.getChartSegmentData(e) === "Active") {
+      this.viewSiteAdmin({ "status": "ACTIVE" })
+    } else if (this.getChartSegmentData(e) === "Inactive") {
+      this.viewSiteAdmin({ "status": "INACTIVE" })
+    } else {
+      this.viewSiteAdmin({ "status": "ALL" });
+    }
   }
 
   appAdminChart2SegmentClicked(e: any) {
-    // if (this.getChartSegmentData(e) === "Total") {
-    //   this.viewSiteAdmin({ "status": "ALL" });
-    // } else if (this.getChartSegmentData(e) === "All License Type") {
-    //   this.viewSiteAdmin({ "status": "ALL", "licenseType": "ALL" })
-    // } else if (this.getChartSegmentData(e) === "Asset License Type") {
-    //   this.viewSiteAdmin({ "status": "ALL", "licenseType": "ASSET" })
-    // } else if (this.getChartSegmentData(e) === "Incident License Type") {
-    //   this.viewSiteAdmin({ "status": "ALL", "licenseType": "INCIDENT" })
-    // } else {
-    //   this.viewSiteAdmin({ "status": "ALL" });
-    // }
+    if (this.getChartSegmentData(e) === "Total") {
+      this.viewSiteAdmin({ "status": "ALL" });
+    } else if (this.getChartSegmentData(e) === "All License Type") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ALL" })
+    } else if (this.getChartSegmentData(e) === "Asset License Type") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ASSET" })
+    } else if (this.getChartSegmentData(e) === "Incident License Type") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "INCIDENT" })
+    } else {
+      this.viewSiteAdmin({ "status": "ALL" });
+    }
+  }
+
+  userIncidentSegmentClicked(e: any) {
+    for (let k in this.userTilesData) {
+      if (this.userTilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.userTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
   }
 
   getChartSegmentData(e: any) {
@@ -568,10 +603,27 @@ export class DashboardComponent implements OnInit {
         const label = chart.data.labels[clickedElementIndex];
         // get value by index
         const value = chart.data.datasets[0].data[clickedElementIndex];
+        //console.log(chart.data);
         //console.log(clickedElementIndex, label, value);
         return label;
       }
     }
+  }
+
+  viewIncident(element: any) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-xl',
+    };
+    const initialState = {
+      params: element
+    };
+    this.modalRef = this.modalService.show(ViewIncidentDetails,
+      Object.assign({}, config, { initialState })
+    );
   }
 
   viewSiteAdmin(element: any) {
@@ -622,108 +674,6 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-}
-
-@Component({
-  selector: 'modal-content',
-  template: `<div class="modal-header">
-  <h6 class="modal-title pull-left"><i class="icon-eye"></i> View Organization</h6>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-<div class="modal-body">
-  <div class="row">
-      <div class="col-sm-12">
-          <div class="card ">
-              <table mat-table [dataSource]="datasource">
-                  <ng-container matColumnDef="name">
-                      <th mat-header-cell *matHeaderCellDef> Name </th>
-                      <td mat-cell *matCellDef="let element">
-                          {{element.name}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="addressDtl">
-                      <th mat-header-cell *matHeaderCellDef> Address </th>
-                      <td mat-cell *matCellDef="let element">
-                          {{element.add1}}<br />
-                          {{element.add2}}<br />
-                          {{element.city}}<br />
-                          {{element.pincode}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="licence">
-                      <th mat-header-cell *matHeaderCellDef> Licence Dtl. </th>
-                      <td mat-cell *matCellDef="let element">
-                          {{element.licenseType}}<br />
-                          {{formatDate(element.licenseStart)}}<br />
-                          {{formatDate(element.licenseEnd)}}
-                      </td>
-                  </ng-container>
-                  <ng-container matColumnDef="status">
-                      <th mat-header-cell *matHeaderCellDef> Status </th>
-                      <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
-                          *matCellDef="let element">
-                          {{element.status}}
-                      </td>
-                  </ng-container>
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;"
-                      [ngClass]="{gray: even}"></tr>
-                  <tr class="mat-row" *matNoDataRow>
-                      <td class="mat-cell" align="center" colspan="9999">
-                          No data found!
-                      </td>
-                  </tr>
-              </table>
-              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
-          </div>
-      </div>
-  </div>
-</div>`
-})
-export class ViewAppAdminDashboardDetails implements OnInit {
-  params: any;
-  displayedColumns = ['name', 'addressDtl', 'licence', 'status'];
-  private datasource: OrganisationDataSource;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  constructor(
-    private fb: FormBuilder,
-    public bsModalRef: BsModalRef,
-    private service: OrganisationService,
-    public options: ModalOptions,
-    private loggedInUserService: LoggedInUserService,
-  ) {
-  }
-  ngOnInit(): void {
-    this.datasource = new OrganisationDataSource(this.service);
-    this.datasource.loadData(0, 5, this.params);
-  }
-
-  ngAfterViewInit() {
-    this.datasource.counter$
-      .pipe(
-        tap((count) => {
-          this.paginator.length = count;
-        })
-      )
-      .subscribe();
-    this.paginator.page
-      .pipe(
-        tap(() => this.loadData(this.params))
-      )
-      .subscribe();
-  }
-
-  loadData(req = {}) {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
-  }
-  formatDate(d: string) {
-    if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
-    }
-    return null;
-  }
 }
 
 @Component({
@@ -943,3 +893,5 @@ export class ViewUserDashboardDetails implements OnInit {
     return null;
   }
 }
+
+

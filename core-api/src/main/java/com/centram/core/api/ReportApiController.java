@@ -89,17 +89,19 @@ public class ReportApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/incident", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('INCIDENT REPORT','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD,INCIDENT REPORT','READ,READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> incidentReport(
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
+            @ApiParam(value = "Raised User Id", defaultValue = "", required = false) @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId,
+            @ApiParam(value = "Assigned User Id", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "Incident Status", defaultValue = "", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident report download", nickname = "organisationReportDownload", notes = "incident report download", response = PaginatedList.class, tags = {"report",})
@@ -113,6 +115,8 @@ public class ReportApiController {
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
+            @ApiParam(value = "Raised User Id", defaultValue = "", required = false) @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId,
+            @ApiParam(value = "Assigned User Id", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "Incident Status", defaultValue = "", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end

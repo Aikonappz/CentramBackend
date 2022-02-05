@@ -53,7 +53,7 @@ public class BatchReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
         if (page.getNumberOfElements() == 0) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -283,7 +283,7 @@ public class BatchReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
         if (page.getNumberOfElements() == 0) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }

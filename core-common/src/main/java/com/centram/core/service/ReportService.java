@@ -54,16 +54,18 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String raisedUserId, String assignedUserId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
+        BigInteger uId = (!raisedUserId.equals("")) ? BigInteger.valueOf(Long.valueOf(raisedUserId)) : null;
+        BigInteger aId = (!assignedUserId.equals("")) ? BigInteger.valueOf(Long.valueOf(assignedUserId)) : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         if (start == null || end == null) {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
+        return incidentService.incidentReport(mId, smId, pId, uId, aId, intStatus, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)
@@ -102,7 +104,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
+        return incidentService.incidentReport(mId, smId, pId, null, null, intStatus, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)
@@ -168,7 +170,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, null, null, intStatus, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(
@@ -380,7 +382,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, null, null, intStatus, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(

@@ -136,6 +136,16 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:subModuleId) is null) " +
             " ) and " +
             " ( " +
+            "   ((:raisedUserId) is not null and i.raisedUser.id = (:raisedUserId)) " +
+            "   OR " +
+            "   ((:raisedUserId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:assignedUserId) is not null and i.assignedUser.id = (:assignedUserId)) " +
+            "   OR " +
+            "   ((:assignedUserId) is null) " +
+            " ) and " +
+            " ( " +
             "   ((:priorityId) is not null and i.priority.id = (:priorityId)) " +
             "   OR " +
             "   ((:priorityId) is null) " +
@@ -145,6 +155,8 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("priorityId") BigInteger priorityId,
+            @Param("raisedUserId") BigInteger raisedUserId,
+            @Param("assignedUserId") BigInteger assignedUserId,
             @Param("status") Integer status,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
@@ -272,17 +284,18 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     );
 
     @Query(value = "select " +
+            " m.id as moduleId, " +
             " m.name as status, " +
             " CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) as statusName, " +
-            " COUNT(1) as count" +
+            " sum(case when i.id is not null then 1 else 0 end) as count" +
             " from " +
-            " incident i " +
-            " join module m on (m.app_module = 0 and m.parent_module_id is null and m.id = i.module_id) " +
-            " join user u on " +
+            " module m " +
+            " left outer join incident i on (i.module_id = m.id and i.organisation_id = (:organisationId) and i.created_date BETWEEN (:start) and (:end) ) " +
+            " left outer join user u on " +
             "  ( " +
-            "    ((:userType) = 'USER' and u.id = i.raised_user_id) " +
+            "    ((:userType) = 'USER' and u.id = i.raised_user_id and u.id = (:userId)) " +
             "    OR " +
-            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id) " +
+            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id and u.id = (:userId)) " +
             "    OR " +
             "    ((:userType) = 'AGENT_LEAD' and u.id = i.raised_user_id ) " +
             "    OR " +
@@ -292,41 +305,21 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
             "  ) " +
-            " where u.organisation_id =  (:organisationId) and " +
+            " where m.app_module = 0 and m.parent_module_id is null and " +
             "  ( " +
-            "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
+            "    ((:roleFilter) = true and m.id in (:userModules)) " +
             "    OR " +
             "    ((:roleFilter) = false) " +
             "  ) " +
-            " and i.created_date BETWEEN (:start) and (:end) " +
-            " and " +
-            " ((:userFilter) = true and " +
-            "  ( " +
-            "    ((:userType) = 'USER' and u.id = (:userId)) " +
-            "    OR " +
-            "    ((:userType) = 'AGENT' and u.id = (:userId)) " +
-            "    OR " +
-            "    ((:userType) = 'AGENT_LEAD') " +
-            "    OR " +
-            "    ((:userType) = 'AGENT_MANAGER') " +
-            "    OR " +
-            "    ((:userType) = 'CATEGORY_ADMIN') " +
-            "    OR " +
-            "    ((:userType) = 'ORG_ADMIN') " +
-            "  ) " +
-            " OR " +
-            " ((:userFilter) = false)) " +
-            " group by m.name, CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) " +
-            " order by 1 asc ", nativeQuery = true)
+            " group by m.id, m.name, CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) " +
+            " order by 2 asc ", nativeQuery = true)
     Set<IncidentStatusVO> orgStatusWiseIncidentDashboardData(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("roleFilter") Boolean roleFilter,
             @Param("userModules") List<BigInteger> userModules,
-            @Param("userSubModules") List<BigInteger> userSubModules,
             @Param("organisationId") BigInteger organisationId,
             @Param("userType") String userType,
-            @Param("userFilter") Boolean userFilter,
             @Param("userId") BigInteger userId
     );
 

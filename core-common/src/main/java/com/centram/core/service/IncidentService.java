@@ -119,7 +119,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -140,7 +140,7 @@ public class IncidentService {
                     .collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**
