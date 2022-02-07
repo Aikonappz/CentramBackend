@@ -21,8 +21,19 @@ public interface VendorRepository extends JpaRepository<Vendor, BigInteger> {
     @Query("select v from Vendor v join v.vendorModules vm join v.organisation org where vm.moduleId = (:moduleId) and vm.subModuleId = (:subModuleId) and org.id = (:organisationId)")
     List<Vendor> getByModuleIdAndSubModuleId(@Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId, @Param("organisationId") BigInteger organisationId);
 
-    @Query("select v from Vendor v join v.organisation org where org.id = (:organisationId)")
-    Page getByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+    @Query("select v from Vendor v join v.organisation org where org.id = (:organisationId) and " +
+            "  ( " +
+            "    ((:hasFilter) = true and v.inHouse = (:inHouseFilter)) " +
+            "    OR " +
+            "    ((:hasFilter) = false) " +
+            "  ) "
+    )
+    Page getByOrganisation(
+            @Param("hasFilter") Boolean hasFilter,
+            @Param("inHouseFilter") Boolean inHouseFilter,
+            @Param("organisationId") BigInteger organisationId,
+            @Param("pageable") Pageable pageable
+    );
 
     @Query(value = "select " +
             " new com.centram.common.vo.OrgAdminDashboardVO(" +

@@ -92,9 +92,18 @@ public class VendorService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Vendor> getVendors(Pageable pageable) {
+    public PaginatedList<Vendor> getVendors(String inHouse, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<Vendor>(vendorRepository.getByOrganisation(loggedInUser.getOrganisationId(), pageable));
+        Boolean hasFilter = (inHouse.equalsIgnoreCase(""))? false : true;
+        Boolean inHouseFilter = false;
+        if(hasFilter && inHouse.equals("1")){
+            inHouseFilter = true;
+        }else if(hasFilter && inHouse.equals("0")){
+            inHouseFilter = false;
+        }else{
+            hasFilter = false;
+        }
+        return new PaginatedList<Vendor>(vendorRepository.getByOrganisation(hasFilter, inHouseFilter, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**

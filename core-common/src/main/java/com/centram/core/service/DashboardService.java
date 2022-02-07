@@ -121,6 +121,16 @@ public class DashboardService {
                     return permission.getModule().getId();
                 })
                 .collect(Collectors.toList());
+        List<BigInteger> incidentModules = permissions.stream()
+                .filter(i -> {
+                    return (i.getModule().getAppModule() == false && i.getModule().getParentModuleId() != null
+                            && i.getAction().getId().compareTo(BigInteger.valueOf(Long.valueOf("7"))) == 0
+                    );
+                })
+                .map(permission -> {
+                    return permission.getModule().getParentModuleId();
+                })
+                .collect(Collectors.toList());
         String userType = "AGENT";
         if (permissions.stream().filter(i -> {
             return (i.getRole().getId().compareTo(BigInteger.valueOf(Long.valueOf("5"))) == 0);
@@ -137,7 +147,7 @@ public class DashboardService {
                         startDateTime,
                         endDateTime,
                         true,
-                        userModules,
+                        incidentModules,
                         loggedInUser.getOrganisationId(),
                         userType,
                         loggedInUser.getUserId()

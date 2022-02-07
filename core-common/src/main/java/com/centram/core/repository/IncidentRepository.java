@@ -114,9 +114,9 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where 1=1 and i.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
+    @Query(value = "select * from incident i where i.organisation_id = (:organisationId) and (i.created_date between (:start) and (:end)) and " +
             " ( " +
-            "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
+            "   ((:modFilter) = true and i.module_id in (:modSubModIds) and i.sub_module_id in (:modSubModIds)) " +
             "   OR " +
             "   ((:modFilter) = false) " +
             " ) and " +
@@ -126,31 +126,45 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:status) = 9) " +
             " ) and " +
             " ( " +
-            "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +
+            "   ((:moduleId) is not null and i.module_id = (:moduleId)) " +
             "   OR " +
             "   ((:moduleId) is null) " +
             " ) and " +
             " ( " +
-            "   ((:subModuleId) is not null and i.subModuleId = (:subModuleId)) " +
+            "   ((:subModuleId) is not null and i.sub_module_id = (:subModuleId)) " +
             "   OR " +
             "   ((:subModuleId) is null) " +
             " ) and " +
             " ( " +
-            "   ((:raisedUserId) is not null and i.raisedUser.id = (:raisedUserId)) " +
+            "   ((:raisedUserId) is not null and i.raised_user_id = (:raisedUserId)) " +
             "   OR " +
             "   ((:raisedUserId) is null) " +
             " ) and " +
             " ( " +
-            "   ((:assignedUserId) is not null and i.assignedUser.id = (:assignedUserId)) " +
+            "   ((:assignedUserId) is not null and i.assigned_user_id = (:assignedUserId)) " +
             "   OR " +
             "   ((:assignedUserId) is null) " +
             " ) and " +
             " ( " +
-            "   ((:priorityId) is not null and i.priority.id = (:priorityId)) " +
+            "   ((:priorityId) is not null and i.priority_id = (:priorityId)) " +
             "   OR " +
             "   ((:priorityId) is null) " +
-            " ) "
-    )
+            " ) " +
+            " and " +
+            " ( " +
+            "   ((:agingFilter) = '>=5' and datediff(SYSDATE() ,i.created_date) between 5 and 9) " +
+            "   OR " +
+            "   ((:agingFilter) = '>=10' and datediff(SYSDATE() ,i.created_date) between 10 and 19) " +
+            "   OR " +
+            "   ((:agingFilter) = '>=20' and datediff(SYSDATE() ,i.created_date) between 20 and 29) " +
+            "   OR " +
+            "   ((:agingFilter) = '>=30' and datediff(SYSDATE() ,i.created_date) between 30 and 59) " +
+            "   OR " +
+            "   ((:agingFilter) = '>60' and datediff(SYSDATE() ,i.created_date) > 60) " +
+            "   OR " +
+            "   ((:agingFilter) is null) " +
+            " )",
+            nativeQuery = true)
     Page<Incident> incidentReport(
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
@@ -162,6 +176,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("end") LocalDateTime end,
             @Param("modFilter") Boolean modFilter,
             @Param("modSubModIds") List<BigInteger> modSubModIds,
+            @Param("agingFilter") String agingFilter,
             @Param("organisationId") BigInteger organisationId,
             Pageable pageable
     );
@@ -287,7 +302,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " m.id as moduleId, " +
             " m.name as status, " +
             " CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) as statusName, " +
-            " sum(case when i.id is not null then 1 else 0 end) as count" +
+            " sum(case when i.id is not null and u.id is not null then 1 else 0 end) as count" +
             " from " +
             " module m " +
             " left outer join incident i on (i.module_id = m.id and i.organisation_id = (:organisationId) and i.created_date BETWEEN (:start) and (:end) ) " +
@@ -324,15 +339,24 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     );
 
     @Query(value = " select " +
+            " p.id as priorityId," +
             " p.name as priority, " +
-            " sum(1) as count " +
+            " sum(case when i.id is not null and u.id is not null then 1 else 0 end) as count " +
             " FROM " +
-            " incident i " +
-            " join user u on " +
+            " priority p " +
+            " left outer join incident i on (" +
+            "   p.id = i.priority_id and i.organisation_id =  (:organisationId) and i.created_date BETWEEN (:start) and (:end) and " +
             "  ( " +
-            "    ((:userType) = 'USER' and u.id = i.raised_user_id) " +
+            "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
             "    OR " +
-            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id) " +
+            "    ((:roleFilter) = false) " +
+            "  ) " +
+            " ) " +
+            " left outer join user u on " +
+            "  ( " +
+            "    ((:userType) = 'USER' and u.id = i.raised_user_id and (((:userFilter) = true and u.id = (:userId)) or (:userFilter) = false)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id and (((:userFilter) = true and u.id = (:userId)) or (:userFilter) = false)) " +
             "    OR " +
             "    ((:userType) = 'AGENT_LEAD' and u.id = i.raised_user_id ) " +
             "    OR " +
@@ -342,32 +366,8 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
             "  ) " +
-            " join priority p on (p.id = i.priority_id) " +
-            " where p.organisation_id =  (:organisationId) and " +
-            "  ( " +
-            "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +
-            "    OR " +
-            "    ((:roleFilter) = false) " +
-            "  ) " +
-            " and " +
-            " ((:userFilter) = true and " +
-            "  ( " +
-            "    ((:userType) = 'USER' and u.id = (:userId)) " +
-            "    OR " +
-            "    ((:userType) = 'AGENT' and u.id = (:userId)) " +
-            "    OR " +
-            "    ((:userType) = 'AGENT_LEAD') " +
-            "    OR " +
-            "    ((:userType) = 'AGENT_MANAGER') " +
-            "    OR " +
-            "    ((:userType) = 'CATEGORY_ADMIN') " +
-            "    OR " +
-            "    ((:userType) = 'ORG_ADMIN') " +
-            "  ) " +
-            " OR " +
-            " ((:userFilter) = false)) " +
-            " and i.created_date BETWEEN (:start) and (:end) " +
-            " group by p.name " +
+            " where 1 = 1 and p.organisation_id =  (:organisationId) " +
+            " group by p.id, p.name " +
             " order by 1 asc ", nativeQuery = true)
     Set<IncidentPriorityVO> orgPriorityWiseIncidentDashboardData(
             @Param("start") LocalDateTime start,
