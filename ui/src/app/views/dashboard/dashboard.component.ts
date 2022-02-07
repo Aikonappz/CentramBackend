@@ -7,8 +7,6 @@ import { DashboardService } from '../../service/DashboardService';
 import { AdminDashboardVO } from '../../model/AdminDashboardVO';
 import { FormBuilder } from '@angular/forms';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { OrganisationService } from '../../service/OrganisationService';
-import { OrganisationDataSource } from '../../service/datasource/OrganisationDataSource';
 import { MatPaginator } from '@angular/material/paginator';
 import { tap } from 'rxjs/operators';
 import * as moment from 'moment';
@@ -16,8 +14,6 @@ import { AppUtility } from '../../config/AppUtility';
 import { Label, MultiDataSet } from 'ng2-charts';
 import { ChartType } from 'chart.js';
 import { OrgAdminDashboardVO } from '../../model/OrgAdminDashboardVO';
-import { UserDataSource } from '../../service/datasource/UserDataSource';
-import { UserService } from '../../service/UserService';
 import { UserDashboardVO } from '../../model/UserDashboardVO';
 import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { IncidentService } from '../../service/IncidentService';
@@ -25,6 +21,8 @@ import { AgentDashboardVO } from '../../model/AgentDashboardVO';
 import { CategoryAdminDashboardVO } from '../../model/CategoryAdminDashboardVO';
 import { ViewIncidentDetails } from './modal/ViewIncidentDetails';
 import { ViewAppAdminDashboardDetails } from './modal/ViewAppAdminDashboardDetails';
+import { ViewOrgAdminDashboardUserDetails } from './modal/ViewOrgAdminDashboardUserDetails';
+import { ViewOrgAdminDashboardVendorDetails } from './modal/ViewOrgAdminDashboardVendorDetails';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -41,6 +39,18 @@ export class DashboardComponent implements OnInit {
   firstTabLoaded: boolean = false;
   userTilesData: any[] = [];
   userChunkedTilesData: any[] = [];
+  orgAdminTilesData: any[] = [];
+  orgAdminChunkedTilesData: any[] = [];
+  agentTilesData: any[] = [];
+  agentChunkedTilesData: any[] = [];
+  agent1TilesData: any[] = [];
+  agent1ChunkedTilesData: any[] = [];
+  caTilesData: any[] = [];
+  caChunkedTilesData: any[] = [];
+  ca1TilesData: any[] = [];
+  ca1ChunkedTilesData: any[] = [];
+  ca2TilesData: any[] = [];
+  ca2ChunkedTilesData: any[] = [];
 
   public adminDoughnutChartLabels: Label[] = [];
   public adminDoughnutChartData: MultiDataSet = [];
@@ -70,7 +80,7 @@ export class DashboardComponent implements OnInit {
   public orgAdmin1DoughnutChartData: MultiDataSet = [];
   public orgAdmin1DoughnutChartType: ChartType = 'pie';
   public orgAdmin1ChartColors: any[] = [{
-    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
+    backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public orgAdmin1DoughnutChartOptions: any = {
     responsive: true,
@@ -92,7 +102,7 @@ export class DashboardComponent implements OnInit {
   public agentDoughnutChartData: MultiDataSet = [];
   public agentDoughnutChartType: ChartType = 'pie';
   public agentChartColors: any[] = [{
-    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
+    backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public agentDoughnutChartOptions: any = {
     responsive: true,
@@ -114,7 +124,7 @@ export class DashboardComponent implements OnInit {
   public caDoughnutChartData: MultiDataSet = [];
   public caDoughnutChartType: ChartType = 'pie';
   public caChartColors: any[] = [{
-    backgroundColor: ["#63CA96", "#E9518B", "#5FBD74", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
+    backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public caDoughnutChartOptions: any = {
     responsive: true,
@@ -222,7 +232,7 @@ export class DashboardComponent implements OnInit {
       if (this.firstTabLoaded === false) {
         this.firstTabLoaded = true;
         this.service
-          .orgAdminDashboard()
+          .orgAdminDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
           .subscribe((data: OrgAdminDashboardVO) => {
             this.orgAdminDashboardVO = new OrgAdminDashboardVO(data);
             let dataPoints = [];
@@ -239,14 +249,20 @@ export class DashboardComponent implements OnInit {
             ];
             this.orgAdminDoughnutChartType = 'pie';
             dataPoints = [];
-            let lebel = [];
+            this.orgAdminTilesData = [];
             for (let i in this.orgAdminDashboardVO.incidents) {
+              this.orgAdminTilesData[i] = {
+                moduleId: this.orgAdminDashboardVO.incidents[i].moduleId,
+                name: this.orgAdminDashboardVO.incidents[i].statusName,
+                value: this.orgAdminDashboardVO.incidents[i].count || 0,
+                backgroundColour: this.orgAdmin1ChartColors[0].backgroundColor[i],
+                detailDataParams: { moduleId: this.orgAdminDashboardVO.incidents[i].moduleId }
+              };
               dataPoints.push(this.orgAdminDashboardVO.incidents[i].count);
               this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.incidents[i].statusName);
             }
-            this.orgAdmin1DoughnutChartData = [
-              dataPoints
-            ];
+            this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 3);
+            this.orgAdmin1DoughnutChartData = [dataPoints];
             this.orgAdmin1DoughnutChartType = 'pie';
           });
       }
@@ -259,6 +275,7 @@ export class DashboardComponent implements OnInit {
           .subscribe((data: UserDashboardVO) => {
             this.userDashboardVO = new UserDashboardVO(data);
             let dataPoints = [];
+            this.userTilesData = [];
             for (let i in this.userDashboardVO.incidents) {
               this.userTilesData[i] = {
                 moduleId: this.userDashboardVO.incidents[i].moduleId,
@@ -284,22 +301,42 @@ export class DashboardComponent implements OnInit {
           .subscribe((data: AgentDashboardVO) => {
             this.agentDashboardVO = new AgentDashboardVO(data);
             let dataPoints = [];
+            this.agentTilesData = [];
             for (let i in this.agentDashboardVO.statusIncidents) {
+              this.agentTilesData[i] = {
+                moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
+                name: this.agentDashboardVO.statusIncidents[i].statusName,
+                value: this.agentDashboardVO.statusIncidents[i].count || 0,
+                backgroundColour: this.userChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
+                  assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
+                }
+              };
               dataPoints.push(this.agentDashboardVO.statusIncidents[i].count);
               this.agentDoughnutChartLabels.push(this.agentDashboardVO.statusIncidents[i].statusName);
             }
-            this.agentDoughnutChartData = [
-              dataPoints
-            ];
+            this.agentChunkedTilesData = this.chunk(this.agentTilesData, 3);
+            this.agentDoughnutChartData = [dataPoints];
             this.agentDoughnutChartType = 'pie';
             dataPoints = [];
+            this.agent1TilesData = [];
             for (let i in this.agentDashboardVO.priorityIncidents) {
+              this.agent1TilesData[i] = {
+                priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
+                name: this.agentDashboardVO.priorityIncidents[i].priority,
+                value: this.agentDashboardVO.priorityIncidents[i].count || 0,
+                backgroundColour: this.agent1ChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
+                  assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
+                }
+              };
               dataPoints.push(this.agentDashboardVO.priorityIncidents[i].count);
               this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityIncidents[i].priority);
             }
-            this.agent1DoughnutChartData = [
-              dataPoints
-            ];
+            this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 3);
+            this.agent1DoughnutChartData = [dataPoints];
             this.agent1DoughnutChartType = 'pie';
           });
       }
@@ -312,22 +349,42 @@ export class DashboardComponent implements OnInit {
           .subscribe((data: CategoryAdminDashboardVO) => {
             this.categoryAdminDashboardVO = new CategoryAdminDashboardVO(data);
             let dataPoints = [];
+            this.caTilesData = [];
             for (let i in this.categoryAdminDashboardVO.statusIncidents) {
+              this.caTilesData[i] = {
+                moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
+                name: this.categoryAdminDashboardVO.statusIncidents[i].statusName,
+                value: this.categoryAdminDashboardVO.statusIncidents[i].count || 0,
+                backgroundColour: this.caChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
+                  assignedUserId: "",
+                }
+              };
               dataPoints.push(this.categoryAdminDashboardVO.statusIncidents[i].count);
               this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.statusIncidents[i].statusName);
             }
-            this.caDoughnutChartData = [
-              dataPoints
-            ];
+            this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
+            this.caDoughnutChartData = [dataPoints];
             this.caDoughnutChartType = 'pie';
             dataPoints = [];
+            this.ca1TilesData = [];
             for (let i in this.categoryAdminDashboardVO.priorityIncidents) {
+              this.ca1TilesData[i] = {
+                priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
+                name: this.categoryAdminDashboardVO.priorityIncidents[i].priority,
+                value: this.categoryAdminDashboardVO.priorityIncidents[i].count || 0,
+                backgroundColour: this.ca1ChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
+                  assignedUserId: "",
+                }
+              };
               dataPoints.push(this.categoryAdminDashboardVO.priorityIncidents[i].count);
               this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityIncidents[i].priority);
             }
-            this.ca1DoughnutChartData = [
-              dataPoints
-            ];
+            this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 3);
+            this.ca1DoughnutChartData = [dataPoints];
             this.ca1DoughnutChartType = 'pie';
             dataPoints = [];
             dataPoints.push(this.categoryAdminDashboardVO.aging5);
@@ -335,9 +392,7 @@ export class DashboardComponent implements OnInit {
             dataPoints.push(this.categoryAdminDashboardVO.aging20);
             dataPoints.push(this.categoryAdminDashboardVO.aging30);
             dataPoints.push(this.categoryAdminDashboardVO.aging60);
-            this.ca2DoughnutChartData = [
-              dataPoints
-            ];
+            this.ca2DoughnutChartData = [dataPoints];
             this.ca2DoughnutChartLabels = [
               " > 5 Days",
               " > 10 Days",
@@ -376,6 +431,12 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
+          // this.admin1DoughnutChartLabels = [
+          //   "Total",
+          //   "All License Type",
+          //   "Asset License Type",
+          //   "Incident License Type",
+          // ];
           this.admin1DoughnutChartLabels = [
             "All License Type",
             "Asset License Type",
@@ -407,14 +468,20 @@ export class DashboardComponent implements OnInit {
           ];
           this.orgAdminDoughnutChartType = 'pie';
           dataPoints = [];
-          let lebel = [];
+          this.orgAdminTilesData = [];
           for (let i in this.orgAdminDashboardVO.incidents) {
+            this.orgAdminTilesData[i] = {
+              moduleId: this.orgAdminDashboardVO.incidents[i].moduleId,
+              name: this.orgAdminDashboardVO.incidents[i].statusName,
+              value: this.orgAdminDashboardVO.incidents[i].count || 0,
+              backgroundColour: this.orgAdmin1ChartColors[0].backgroundColor[i],
+              detailDataParams: { moduleId: this.orgAdminDashboardVO.incidents[i].moduleId }
+            };
             dataPoints.push(this.orgAdminDashboardVO.incidents[i].count);
             this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.incidents[i].statusName);
           }
-          this.orgAdmin1DoughnutChartData = [
-            dataPoints
-          ];
+          this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 3);
+          this.orgAdmin1DoughnutChartData = [dataPoints];
           this.orgAdmin1DoughnutChartType = 'pie';
         });
     }
@@ -427,6 +494,7 @@ export class DashboardComponent implements OnInit {
         .subscribe((data: UserDashboardVO) => {
           this.userDashboardVO = new UserDashboardVO(data);
           let dataPoints = [];
+          this.userTilesData = [];
           for (let i in this.userDashboardVO.incidents) {
             this.userTilesData[i] = {
               moduleId: this.userDashboardVO.incidents[i].moduleId,
@@ -452,22 +520,42 @@ export class DashboardComponent implements OnInit {
         .subscribe((data: AgentDashboardVO) => {
           this.agentDashboardVO = new AgentDashboardVO(data);
           let dataPoints = [];
+          this.agentTilesData = [];
           for (let i in this.agentDashboardVO.statusIncidents) {
+            this.agentTilesData[i] = {
+              moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
+              name: this.agentDashboardVO.statusIncidents[i].statusName,
+              value: this.agentDashboardVO.statusIncidents[i].count || 0,
+              backgroundColour: this.userChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
+                assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
+              }
+            };
             dataPoints.push(this.agentDashboardVO.statusIncidents[i].count);
             this.agentDoughnutChartLabels.push(this.agentDashboardVO.statusIncidents[i].statusName);
           }
-          this.agentDoughnutChartData = [
-            dataPoints
-          ];
+          this.agentChunkedTilesData = this.chunk(this.agentTilesData, 3);
+          this.agentDoughnutChartData = [dataPoints];
           this.agentDoughnutChartType = 'pie';
           dataPoints = [];
+          this.agent1TilesData = [];
           for (let i in this.agentDashboardVO.priorityIncidents) {
+            this.agent1TilesData[i] = {
+              priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
+              name: this.agentDashboardVO.priorityIncidents[i].priority,
+              value: this.agentDashboardVO.priorityIncidents[i].count || 0,
+              backgroundColour: this.agent1ChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
+                assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
+              }
+            };
             dataPoints.push(this.agentDashboardVO.priorityIncidents[i].count);
             this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityIncidents[i].priority);
           }
-          this.agent1DoughnutChartData = [
-            dataPoints
-          ];
+          this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 3);
+          this.agent1DoughnutChartData = [dataPoints];
           this.agent1DoughnutChartType = 'pie';
         });
     }
@@ -480,22 +568,42 @@ export class DashboardComponent implements OnInit {
         .subscribe((data: CategoryAdminDashboardVO) => {
           this.categoryAdminDashboardVO = new CategoryAdminDashboardVO(data);
           let dataPoints = [];
+          this.caTilesData = [];
           for (let i in this.categoryAdminDashboardVO.statusIncidents) {
+            this.caTilesData[i] = {
+              moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
+              name: this.categoryAdminDashboardVO.statusIncidents[i].statusName,
+              value: this.categoryAdminDashboardVO.statusIncidents[i].count || 0,
+              backgroundColour: this.caChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
+                assignedUserId: "",
+              }
+            };
             dataPoints.push(this.categoryAdminDashboardVO.statusIncidents[i].count);
             this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.statusIncidents[i].statusName);
           }
-          this.caDoughnutChartData = [
-            dataPoints
-          ];
+          this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
+          this.caDoughnutChartData = [dataPoints];
           this.caDoughnutChartType = 'pie';
           dataPoints = [];
+          this.ca1TilesData = [];
           for (let i in this.categoryAdminDashboardVO.priorityIncidents) {
+            this.ca1TilesData[i] = {
+              priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
+              name: this.categoryAdminDashboardVO.priorityIncidents[i].priority,
+              value: this.categoryAdminDashboardVO.priorityIncidents[i].count || 0,
+              backgroundColour: this.ca1ChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
+                assignedUserId: "",
+              }
+            };
             dataPoints.push(this.categoryAdminDashboardVO.priorityIncidents[i].count);
             this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityIncidents[i].priority);
           }
-          this.ca1DoughnutChartData = [
-            dataPoints
-          ];
+          this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 3);
+          this.ca1DoughnutChartData = [dataPoints];
           this.ca1DoughnutChartType = 'pie';
           dataPoints = [];
           dataPoints.push(this.categoryAdminDashboardVO.aging5);
@@ -503,9 +611,7 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.categoryAdminDashboardVO.aging20);
           dataPoints.push(this.categoryAdminDashboardVO.aging30);
           dataPoints.push(this.categoryAdminDashboardVO.aging60);
-          this.ca2DoughnutChartData = [
-            dataPoints
-          ];
+          this.ca2DoughnutChartData = [dataPoints];
           this.ca2DoughnutChartLabels = [
             " > 5 Days",
             " > 10 Days",
@@ -593,6 +699,70 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  agentIncidentSegmentClicked(e: any) {
+    for (let k in this.agentTilesData) {
+      if (this.agentTilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.agentTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  agentIncidentPrioritySegmentClicked(e: any) {
+    for (let k in this.agent1TilesData) {
+      if (this.agent1TilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.agent1TilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  caIncidentSegmentClicked(e: any) {
+    for (let k in this.caTilesData) {
+      if (this.caTilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.caTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  caIncidentPrioritySegmentClicked(e: any) {
+    for (let k in this.ca1TilesData) {
+      if (this.ca1TilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.ca1TilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  caIncidentAgingSegmentClicked(e: any) {
+    if (this.getChartSegmentData(e) == " > 5 Days") {
+      this.viewIncident({ agingFilter: ">=5" });
+    } else if (this.getChartSegmentData(e) == " > 10 Days") {
+      this.viewIncident({ agingFilter: ">=10" });
+    } else if (this.getChartSegmentData(e) == " > 20 Days") {
+      this.viewIncident({ agingFilter: ">=20" });
+    } else if (this.getChartSegmentData(e) == " > 30 Days") {
+      this.viewIncident({ agingFilter: ">=30" });
+    } else if (this.getChartSegmentData(e) == " > 60 Days") {
+      this.viewIncident({ agingFilter: ">60" });
+    }
+  }
+
+  orgAdminIncidentSegmentClicked(e: any) {
+    for (let k in this.orgAdminTilesData) {
+      if (this.orgAdminTilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.orgAdminTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
   getChartSegmentData(e: any) {
     if (e.active.length > 0) {
       const chart = e.active[0]._chart;
@@ -642,7 +812,7 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  viewOrgAdmin(element: any) {
+  viewOrgAdminUserDetail(element: any) {
     const config: ModalOptions = {
       backdrop: 'static',
       keyboard: false,
@@ -653,7 +823,23 @@ export class DashboardComponent implements OnInit {
     const initialState = {
       params: element
     };
-    this.modalRef = this.modalService.show(ViewOrgAdminDashboardDetails,
+    this.modalRef = this.modalService.show(ViewOrgAdminDashboardUserDetails,
+      Object.assign({}, config, { initialState })
+    );
+  }
+
+  viewOrgAdminVendorDetail(element: any) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-xl',
+    };
+    const initialState = {
+      params: element
+    };
+    this.modalRef = this.modalService.show(ViewOrgAdminDashboardVendorDetails,
       Object.assign({}, config, { initialState })
     );
   }
@@ -676,115 +862,7 @@ export class DashboardComponent implements OnInit {
 
 }
 
-@Component({
-  selector: 'modal-content',
-  template: `<div class="modal-header">
-  <h6 class="modal-title pull-left"><i class="icon-eye"></i> View Employees/Agent</h6>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-<div class="modal-body">
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="card ">
-        <div class="row">
-          <div class=" col col-sm-5">
-            <label class="form-col-form-label" for="moduleId">Vendor</label>
-            <!-- <select class="form-control" formControlName="moduleId" ngModel id="moduleId" name="moduleId"> -->
-            <select class="form-control" id="moduleId" name="moduleId">
-            <option value="" selected>ALL</option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <table class="table table-bordered" mat-table [dataSource]="datasource">
-              <ng-container matColumnDef="name">
-                <th class="w-20" mat-header-cell *matHeaderCellDef> Name </th>
-                <td mat-cell *matCellDef="let element">
-                  {{element.firstName}} {{element.lastName}}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="email">
-                <th class="w-20" mat-header-cell *matHeaderCellDef> Email </th>
-                <td mat-cell *matCellDef="let element">
-                  {{element.email}}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="contact">
-                <th class="w-20" mat-header-cell *matHeaderCellDef> Contact Dtl. </th>
-                <td mat-cell *matCellDef="let element">
-                  <b>{{element.contactNo}}</b><br />
-                  {{element.secContactNo}}
-                </td>
-              </ng-container>
-              <ng-container matColumnDef="categories">
-                <th class="w-20" mat-header-cell *matHeaderCellDef> Category Access </th>
-                <td mat-cell *matCellDef="let element">
-                  {{element.categories.join(',')}}
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;" [ngClass]="{gray: even}">
-              </tr>
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" align="center" colspan="9999">
-                  No data found!
-                </td>
-              </tr>
-            </table>
-            <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>`
-})
-export class ViewOrgAdminDashboardDetails implements OnInit {
-  params: any;
-  displayedColumns = ['name', 'email', 'contact', 'categories',];
-  private datasource: UserDataSource
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  constructor(
-    private fb: FormBuilder,
-    public bsModalRef: BsModalRef,
-    private service: UserService,
-    public options: ModalOptions,
-    private loggedInUserService: LoggedInUserService,
-  ) {
-  }
-  ngOnInit(): void {
-    this.datasource = new UserDataSource(this.service);
-    this.datasource.loadUserVOs(0, 5, this.params);
-  }
 
-  ngAfterViewInit() {
-    this.datasource.counter$
-      .pipe(
-        tap((count) => {
-          this.paginator.length = count;
-        })
-      )
-      .subscribe();
-    this.paginator.page
-      .pipe(
-        tap(() => this.loadData(this.params))
-      )
-      .subscribe();
-  }
-
-  loadData(req = {}) {
-    this.datasource.loadUserVOs(this.paginator.pageIndex, this.paginator.pageSize, req);
-  }
-  formatDate(d: string) {
-    if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
-    }
-    return null;
-  }
-}
 
 @Component({
   selector: 'modal-content',
@@ -894,4 +972,8 @@ export class ViewUserDashboardDetails implements OnInit {
   }
 }
 
+
+function ViewOrgAdminVendorDetail(ViewOrgAdminVendorDetail: any, arg1: ModalOptions<Object> & { initialState: { params: any; }; }): BsModalRef<any> {
+  throw new Error('Function not implemented.');
+}
 

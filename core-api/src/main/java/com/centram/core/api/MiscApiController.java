@@ -434,8 +434,11 @@ public class MiscApiController {
     @RequestMapping(value = "/all-vendor", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR','READ',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity<PaginatedList<Vendor>> getVendors(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<Vendor>> getVendors(
+            @ApiParam(value = "In House Vendor", defaultValue = "", required = false) @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(inHouse, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a vendor", nickname = "saveVendor", notes = "Add a vendor", tags = {"misc",})
