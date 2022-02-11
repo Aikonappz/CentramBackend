@@ -65,6 +65,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { ErrormessageComponent } from './views/errormessage/errormessage.component';
 import { PushNotificationsModule } from 'ng-push-ivy';
 import { ClientStorageService } from './service/ClientStorageService';
+import { ChatComponent } from './views/chat/chat.component';
 
 @NgModule({
   imports: [
@@ -106,6 +107,7 @@ import { ClientStorageService } from './service/ClientStorageService';
     RequestDemoComponent,
     LogoutComponent,
     SpinnerComponent,
+    ChatComponent,
     ErrormessageComponent,
   ],
   providers: [

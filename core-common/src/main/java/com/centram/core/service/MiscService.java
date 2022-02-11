@@ -885,4 +885,77 @@ public class MiscService {
     public void sendBatchReport(Map<String, Object> mailValues) {
         appEmailService.sendBatchReport(mailValues);
     }
+
+    @Async("asyncExecutor")
+    public void sendOutBoundAssetUpdateEmail(AssetOrder assetOrder) {
+        List<Notification> userNotifications = new ArrayList<Notification>();
+        Map<String, Object> mailValues = new HashMap<String, Object>();
+        mailValues.put("ord_no", assetOrder.getOrderNo());
+        mailValues.put("dept_name", (assetOrder.getDepartment() != null) ? assetOrder.getDepartment().getName() : "");
+        mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getOfficeName() : "");
+        mailValues.put("asset_type", assetOrder.getAssetType().name());
+        mailValues.put("qty", assetOrder.getQuantity());
+        mailValues.put("cost", assetOrder.getCost());
+        mailValues.put("in_budget", assetOrder.getWithinBudget() ? "Yes" : "No");
+        mailValues.put("purchase_type", assetOrder.getPurchaseType().name());
+        mailValues.put("existing_agreement", assetOrder.getExistingAgreement() ? "Yes" : "No");
+        mailValues.put("vendor_name", assetOrder.getVendor().getName());
+        mailValues.put("comment", assetOrder.getComment());
+        mailValues.put("approver_index", 0);
+        mailValues.put("order_id", assetOrder.getId());
+        mailValues.put("approver_1", assetOrder.getApproverUser1().getEmail());
+        mailValues.put("approver_2", assetOrder.getApproverUser2().getEmail());
+        if (assetOrder.getApproverUser1Comment() == null && assetOrder.getApproverUser2Comment() == null) {
+            mailValues.put("notification", new Notification(null, null, assetOrder.getApproverUser1(), Status.PUSHED, NotificationType.ACTIONABLE));
+            mailValues.put("recipient_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());
+            mailValues.put("feedback", "");
+            mailValues.put("ord_status", "");
+            mailValues.put("approver_index", 1);
+            mailValues.put("subject", "approver1MailSubject");
+            mailValues.put("body", "approver1MailBody");
+            mailValues.put("to", assetOrder.getApproverUser1().getEmail());
+            appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
+            mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
+            mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
+            mailValues.put("feedback", "");
+            mailValues.put("ord_status", "");
+            mailValues.put("subject", "mailSubject");
+            mailValues.put("body", "mailBody");
+            mailValues.put("to", assetOrder.getRaisedUser().getEmail());
+            userNotifications.add(new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
+            appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
+        } else if (assetOrder.getApproverUser1Comment() != null && assetOrder.getApproverUser2Comment() == null) {
+            if (assetOrder.getApprovedUser1()) {
+                mailValues.put("notification", new Notification(null, null, assetOrder.getApproverUser2(), Status.PUSHED, NotificationType.ACTIONABLE));
+                mailValues.put("recipient_name", assetOrder.getApproverUser2().getFirstName() + " " + assetOrder.getApproverUser2().getLastName());
+                mailValues.put("feedback", "");
+                mailValues.put("ord_status", "");
+                mailValues.put("approver_index", 2);
+                mailValues.put("subject", "approver2MailSubject");
+                mailValues.put("body", "approver2MailBody");
+                mailValues.put("to", assetOrder.getApproverUser1().getEmail());
+                userNotifications.add(new Notification(null, null, assetOrder.getApproverUser2(), Status.PUSHED, NotificationType.ACTIONABLE));
+                appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
+            }
+            mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
+            mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
+            mailValues.put("feedback", assetOrder.getApproverUser1Comment());
+            mailValues.put("ord_status", assetOrder.getApprovedUser1() ? "Approved" : "Rejected");
+            mailValues.put("subject", "approver1FeedbackMailSubject");
+            mailValues.put("body", "approver1FeedbackMailBody");
+            mailValues.put("to", assetOrder.getRaisedUser().getEmail());
+            userNotifications.add(new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
+            appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
+        } else if (assetOrder.getApproverUser1Comment() != null && assetOrder.getApproverUser2Comment() != null) {
+            mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
+            mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
+            mailValues.put("feedback", assetOrder.getApproverUser2Comment());
+            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Approved" : "Rejected");
+            mailValues.put("subject", "approver2FeedbackMailSubject");
+            mailValues.put("body", "approver2FeedbackMailBody");
+            mailValues.put("to", assetOrder.getRaisedUser().getEmail());
+            userNotifications.add(new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
+            appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
+        }
+    }
 }

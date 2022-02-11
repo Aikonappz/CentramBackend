@@ -1,0 +1,212 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Order Asset</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Approve Order</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <fieldset class="border p-2">
+              <legend class="w-auto">Request</legend>
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="isDepartment">For
+                    Department?</label>
+                  <select class="form-control" formControlName="isDepartment" ngModel id="isDepartment"
+                    name="isDepartment">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                  <div *ngIf="f.isDepartment.touched && f.isDepartment.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.isDepartment.errors?.required">
+                      Selection is required!
+                    </div>
+                  </div>
+                </div>
+                <div id="dept-inp" class="col">
+                  <label class="form-col-form-label" for="department">Department</label>
+                  <select class="form-control" formControlName="department" ngModel id="department" name="department">
+                    <option *ngFor="let e of departmentList" value="{{e.id}}">{{e.name}}</option>
+                  </select>
+                  <div id="dept-err" class="alert alert-danger-custom d-none">Department is required!</div>
+                </div>
+                <div id="loc-inp" class="col d-none">
+                  <label class="form-col-form-label" for="departmentOrganisationName">Organization</label>
+                  <select class="form-control" formControlName="location" ngModel id="location" name="location">
+                    <option *ngFor="let e of locationList" value="{{e.id}}">{{e.name}}</option>
+                  </select>
+                  <div id="loc-err" class="alert alert-danger-custom d-none">Organization is required!</div>
+                </div>
+                <div class="col"></div>
+                <div class="col"></div>
+              </div>
+            </fieldset>
+            <fieldset class=" border p-2">
+              <legend class="w-auto">Asset</legend>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="assetType">Asset Type</label>
+                  <select class="form-control" formControlName="assetType" ngModel id="assetType" name="assetType">
+                    <option value="">-- Select Asset Type --</option>
+                    <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
+                  </select>
+                  <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.assetType.errors?.required">
+                      Asset Type is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="quantity">Quantity</label>
+                  <input type="text" formControlName="quantity" ngModel id="quantity" name="quantity"
+                    class="form-control">
+                  <div *ngIf="f.quantity.touched && f.quantity.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.quantity.errors?.required">
+                      Quantity is required!
+                    </div>
+                    <div *ngIf="f.quantity.errors?.pattern">
+                      Invalid quantity valueI!
+                    </div>
+                    <div *ngIf="f.quantity.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="cost">Cost</label>
+                  <input type="text" formControlName="cost" ngModel id="cost" name="cost" class="form-control">
+                  <div *ngIf="f.cost.touched && f.cost.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.cost.errors?.required">
+                      Cost is required!
+                    </div>
+                    <div *ngIf="f.cost.errors?.pattern">
+                      Invalid cost value!
+                    </div>
+                    <div *ngIf="f.cost.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="withinBudget">With In
+                    Budget?</label>
+                  <select class="form-control" formControlName="withinBudget" ngModel id="withinBudget"
+                    name="withinBudget">
+                    <option value="1" selected>Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                  <div *ngIf="f.withinBudget.touched && f.withinBudget.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.withinBudget.errors?.required">
+                      Selection is required!
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset *ngIf="newEntity" class="border p-2">
+              <legend class="w-auto">Vendor</legend>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="purchaseType">Purchase Type</label>
+                  <select class="form-control" formControlName="purchaseType" ngModel id="purchaseType"
+                    name="purchaseType">
+                    <option value="">-- Select Purchase Type --</option>
+                    <option *ngFor="let e of purchaseTypeList" value="{{e}}">{{e}}</option>
+                  </select>
+                  <div *ngIf="f.purchaseType.touched && f.purchaseType.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.purchaseType.errors?.required">
+                      Purchase Type is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="existingAgreement">Existing
+                    Agreement?</label>
+                  <select class="form-control" formControlName="existingAgreement" ngModel id="existingAgreement"
+                    name="existingAgreement">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                  <div *ngIf="f.existingAgreement.touched && f.existingAgreement.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.existingAgreement.errors?.required">
+                      Selection is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="vendor">Vendor</label>
+                  <select class="form-control" formControlName="vendor" ngModel id="vendor" name="vendor">
+                    <option value="">-- Select Vendor --</option>
+                    <option *ngFor="let e of vendorList" value="{{e.id}}">{{e.name}}</option>
+                  </select>
+                  <div *ngIf="f.vendor.touched && f.vendor.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.vendor.errors?.required">
+                      Vendor is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="comment">Comment</label>
+                  <textarea formControlName="comment" ngModel id="comment" name="comment" rows="4"
+                    class="form-control textarea-non-resizable" placeholder="Comment"></textarea>
+                  <div *ngIf="f.comment.touched && f.comment.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.comment.errors?.required">
+                      Comment is required.
+                    </div>
+                    <div *ngIf="f.comment.errors?.maxlength">
+                      Allowed maxlength exceeds.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset *ngIf="newEntity" class="border p-2">
+              <legend class="w-auto">Approver</legend>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approverUser1">Approver 1</label>
+                  <select class="form-control" formControlName="approverUser1" ngModel id="approverUser1"
+                    name="approverUser1">
+                    <option value="">-- Select Approver 1 --</option>
+                    <option *ngFor="let e of approver1List" value="{{e.id}}">{{e.fullName}}</option>
+                  </select>
+                  <div *ngIf="f.approverUser1.touched && f.approverUser1.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.approverUser1.errors?.required">
+                      Approver 1 is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approverUser2">Approver 2</label>
+                  <select class="form-control" formControlName="approverUser2" ngModel id="approverUser2"
+                    name="approverUser2">
+                    <option value="">-- Select Approver 2 --</option>
+                    <option *ngFor="let e of approver2List" value="{{e.id}}">{{e.fullName}}</option>
+                  </select>
+                  <div *ngIf="f.approverUser2.touched && f.approverUser2.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.approverUser2.errors?.required">
+                      Approver 2 is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+                <div class="col"></div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE,APPROVE')" [disabled]="!angForm.valid" type="button"
+              (click)="formSubmit()" class="btn btn-primary">Submit</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

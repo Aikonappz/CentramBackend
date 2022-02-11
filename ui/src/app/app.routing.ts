@@ -122,6 +122,11 @@ export const routes: Routes = [
         loadChildren: () => import('./views/incident/incident.module').then(m => m.IncidentModule),
       },
       {
+        path: 'asset',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/asset/asset.module').then(m => m.AssetModule),
+      },
+      {
         path: 'report',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/report/report.module').then(m => m.ReportModule),

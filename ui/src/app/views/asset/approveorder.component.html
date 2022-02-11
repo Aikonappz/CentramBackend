@@ -1,0 +1,105 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Approve/Reject Order</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <table class="table table-bordered table-striped table-sm">
+              <tr>
+                <td width="50%"><strong>For Department</strong></td>
+                <td>{{assetOrder.isDepartment==true? 'Yes' : 'No'}}</td>
+              </tr>
+              <tr *ngIf="assetOrder.department!=null">
+                <td><strong>Department</strong></td>
+                <td>{{assetOrder.department?.name}}</td>
+              </tr>
+              <tr *ngIf="assetOrder.location!=null">
+                <td><strong>Organization</strong></td>
+                <td>{{assetOrder.location?.officeName}}</td>
+              </tr>
+              <tr>
+                <td><strong>Asset Type</strong></td>
+                <td>{{assetOrder.assetType}}</td>
+              </tr>
+              <tr>
+                <td><strong>Quantity</strong></td>
+                <td>{{assetOrder.quantity}}</td>
+              </tr>
+              <tr>
+                <td><strong>Cost</strong></td>
+                <td>{{assetOrder.cost}}</td>
+              </tr>
+              <tr>
+                <td><strong>With In Budget</strong></td>
+                <td>{{assetOrder.withinBudget==true? 'Yes' : 'No'}}</td>
+              </tr>
+              <tr>
+                <td><strong>Purchase Type</strong></td>
+                <td>{{assetOrder.purchaseType}}</td>
+              </tr>
+              <tr>
+                <td><strong>Existing Agreement With Vendor</strong></td>
+                <td>{{assetOrder.existingAgreement==true? 'Yes' : 'No'}}</td>
+              </tr>
+              <tr>
+                <td><strong>Vendor</strong></td>
+                <td>{{assetOrder.vendor?.name}}</td>
+              </tr>
+              <tr>
+                <td><strong>Comment</strong></td>
+                <td>{{assetOrder.comment}}</td>
+              </tr>
+              <tr>
+                <td><strong>Approver 1 Feedback</strong></td>
+                <td>
+                  {{assetOrder.approverUser1?.firstName}} {{assetOrder.approverUser1?.lastName}}<br />
+                  {{assetOrder.approverUser1Comment==null? 'Not Yet' : assetOrder.approvedUser1==true? 'Yes' :
+                  'No'}}<br />
+                  <div *ngIf="assetOrder.approverUser1Comment==null">
+                    <textarea *ngIf="canApprove1" id="approverUser1Comment" rows="4"
+                      class="form-control textarea-non-resizable" formControlName="approverUser1Comment"
+                      id="approverUser1Comment" name="approverUser1Comment"
+                      placeholder="Approver 1 Feedback"></textarea>
+                    <div id="feedback1-err" class="alert alert-danger-custom d-none">Feedback is required!</div>
+                  </div>
+                  <div *ngIf="assetOrder.approverUser1Comment!=null">
+                    {{assetOrder.approverUser1Comment}}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Approver 2 Feedback</strong></td>
+                <td>
+                  {{assetOrder.approverUser2?.firstName}} {{assetOrder.approverUser2?.lastName}}<br />
+                  {{assetOrder.approverUser2Comment==null? 'Not Yet' : assetOrder.approvedUser2==true? 'Yes' :
+                  'No'}}<br />
+                  <div *ngIf="assetOrder.approverUser2Comment==null">
+                    <textarea *ngIf="canApprove2" id="approverUser2Comment" rows="4"
+                      class="form-control textarea-non-resizable" formControlName="approverUser2Comment"
+                      id="approverUser2Comment" name="approverUser2Comment"
+                      placeholder="Approver 2 Feedback"></textarea>
+                    <div id="feedback2-err" class="alert alert-danger-custom d-none">Feedback is required!</div>
+                  </div>
+                  <div *ngIf="assetOrder.approverUser2Comment!=null">
+                    {{assetOrder.approverUser2Comment}}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="(canApprove1 || canApprove2) && hasPermission('APPROVE')" [disabled]="!angForm.valid"
+              type="button" (click)="formSubmit('APPROVE')" class="btn btn-primary">Approve</button>
+            <button *ngIf="(canApprove1 || canApprove2) && hasPermission('APPROVE')" [disabled]="!angForm.valid"
+              type="button" (click)="formSubmit('REJECT')" class="btn btn-danger">Reject</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

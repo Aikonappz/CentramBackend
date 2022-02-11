@@ -201,6 +201,69 @@ public class AppEmailService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")
+    public void sendOutBoundAssetUpdateEmail(Map<String, Object> mailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
+                Arrays.asList("BASE_EMAIL_TEMPLATE", "OUTBOUND_ASSET_EMAIL_TEMPLATE")
+        );
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("OUTBOUND_ASSET_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("subject")).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("body")).toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("ord_no", mailValues.get("ord_no"));
+        context.setVariable("ord_status", mailValues.get("ord_status"));
+        mailSubject = templateEngine.process(mailSubject, context);
+        String assetOrderLink = appBaseUrl.concat("/asset/order/".concat(mailValues.get("approver_index").toString()).concat("/approve/")).concat(mailValues.get("order_id").toString());
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("ord_no", mailValues.get("ord_no"));
+        context.setVariable("dept_name", mailValues.get("dept_name"));
+        context.setVariable("loc_name", mailValues.get("loc_name"));
+        context.setVariable("asset_type", mailValues.get("asset_type"));
+        context.setVariable("qty", mailValues.get("qty"));
+        context.setVariable("cost", mailValues.get("cost"));
+        context.setVariable("in_budget", mailValues.get("in_budget"));
+        context.setVariable("purchase_type", mailValues.get("purchase_type"));
+        context.setVariable("vendor_name", mailValues.get("vendor_name"));
+        context.setVariable("comment", mailValues.get("comment"));
+        context.setVariable("approver_1", mailValues.get("approver_1"));
+        context.setVariable("approver_2", mailValues.get("approver_2"));
+        context.setVariable("feedback", mailValues.get("feedback"));
+        context.setVariable("ord_status", mailValues.get("ord_status"));
+        context.setVariable("existing_agreement", mailValues.get("existing_agreement"));
+        context.setVariable("ord_link", assetOrderLink);
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", mailValues.get("recipient_name"));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", new String[]{mailValues.get("to").toString()});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("bcc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("ASSET EMAIL TITLE: {}", mailSubject);
+        log.info("ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        Notification notification = (Notification) mailValues.get("notification");
+        notification.setNotificationTitle(mailSubject);
+        notification.setNotificationBody(mailBody);
+        notificationService.save(notification);
+        emailService.sendMail(mailMap);
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Async("asyncExecutor")
     public void sendIncidentUpdateEmail(IncidentEmailVO incidentEmailVO) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
                 Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE")

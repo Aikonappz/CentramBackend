@@ -53,6 +53,11 @@ public class Utility {
         return incidentNoPrefix.concat(generateUniqueID());
     }
 
+
+    public static String orderNo(String orderNoPrefix) {
+        return orderNoPrefix.concat(generateUniqueID());
+    }
+
     public static Long generateUniqueIDOld() {
         final String DATE_FORMATTER = "yyMMddHHmmss";
         LocalDateTime localDateTime = LocalDateTime.now();

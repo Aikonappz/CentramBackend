@@ -99,6 +99,20 @@ export const navItems: INavData[] = [
     ]
   },
   {
+    name: 'Assets',
+    url: '/asset',
+    icon: 'fa fa-list-alt',
+    attributes: { "moduleName": "ASSET" },
+    children: [
+      {
+        name: 'Ordered Asset',
+        url: '/asset/order',
+        icon: 'fa fa-plus',
+        attributes: { "moduleName": "ORDER ASSET" }
+      },
+    ]
+  },
+  {
     name: 'My Notifications',
     url: '/notification',
     icon: 'icon-info',

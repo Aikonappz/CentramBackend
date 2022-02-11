@@ -220,20 +220,6 @@ export class DefaultLayoutComponent implements OnInit {
       if (!roles.includes('EMP') && roles.includes('AGENT')) {
         $('.nav-item').removeClass('highlighted-yellow');
       }
-      $("#chat-box-title").click(function () {
-        $('.main-section').toggleClass("open-more");
-      });
-      $("#minimize-chat").click(function () {
-        $('.main-section').toggleClass("open-more");
-      });
-      $('#share-screen').click(function () {
-        let res = window.confirm("Do you really want to share the screen?")
-        if (!res) {
-          return;
-        } else {
-          alert("Sharing....");
-        }
-      });
     });
   }
 
