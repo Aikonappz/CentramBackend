@@ -216,6 +216,11 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Boolean reOpened = false;
 
+    @ApiModelProperty(required = false)
+    @Column(name = "assignment_comment", nullable = true, columnDefinition = "varchar(1000) default null")
+    @JsonView(Views.BasicView.class)
+    private String assignmentComment;
+
     @ApiModelProperty(required = false, value = "")
     @Valid
     @OneToOne

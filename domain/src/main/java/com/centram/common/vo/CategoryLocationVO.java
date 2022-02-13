@@ -11,10 +11,12 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class CategoryVO implements Serializable {
+public class CategoryLocationVO implements Serializable {
     private static final long serialVersionUID = -6554121568157662441L;
     private BigInteger categoryId;
     private String categoryName;
     private BigInteger subCategoryId;
     private String subCategoryName;
+    private BigInteger locationId;
+    private String locationName;
 }

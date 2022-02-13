@@ -105,13 +105,14 @@ public class IncidentApiController {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Incident not found")
     })
-    @RequestMapping(value = "/assign/{ids}/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/assign/{ids}/{userId}/{comment}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MY GROUP INCIDENTS','WRITE|SOLVE|ASSIGN',authentication.principal)")
     public ResponseEntity<Void> assignIncidents(
             @NotNull @ApiParam(value = "Incident id's to assign", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
-            @ApiParam(value = "User Id", required = true) @PathVariable("userId") BigInteger userId
+            @NotNull @ApiParam(value = "User Id", required = true) @PathVariable("userId") BigInteger userId,
+            @NotNull @ApiParam(value = "Assign comment", required = true) @PathVariable("comment") String comment
     ) {
-        incidentService.assignIncidents(ids, userId);
+        incidentService.assignIncidents(ids, userId, comment);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

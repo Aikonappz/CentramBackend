@@ -17,5 +17,9 @@ public interface HolidayCalenderRepository extends JpaRepository<HolidayCalender
     Page getHolidayCalenderByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
 
     @Query("select hc from HolidayCalender hc where hc.location.id = (:locationId) and hc.year = (:year) and hc.organisation.id = (:organisationId)")
-    HolidayCalender getHolidayCalenderByYear(@Param("organisationId") BigInteger organisationId, @Param("year") String year, @Param("locationId") BigInteger locationId);
+    HolidayCalender getHolidayCalenderByYear(
+            @Param("year") String year,
+            @Param("locationId") BigInteger locationId,
+            @Param("organisationId") BigInteger organisationId
+    );
 }

@@ -55,7 +55,7 @@ public class EmailService {
             throw new MailParseException(e);
         }
         if (to.length > 0) {
-            javaMailSender.send(message);
+            //javaMailSender.send(message);
         }
     }
 }

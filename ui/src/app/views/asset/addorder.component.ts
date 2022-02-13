@@ -258,12 +258,12 @@ export class AddOrderComponent implements OnInit {
       this.assetOrder.withinBudget = this.angForm.controls['withinBudget'].value == 1 ? true : false;
       for (let k in this.approver1List) {
         if (this.angForm.controls['approverUser1'].value == this.approver1List[k].id) {
-          this.assetOrder.approverUser1 = { id: this.approver1List[k].id, email: this.approver1List[k].email, version: this.approver1List[k].version };
+          this.assetOrder.approverUser1 = { id: this.approver1List[k].id, firstName: this.approver1List[k].firstName, lastName: this.approver1List[k].lastName, email: this.approver1List[k].email, version: this.approver1List[k].version };
         }
       }
       for (let k in this.approver2List) {
         if (this.angForm.controls['approverUser2'].value == this.approver2List[k].id) {
-          this.assetOrder.approverUser2 = { id: this.approver2List[k].id, email: this.approver1List[k].email, version: this.approver2List[k].version };
+          this.assetOrder.approverUser2 = { id: this.approver2List[k].id, firstName: this.approver2List[k].firstName, lastName: this.approver2List[k].lastName, email: this.approver1List[k].email, version: this.approver2List[k].version };
         }
       }
       this.assetOrder.purchaseType = PurchaseType[this.angForm.controls['purchaseType'].value];

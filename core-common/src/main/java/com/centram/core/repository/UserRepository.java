@@ -60,11 +60,12 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
 
     @Query(value = "select u.* from user u join vendor v on (v.id=u.vendor_id and v.ticket_allocation_type=1) " +
             " join vendor_module vm on (v.id = vm.vendor_id and vm.module_id = (:moduleId) and vm.sub_module_id = (:subModuleId)) " +
-            " where u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
-    List<User> getAgentsByRoleIds(
+            " where u.location_id = (:locationId) and u.organisation_id = (:organisationId) and CONCAT(',',u.roles,',') REGEXP (:roleExp)", nativeQuery = true)
+    List<User> getAgents(
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("roleExp") String roleExp,
+            @Param("locationId") BigInteger locationId,
             @Param("organisationId") BigInteger organisationId
     );
 

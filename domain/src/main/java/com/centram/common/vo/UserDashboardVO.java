@@ -11,5 +11,6 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class UserDashboardVO {
-    private Set<IncidentStatusVO> incidents;
+    private Set<IncidentModuleVO> moduleWiseIncidents;
+    private Set<IncidentStatusVO> statusWiseIncidents;
 }

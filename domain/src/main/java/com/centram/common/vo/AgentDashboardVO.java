@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class AgentDashboardVO {
-    private Set<IncidentPriorityVO> priorityIncidents;
-    private Set<IncidentStatusVO> statusIncidents;
+    private Set<IncidentPriorityVO> priorityWiseIncidents;
+    private Set<IncidentModuleVO> moduleWiseIncidents;
+    private Set<IncidentStatusVO> statusWiseIncidents;
 }

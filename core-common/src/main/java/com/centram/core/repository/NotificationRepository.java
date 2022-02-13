@@ -20,14 +20,26 @@ public interface NotificationRepository extends JpaRepository<Notification, BigI
     @Query("select n from Notification n where n.user.id = (:idUser) and n.status = (:status)")
     List<Notification> getNotificationsByUserAndStatus(@Param("idUser") BigInteger idUser, @Param("status") Status status);
 
-    @Query("select n from Notification n where n.user.id = (:id) and " +
+    @Query(value = "select * from notification n where n.user_id = (:id) and " +
+            " ( " +
+            "   ((:searchValue) is not null and (upper(n.notification_title) like (:searchValue) or upper(n.notification_body) like (:searchValue))) " +
+            "   OR " +
+            "   ((:searchValue) is null) " +
+            " ) " +
+            " and " +
             " ( " +
             "   ((:status) <> 2 and n.status = (:status)) " +
             "   OR " +
             "   ((:status) = 2) " +
-            " ) "
+            " ) ",
+            nativeQuery = true
     )
-    Page getNotifications(@Param("id") BigInteger id, @Param("status") Integer status, Pageable pageable);
+    Page<Notification> getNotifications(
+            @Param("id") BigInteger id,
+            @Param("status") Integer status,
+            @Param("searchValue") String searchValue,
+            Pageable pageable
+    );
 
 
     @Modifying

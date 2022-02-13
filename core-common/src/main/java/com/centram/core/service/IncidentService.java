@@ -119,7 +119,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, String agingFilter, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, String agingFilter, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, Boolean escalated1stLevel, Boolean escalated2ndLevel, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -141,7 +141,7 @@ public class IncidentService {
             modFilter = true;
         }
         agingFilter = (agingFilter == null || agingFilter.equalsIgnoreCase("")) ? null : agingFilter;
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, escalated1stLevel, escalated2ndLevel, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
     }
 
     /**
@@ -231,15 +231,16 @@ public class IncidentService {
     }
 
     /**
-     * get all open incidents by category subcategory and organisation
+     * get all open incidents by category subcategory and organisation and location
      *
      * @param organisationId
      * @return
      */
-    public List<Incident> getOpenIncidentsByCategoryAndSubCategoryAndOrganisation(BigInteger category, BigInteger subCategory, BigInteger organisationId) {
-        return incidentRepository.getIncidentsByOrganisationAndStatusAndCategoryAndSubCategory(
+    public List<Incident> getOpenIncidents(BigInteger category, BigInteger subCategory, BigInteger locationId, BigInteger organisationId) {
+        return incidentRepository.getIncidents(
                 category,
                 subCategory,
+                locationId,
                 organisationId,
                 new ArrayList<IncidentStatus>() {{
                     add(IncidentStatus.OPEN);
@@ -333,10 +334,18 @@ public class IncidentService {
      * @param userId
      */
     @Transactional(readOnly = false)
-    public void assignIncidents(List<BigInteger> ids, BigInteger userId) {
-        incidentRepository.assignIncidents(IncidentStatus.ASSIGNED, userId, LocalDateTime.now(), ids);
+    public void assignIncidents(List<BigInteger> ids, BigInteger userId, String comment) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User assignedUser = new User(userService.getUserById(userId));
         Iterable<Incident> incidents = incidentRepository.findAllById(ids);
+        Set<IncidentCommunication> incidentCommunications = new HashSet<IncidentCommunication>();
         for (Incident incident : incidents) {
+            incidentCommunications = incident.getCommunications();
+            incidentCommunications.add(new IncidentCommunication(comment, incident, assignedUser, Collections.emptyList()));
+            incident.setCommunications(incidentCommunications);
+            incident.setStatus(IncidentStatus.ASSIGNED);
+            incident.setAssignedUser(assignedUser);
+            incident = incidentRepository.save(incident);
             miscService.notifyIncidentAssign(new IncidentEmailVO(incident, appDateTimeViewFormat, null));
         }
     }
@@ -397,11 +406,17 @@ public class IncidentService {
     public void reopenIncident(String status, List<BigInteger> ids) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Iterable<Incident> incidents = incidentRepository.findAllById(ids);
+        Set<IncidentCommunication> incidentCommunications = new HashSet<IncidentCommunication>();
         for (Incident incident : incidents) {
+            incidentCommunications = incident.getCommunications();
+            incidentCommunications.add(new IncidentCommunication("Incident Reopened again!", incident, incident.getRaisedUser(), Collections.emptyList()));
+            incident.setCommunications(incidentCommunications);
             incident.setStatus(IncidentStatus.valueOf(status));
             incident.setReopenedAt(LocalDateTime.now());
             incident.setReOpened(true);
             incident.setAssignedUser(null);
+            incident.setEscalation1At(null);
+            incident.setEscalation2At(null);
             //incident.setAssignedUser(null);
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());
@@ -419,9 +434,7 @@ public class IncidentService {
             /*prepare holiday List*/
             raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
             incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
-        }
-        incidents = incidentRepository.saveAll(incidents);
-        for (Incident incident : incidents) {
+            incident = incidentRepository.save(incident);
             miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appDateTimeViewFormat, "Incident Reopened again!", true));
         }
     }

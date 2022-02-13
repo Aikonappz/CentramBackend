@@ -14,8 +14,8 @@
                   [ngClass]="{'d-none': loggedInUser.licenseType!='ALL'&&loggedInUser.licenseType!='ASSET', col : true}">
                   <label class="form-col-form-label" for="assetPrefix">Asset Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="assetPrefix"
-                    ngModel id="assetPrefix" name="assetPrefix" class="form-control"
-                    placeholder="Incident Ticket Prefix" aria-label="Incident Ticket Prefix">
+                    ngModel id="assetPrefix" name="assetPrefix" class="form-control" placeholder="Incident No Prefix"
+                    aria-label="Incident No Prefix">
                   <div *ngIf="f.assetPrefix.touched && f.assetPrefix.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.assetPrefix.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -30,7 +30,7 @@
                   <label class="form-col-form-label" for="incidentPrefix">Incident Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="incidentPrefix"
                     ngModel id="incidentPrefix" name="incidentPrefix" class="form-control"
-                    placeholder="Incident Ticket Prefix" aria-label="Incident Ticket Prefix">
+                    placeholder="Incident No Prefix" aria-label="Incident No Prefix">
                   <div *ngIf="f.incidentPrefix.touched && f.incidentPrefix.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.incidentPrefix.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -53,7 +53,7 @@
                   <div *ngIf="f.ticketAllocationType.touched && f.ticketAllocationType.invalid"
                     class="alert alert-danger-custom">
                     <div *ngIf="f.ticketAllocationType.errors?.required">
-                      Ticket Allocation is required.
+                      Incident Allocation Type is required.
                     </div>
                   </div>
                 </div>

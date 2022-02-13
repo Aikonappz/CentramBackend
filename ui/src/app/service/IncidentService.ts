@@ -26,8 +26,8 @@ export class IncidentService {
         return this.http.get('/v1/incident/' + id, { "params": request });
     }
 
-    assignIncidentService(ids: number[], userId: number, request?: any): Observable<any> {
-        return this.http.get('/v1/incident/assign/' + ids.join(",") + '/' + userId, { "params": request });
+    assignIncidentService(ids: number[], userId: number, comment: string, request?: any): Observable<any> {
+        return this.http.get('/v1/incident/assign/' + ids.join(",") + '/' + userId + '/' + comment, { "params": request });
     }
 
     reOpenIncidentService(ids: number[], status: string, request?: any): Observable<any> {

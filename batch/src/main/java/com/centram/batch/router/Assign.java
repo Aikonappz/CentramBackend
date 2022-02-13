@@ -1,7 +1,7 @@
 package com.centram.batch.router;
 
 import com.centram.batch.aggregator.OrganisationAggregator;
-import com.centram.common.vo.CategoryVO;
+import com.centram.common.vo.CategoryLocationVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.service.*;
 import com.centram.domain.Incident;
@@ -82,15 +82,15 @@ public class Assign extends RouteBuilder {
                         List<Incident> assignedIncidents = new ArrayList<Incident>();
                         Integer max = 0;
                         Integer counter = 0;
-                        List<CategoryVO> categoryVOS = moduleService.getCategorySubCategories();
-                        for (CategoryVO categoryVO : categoryVOS) {
+                        List<CategoryLocationVO> categoryLocationVOS = moduleService.getCategorySubCategoriesAndLocation(organisation.getId());
+                        for (CategoryLocationVO categoryLocationVO : categoryLocationVOS) {
                             mods = new LinkedList<>() {{
-                                add(categoryVO.getCategoryId());
-                                add(categoryVO.getSubCategoryId());
+                                add(categoryLocationVO.getCategoryId());
+                                add(categoryLocationVO.getSubCategoryId());
                             }};
-                            incidents = incidentService.getOpenIncidentsByCategoryAndSubCategoryAndOrganisation(categoryVO.getCategoryId(), categoryVO.getSubCategoryId(), organisation.getId());
+                            incidents = incidentService.getOpenIncidents(categoryLocationVO.getCategoryId(), categoryLocationVO.getSubCategoryId(), categoryLocationVO.getLocationId(), organisation.getId());
                             if (incidents.size() > 0) {
-                                users = userService.getAgentsByModuleAndActionAndOrganisation(mods, "SOLVE", organisation.getId());
+                                users = userService.getAgents(mods, "SOLVE", categoryLocationVO.getLocationId(), organisation.getId());
                                 if (users.size() > 0) {
                                     Collections.sort(users);
                                     max = users.size();

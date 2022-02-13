@@ -60,7 +60,16 @@ public class DashboardService {
         LocalDateTime startDateTime = endDateTime.minusDays(90).toLocalDate().atStartOfDay();
         OrgAdminDashboardVO orgAdminDashboardVO = vendorRepository.orgAdminVendorDashboardData(loggedInUser.getOrganisationId());
         orgAdminDashboardVO.setActiveEmployees(userRepository.orgAdminUserDashboardData(loggedInUser.getOrganisationId()));
-        orgAdminDashboardVO.setIncidents(incidentRepository.orgStatusWiseIncidentDashboardData(
+        orgAdminDashboardVO.setStatusWiseIncidents(incidentRepository.statusWiseIncidentsDashboardData(
+                startDateTime,
+                endDateTime,
+                false,
+                null,
+                loggedInUser.getOrganisationId(),
+                "ORG_ADMIN",
+                null
+        ));
+        orgAdminDashboardVO.setModuleWiseIncidents(incidentRepository.moduleWiseIncidentsDashboardData(
                 startDateTime,
                 endDateTime,
                 false,
@@ -86,15 +95,25 @@ public class DashboardService {
                     return permission.getModule().getParentModuleId();
                 })
                 .collect(Collectors.toList());
-        return new UserDashboardVO(incidentRepository.orgStatusWiseIncidentDashboardData(
-                startDateTime,
-                endDateTime,
-                true,
-                userModules,
-                loggedInUser.getOrganisationId(),
-                "USER",
-                loggedInUser.getUserId()
-        ));
+        return new UserDashboardVO(
+                incidentRepository.moduleWiseIncidentsDashboardData(
+                        startDateTime,
+                        endDateTime,
+                        true,
+                        userModules,
+                        loggedInUser.getOrganisationId(),
+                        "USER",
+                        loggedInUser.getUserId()
+                ),
+                incidentRepository.statusWiseIncidentsDashboardData(
+                        startDateTime,
+                        endDateTime,
+                        true,
+                        userModules,
+                        loggedInUser.getOrganisationId(),
+                        "USER",
+                        loggedInUser.getUserId()
+                ));
     }
 
     @Transactional(readOnly = true)
@@ -142,8 +161,8 @@ public class DashboardService {
             userType = "AGENT_MANAGER";
         }
         AgentDashboardVO agentDashboardVO = new AgentDashboardVO();
-        agentDashboardVO.setStatusIncidents(
-                incidentRepository.orgStatusWiseIncidentDashboardData(
+        agentDashboardVO.setModuleWiseIncidents(
+                incidentRepository.moduleWiseIncidentsDashboardData(
                         startDateTime,
                         endDateTime,
                         true,
@@ -153,7 +172,18 @@ public class DashboardService {
                         loggedInUser.getUserId()
                 )
         );
-        agentDashboardVO.setPriorityIncidents(
+        agentDashboardVO.setStatusWiseIncidents(
+                incidentRepository.statusWiseIncidentsDashboardData(
+                        startDateTime,
+                        endDateTime,
+                        true,
+                        incidentModules,
+                        loggedInUser.getOrganisationId(),
+                        userType,
+                        loggedInUser.getUserId()
+                )
+        );
+        agentDashboardVO.setPriorityWiseIncidents(
                 incidentRepository.orgPriorityWiseIncidentDashboardData(
                         startDateTime,
                         endDateTime,
@@ -201,8 +231,8 @@ public class DashboardService {
                 userSubModules,
                 loggedInUser.getOrganisationId()
         );
-        categoryAdminDashboardVO.setStatusIncidents(
-                incidentRepository.orgStatusWiseIncidentDashboardData(
+        categoryAdminDashboardVO.setModuleWiseIncidents(
+                incidentRepository.moduleWiseIncidentsDashboardData(
                         startDateTime,
                         endDateTime,
                         true,
@@ -212,7 +242,18 @@ public class DashboardService {
                         null
                 )
         );
-        categoryAdminDashboardVO.setPriorityIncidents(
+        categoryAdminDashboardVO.setStatusWiseIncidents(
+                incidentRepository.statusWiseIncidentsDashboardData(
+                        startDateTime,
+                        endDateTime,
+                        true,
+                        userModules,
+                        loggedInUser.getOrganisationId(),
+                        "CATEGORY_ADMIN",
+                        null
+                )
+        );
+        categoryAdminDashboardVO.setPriorityWiseIncidents(
                 incidentRepository.orgPriorityWiseIncidentDashboardData(
                         startDateTime,
                         endDateTime,

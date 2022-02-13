@@ -98,11 +98,14 @@ public class ReportApiController {
             @ApiParam(value = "Raised User Id", defaultValue = "", required = false) @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId,
             @ApiParam(value = "Assigned User Id", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "Incident Status", defaultValue = "", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
+            @ApiParam(value = "escalated1stLevel", defaultValue = "", required = false) @RequestParam(value = "escalated1stLevel", defaultValue = "false", required = false) Boolean escalated1stLevel,
+            @ApiParam(value = "escalated2ndLevel", defaultValue = "", required = false) @RequestParam(value = "escalated2ndLevel", defaultValue = "false", required = false) Boolean escalated2ndLevel,
+            @ApiParam(value = "isReopened", defaultValue = "", required = false) @RequestParam(value = "isReopened", defaultValue = "false", required = false) Boolean isReopened,
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(moduleId, subModuleId, priorityId, agingFilter, raisedUserId, assignedUserId, status, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(moduleId, subModuleId, priorityId, agingFilter, raisedUserId, assignedUserId, status, escalated1stLevel, escalated2ndLevel, isReopened, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident report download", nickname = "organisationReportDownload", notes = "incident report download", response = PaginatedList.class, tags = {"report",})

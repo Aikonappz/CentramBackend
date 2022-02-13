@@ -70,4 +70,11 @@ public class IncidentCommunication extends BaseEntity implements Serializable {
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     @Transient
     private List<MediaFile> attachments;
+
+    public IncidentCommunication(String message, Incident incident, User communicatedBy, List<MediaFile> attachments) {
+        this.message = message;
+        this.incident = incident;
+        this.communicatedBy = communicatedBy;
+        this.attachments = attachments;
+    }
 }

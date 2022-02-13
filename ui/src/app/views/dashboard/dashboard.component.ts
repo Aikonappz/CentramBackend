@@ -23,6 +23,7 @@ import { ViewIncidentDetails } from './modal/ViewIncidentDetails';
 import { ViewAppAdminDashboardDetails } from './modal/ViewAppAdminDashboardDetails';
 import { ViewOrgAdminDashboardUserDetails } from './modal/ViewOrgAdminDashboardUserDetails';
 import { ViewOrgAdminDashboardVendorDetails } from './modal/ViewOrgAdminDashboardVendorDetails';
+import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 
 @Component({
   templateUrl: 'dashboard.component.html'
@@ -39,18 +40,26 @@ export class DashboardComponent implements OnInit {
   firstTabLoaded: boolean = false;
   userTilesData: any[] = [];
   userChunkedTilesData: any[] = [];
+  user1TilesData: any[] = [];
+  user1ChunkedTilesData: any[] = [];
   orgAdminTilesData: any[] = [];
   orgAdminChunkedTilesData: any[] = [];
+  orgAdmin1TilesData: any[] = [];
+  orgAdmin1ChunkedTilesData: any[] = [];
   agentTilesData: any[] = [];
   agentChunkedTilesData: any[] = [];
   agent1TilesData: any[] = [];
   agent1ChunkedTilesData: any[] = [];
+  agent2TilesData: any[] = [];
+  agent2ChunkedTilesData: any[] = [];
   caTilesData: any[] = [];
   caChunkedTilesData: any[] = [];
   ca1TilesData: any[] = [];
   ca1ChunkedTilesData: any[] = [];
   ca2TilesData: any[] = [];
   ca2ChunkedTilesData: any[] = [];
+  ca3TilesData: any[] = [];
+  ca3ChunkedTilesData: any[] = [];
 
   public adminDoughnutChartLabels: Label[] = [];
   public adminDoughnutChartData: MultiDataSet = [];
@@ -65,17 +74,6 @@ export class DashboardComponent implements OnInit {
   public admin1ChartColors: any[] = [{ backgroundColor: ["#EE6A6C", "#5FBD74", "#3B5998",] }];
   public admin1DoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
 
-  public orgAdminDoughnutChartLabels: Label[] = [];
-  public orgAdminDoughnutChartData: MultiDataSet = [];
-  public orgAdminDoughnutChartType: ChartType = 'pie';
-  public orgAdminChartColors: any[] = [{
-    backgroundColor: ["#FF7360", "#6FC8CE", "#adff2f", "#6062ce", "#fd72e6"]
-  }];
-  public orgAdminDoughnutChartOptions: any = {
-    responsive: true,
-    boxWidth: 1,
-  };
-
   public orgAdmin1DoughnutChartLabels: Label[] = [];
   public orgAdmin1DoughnutChartData: MultiDataSet = [];
   public orgAdmin1DoughnutChartType: ChartType = 'pie';
@@ -87,6 +85,17 @@ export class DashboardComponent implements OnInit {
     boxWidth: 1,
   };
 
+  public orgAdmin2DoughnutChartLabels: Label[] = [];
+  public orgAdmin2DoughnutChartData: MultiDataSet = [];
+  public orgAdmin2DoughnutChartType: ChartType = 'pie';
+  public orgAdmin2ChartColors: any[] = [{
+    backgroundColor: ["#42A3B8", "#adff2f", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",]
+  }];
+  public orgAdmin2DoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
   public userDoughnutChartLabels: Label[] = [];
   public userDoughnutChartData: MultiDataSet = [];
   public userDoughnutChartType: ChartType = 'pie';
@@ -94,6 +103,17 @@ export class DashboardComponent implements OnInit {
     backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"]
   }];
   public userDoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public user1DoughnutChartLabels: Label[] = [];
+  public user1DoughnutChartData: MultiDataSet = [];
+  public user1DoughnutChartType: ChartType = 'pie';
+  public user1ChartColors: any[] = [{
+    backgroundColor: ["#42A3B8", "#adff2f", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",]
+  }];
+  public user1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
   };
@@ -116,6 +136,17 @@ export class DashboardComponent implements OnInit {
     backgroundColor: ["#3DA8D8", "#E9518B", "#FAC008", "#7048C1", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",]
   }];
   public agent1DoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
+  public agent2DoughnutChartLabels: Label[] = [];
+  public agent2DoughnutChartData: MultiDataSet = [];
+  public agent2DoughnutChartType: ChartType = 'pie';
+  public agent2ChartColors: any[] = [{
+    backgroundColor: ["#42A3B8", "#adff2f", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",]
+  }];
+  public agent2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
   };
@@ -153,6 +184,17 @@ export class DashboardComponent implements OnInit {
     boxWidth: 1,
   };
 
+  public ca3DoughnutChartLabels: Label[] = [];
+  public ca3DoughnutChartData: MultiDataSet = [];
+  public ca3DoughnutChartType: ChartType = 'pie';
+  public ca3ChartColors: any[] = [{
+    backgroundColor: ["#42A3B8", "#adff2f", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",]
+  }];
+  public ca3DoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+  };
+
   constructor(
     private loggedInUserService: LoggedInUserService,
     private titleService: Title,
@@ -185,6 +227,32 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+  }
+
+  getIncidentStatus(s: string): string {
+    let status = "";
+    if (s == "Open") {
+      status = "OPEN";
+    } else if (s == "Assigned") {
+      status = "ASSIGNED";
+    } else if (s == "Need Clarification") {
+      status = "NEED_CLARIFICATION";
+    } else if (s == "Work In Progress") {
+      status = "WORK_IN_PROGRESS";
+    } else if (s == "Closed") {
+      status = "CLOSED";
+    } else if (s == "Sla About To Breach") {
+      status = "SLA_ABOUT_TO_BREACH";
+    } else if (s == "Sla Breached") {
+      status = "SLA_BREACHED";
+    } else if (s == "On Hold") {
+      status = "ON_HOLD";
+    } else if (s == "Pending from vendor") {
+      status = "PENDING_FROM_VENDOR";
+    } else if (s == "Clarification provided") {
+      status = "CLARIFICATION_PROVIDED";
+    }
+    return status;
   }
 
   loadData() {
@@ -239,31 +307,42 @@ export class DashboardComponent implements OnInit {
             dataPoints.push(this.orgAdminDashboardVO.activeEmployees);
             dataPoints.push(this.orgAdminDashboardVO.inHouseVendors);
             dataPoints.push(this.orgAdminDashboardVO.outSourcedVendors);
-            this.orgAdminDoughnutChartLabels = [
-              "Active Employees",
-              "In House Vendors",
-              "Out Sourced Vendors",
-            ];
-            this.orgAdminDoughnutChartData = [
-              dataPoints
-            ];
-            this.orgAdminDoughnutChartType = 'pie';
             dataPoints = [];
             this.orgAdminTilesData = [];
-            for (let i in this.orgAdminDashboardVO.incidents) {
+            for (let i in this.orgAdminDashboardVO.moduleWiseIncidents) {
               this.orgAdminTilesData[i] = {
-                moduleId: this.orgAdminDashboardVO.incidents[i].moduleId,
-                name: this.orgAdminDashboardVO.incidents[i].statusName,
-                value: this.orgAdminDashboardVO.incidents[i].count || 0,
+                moduleId: this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleId,
+                name: this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleName,
+                value: this.orgAdminDashboardVO.moduleWiseIncidents[i].count || 0,
                 backgroundColour: this.orgAdmin1ChartColors[0].backgroundColor[i],
-                detailDataParams: { moduleId: this.orgAdminDashboardVO.incidents[i].moduleId }
+                detailDataParams: { moduleId: this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleId }
               };
-              dataPoints.push(this.orgAdminDashboardVO.incidents[i].count);
-              this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.incidents[i].statusName);
+              dataPoints.push(this.orgAdminDashboardVO.moduleWiseIncidents[i].count);
+              this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleName);
             }
             this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 3);
             this.orgAdmin1DoughnutChartData = [dataPoints];
             this.orgAdmin1DoughnutChartType = 'pie';
+            dataPoints = [];
+            this.orgAdmin1TilesData = [];
+            for (let i in this.orgAdminDashboardVO.statusWiseIncidents) {
+              this.orgAdmin1TilesData[i] = {
+                name: this.orgAdminDashboardVO.statusWiseIncidents[i].status,
+                value: this.orgAdminDashboardVO.statusWiseIncidents[i].count || 0,
+                backgroundColour: this.orgAdmin2ChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  status: this.getIncidentStatus(this.orgAdminDashboardVO.statusWiseIncidents[i].status),
+                  escalated1stLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  escalated2ndLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  isReopened: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                }
+              };
+              dataPoints.push(this.orgAdminDashboardVO.statusWiseIncidents[i].count);
+              this.orgAdmin2DoughnutChartLabels.push(this.orgAdminDashboardVO.statusWiseIncidents[i].status);
+            }
+            this.orgAdmin1ChunkedTilesData = this.chunk(this.orgAdmin1TilesData, 3);
+            this.orgAdmin2DoughnutChartData = [dataPoints];
+            this.orgAdmin2DoughnutChartType = 'pie';
           });
       }
     }
@@ -276,20 +355,40 @@ export class DashboardComponent implements OnInit {
             this.userDashboardVO = new UserDashboardVO(data);
             let dataPoints = [];
             this.userTilesData = [];
-            for (let i in this.userDashboardVO.incidents) {
+            for (let i in this.userDashboardVO.moduleWiseIncidents) {
               this.userTilesData[i] = {
-                moduleId: this.userDashboardVO.incidents[i].moduleId,
-                name: this.userDashboardVO.incidents[i].statusName,
-                value: this.userDashboardVO.incidents[i].count || 0,
+                moduleId: this.userDashboardVO.moduleWiseIncidents[i].moduleId,
+                name: this.userDashboardVO.moduleWiseIncidents[i].moduleName,
+                value: this.userDashboardVO.moduleWiseIncidents[i].count || 0,
                 backgroundColour: this.userChartColors[0].backgroundColor[i],
-                detailDataParams: { moduleId: this.userDashboardVO.incidents[i].moduleId, raisedUserId: this.loggedInUser.userId }
+                detailDataParams: { moduleId: this.userDashboardVO.moduleWiseIncidents[i].moduleId, raisedUserId: this.loggedInUser.userId }
               };
-              dataPoints.push(this.userDashboardVO.incidents[i].count);
-              this.userDoughnutChartLabels.push(this.userDashboardVO.incidents[i].statusName);
+              dataPoints.push(this.userDashboardVO.moduleWiseIncidents[i].count);
+              this.userDoughnutChartLabels.push(this.userDashboardVO.moduleWiseIncidents[i].moduleName);
             }
             this.userChunkedTilesData = this.chunk(this.userTilesData, 3);
             this.userDoughnutChartData = [dataPoints];
             this.userDoughnutChartType = 'pie';
+            dataPoints = [];
+            this.user1TilesData = [];
+            for (let i in this.userDashboardVO.statusWiseIncidents) {
+              this.user1TilesData[i] = {
+                name: this.userDashboardVO.statusWiseIncidents[i].status,
+                value: this.userDashboardVO.statusWiseIncidents[i].count || 0,
+                backgroundColour: this.user1ChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  status: this.getIncidentStatus(this.userDashboardVO.statusWiseIncidents[i].status),
+                  escalated1stLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  escalated2ndLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  isReopened: this.userDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                }
+              };
+              dataPoints.push(this.userDashboardVO.statusWiseIncidents[i].count);
+              this.user1DoughnutChartLabels.push(this.userDashboardVO.statusWiseIncidents[i].status);
+            }
+            this.user1ChunkedTilesData = this.chunk(this.user1TilesData, 3);
+            this.user1DoughnutChartData = [dataPoints];
+            this.user1DoughnutChartType = 'pie';
           });
       }
     }
@@ -302,42 +401,62 @@ export class DashboardComponent implements OnInit {
             this.agentDashboardVO = new AgentDashboardVO(data);
             let dataPoints = [];
             this.agentTilesData = [];
-            for (let i in this.agentDashboardVO.statusIncidents) {
+            for (let i in this.agentDashboardVO.moduleWiseIncidents) {
               this.agentTilesData[i] = {
-                moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
-                name: this.agentDashboardVO.statusIncidents[i].statusName,
-                value: this.agentDashboardVO.statusIncidents[i].count || 0,
+                moduleId: this.agentDashboardVO.moduleWiseIncidents[i].moduleId,
+                name: this.agentDashboardVO.moduleWiseIncidents[i].moduleName,
+                value: this.agentDashboardVO.moduleWiseIncidents[i].count || 0,
                 backgroundColour: this.userChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
+                  moduleId: this.agentDashboardVO.moduleWiseIncidents[i].moduleId,
                   assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
                 }
               };
-              dataPoints.push(this.agentDashboardVO.statusIncidents[i].count);
-              this.agentDoughnutChartLabels.push(this.agentDashboardVO.statusIncidents[i].statusName);
+              dataPoints.push(this.agentDashboardVO.moduleWiseIncidents[i].count);
+              this.agentDoughnutChartLabels.push(this.agentDashboardVO.moduleWiseIncidents[i].moduleName);
             }
             this.agentChunkedTilesData = this.chunk(this.agentTilesData, 3);
             this.agentDoughnutChartData = [dataPoints];
             this.agentDoughnutChartType = 'pie';
             dataPoints = [];
             this.agent1TilesData = [];
-            for (let i in this.agentDashboardVO.priorityIncidents) {
+            for (let i in this.agentDashboardVO.priorityWiseIncidents) {
               this.agent1TilesData[i] = {
-                priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
-                name: this.agentDashboardVO.priorityIncidents[i].priority,
-                value: this.agentDashboardVO.priorityIncidents[i].count || 0,
+                priorityId: this.agentDashboardVO.priorityWiseIncidents[i].priorityId,
+                name: this.agentDashboardVO.priorityWiseIncidents[i].priority,
+                value: this.agentDashboardVO.priorityWiseIncidents[i].count || 0,
                 backgroundColour: this.agent1ChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
+                  priorityId: this.agentDashboardVO.priorityWiseIncidents[i].priorityId,
                   assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
                 }
               };
-              dataPoints.push(this.agentDashboardVO.priorityIncidents[i].count);
-              this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityIncidents[i].priority);
+              dataPoints.push(this.agentDashboardVO.priorityWiseIncidents[i].count);
+              this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityWiseIncidents[i].priority);
             }
             this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 3);
             this.agent1DoughnutChartData = [dataPoints];
             this.agent1DoughnutChartType = 'pie';
+            dataPoints = [];
+            this.agent2TilesData = [];
+            for (let i in this.agentDashboardVO.statusWiseIncidents) {
+              this.agent2TilesData[i] = {
+                name: this.agentDashboardVO.statusWiseIncidents[i].status,
+                value: this.agentDashboardVO.statusWiseIncidents[i].count || 0,
+                backgroundColour: this.agent2ChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  status: this.getIncidentStatus(this.agentDashboardVO.statusWiseIncidents[i].status),
+                  escalated1stLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  escalated2ndLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  isReopened: this.agentDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                }
+              };
+              dataPoints.push(this.agentDashboardVO.statusWiseIncidents[i].count);
+              this.agent2DoughnutChartLabels.push(this.agentDashboardVO.statusWiseIncidents[i].status);
+            }
+            this.agent2ChunkedTilesData = this.chunk(this.agent2TilesData, 3);
+            this.agent2DoughnutChartData = [dataPoints];
+            this.agent2DoughnutChartType = 'pie';
           });
       }
     }
@@ -350,42 +469,62 @@ export class DashboardComponent implements OnInit {
             this.categoryAdminDashboardVO = new CategoryAdminDashboardVO(data);
             let dataPoints = [];
             this.caTilesData = [];
-            for (let i in this.categoryAdminDashboardVO.statusIncidents) {
+            for (let i in this.categoryAdminDashboardVO.moduleWiseIncidents) {
               this.caTilesData[i] = {
-                moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
-                name: this.categoryAdminDashboardVO.statusIncidents[i].statusName,
-                value: this.categoryAdminDashboardVO.statusIncidents[i].count || 0,
+                moduleId: this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleId,
+                name: this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleName,
+                value: this.categoryAdminDashboardVO.moduleWiseIncidents[i].count || 0,
                 backgroundColour: this.caChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
+                  moduleId: this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleId,
                   assignedUserId: "",
                 }
               };
-              dataPoints.push(this.categoryAdminDashboardVO.statusIncidents[i].count);
-              this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.statusIncidents[i].statusName);
+              dataPoints.push(this.categoryAdminDashboardVO.moduleWiseIncidents[i].count);
+              this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleName);
             }
             this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
             this.caDoughnutChartData = [dataPoints];
             this.caDoughnutChartType = 'pie';
             dataPoints = [];
             this.ca1TilesData = [];
-            for (let i in this.categoryAdminDashboardVO.priorityIncidents) {
+            for (let i in this.categoryAdminDashboardVO.priorityWiseIncidents) {
               this.ca1TilesData[i] = {
-                priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
-                name: this.categoryAdminDashboardVO.priorityIncidents[i].priority,
-                value: this.categoryAdminDashboardVO.priorityIncidents[i].count || 0,
+                priorityId: this.categoryAdminDashboardVO.priorityWiseIncidents[i].priorityId,
+                name: this.categoryAdminDashboardVO.priorityWiseIncidents[i].priority,
+                value: this.categoryAdminDashboardVO.priorityWiseIncidents[i].count || 0,
                 backgroundColour: this.ca1ChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
+                  priorityId: this.categoryAdminDashboardVO.priorityWiseIncidents[i].priorityId,
                   assignedUserId: "",
                 }
               };
-              dataPoints.push(this.categoryAdminDashboardVO.priorityIncidents[i].count);
-              this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityIncidents[i].priority);
+              dataPoints.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].count);
+              this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].priority);
             }
             this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 3);
             this.ca1DoughnutChartData = [dataPoints];
             this.ca1DoughnutChartType = 'pie';
+            dataPoints = [];
+            this.ca3TilesData = [];
+            for (let i in this.categoryAdminDashboardVO.statusWiseIncidents) {
+              this.ca3TilesData[i] = {
+                name: this.categoryAdminDashboardVO.statusWiseIncidents[i].status,
+                value: this.categoryAdminDashboardVO.statusWiseIncidents[i].count || 0,
+                backgroundColour: this.ca3ChartColors[0].backgroundColor[i],
+                detailDataParams: {
+                  status: this.getIncidentStatus(this.categoryAdminDashboardVO.statusWiseIncidents[i].status),
+                  escalated1stLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  escalated2ndLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  isReopened: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                }
+              };
+              dataPoints.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].count);
+              this.ca3DoughnutChartLabels.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].status);
+            }
+            this.ca3ChunkedTilesData = this.chunk(this.ca3TilesData, 3);
+            this.ca3DoughnutChartData = [dataPoints];
+            this.ca3DoughnutChartType = 'pie';
             dataPoints = [];
             dataPoints.push(this.categoryAdminDashboardVO.aging5);
             dataPoints.push(this.categoryAdminDashboardVO.aging10);
@@ -458,153 +597,224 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.orgAdminDashboardVO.activeEmployees);
           dataPoints.push(this.orgAdminDashboardVO.inHouseVendors);
           dataPoints.push(this.orgAdminDashboardVO.outSourcedVendors);
-          this.orgAdminDoughnutChartLabels = [
-            "Active Employees",
-            "In House Vendors",
-            "Out Sourced Vendors",
-          ];
-          this.orgAdminDoughnutChartData = [
-            dataPoints
-          ];
-          this.orgAdminDoughnutChartType = 'pie';
           dataPoints = [];
           this.orgAdminTilesData = [];
-          for (let i in this.orgAdminDashboardVO.incidents) {
+          for (let i in this.orgAdminDashboardVO.moduleWiseIncidents) {
             this.orgAdminTilesData[i] = {
-              moduleId: this.orgAdminDashboardVO.incidents[i].moduleId,
-              name: this.orgAdminDashboardVO.incidents[i].statusName,
-              value: this.orgAdminDashboardVO.incidents[i].count || 0,
+              moduleId: this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleId,
+              name: this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleName,
+              value: this.orgAdminDashboardVO.moduleWiseIncidents[i].count || 0,
               backgroundColour: this.orgAdmin1ChartColors[0].backgroundColor[i],
-              detailDataParams: { moduleId: this.orgAdminDashboardVO.incidents[i].moduleId }
+              detailDataParams: { moduleId: this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleId }
             };
-            dataPoints.push(this.orgAdminDashboardVO.incidents[i].count);
-            this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.incidents[i].statusName);
+            dataPoints.push(this.orgAdminDashboardVO.moduleWiseIncidents[i].count);
+            this.orgAdmin1DoughnutChartLabels.push(this.orgAdminDashboardVO.moduleWiseIncidents[i].moduleName);
           }
           this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 3);
           this.orgAdmin1DoughnutChartData = [dataPoints];
           this.orgAdmin1DoughnutChartType = 'pie';
+          dataPoints = [];
+          this.orgAdmin1TilesData = [];
+          for (let i in this.orgAdminDashboardVO.statusWiseIncidents) {
+            this.orgAdmin1TilesData[i] = {
+              name: this.orgAdminDashboardVO.statusWiseIncidents[i].status,
+              value: this.orgAdminDashboardVO.statusWiseIncidents[i].count || 0,
+              backgroundColour: this.orgAdmin2ChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                status: this.getIncidentStatus(this.orgAdminDashboardVO.statusWiseIncidents[i].status),
+                escalated1stLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                escalated2ndLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                isReopened: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+              }
+            };
+            dataPoints.push(this.orgAdminDashboardVO.statusWiseIncidents[i].count);
+            this.orgAdmin2DoughnutChartLabels.push(this.orgAdminDashboardVO.statusWiseIncidents[i].status);
+          }
+          this.orgAdmin1ChunkedTilesData = this.chunk(this.orgAdmin1TilesData, 3);
+          this.orgAdmin2DoughnutChartData = [dataPoints];
+          this.orgAdmin2DoughnutChartType = 'pie';
         });
     }
   }
 
   loadUserData() {
-    if (this.userDashboardVO.incidents.length == 0) {
+    if (this.userDashboardVO.moduleWiseIncidents.length == 0) {
       this.service
         .userDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
         .subscribe((data: UserDashboardVO) => {
           this.userDashboardVO = new UserDashboardVO(data);
           let dataPoints = [];
           this.userTilesData = [];
-          for (let i in this.userDashboardVO.incidents) {
+          for (let i in this.userDashboardVO.moduleWiseIncidents) {
             this.userTilesData[i] = {
-              moduleId: this.userDashboardVO.incidents[i].moduleId,
-              name: this.userDashboardVO.incidents[i].statusName,
-              value: this.userDashboardVO.incidents[i].count || 0,
+              moduleId: this.userDashboardVO.moduleWiseIncidents[i].moduleId,
+              name: this.userDashboardVO.moduleWiseIncidents[i].moduleName,
+              value: this.userDashboardVO.moduleWiseIncidents[i].count || 0,
               backgroundColour: this.userChartColors[0].backgroundColor[i],
-              detailDataParams: { moduleId: this.userDashboardVO.incidents[i].moduleId, raisedUserId: this.loggedInUser.userId }
+              detailDataParams: { moduleId: this.userDashboardVO.moduleWiseIncidents[i].moduleId, raisedUserId: this.loggedInUser.userId }
             };
-            dataPoints.push(this.userDashboardVO.incidents[i].count);
-            this.userDoughnutChartLabels.push(this.userDashboardVO.incidents[i].statusName);
+            dataPoints.push(this.userDashboardVO.moduleWiseIncidents[i].count);
+            this.userDoughnutChartLabels.push(this.userDashboardVO.moduleWiseIncidents[i].moduleName);
           }
           this.userChunkedTilesData = this.chunk(this.userTilesData, 3);
           this.userDoughnutChartData = [dataPoints];
           this.userDoughnutChartType = 'pie';
+          dataPoints = [];
+          this.user1TilesData = [];
+          for (let i in this.userDashboardVO.statusWiseIncidents) {
+            this.user1TilesData[i] = {
+              name: this.userDashboardVO.statusWiseIncidents[i].status,
+              value: this.userDashboardVO.statusWiseIncidents[i].count || 0,
+              backgroundColour: this.user1ChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                status: this.getIncidentStatus(this.userDashboardVO.statusWiseIncidents[i].status),
+                escalated1stLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                escalated2ndLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                isReopened: this.userDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+              }
+            };
+            dataPoints.push(this.userDashboardVO.statusWiseIncidents[i].count);
+            this.user1DoughnutChartLabels.push(this.userDashboardVO.statusWiseIncidents[i].status);
+          }
+          this.user1ChunkedTilesData = this.chunk(this.user1TilesData, 3);
+          this.user1DoughnutChartData = [dataPoints];
+          this.user1DoughnutChartType = 'pie';
         });
     }
   }
 
   loadAgentData() {
-    if (this.agentDashboardVO.statusIncidents.length == 0) {
+    if (this.agentDashboardVO.moduleWiseIncidents.length == 0) {
       this.service
         .agentDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
         .subscribe((data: AgentDashboardVO) => {
           this.agentDashboardVO = new AgentDashboardVO(data);
           let dataPoints = [];
           this.agentTilesData = [];
-          for (let i in this.agentDashboardVO.statusIncidents) {
+          for (let i in this.agentDashboardVO.moduleWiseIncidents) {
             this.agentTilesData[i] = {
-              moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
-              name: this.agentDashboardVO.statusIncidents[i].statusName,
-              value: this.agentDashboardVO.statusIncidents[i].count || 0,
+              moduleId: this.agentDashboardVO.moduleWiseIncidents[i].moduleId,
+              name: this.agentDashboardVO.moduleWiseIncidents[i].moduleName,
+              value: this.agentDashboardVO.moduleWiseIncidents[i].count || 0,
               backgroundColour: this.userChartColors[0].backgroundColor[i],
               detailDataParams: {
-                moduleId: this.agentDashboardVO.statusIncidents[i].moduleId,
+                moduleId: this.agentDashboardVO.moduleWiseIncidents[i].moduleId,
                 assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
               }
             };
-            dataPoints.push(this.agentDashboardVO.statusIncidents[i].count);
-            this.agentDoughnutChartLabels.push(this.agentDashboardVO.statusIncidents[i].statusName);
+            dataPoints.push(this.agentDashboardVO.moduleWiseIncidents[i].count);
+            this.agentDoughnutChartLabels.push(this.agentDashboardVO.moduleWiseIncidents[i].moduleName);
           }
           this.agentChunkedTilesData = this.chunk(this.agentTilesData, 3);
           this.agentDoughnutChartData = [dataPoints];
           this.agentDoughnutChartType = 'pie';
           dataPoints = [];
           this.agent1TilesData = [];
-          for (let i in this.agentDashboardVO.priorityIncidents) {
+          for (let i in this.agentDashboardVO.priorityWiseIncidents) {
             this.agent1TilesData[i] = {
-              priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
-              name: this.agentDashboardVO.priorityIncidents[i].priority,
-              value: this.agentDashboardVO.priorityIncidents[i].count || 0,
+              priorityId: this.agentDashboardVO.priorityWiseIncidents[i].priorityId,
+              name: this.agentDashboardVO.priorityWiseIncidents[i].priority,
+              value: this.agentDashboardVO.priorityWiseIncidents[i].count || 0,
               backgroundColour: this.agent1ChartColors[0].backgroundColor[i],
               detailDataParams: {
-                priorityId: this.agentDashboardVO.priorityIncidents[i].priorityId,
+                priorityId: this.agentDashboardVO.priorityWiseIncidents[i].priorityId,
                 assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
               }
             };
-            dataPoints.push(this.agentDashboardVO.priorityIncidents[i].count);
-            this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityIncidents[i].priority);
+            dataPoints.push(this.agentDashboardVO.priorityWiseIncidents[i].count);
+            this.agent1DoughnutChartLabels.push(this.agentDashboardVO.priorityWiseIncidents[i].priority);
           }
           this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 3);
           this.agent1DoughnutChartData = [dataPoints];
           this.agent1DoughnutChartType = 'pie';
+          dataPoints = [];
+          this.agent2TilesData = [];
+          for (let i in this.agentDashboardVO.statusWiseIncidents) {
+            this.agent2TilesData[i] = {
+              name: this.agentDashboardVO.statusWiseIncidents[i].status,
+              value: this.agentDashboardVO.statusWiseIncidents[i].count || 0,
+              backgroundColour: this.agent2ChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                status: this.getIncidentStatus(this.agentDashboardVO.statusWiseIncidents[i].status),
+                escalated1stLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                escalated2ndLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                isReopened: this.agentDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+              }
+            };
+            dataPoints.push(this.agentDashboardVO.statusWiseIncidents[i].count);
+            this.agent2DoughnutChartLabels.push(this.agentDashboardVO.statusWiseIncidents[i].status);
+          }
+          this.agent2ChunkedTilesData = this.chunk(this.agent2TilesData, 3);
+          this.agent2DoughnutChartData = [dataPoints];
+          this.agent2DoughnutChartType = 'pie';
         });
     }
   }
 
   loadCategoryAdminData() {
-    if (this.categoryAdminDashboardVO.statusIncidents.length == 0) {
+    if (this.categoryAdminDashboardVO.moduleWiseIncidents.length == 0) {
       this.service
         .categoryAdminDashboard({ currentDate: moment().tz(this.loggedInUser.timeZone).format("YYYY-MM-DD") })
         .subscribe((data: CategoryAdminDashboardVO) => {
           this.categoryAdminDashboardVO = new CategoryAdminDashboardVO(data);
           let dataPoints = [];
           this.caTilesData = [];
-          for (let i in this.categoryAdminDashboardVO.statusIncidents) {
+          for (let i in this.categoryAdminDashboardVO.moduleWiseIncidents) {
             this.caTilesData[i] = {
-              moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
-              name: this.categoryAdminDashboardVO.statusIncidents[i].statusName,
-              value: this.categoryAdminDashboardVO.statusIncidents[i].count || 0,
+              moduleId: this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleId,
+              name: this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleName,
+              value: this.categoryAdminDashboardVO.moduleWiseIncidents[i].count || 0,
               backgroundColour: this.caChartColors[0].backgroundColor[i],
               detailDataParams: {
-                moduleId: this.categoryAdminDashboardVO.statusIncidents[i].moduleId,
+                moduleId: this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleId,
                 assignedUserId: "",
               }
             };
-            dataPoints.push(this.categoryAdminDashboardVO.statusIncidents[i].count);
-            this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.statusIncidents[i].statusName);
+            dataPoints.push(this.categoryAdminDashboardVO.moduleWiseIncidents[i].count);
+            this.caDoughnutChartLabels.push(this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleName);
           }
           this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
           this.caDoughnutChartData = [dataPoints];
           this.caDoughnutChartType = 'pie';
           dataPoints = [];
           this.ca1TilesData = [];
-          for (let i in this.categoryAdminDashboardVO.priorityIncidents) {
+          for (let i in this.categoryAdminDashboardVO.priorityWiseIncidents) {
             this.ca1TilesData[i] = {
-              priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
-              name: this.categoryAdminDashboardVO.priorityIncidents[i].priority,
-              value: this.categoryAdminDashboardVO.priorityIncidents[i].count || 0,
+              priorityId: this.categoryAdminDashboardVO.priorityWiseIncidents[i].priorityId,
+              name: this.categoryAdminDashboardVO.priorityWiseIncidents[i].priority,
+              value: this.categoryAdminDashboardVO.priorityWiseIncidents[i].count || 0,
               backgroundColour: this.ca1ChartColors[0].backgroundColor[i],
               detailDataParams: {
-                priorityId: this.categoryAdminDashboardVO.priorityIncidents[i].priorityId,
+                priorityId: this.categoryAdminDashboardVO.priorityWiseIncidents[i].priorityId,
                 assignedUserId: "",
               }
             };
-            dataPoints.push(this.categoryAdminDashboardVO.priorityIncidents[i].count);
-            this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityIncidents[i].priority);
+            dataPoints.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].count);
+            this.ca1DoughnutChartLabels.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].priority);
           }
           this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 3);
           this.ca1DoughnutChartData = [dataPoints];
           this.ca1DoughnutChartType = 'pie';
+          dataPoints = [];
+          this.ca3TilesData = [];
+          for (let i in this.categoryAdminDashboardVO.statusWiseIncidents) {
+            this.ca3TilesData[i] = {
+              name: this.categoryAdminDashboardVO.statusWiseIncidents[i].status,
+              value: this.categoryAdminDashboardVO.statusWiseIncidents[i].count || 0,
+              backgroundColour: this.ca3ChartColors[0].backgroundColor[i],
+              detailDataParams: {
+                status: this.getIncidentStatus(this.categoryAdminDashboardVO.statusWiseIncidents[i].status),
+                escalated1stLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                escalated2ndLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                isReopened: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+              }
+            };
+            dataPoints.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].count);
+            this.ca3DoughnutChartLabels.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].status);
+          }
+          this.ca3ChunkedTilesData = this.chunk(this.ca3TilesData, 3);
+          this.ca3DoughnutChartData = [dataPoints];
+          this.ca3DoughnutChartType = 'pie';
           dataPoints = [];
           dataPoints.push(this.categoryAdminDashboardVO.aging5);
           dataPoints.push(this.categoryAdminDashboardVO.aging10);
@@ -699,10 +909,30 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  userIncident1SegmentClicked(e: any) {
+    for (let k in this.user1TilesData) {
+      if (this.user1TilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.user1TilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
   agentIncidentSegmentClicked(e: any) {
     for (let k in this.agentTilesData) {
       if (this.agentTilesData[k].name == this.getChartSegmentData(e)) {
         this.viewIncident(this.agentTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  agent1IncidentSegmentClicked(e: any) {
+    for (let k in this.agent2TilesData) {
+      if (this.agent2TilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.agent2TilesData[k].detailDataParams);
       } else {
         continue;
       }
@@ -723,6 +953,16 @@ export class DashboardComponent implements OnInit {
     for (let k in this.caTilesData) {
       if (this.caTilesData[k].name == this.getChartSegmentData(e)) {
         this.viewIncident(this.caTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  ca3IncidentSegmentClicked(e: any) {
+    for (let k in this.ca3TilesData) {
+      if (this.ca3TilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.ca3TilesData[k].detailDataParams);
       } else {
         continue;
       }
@@ -757,6 +997,16 @@ export class DashboardComponent implements OnInit {
     for (let k in this.orgAdminTilesData) {
       if (this.orgAdminTilesData[k].name == this.getChartSegmentData(e)) {
         this.viewIncident(this.orgAdminTilesData[k].detailDataParams);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  orgAdmin1IncidentSegmentClicked(e: any) {
+    for (let k in this.orgAdmin1TilesData) {
+      if (this.orgAdmin1TilesData[k].name == this.getChartSegmentData(e)) {
+        this.viewIncident(this.orgAdmin1TilesData[k].detailDataParams);
       } else {
         continue;
       }

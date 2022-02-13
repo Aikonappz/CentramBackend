@@ -76,19 +76,15 @@ export class MiscService {
     downloadholidayCalenderService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/holiday-callender/' + id + '/download', { responseType: 'blob' });
     }
-
     notificationsService(request?: any): Observable<NotificationList> {
         return this.http.get('/v1/misc/all-notifications', { "params": request });
     }
-
     notificationService(id: number, request?: any): Observable<Notification> {
         return this.http.get('/v1/misc/notification/' + id, { "params": request });
     }
-
     saveNotificationService(notifications: Notification[], request?: any): Observable<any> {
         return this.http.post('/v1/misc/notification', notifications, { "params": request });
     }
-
     updateNotificationsStatusService(ids: number[], status: Status, request?: any): Observable<any> {
         return this.http.get('/v1/misc/notification/' + ids.join(",") + '/' + Status[status], { "params": request });
     }

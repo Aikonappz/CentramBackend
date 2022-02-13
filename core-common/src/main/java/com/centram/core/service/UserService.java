@@ -489,11 +489,11 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserVO> getAgentsByModuleAndActionAndOrganisation(List<BigInteger> moduleIds, String actionName, BigInteger organisationId) {
+    public List<UserVO> getAgents(List<BigInteger> moduleIds, String actionName, BigInteger locationId, BigInteger organisationId) {
         List<BigInteger> roleIds = permissionService.getRoleIdsByModuleAndAction(moduleIds, actionName);
         String roles = roleIds.stream().map(String::valueOf).collect(Collectors.joining("|"));
         roles = ",(".concat(roles).concat("),");
-        List<User> users = userRepository.getAgentsByRoleIds(moduleIds.get(0), moduleIds.get(1), roles, organisationId);
+        List<User> users = userRepository.getAgents(moduleIds.get(0), moduleIds.get(1), roles, locationId, organisationId);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;

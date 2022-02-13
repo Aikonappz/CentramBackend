@@ -186,22 +186,48 @@
               </div>
             </div>
           </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row" *ngFor="let rows of orgAdmin1ChunkedTilesData">
+              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card-body pb-0">
+                    <button type="button" (click)='viewIncident(item.detailDataParams)'
+                      class="btn btn-transparent p-0 float-right">
+                      <i class="icon-eye"></i>
+                    </button>
+                    <div class="text-value">{{item.value}}</div>
+                    <div>{{item.name}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </div>
-      <div *ngIf="orgAdminDashboardVO.incidents.length>0" class="card">
+      <div *ngIf="orgAdminDashboardVO.moduleWiseIncidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col ">
               <fieldset class="border p-2">
                 <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                <canvas chart-legend="false" width="2" height="1" baseChart (chartHover)="chartHovered($event)"
                   (chartClick)="orgAdminIncidentSegmentClicked($event)" [colors]="orgAdmin1ChartColors"
                   [data]="orgAdmin1DoughnutChartData" [labels]="orgAdmin1DoughnutChartLabels"
                   [chartType]="orgAdmin1DoughnutChartType" [options]="orgAdmin1DoughnutChartOptions" [legend]="true">
                 </canvas>
               </fieldset>
             </div>
-            <div class="col "></div>
+            <div class="col ">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas chart-legend="false" width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="orgAdmin1IncidentSegmentClicked($event)" [colors]="orgAdmin2ChartColors"
+                  [data]="orgAdmin2DoughnutChartData" [labels]="orgAdmin2DoughnutChartLabels"
+                  [chartType]="orgAdmin2DoughnutChartType" [options]="orgAdmin2DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
           </div>
         </div>
       </div>
@@ -226,9 +252,26 @@
               </div>
             </div>
           </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row" *ngFor="let rows of user1ChunkedTilesData">
+              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card-body pb-0">
+                    <button type="button" (click)='viewIncident(item.detailDataParams)'
+                      class="btn btn-transparent p-0 float-right">
+                      <i class="icon-eye"></i>
+                    </button>
+                    <div class="text-value">{{item.value}}</div>
+                    <div>{{item.name}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </div>
-      <div *ngIf="userDashboardVO.incidents.length>0" class="card">
+      <div *ngIf="userDashboardVO.moduleWiseIncidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col">
@@ -241,7 +284,16 @@
                 </canvas>
               </fieldset>
             </div>
-            <div class="col"></div>
+            <div class="col ">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="userIncident1SegmentClicked($event)" [colors]="user1ChartColors"
+                  [data]="user1DoughnutChartData" [labels]="user1DoughnutChartLabels"
+                  [chartType]="user1DoughnutChartType" [options]="user1DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
           </div>
         </div>
       </div>
@@ -283,9 +335,26 @@
               </div>
             </div>
           </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row" *ngFor="let rows of agent2ChunkedTilesData">
+              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card-body pb-0">
+                    <button type="button" (click)='viewIncident(item.detailDataParams)'
+                      class="btn btn-transparent p-0 float-right">
+                      <i class="icon-eye"></i>
+                    </button>
+                    <div class="text-value">{{item.value}}</div>
+                    <div>{{item.name}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </div>
-      <div *ngIf="agentDashboardVO.statusIncidents.length>0" class="card">
+      <div *ngIf="agentDashboardVO.statusWiseIncidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col col-sm-6">
@@ -307,6 +376,19 @@
                 </canvas>
               </fieldset>
             </div>
+          </div>
+          <div class="row">
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="agent1IncidentSegmentClicked($event)" [colors]="agent2ChartColors"
+                  [data]="agent2DoughnutChartData" [labels]="agent2DoughnutChartLabels"
+                  [chartType]="agent2DoughnutChartType" [options]="agent2DoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
+            <div class="col col-sm-6"></div>
           </div>
         </div>
       </div>
@@ -423,17 +505,35 @@
               </div>
             </div>
           </fieldset>
+          <fieldset class="border p-2">
+            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+            <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
+              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card-body pb-0">
+                    <button type="button" (click)='viewIncident(item.detailDataParams)'
+                      class="btn btn-transparent p-0 float-right">
+                      <i class="icon-eye"></i>
+                    </button>
+                    <div class="text-value">{{item.value}}</div>
+                    <div>{{item.name}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </div>
-      <div *ngIf="categoryAdminDashboardVO.statusIncidents.length>0" class="card">
+      <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="card">
         <div class="card-body">
           <div class="row">
             <div class="col col-sm-6">
               <fieldset class="border p-2">
                 <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="caIncidentAgingSegmentClicked($event)"
-                  [colors]="ca2ChartColors" [data]="ca2DoughnutChartData" [labels]="ca2DoughnutChartLabels"
-                  [chartType]="ca2DoughnutChartType" [options]="ca2DoughnutChartOptions" [legend]="true">
+                <canvas baseChart (chartHover)="chartHovered($event)"
+                  (chartClick)="caIncidentAgingSegmentClicked($event)" [colors]="ca2ChartColors"
+                  [data]="ca2DoughnutChartData" [labels]="ca2DoughnutChartLabels" [chartType]="ca2DoughnutChartType"
+                  [options]="ca2DoughnutChartOptions" [legend]="true">
                 </canvas>
               </fieldset>
             </div>
@@ -455,6 +555,15 @@
                 <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="caIncidentSegmentClicked($event)"
                   [colors]="caChartColors" [data]="caDoughnutChartData" [labels]="caDoughnutChartLabels"
                   [chartType]="caDoughnutChartType" [options]="caDoughnutChartOptions" [legend]="true">
+                </canvas>
+              </fieldset>
+            </div>
+            <div class="col col-sm-6">
+              <fieldset class="border p-2">
+                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
+                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="ca3IncidentSegmentClicked($event)"
+                  [colors]="ca3ChartColors" [data]="ca3DoughnutChartData" [labels]="ca3DoughnutChartLabels"
+                  [chartType]="ca3DoughnutChartType" [options]="ca3DoughnutChartOptions" [legend]="true">
                 </canvas>
               </fieldset>
             </div>

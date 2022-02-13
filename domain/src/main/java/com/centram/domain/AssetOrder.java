@@ -63,7 +63,7 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @Valid
     @NotNull
     @OneToOne
-    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
+    @JoinColumn(name = "location_id", nullable = true, updatable = false, insertable = false, referencedColumnName = "id")
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Location location;
 

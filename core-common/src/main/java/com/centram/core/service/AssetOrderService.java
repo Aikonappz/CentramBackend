@@ -38,6 +38,9 @@ public class AssetOrderService {
     @Autowired
     private MiscService miscService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transactional(readOnly = true)
     public PaginatedList<AssetOrder> getAssetOrders(String orderNo, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

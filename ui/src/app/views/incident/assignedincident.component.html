@@ -37,21 +37,21 @@
                                 </div>
                                 <div class="row row-margin-05">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="moduleId">Module</label>
+                                        <label class="form-col-form-label" for="moduleId">Category</label>
                                         <select #moduleId (change)="populateSubmodule($event.target.value)"
                                             class="form-control" formControlName="moduleId" ngModel id="moduleId"
                                             name="moduleId">
-                                            <option value="">-- Select Module --</option>
+                                            <option value="">-- Select Category --</option>
                                             <option *ngFor="let e of moduleList" value="{{e.moduleId}}">
                                                 {{e.customerModuleName}}</option>
                                         </select>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="subModuleId">Sub
-                                            Module</label>
+                                            Category</label>
                                         <select class="form-control" formControlName="subModuleId" ngModel
                                             id="subModuleId" name="subModuleId">
-                                            <option value="">-- Select Sub Module --</option>
+                                            <option value="">-- Select Sub Category --</option>
                                             <option *ngFor="let e of subModuleList" value="{{e.moduleId}}">
                                                 {{e.customerModuleName}}
                                             </option>

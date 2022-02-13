@@ -33,7 +33,7 @@ import { ViewOrgAdminDashboardUserDetails } from "./ViewOrgAdminDashboardUserDet
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="allocationType">
-                  <th mat-header-cell *matHeaderCellDef> Ticket Allocation Type </th>
+                  <th mat-header-cell *matHeaderCellDef> Incident Allocation Type </th>
                   <td mat-cell *matCellDef="let element">
                     {{element.ticketAllocationType}}
                   </td>

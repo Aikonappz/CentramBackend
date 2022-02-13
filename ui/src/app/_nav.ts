@@ -101,13 +101,19 @@ export const navItems: INavData[] = [
   {
     name: 'Assets',
     url: '/asset',
-    icon: 'fa fa-list-alt',
+    icon: 'fa fa-cubes',
     attributes: { "moduleName": "ASSET" },
     children: [
       {
+        name: 'Order Asset',
+        url: '/asset/order/add',
+        icon: 'fa fa-plus',
+        attributes: { "moduleName": "ORDER ASSET" }
+      },
+      {
         name: 'Ordered Asset',
         url: '/asset/order',
-        icon: 'fa fa-plus',
+        icon: 'fa fa-outdent',
         attributes: { "moduleName": "ORDER ASSET" }
       },
     ]

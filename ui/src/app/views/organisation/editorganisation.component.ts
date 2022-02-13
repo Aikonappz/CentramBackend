@@ -45,6 +45,7 @@ export class EditOrganisationComponent implements OnInit {
   locations: LocationVO[];
   departments: Department[];
   angForm: FormGroup;
+  oldStatus: boolean = false;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -350,7 +351,7 @@ export class EditOrganisationComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
-      if (this.statusFlag === false) {
+      if (!this.newEntity && this.statusFlag != this.oldStatus) {
         let res = window.confirm("Do you really want to change the status?")
         if (!res) {
           return;
@@ -485,6 +486,7 @@ export class EditOrganisationComponent implements OnInit {
         this.angForm.get('tan').setValue(this.org.tan);
         this.angForm.get('name').setValue(this.org.name);
         this.statusFlag = String(this.org.status) == 'ACTIVE' ? true : false;
+        this.oldStatus = String(this.org.status) == 'ACTIVE' ? true : false;
 
 
         this.angForm.get('keyPersonName1').setValue(this.org.contactPersons[0].name);

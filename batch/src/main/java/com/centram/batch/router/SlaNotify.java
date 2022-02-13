@@ -67,9 +67,11 @@ public class SlaNotify extends RouteBuilder {
                         Incident incident = nonBlockedIncidents.get((int) exchange.getProperty("CamelLoopIndex"));
                         String targetRouter = null;
                         String timeZone = incident.getRaisedUser().getLocation().getTimezone();
-
                         ZonedDateTime currentDatetime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.of(timeZone));
-                        ZonedDateTime startDatetime = ZonedDateTime.of(incident.getCreatedDate(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
+                        ZonedDateTime startDatetime = ZonedDateTime.of(
+                                incident.getReOpened() ? incident.getReopenedAt() : incident.getRaisedAt(),
+                                ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone)
+                        );
                         ZonedDateTime endDatetime = ZonedDateTime.of(incident.getSlaAt(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));
                         Duration duration = Duration.between(startDatetime, endDatetime);
                         ZonedDateTime wip50PercentPassed = ZonedDateTime.of(incident.getCreatedDate(), ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(timeZone));

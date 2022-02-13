@@ -7,19 +7,12 @@ import { SpinnerService } from '../../service/SpinnerService';
   styleUrls: ['./spinner.component.scss']
 })
 export class SpinnerComponent implements OnInit {
-
   public showSpinner = false;
-
   constructor(
     private spinnerService: SpinnerService,
     private cvRef: ChangeDetectorRef
-  ) {
-  }
-
-  ngOnInit(): void {
-    this.init();
-  }
-
+  ) { }
+  ngOnInit(): void { this.init(); }
   init() {
     this.spinnerService.getSpinnerObserver()
       .subscribe((status) => {
@@ -27,5 +20,4 @@ export class SpinnerComponent implements OnInit {
         this.cvRef.detectChanges();
       });
   }
-
 }

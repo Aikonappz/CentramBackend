@@ -6,10 +6,8 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.HolidayCalenderRepository;
-
 import com.centram.domain.Holiday;
 import com.centram.domain.HolidayCalender;
-import com.centram.domain.enumarator.ActivityType;
 import org.apache.commons.csv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,6 @@ public class HolidayCalenderService {
 
     @Autowired
     private OrganisationService organisationService;
-
 
 
     /**
@@ -159,7 +156,9 @@ public class HolidayCalenderService {
     @Transactional(readOnly = true)
     public List<Holiday> getHolidaysByYear(String year) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(loggedInUser.getOrganisationId(), year, loggedInUser.getLocationId());
+        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(
+                year, loggedInUser.getLocationId(), loggedInUser.getOrganisationId()
+        );
         if (holidayCalender == null) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }

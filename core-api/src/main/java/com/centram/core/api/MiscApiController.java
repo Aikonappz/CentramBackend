@@ -334,10 +334,11 @@ public class MiscApiController {
     @RequestMapping(value = "/all-notifications", produces = {"application/json"}, method = RequestMethod.GET)
     @JsonView(Views.ListView.class)
     public ResponseEntity<PaginatedList<Notification>> getNotifications(
+            @ApiParam(value = "Search Value", defaultValue = "ALL", required = false) @RequestParam(value = "searchValue", defaultValue = "", required = false) String searchValue,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Notification>>(notificationService.getNotifications(Status.valueOf(status), pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Notification>>(notificationService.getNotifications(searchValue, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find notification id", nickname = "getNotificationById", notes = "Find notification id", response = Notification.class, tags = {"misc",})

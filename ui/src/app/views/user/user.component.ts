@@ -226,7 +226,6 @@ export class UserComponent implements OnInit, OnDestroy {
         "email": this.usr.email == null ? '' : this.usr.email,
         "employeeId": this.usr.employeeId == null ? '' : this.usr.employeeId,
         "status": this.usr.status,
-        "filterType": userType,
         "vendorId": vendorId,
       });
       //console.log(JSON.stringify(this.org));

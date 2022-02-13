@@ -1,10 +1,7 @@
 package com.centram.core.repository;
 
 
-import com.centram.common.vo.CategoryAdminDashboardVO;
-import com.centram.common.vo.IncidentPriorityVO;
-import com.centram.common.vo.IncidentStatusVO;
-import com.centram.common.vo.UserDashboardVO;
+import com.centram.common.vo.*;
 import com.centram.domain.Incident;
 import com.centram.domain.enumarator.IncidentStatus;
 import org.springframework.data.domain.Page;
@@ -149,6 +146,21 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:priorityId) is not null and i.priority_id = (:priorityId)) " +
             "   OR " +
             "   ((:priorityId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:escalated1stLevel) = true and i.escalation1_at is not null and i.escalation2_at is null) " +
+            "   OR " +
+            "   ((:escalated1stLevel) = false) " +
+            " ) and " +
+            " ( " +
+            "   ((:escalated2ndLevel) = true and i.escalation2_at is not null and i.escalation1_at is not null) " +
+            "   OR " +
+            "   ((:escalated2ndLevel) = false) " +
+            " ) and " +
+            " ( " +
+            "   ((:reOpened) = true and i.re_opened = 1) " +
+            "   OR " +
+            "   ((:reOpened) = false) " +
             " ) " +
             " and " +
             " ( " +
@@ -172,6 +184,9 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("raisedUserId") BigInteger raisedUserId,
             @Param("assignedUserId") BigInteger assignedUserId,
             @Param("status") Integer status,
+            @Param("escalated1stLevel") Boolean escalated1stLevel,
+            @Param("escalated2ndLevel") Boolean escalated2ndLevel,
+            @Param("reOpened") Boolean reOpened,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("modFilter") Boolean modFilter,
@@ -274,10 +289,11 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     @Query("select i from Incident i where i.status in (:statuses) and i.organisation.id = (:organisationId) order by i.id asc")
     List<Incident> getIncidentsByOrganisationAndStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
 
-    @Query("select i from Incident i where i.moduleId = (:categoryId) and i.subModuleId = (:subCategoryId) and i.status in (:statuses) and i.organisation.id = (:organisationId) order by i.id asc")
-    List<Incident> getIncidentsByOrganisationAndStatusAndCategoryAndSubCategory(
+    @Query("select i from Incident i where i.raisedUser.location.id = (:locationId) and i.moduleId = (:categoryId) and i.subModuleId = (:subCategoryId) and i.status in (:statuses) and i.organisation.id = (:organisationId) order by i.id asc")
+    List<Incident> getIncidents(
             @Param("categoryId") BigInteger categoryId,
             @Param("subCategoryId") BigInteger subCategoryId,
+            @Param("locationId") BigInteger locationId,
             @Param("organisationId") BigInteger organisationId,
             @Param("statuses") List<IncidentStatus> statuses
     );
@@ -300,8 +316,8 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
 
     @Query(value = "select " +
             " m.id as moduleId, " +
-            " m.name as status, " +
-            " CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) as statusName, " +
+            " m.name as module, " +
+            " m.customer_module_name as moduleName, " +
             " sum(case when i.id is not null and u.id is not null then 1 else 0 end) as count" +
             " from " +
             " module m " +
@@ -326,9 +342,94 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:roleFilter) = false) " +
             "  ) " +
-            " group by m.id, m.name, CONCAT(UPPER(SUBSTRING(m.customer_module_name,1,1)),LOWER(SUBSTRING(m.customer_module_name,2))) " +
+            " group by m.id, m.name, m.customer_module_name " +
             " order by 2 asc ", nativeQuery = true)
-    Set<IncidentStatusVO> orgStatusWiseIncidentDashboardData(
+    Set<IncidentModuleVO> moduleWiseIncidentsDashboardData(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("roleFilter") Boolean roleFilter,
+            @Param("userModules") List<BigInteger> userModules,
+            @Param("organisationId") BigInteger organisationId,
+            @Param("userType") String userType,
+            @Param("userId") BigInteger userId
+    );
+
+    @Query(value = "SELECT " +
+            " status as status, " +
+            " count(1) as count" +
+            " from " +
+            " ( " +
+            "   select " +
+            "       i.status as statusId, " +
+            "       case " +
+            "           when i.status = 0 then 'Open' " +
+            "           when i.status = 1 then 'Assigned' " +
+            "           when i.status = 2 then 'Need Clarification' " +
+            "           when i.status = 3 then 'Work In Progress' " +
+            "           when i.status = 4 then 'Closed' " +
+            "           when i.status = 5 then 'Sla About To Breach' " +
+            "           when i.status = 6 then 'Sla Breached' " +
+            "           when i.status = 7 then 'On Hold' " +
+            "           when i.status = 8 then 'Pending from vendor' " +
+            "           when i.status = 10 then 'Clarification provided' " +
+            "       END as status " +
+            "  from incident i " +
+            "  join module m on ( m.id = i.module_id and m.app_module = 0 and m.parent_module_id is null ) " +
+            "  join user u on " +
+            "  ( " +
+            "    ((:userType) = 'USER' and u.id = i.raised_user_id and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_LEAD' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_MANAGER' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'CATEGORY_ADMIN' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
+            "  ) " +
+            "  where i.created_date BETWEEN (:start) and (:end) and i.organisation_id = (:organisationId) and " +
+            "  ( " +
+            "    ((:roleFilter) = true and m.id in (:userModules)) " +
+            "    OR " +
+            "    ((:roleFilter) = false) " +
+            "  ) " +
+            "union all " +
+            "  select " +
+            "       i.status as statusId, " +
+            "       case  " +
+            "           when i.escalation2_at is not null and i.escalation1_at is not null then 'Escalated 2nd Level' " +
+            "           when i.escalation1_at is not null and i.escalation2_at is null then 'Escalated 1st Level' " +
+            "           when i.re_opened = 1 then 'Reopened' " +
+            "       END as status " +
+            " from incident i " +
+            " join module m on ( m.id = i.module_id and m.app_module = 0 and m.parent_module_id is null ) " +
+            " join user u on " +
+            " ( " +
+            "    ((:userType) = 'USER' and u.id = i.raised_user_id and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT' and u.id = i.assigned_user_id and u.id = (:userId)) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_LEAD' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'AGENT_MANAGER' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'CATEGORY_ADMIN' and u.id = i.raised_user_id ) " +
+            "    OR " +
+            "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
+            " ) " +
+            " where (i.re_opened = 1 or i.escalation2_at is not null or i.escalation1_at is not null) and " +
+            " i.created_date BETWEEN (:start) and (:end) and i.organisation_id = (:organisationId) and " +
+            "  ( " +
+            "    ((:roleFilter) = true and m.id in (:userModules)) " +
+            "    OR " +
+            "    ((:roleFilter) = false) " +
+            "  ) " +
+            " ) as t " +
+            "group by status " +
+            "order by 2 asc ", nativeQuery = true)
+    Set<IncidentStatusVO> statusWiseIncidentsDashboardData(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("roleFilter") Boolean roleFilter,

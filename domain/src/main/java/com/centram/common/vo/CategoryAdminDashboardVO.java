@@ -16,8 +16,9 @@ public class CategoryAdminDashboardVO {
     private Integer aging20;
     private Integer aging30;
     private Integer aging60;
-    private Set<IncidentPriorityVO> priorityIncidents;
-    private Set<IncidentStatusVO> statusIncidents;
+    private Set<IncidentPriorityVO> priorityWiseIncidents;
+    private Set<IncidentModuleVO> moduleWiseIncidents;
+    private Set<IncidentStatusVO> statusWiseIncidents;
 
     public CategoryAdminDashboardVO(Integer aging5, Integer aging10, Integer aging20, Integer aging30, Integer aging60) {
         this.aging5 = aging5;

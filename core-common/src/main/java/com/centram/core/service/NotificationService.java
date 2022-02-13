@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -68,9 +69,10 @@ public class NotificationService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Notification> getNotifications(Status status, Pageable pageable) {
+    public PaginatedList<Notification> getNotifications(String searchValue, Status status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<Notification>(notificationRepository.getNotifications(loggedInUser.getUserId(), status.ordinal(), pageable));
+        searchValue = (searchValue.equalsIgnoreCase("")) ? null : "%" + searchValue.toUpperCase(Locale.ROOT) + "%";
+        return new PaginatedList<Notification>(notificationRepository.getNotifications(loggedInUser.getUserId(), status.ordinal(), searchValue, pageable));
     }
 
     /**

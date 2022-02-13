@@ -1,12 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { tap } from 'rxjs/operators';
-import { Notification } from '../../model/Notification';
+import { Status } from '../../model/enumerator/Status';
+import { Notification, NotificationList } from '../../model/Notification';
 import { NotificationDataSource } from '../../service/datasource/NotificationSource';
 import { MiscService } from '../../service/MiscService';
+import { NotificationViewComponent } from './modal/NotificationViewComponent';
 
 @Component({
   selector: 'app-notification',
@@ -19,7 +22,11 @@ export class NotificationComponent implements OnInit {
   displayedColumns = ['notificationTitle', 'notificationBody', 'action'];
   private datasource: NotificationDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  entityId: number;
+  angForm: FormGroup;
+  searchedData: Object = {};
   constructor(
+    private fb: FormBuilder,
     private service: MiscService,
     private titleService: Title,
     private router: Router,
@@ -32,7 +39,28 @@ export class NotificationComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    //console.log("test...");
+    this.angForm = this.fb.group({
+      searchValue: new FormControl('', [
+      ]),
+    });
+    this.service.notificationsService({ status: "PUSHED", }).subscribe((data: NotificationList) => {
+      if (typeof data.content != "undefined" && data.content.length > 0) {
+        let updatedNotifications = [];
+        for (let k in data.content) {
+          updatedNotifications.push(data.content[k].id);
+        }
+        this.service
+          .updateNotificationsStatusService(updatedNotifications, Status.PULLED)
+          .subscribe((data: any) => {
+          });
+      }
+    });
+  }
+
+  loadPage() {
+    this.angForm.reset();
+    this.searchedData = {};
+    this.loadData({});
   }
 
   getTitle(state, parent) {
@@ -48,13 +76,15 @@ export class NotificationComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = new NotificationDataSource(this.service);
-    this.datasource.load(0, 10, { status: "ALL" });
     if (!this.route.snapshot.paramMap.has('id')) {
-
+      this.datasource.load(0, 10, { status: "ALL" });
     } else {
       this.route.params.subscribe(params => {
-        let entityId = Number(this.route.snapshot.paramMap.get('id'));
-        this.viewNotification(entityId);
+        this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+        this.viewNotification(this.entityId)
+          .then(() => {
+            this.datasource.load(0, 10, { status: "ALL" })
+          });
       });
     }
   }
@@ -76,6 +106,9 @@ export class NotificationComponent implements OnInit {
   }
 
   loadData(req = {}) {
+    if (this.searchedData.hasOwnProperty('searchValue')) {
+      req = this.searchedData;
+    }
     this.datasource.load(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
 
@@ -83,16 +116,21 @@ export class NotificationComponent implements OnInit {
     this.router.navigate(['/notification/view/' + id]);
   }
 
+  formSubmit() {
+    if (this.angForm.valid) {
+      let saerchVal = this.angForm.controls['searchValue'].value;
+      this.searchedData = {
+        "searchValue": saerchVal == null ? '' : saerchVal,
+      };
+      this.loadData(this.searchedData);
+    } else {
+      console.log("Invalid Form!");
+    }
+  }
+
   viewNotification(id: number) {
     this.service.notificationService(id, {})
       .subscribe((data: Notification) => {
-        //console.log("completed....");
-        // const initialState = {
-        //   notification: data,
-        // };
-        // this.modalRef = this.modalService.show(NotificationViewComponent, { initialState });
-        // this.modalRef.content.closeBtnName = 'Close';
-
         const config: ModalOptions = {
           backdrop: 'static',
           keyboard: false,
@@ -103,43 +141,8 @@ export class NotificationComponent implements OnInit {
         const initialState = {
           notification: data,
         };
-        this.modalRef = this.modalService.show(NotificationViewComponent,
-          Object.assign({}, config, { initialState })
-        );
-
-
-
+        this.modalRef = this.modalService.show(NotificationViewComponent, Object.assign({}, config, { initialState }));
       });
+    return Promise.resolve("Success");
   }
-}
-@Component({
-  selector: 'modal-content',
-  template: `<div class="modal-header">
-  <h6 class="modal-title pull-left"><i class="fa fa-info-circle"></i>&nbsp; &nbsp;{{notification.notificationTitle}}</h6>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-<div class="modal-body">
-  <div class="row">
-      <div class="col-sm-12">
-          <div class="card ">
-              <div class="card-body">
-                  <div class="row">
-                      <div class="col">
-                          <div [innerHTML]="notification.notificationBody"></div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>`
-})
-export class NotificationViewComponent implements OnInit {
-  notification: Notification;
-  constructor(public bsModalRef: BsModalRef,) { }
-  ngOnInit() { }
-  ngAfterViewInit() { }
-  ngAfterContentInit() { }
 }

@@ -42,7 +42,7 @@
                                         <select #moduleId (change)="populateSubmodule($event.target.value)"
                                             class="form-control" formControlName="moduleId" ngModel id="moduleId"
                                             name="moduleId">
-                                            <option value="">-- Select Module --</option>
+                                            <option value="">-- Select Category --</option>
                                             <option *ngFor="let e of moduleList" value="{{e.moduleId}}">
                                                 {{e.customerModuleName}}</option>
                                         </select>
@@ -59,7 +59,7 @@
                                         <select class="form-control" #subModuleId
                                             (change)="populateUser($event.target.value)" formControlName="subModuleId"
                                             ngModel id="subModuleId" name="subModuleId">
-                                            <option value="">-- Select Sub Module --</option>
+                                            <option value="">-- Select Sub Category --</option>
                                             <option *ngFor="let e of subModuleList" value="{{e.moduleId}}">
                                                 {{e.customerModuleName}}
                                             </option>

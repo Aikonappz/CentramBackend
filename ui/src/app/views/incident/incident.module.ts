@@ -8,13 +8,12 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { MasterRoutingModule } from '../master/master-routing.module';
 import { EditIncidentComponent } from './editincident.component';
 import { CKEditorModule } from 'ckeditor4-angular';
-import { AssignIncidentComponent, AgentIncidentComponent } from './agentincident.component';
 import { UserIncidentComponent } from './userincident.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AssignedIncidentComponent } from './assignedincident.component';
-
-
+import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
+import { AgentIncidentComponent } from './agentincident.component';
 
 @NgModule({
   declarations: [
