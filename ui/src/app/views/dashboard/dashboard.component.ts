@@ -23,10 +23,10 @@ import { ViewIncidentDetails } from './modal/ViewIncidentDetails';
 import { ViewAppAdminDashboardDetails } from './modal/ViewAppAdminDashboardDetails';
 import { ViewOrgAdminDashboardUserDetails } from './modal/ViewOrgAdminDashboardUserDetails';
 import { ViewOrgAdminDashboardVendorDetails } from './modal/ViewOrgAdminDashboardVendorDetails';
-import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 
 @Component({
-  templateUrl: 'dashboard.component.html'
+  templateUrl: 'dashboard.component.html',
+  styleUrls: ['dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   roles: string[];
@@ -65,14 +65,21 @@ export class DashboardComponent implements OnInit {
   public adminDoughnutChartData: MultiDataSet = [];
   public adminDoughnutChartType: ChartType = 'pie';
   public adminChartColors: any[] = [{ backgroundColor: ["#63C2DE", "#FAC008", "#7048C1"] }];
-  public adminDoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
+  public adminDoughnutChartOptions: any = {
+    responsive: true,
+    iboxWidth: 1,
+  };
 
   public admin1DoughnutChartLabels: Label[] = [];
   public admin1DoughnutChartData: MultiDataSet = [];
   public admin1DoughnutChartType: ChartType = 'pie';
   //public admin1ChartColors: any[] = [{ backgroundColor: ["#adff2f", "#EE6A6C", "#5FBD74", "#3B5998",] }];
   public admin1ChartColors: any[] = [{ backgroundColor: ["#EE6A6C", "#5FBD74", "#3B5998",] }];
-  public admin1DoughnutChartOptions: any = { responsive: true, boxWidth: 1, };
+  public admin1DoughnutChartOptions: any = {
+    responsive: true,
+    boxWidth: 1,
+    legend: { position: 'bottom' }
+  };
 
   public orgAdmin1DoughnutChartLabels: Label[] = [];
   public orgAdmin1DoughnutChartData: MultiDataSet = [];
@@ -83,6 +90,7 @@ export class DashboardComponent implements OnInit {
   public orgAdmin1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public orgAdmin2DoughnutChartLabels: Label[] = [];
@@ -94,6 +102,7 @@ export class DashboardComponent implements OnInit {
   public orgAdmin2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public userDoughnutChartLabels: Label[] = [];
@@ -105,6 +114,7 @@ export class DashboardComponent implements OnInit {
   public userDoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public user1DoughnutChartLabels: Label[] = [];
@@ -116,6 +126,7 @@ export class DashboardComponent implements OnInit {
   public user1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public agentDoughnutChartLabels: Label[] = [];
@@ -127,6 +138,7 @@ export class DashboardComponent implements OnInit {
   public agentDoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public agent1DoughnutChartLabels: Label[] = [];
@@ -138,6 +150,7 @@ export class DashboardComponent implements OnInit {
   public agent1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public agent2DoughnutChartLabels: Label[] = [];
@@ -149,6 +162,7 @@ export class DashboardComponent implements OnInit {
   public agent2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public caDoughnutChartLabels: Label[] = [];
@@ -160,6 +174,7 @@ export class DashboardComponent implements OnInit {
   public caDoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public ca1DoughnutChartLabels: Label[] = [];
@@ -171,6 +186,7 @@ export class DashboardComponent implements OnInit {
   public ca1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public ca2DoughnutChartLabels: Label[] = [];
@@ -182,6 +198,7 @@ export class DashboardComponent implements OnInit {
   public ca2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   public ca3DoughnutChartLabels: Label[] = [];
@@ -193,6 +210,7 @@ export class DashboardComponent implements OnInit {
   public ca3DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
+    legend: { position: 'bottom' }
   };
 
   constructor(

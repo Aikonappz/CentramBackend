@@ -211,7 +211,7 @@
             <div class="col ">
               <fieldset class="border p-2">
                 <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-                <canvas chart-legend="false" width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
                   (chartClick)="orgAdminIncidentSegmentClicked($event)" [colors]="orgAdmin1ChartColors"
                   [data]="orgAdmin1DoughnutChartData" [labels]="orgAdmin1DoughnutChartLabels"
                   [chartType]="orgAdmin1DoughnutChartType" [options]="orgAdmin1DoughnutChartOptions" [legend]="true">
@@ -221,7 +221,7 @@
             <div class="col ">
               <fieldset class="border p-2">
                 <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-                <canvas chart-legend="false" width="2" height="1" baseChart (chartHover)="chartHovered($event)"
+                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
                   (chartClick)="orgAdmin1IncidentSegmentClicked($event)" [colors]="orgAdmin2ChartColors"
                   [data]="orgAdmin2DoughnutChartData" [labels]="orgAdmin2DoughnutChartLabels"
                   [chartType]="orgAdmin2DoughnutChartType" [options]="orgAdmin2DoughnutChartOptions" [legend]="true">
