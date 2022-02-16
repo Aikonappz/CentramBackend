@@ -61,7 +61,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({AuthenticationException.class})
-    public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest webRequest) {
+    public ResponseEntity<ClientError> handleAccessDeniedException(Exception ex, WebRequest webRequest) {
         LOG.error(ex.getMessage());
         String code = GenericErrorCode.UNAUTHORIZED.getCode();
         String msg = GenericErrorCode.UNAUTHORIZED.getTemplate();

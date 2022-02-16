@@ -9,6 +9,7 @@ import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
 import com.centram.common.vo.WorkingDay;
 import com.centram.core.repository.IncidentRepository;
+import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.IncidentStatus;
@@ -119,7 +120,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, String agingFilter, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, Boolean escalated1stLevel, Boolean escalated2ndLevel, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, String agingFilter, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, Boolean allOpen, Boolean allClosed, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -141,7 +142,7 @@ public class IncidentService {
             modFilter = true;
         }
         agingFilter = (agingFilter == null || agingFilter.equalsIgnoreCase("")) ? null : agingFilter;
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, escalated1stLevel, escalated2ndLevel, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, allOpen, allClosed, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
     }
 
     /**
@@ -322,8 +323,12 @@ public class IncidentService {
             descSortedCommunicationSet.add(incidentCommunication);
         }
         incident.get().setCommunications(descSortedCommunicationSet);
-        incident.get().setModuleName(moduleService.getModuleById(incident.get().getModuleId()).getCustomerModuleName());
-        incident.get().setSubModuleName(moduleService.getModuleById(incident.get().getSubModuleId()).getCustomerModuleName());
+        Module module = moduleService.getModuleById(incident.get().getModuleId());
+        incident.get().setModuleName(module.getCustomerModuleName());
+        incident.get().setActualModuleName(module.getName());
+        module = moduleService.getModuleById(incident.get().getSubModuleId());
+        incident.get().setSubModuleName(module.getCustomerModuleName());
+        incident.get().setActualSubModuleName(module.getName());
         return incident.get();
     }
 

@@ -29,7 +29,6 @@ import { ViewOrgAdminDashboardUserDetails } from "./ViewOrgAdminDashboardUserDet
                   <th mat-header-cell *matHeaderCellDef> Vendor Name </th>
                   <td mat-cell *matCellDef="let element">
                     <a href="javascript:void(0);" (click)="viewOrgAdminUserDetail({vendorId: element.id })"> {{element.name}} </a>
-
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="allocationType">

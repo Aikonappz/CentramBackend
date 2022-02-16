@@ -23,6 +23,7 @@ import { ViewIncidentDetails } from './modal/ViewIncidentDetails';
 import { ViewAppAdminDashboardDetails } from './modal/ViewAppAdminDashboardDetails';
 import { ViewOrgAdminDashboardUserDetails } from './modal/ViewOrgAdminDashboardUserDetails';
 import { ViewOrgAdminDashboardVendorDetails } from './modal/ViewOrgAdminDashboardVendorDetails';
+declare var $: any;
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -78,7 +79,7 @@ export class DashboardComponent implements OnInit {
   public admin1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public orgAdmin1DoughnutChartLabels: Label[] = [];
@@ -90,7 +91,7 @@ export class DashboardComponent implements OnInit {
   public orgAdmin1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public orgAdmin2DoughnutChartLabels: Label[] = [];
@@ -102,7 +103,7 @@ export class DashboardComponent implements OnInit {
   public orgAdmin2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public userDoughnutChartLabels: Label[] = [];
@@ -114,7 +115,7 @@ export class DashboardComponent implements OnInit {
   public userDoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public user1DoughnutChartLabels: Label[] = [];
@@ -126,7 +127,7 @@ export class DashboardComponent implements OnInit {
   public user1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public agentDoughnutChartLabels: Label[] = [];
@@ -138,7 +139,7 @@ export class DashboardComponent implements OnInit {
   public agentDoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public agent1DoughnutChartLabels: Label[] = [];
@@ -150,7 +151,7 @@ export class DashboardComponent implements OnInit {
   public agent1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public agent2DoughnutChartLabels: Label[] = [];
@@ -162,7 +163,7 @@ export class DashboardComponent implements OnInit {
   public agent2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public caDoughnutChartLabels: Label[] = [];
@@ -174,7 +175,7 @@ export class DashboardComponent implements OnInit {
   public caDoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public ca1DoughnutChartLabels: Label[] = [];
@@ -186,7 +187,7 @@ export class DashboardComponent implements OnInit {
   public ca1DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public ca2DoughnutChartLabels: Label[] = [];
@@ -198,7 +199,7 @@ export class DashboardComponent implements OnInit {
   public ca2DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   public ca3DoughnutChartLabels: Label[] = [];
@@ -210,7 +211,7 @@ export class DashboardComponent implements OnInit {
   public ca3DoughnutChartOptions: any = {
     responsive: true,
     boxWidth: 1,
-    legend: { position: 'bottom' }
+    legend: { position: 'top' }
   };
 
   constructor(
@@ -245,6 +246,21 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+
+    $(function () {
+      $("#dataSets").accordion({
+        //icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
+        heightStyle: "content",
+        active: true,
+        collapsible: true,
+        activate: function (event, ui) {
+          var index = $(this).accordion("option", "active");
+          console.log(index);
+        }
+      });
+      $(".accordion-toggle:eq(0)").trigger('click');
+    });
+
   }
 
   getIncidentStatus(s: string): string {
@@ -349,10 +365,12 @@ export class DashboardComponent implements OnInit {
                 value: this.orgAdminDashboardVO.statusWiseIncidents[i].count || 0,
                 backgroundColour: this.orgAdmin2ChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  status: this.getIncidentStatus(this.orgAdminDashboardVO.statusWiseIncidents[i].status),
-                  escalated1stLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                  escalated2ndLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                  isReopened: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                  allOpen: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                  allClosed: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                  //status: this.getIncidentStatus(this.orgAdminDashboardVO.statusWiseIncidents[i].status),
+                  //escalated1stLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  //escalated2ndLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  //isReopened: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
                 }
               };
               dataPoints.push(this.orgAdminDashboardVO.statusWiseIncidents[i].count);
@@ -395,10 +413,12 @@ export class DashboardComponent implements OnInit {
                 value: this.userDashboardVO.statusWiseIncidents[i].count || 0,
                 backgroundColour: this.user1ChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  status: this.getIncidentStatus(this.userDashboardVO.statusWiseIncidents[i].status),
-                  escalated1stLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                  escalated2ndLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                  isReopened: this.userDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                  allOpen: this.userDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                  allClosed: this.userDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                  //status: this.getIncidentStatus(this.userDashboardVO.statusWiseIncidents[i].status),
+                  //escalated1stLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  //escalated2ndLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  //isReopened: this.userDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
                 }
               };
               dataPoints.push(this.userDashboardVO.statusWiseIncidents[i].count);
@@ -463,10 +483,13 @@ export class DashboardComponent implements OnInit {
                 value: this.agentDashboardVO.statusWiseIncidents[i].count || 0,
                 backgroundColour: this.agent2ChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  status: this.getIncidentStatus(this.agentDashboardVO.statusWiseIncidents[i].status),
-                  escalated1stLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                  escalated2ndLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                  isReopened: this.agentDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                  allOpen: this.agentDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                  allClosed: this.agentDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                  assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
+                  //status: this.getIncidentStatus(this.agentDashboardVO.statusWiseIncidents[i].status),
+                  //escalated1stLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  //escalated2ndLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  //isReopened: this.agentDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
                 }
               };
               dataPoints.push(this.agentDashboardVO.statusWiseIncidents[i].count);
@@ -531,10 +554,12 @@ export class DashboardComponent implements OnInit {
                 value: this.categoryAdminDashboardVO.statusWiseIncidents[i].count || 0,
                 backgroundColour: this.ca3ChartColors[0].backgroundColor[i],
                 detailDataParams: {
-                  status: this.getIncidentStatus(this.categoryAdminDashboardVO.statusWiseIncidents[i].status),
-                  escalated1stLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                  escalated2ndLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                  isReopened: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                  allOpen: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                  allClosed: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                  //status: this.getIncidentStatus(this.categoryAdminDashboardVO.statusWiseIncidents[i].status),
+                  //escalated1stLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                  //escalated2ndLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                  //isReopened: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
                 }
               };
               dataPoints.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].count);
@@ -639,10 +664,12 @@ export class DashboardComponent implements OnInit {
               value: this.orgAdminDashboardVO.statusWiseIncidents[i].count || 0,
               backgroundColour: this.orgAdmin2ChartColors[0].backgroundColor[i],
               detailDataParams: {
-                status: this.getIncidentStatus(this.orgAdminDashboardVO.statusWiseIncidents[i].status),
-                escalated1stLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                escalated2ndLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                isReopened: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                allOpen: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                allClosed: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                //status: this.getIncidentStatus(this.orgAdminDashboardVO.statusWiseIncidents[i].status),
+                //escalated1stLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                //escalated2ndLevel: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                //isReopened: this.orgAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
               }
             };
             dataPoints.push(this.orgAdminDashboardVO.statusWiseIncidents[i].count);
@@ -685,10 +712,12 @@ export class DashboardComponent implements OnInit {
               value: this.userDashboardVO.statusWiseIncidents[i].count || 0,
               backgroundColour: this.user1ChartColors[0].backgroundColor[i],
               detailDataParams: {
-                status: this.getIncidentStatus(this.userDashboardVO.statusWiseIncidents[i].status),
-                escalated1stLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                escalated2ndLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                isReopened: this.userDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                allOpen: this.userDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                allClosed: this.userDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                //status: this.getIncidentStatus(this.userDashboardVO.statusWiseIncidents[i].status),
+                //escalated1stLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                //escalated2ndLevel: this.userDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                //isReopened: this.userDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
               }
             };
             dataPoints.push(this.userDashboardVO.statusWiseIncidents[i].count);
@@ -753,10 +782,13 @@ export class DashboardComponent implements OnInit {
               value: this.agentDashboardVO.statusWiseIncidents[i].count || 0,
               backgroundColour: this.agent2ChartColors[0].backgroundColor[i],
               detailDataParams: {
-                status: this.getIncidentStatus(this.agentDashboardVO.statusWiseIncidents[i].status),
-                escalated1stLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                escalated2ndLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                isReopened: this.agentDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                allOpen: this.agentDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                allClosed: this.agentDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                assignedUserId: (this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD') || this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_MANAGER')) ? "" : this.loggedInUser.userId,
+                //status: this.getIncidentStatus(this.agentDashboardVO.statusWiseIncidents[i].status),
+                //escalated1stLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                //escalated2ndLevel: this.agentDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                //isReopened: this.agentDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
               }
             };
             dataPoints.push(this.agentDashboardVO.statusWiseIncidents[i].count);
@@ -821,10 +853,12 @@ export class DashboardComponent implements OnInit {
               value: this.categoryAdminDashboardVO.statusWiseIncidents[i].count || 0,
               backgroundColour: this.ca3ChartColors[0].backgroundColor[i],
               detailDataParams: {
-                status: this.getIncidentStatus(this.categoryAdminDashboardVO.statusWiseIncidents[i].status),
-                escalated1stLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
-                escalated2ndLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
-                isReopened: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
+                allOpen: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Open" ? true : false,
+                allClosed: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Closed" ? true : false,
+                //status: this.getIncidentStatus(this.categoryAdminDashboardVO.statusWiseIncidents[i].status),
+                //escalated1stLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 1st Level" ? true : false,
+                //escalated2ndLevel: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Escalated 2nd Level" ? true : false,
+                //isReopened: this.categoryAdminDashboardVO.statusWiseIncidents[i].status == "Reopened" ? true : false
               }
             };
             dataPoints.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].count);
@@ -891,7 +925,7 @@ export class DashboardComponent implements OnInit {
     //this.getChartSegmentData(e);
   }
 
-  appAdminChart1SegmentClicked(e: any) {
+  appAdminChart1(e: any) {
     if (this.getChartSegmentData(e) === "Total") {
       this.viewSiteAdmin({ "status": "ALL" });
     } else if (this.getChartSegmentData(e) === "Active") {
@@ -903,7 +937,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  appAdminChart2SegmentClicked(e: any) {
+  appAdminChart2(e: any) {
     if (this.getChartSegmentData(e) === "Total") {
       this.viewSiteAdmin({ "status": "ALL" });
     } else if (this.getChartSegmentData(e) === "All License Type") {
@@ -917,114 +951,114 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  userIncidentSegmentClicked(e: any) {
+  userChart1(e: any, type: string = "user") {
     for (let k in this.userTilesData) {
       if (this.userTilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.userTilesData[k].detailDataParams);
+        this.viewIncident(this.userTilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  userIncident1SegmentClicked(e: any) {
+  userChart2(e: any, type: string = "user") {
     for (let k in this.user1TilesData) {
       if (this.user1TilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.user1TilesData[k].detailDataParams);
+        this.viewIncident(this.user1TilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  agentIncidentSegmentClicked(e: any) {
+  agentChart2(e: any, type: string = "agent") {
     for (let k in this.agentTilesData) {
       if (this.agentTilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.agentTilesData[k].detailDataParams);
+        this.viewIncident(this.agentTilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  agent1IncidentSegmentClicked(e: any) {
+  agentChart3(e: any, type: string = "agent") {
     for (let k in this.agent2TilesData) {
       if (this.agent2TilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.agent2TilesData[k].detailDataParams);
+        this.viewIncident(this.agent2TilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  agentIncidentPrioritySegmentClicked(e: any) {
+  agentChart1(e: any, type: string = "agent") {
     for (let k in this.agent1TilesData) {
       if (this.agent1TilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.agent1TilesData[k].detailDataParams);
+        this.viewIncident(this.agent1TilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  caIncidentSegmentClicked(e: any) {
+  caChart3(e: any, type: string = "user") {
     for (let k in this.caTilesData) {
       if (this.caTilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.caTilesData[k].detailDataParams);
+        this.viewIncident(this.caTilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  ca3IncidentSegmentClicked(e: any) {
+  caChart4(e: any, type: string = "user") {
     for (let k in this.ca3TilesData) {
       if (this.ca3TilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.ca3TilesData[k].detailDataParams);
+        this.viewIncident(this.ca3TilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  caIncidentPrioritySegmentClicked(e: any) {
+  caChart2(e: any, type: string = "user") {
     for (let k in this.ca1TilesData) {
       if (this.ca1TilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.ca1TilesData[k].detailDataParams);
+        this.viewIncident(this.ca1TilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  caIncidentAgingSegmentClicked(e: any) {
+  caChart1(e: any, type: string = "user") {
     if (this.getChartSegmentData(e) == " > 5 Days") {
-      this.viewIncident({ agingFilter: ">=5" });
+      this.viewIncident({ agingFilter: ">=5" }, type);
     } else if (this.getChartSegmentData(e) == " > 10 Days") {
-      this.viewIncident({ agingFilter: ">=10" });
+      this.viewIncident({ agingFilter: ">=10" }, type);
     } else if (this.getChartSegmentData(e) == " > 20 Days") {
-      this.viewIncident({ agingFilter: ">=20" });
+      this.viewIncident({ agingFilter: ">=20" }, type);
     } else if (this.getChartSegmentData(e) == " > 30 Days") {
-      this.viewIncident({ agingFilter: ">=30" });
+      this.viewIncident({ agingFilter: ">=30" }, type);
     } else if (this.getChartSegmentData(e) == " > 60 Days") {
-      this.viewIncident({ agingFilter: ">60" });
+      this.viewIncident({ agingFilter: ">60" }, type);
     }
   }
 
-  orgAdminIncidentSegmentClicked(e: any) {
+  orgAdminChart1(e: any, type: string = "user") {
     for (let k in this.orgAdminTilesData) {
       if (this.orgAdminTilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.orgAdminTilesData[k].detailDataParams);
+        this.viewIncident(this.orgAdminTilesData[k].detailDataParams, type);
       } else {
         continue;
       }
     }
   }
 
-  orgAdmin1IncidentSegmentClicked(e: any) {
+  orgAdminChart2(e: any, type: string = "user") {
     for (let k in this.orgAdmin1TilesData) {
       if (this.orgAdmin1TilesData[k].name == this.getChartSegmentData(e)) {
-        this.viewIncident(this.orgAdmin1TilesData[k].detailDataParams);
+        this.viewIncident(this.orgAdmin1TilesData[k].detailDataParams, type);
       } else {
         continue;
       }
@@ -1048,7 +1082,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  viewIncident(element: any) {
+  viewIncident(element: any, type: string) {
     const config: ModalOptions = {
       backdrop: 'static',
       keyboard: false,
@@ -1057,7 +1091,8 @@ export class DashboardComponent implements OnInit {
       class: 'modal-xl',
     };
     const initialState = {
-      params: element
+      params: element,
+      type: type
     };
     this.modalRef = this.modalService.show(ViewIncidentDetails,
       Object.assign({}, config, { initialState })

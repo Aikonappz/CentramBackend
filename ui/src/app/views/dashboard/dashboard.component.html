@@ -3,120 +3,111 @@
     <tab *ngIf="roles.includes('APP_ADMIN')" (selectTab)="loadAppAdminData()" heading="App Admin">
       <div class="card">
         <div class="card-body">
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Organizations By Status</legend>
-            <div class="row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-info">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{adminDashboard.totalCompanies}}</div>
-                    <div>Total Organization</div>
+          <div id="dataSets" class="row-margin-05">
+            <h3 class="accordion-toggle"><b>Organizations By Status</b>
+            </h3>
+            <div>
+              <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-info">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{adminDashboard.totalCompanies}}</div>
+                      <div>Total Organization</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{adminDashboard.activeCompanies}}</div>
-                    <div>Active Organization</div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-warning">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{adminDashboard.activeCompanies}}</div>
+                      <div>Active Organization</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-success purple ">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{adminDashboard.inactiveCompanies}}</div>
-                    <div>Inactive Organization</div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-success purple ">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{adminDashboard.inactiveCompanies}}</div>
+                      <div>Inactive Organization</div>
+                    </div>
                   </div>
                 </div>
+                <!--/.col-->
               </div>
-              <!--/.col-->
-            </div>
-          </fieldset>
-          <!--/.row-->
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Organizations By Licence Types</legend>
-            <div class="row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-danger">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{adminDashboard.allLicenceTypeCompanies}}</div>
-                    <div>Organization (Licence Type All)</div>
-                  </div>
-                </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-success">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{adminDashboard.incidentLicenceTypeCompanies}}</div>
-                    <div>Organization (Licence Type Incident)</div>
-                  </div>
-                </div>
-              </div>
-              <!--/.col-->
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-facebook">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{adminDashboard.assetLicenceTypeCompanies}}</div>
-                    <div>Organization (Licence Type Asset)</div>
-                  </div>
-                </div>
-              </div>
-              <!--/.col-->
-            </div>
-          </fieldset>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Organizations By Status</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="appAdminChart1SegmentClicked($event)" [colors]="adminChartColors"
-                  [data]="adminDoughnutChartData" [labels]="adminDoughnutChartLabels"
-                  [chartType]="adminDoughnutChartType" [options]="adminDoughnutChartOptions" [legend]="true">
+              <div class="row">
+                <canvas baseChart width="4" height="1" (chartHover)="chartHovered($event)"
+                  (chartClick)="appAdminChart1($event)" [colors]="adminChartColors" [data]="adminDoughnutChartData"
+                  [labels]="adminDoughnutChartLabels" [chartType]="adminDoughnutChartType"
+                  [options]="adminDoughnutChartOptions" [legend]="true">
                 </canvas>
-              </fieldset>
+              </div>
             </div>
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Organizations By Licence Types</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="appAdminChart2SegmentClicked($event)" [colors]="admin1ChartColors"
-                  [data]="admin1DoughnutChartData" [labels]="admin1DoughnutChartLabels"
-                  [chartType]="admin1DoughnutChartType" [options]="admin1DoughnutChartOptions" [legend]="true">
+            <h3 class="accordion-toggle"><b>Organizations By Licence Types</b>
+            </h3>
+            <div>
+              <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-danger">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{adminDashboard.allLicenceTypeCompanies}}</div>
+                      <div>Organization (Licence Type All)</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-success">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{adminDashboard.incidentLicenceTypeCompanies}}</div>
+                      <div>Organization (Licence Type Incident)</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-facebook">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{adminDashboard.assetLicenceTypeCompanies}}</div>
+                      <div>Organization (Licence Type Asset)</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+              </div>
+              <div class="row">
+                <canvas baseChart width="4" height="1" (chartHover)="chartHovered($event)"
+                  (chartClick)="appAdminChart2($event)" [colors]="admin1ChartColors" [data]="admin1DoughnutChartData"
+                  [labels]="admin1DoughnutChartLabels" [chartType]="admin1DoughnutChartType"
+                  [options]="admin1DoughnutChartOptions" [legend]="true">
                 </canvas>
-              </fieldset>
+              </div>
             </div>
           </div>
         </div>
@@ -125,108 +116,104 @@
     <tab *ngIf="roles.includes('ORG_ADMIN')" (selectTab)="loadOrgAdminData()" heading="Organization Admin">
       <div class="card">
         <div class="card-body">
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Employees & Vendors</legend>
-            <div class="row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-info">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewOrgAdminUserDetail({})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{orgAdminDashboardVO.activeEmployees||0}}</div>
-                    <div>Active Employees</div>
+          <div id="dataSets" class="row-margin-05">
+            <h3 class="accordion-toggle"><b>Employees & Vendors</b>
+            </h3>
+            <div>
+              <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-info">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewOrgAdminUserDetail({})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{orgAdminDashboardVO.activeEmployees||0}}</div>
+                      <div>Active Employees</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{orgAdminDashboardVO.inHouseVendors||0}}</div>
-                    <div>In House Vendors</div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-warning">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{orgAdminDashboardVO.inHouseVendors||0}}</div>
+                      <div>In House Vendors</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white cyan">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors||0}}</div>
-                    <div>Out Sourced Vendors</div>
-                  </div>
-                </div>
-              </div>
-              <!--/.col-->
-            </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-            <div class="row" *ngFor="let rows of orgAdminChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white cyan">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors||0}}</div>
+                      <div>Out Sourced Vendors</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-            <div class="row" *ngFor="let rows of orgAdmin1ChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
+            <h3 class="accordion-toggle"><b>Incidents By Category</b>
+            </h3>
+            <div>
+              <div class="row" *ngFor="let rows of orgAdminChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div *ngIf="orgAdminDashboardVO.moduleWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="orgAdminChart1($event)" [colors]="orgAdmin1ChartColors"
+                    [data]="orgAdmin1DoughnutChartData" [labels]="orgAdmin1DoughnutChartLabels"
+                    [chartType]="orgAdmin1DoughnutChartType" [options]="orgAdmin1DoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
-          </fieldset>
-        </div>
-      </div>
-      <div *ngIf="orgAdminDashboardVO.moduleWiseIncidents.length>0" class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col ">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="orgAdminIncidentSegmentClicked($event)" [colors]="orgAdmin1ChartColors"
-                  [data]="orgAdmin1DoughnutChartData" [labels]="orgAdmin1DoughnutChartLabels"
-                  [chartType]="orgAdmin1DoughnutChartType" [options]="orgAdmin1DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
-            </div>
-            <div class="col ">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="orgAdmin1IncidentSegmentClicked($event)" [colors]="orgAdmin2ChartColors"
-                  [data]="orgAdmin2DoughnutChartData" [labels]="orgAdmin2DoughnutChartLabels"
-                  [chartType]="orgAdmin2DoughnutChartType" [options]="orgAdmin2DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
+            <h3 class="accordion-toggle"><b>Incidents By Status</b>
+            </h3>
+            <div>
+              <div class="row" *ngFor="let rows of orgAdmin1ChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="orgAdminDashboardVO.moduleWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="orgAdminChart2($event)" [colors]="orgAdmin2ChartColors"
+                    [data]="orgAdmin2DoughnutChartData" [labels]="orgAdmin2DoughnutChartLabels"
+                    [chartType]="orgAdmin2DoughnutChartType" [options]="orgAdmin2DoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -235,64 +222,60 @@
     <tab *ngIf="hasUserRole()" (selectTab)="loadUserData()" heading="User">
       <div class="card">
         <div class="card-body">
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-            <div class="row" *ngFor="let rows of userChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
+          <div id="dataSets" class="row-margin-05">
+            <h3 class="accordion-toggle"><b>Incidents By Category</b>
+            </h3>
+            <div>
+              <div class="row" *ngFor="let rows of userChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-            <div class="row" *ngFor="let rows of user1ChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
-                  </div>
+              <div *ngIf="userDashboardVO.moduleWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="userChart1($event)" [colors]="userChartColors" [data]="userDoughnutChartData"
+                    [labels]="userDoughnutChartLabels" [chartType]="userDoughnutChartType"
+                    [options]="userDoughnutChartOptions" [legend]="true">
+                  </canvas>
                 </div>
               </div>
             </div>
-          </fieldset>
-        </div>
-      </div>
-      <div *ngIf="userDashboardVO.moduleWiseIncidents.length>0" class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="userIncidentSegmentClicked($event)" [colors]="userChartColors"
-                  [data]="userDoughnutChartData" [labels]="userDoughnutChartLabels" [chartType]="userDoughnutChartType"
-                  [options]="userDoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
-            </div>
-            <div class="col ">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-                <canvas width="2" height="1" baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="userIncident1SegmentClicked($event)" [colors]="user1ChartColors"
-                  [data]="user1DoughnutChartData" [labels]="user1DoughnutChartLabels"
-                  [chartType]="user1DoughnutChartType" [options]="user1DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
+            <h3 class="accordion-toggle"><b>Incidents By Status</b>
+            </h3>
+            <div>
+              <div class="row" *ngFor="let rows of user1ChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="userDashboardVO.moduleWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="userChart2($event)" [colors]="user1ChartColors" [data]="user1DoughnutChartData"
+                    [labels]="user1DoughnutChartLabels" [chartType]="user1DoughnutChartType"
+                    [options]="user1DoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -301,94 +284,84 @@
     <tab *ngIf="hasAgentRole()" (selectTab)="loadAgentData()" heading="Agent">
       <div class="card">
         <div class="card-body">
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Priority</legend>
-            <div class="row" *ngFor="let rows of agent1ChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
+          <div id="dataSets" class="row-margin-05">
+            <h3 class="accordion-toggle"><b>Incidents By Priority</b></h3>
+            <div>
+              <div class="row" *ngFor="let rows of agent1ChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-            <div class="row" *ngFor="let rows of agentChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
-                  </div>
+              <div *ngIf="agentDashboardVO.statusWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="agentChart1($event)" [colors]="agent1ChartColors" [data]="agent1DoughnutChartData"
+                    [labels]="agent1DoughnutChartLabels" [chartType]="agent1DoughnutChartType"
+                    [options]="agent1DoughnutChartOptions" [legend]="true"></canvas>
                 </div>
               </div>
             </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-            <div class="row" *ngFor="let rows of agent2ChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
+            <h3 class="accordion-toggle"><b>Incidents By Category</b></h3>
+            <div>
+              <div class="row" *ngFor="let rows of agentChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div *ngIf="agentDashboardVO.statusWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="agentChart2($event)" [colors]="agentChartColors" [data]="agentDoughnutChartData"
+                    [labels]="agentDoughnutChartLabels" [chartType]="agentDoughnutChartType"
+                    [options]="agentDoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
-          </fieldset>
-        </div>
-      </div>
-      <div *ngIf="agentDashboardVO.statusWiseIncidents.length>0" class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Priority</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="agentIncidentPrioritySegmentClicked($event)" [colors]="agent1ChartColors"
-                  [data]="agent1DoughnutChartData" [labels]="agent1DoughnutChartLabels"
-                  [chartType]="agent1DoughnutChartType" [options]="agent1DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
+            <h3 class="accordion-toggle"><b>Incidents By Status</b></h3>
+            <div>
+              <div class="row" *ngFor="let rows of agent2ChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="agentDashboardVO.statusWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="agentChart3($event)" [colors]="agent2ChartColors" [data]="agent2DoughnutChartData"
+                    [labels]="agent2DoughnutChartLabels" [chartType]="agent2DoughnutChartType"
+                    [options]="agent2DoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="agentIncidentSegmentClicked($event)"
-                  [colors]="agentChartColors" [data]="agentDoughnutChartData" [labels]="agentDoughnutChartLabels"
-                  [chartType]="agentDoughnutChartType" [options]="agentDoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="agent1IncidentSegmentClicked($event)" [colors]="agent2ChartColors"
-                  [data]="agent2DoughnutChartData" [labels]="agent2DoughnutChartLabels"
-                  [chartType]="agent2DoughnutChartType" [options]="agent2DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
-            </div>
-            <div class="col col-sm-6"></div>
           </div>
         </div>
       </div>
@@ -396,176 +369,168 @@
     <tab *ngIf="hasCategoryAdminRole()" (selectTab)="loadCategoryAdminData()" heading="Category Admin">
       <div class="card">
         <div class="card-body">
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
-            <div class="row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-info orange">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident({agingFilter:">=5"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{categoryAdminDashboardVO.aging5||0}}</div>
-                    <div><strong> > 5 Days </strong></div>
+          <div id="dataSets" class="row-margin-05">
+            <h3 class="accordion-toggle"><b>Incidents By Aging</b></h3>
+            <div>
+              <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-info orange">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident({agingFilter:">=5"},"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{categoryAdminDashboardVO.aging5||0}}</div>
+                      <div><strong> > 5 Days </strong></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-primary pink">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident({agingFilter:">=10"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{categoryAdminDashboardVO.aging10||0}}</div>
-                    <div><strong> > 10 Days </strong></div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-primary pink">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident({agingFilter:">=10"},"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{categoryAdminDashboardVO.aging10||0}}</div>
+                      <div><strong> > 10 Days </strong></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-warning green">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident({agingFilter:">=20"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{categoryAdminDashboardVO.aging20||0}}</div>
-                    <div><strong> > 20 Days </strong></div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-warning green">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident({agingFilter:">=20"},"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{categoryAdminDashboardVO.aging20||0}}</div>
+                      <div><strong> > 20 Days </strong></div>
+                    </div>
                   </div>
                 </div>
+                <!--/.col-->
               </div>
-              <!--/.col-->
-            </div>
-            <div class="row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-info purple">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident({agingFilter:">=30"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{categoryAdminDashboardVO.aging30||0}}</div>
-                    <div><strong> > 30 Days </strong></div>
+              <div class="row">
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-info purple">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident({agingFilter:">=30"},"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{categoryAdminDashboardVO.aging30||0}}</div>
+                      <div><strong> > 30 Days </strong></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-                <div class="card text-white bg-primary">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident({agingFilter:">60"})'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{categoryAdminDashboardVO.aging60||0}}</div>
-                    <div><strong> > 60 Days </strong></div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                  <div class="card text-white bg-primary">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident({agingFilter:">60"},"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{categoryAdminDashboardVO.aging60||0}}</div>
+                      <div><strong> > 60 Days </strong></div>
+                    </div>
                   </div>
                 </div>
+                <!--/.col-->
+                <div class="col-sm-6 col-lg-4">
+                </div>
+                <!--/.col-->
               </div>
-              <!--/.col-->
-              <div class="col-sm-6 col-lg-4">
-              </div>
-              <!--/.col-->
-            </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Priority</legend>
-            <div class="row" *ngFor="let rows of ca1ChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
-                  </div>
+              <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="caChart1($event)" [colors]="ca2ChartColors" [data]="ca2DoughnutChartData"
+                    [labels]="ca2DoughnutChartLabels" [chartType]="ca2DoughnutChartType"
+                    [options]="ca2DoughnutChartOptions" [legend]="true">
+                  </canvas>
                 </div>
               </div>
             </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-            <div class="row" *ngFor="let rows of caChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
+            <h3 class="accordion-toggle"><b>Incidents By Priority</b></h3>
+            <div>
+              <div class="row" *ngFor="let rows of ca1ChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </fieldset>
-          <fieldset class="border p-2">
-            <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-            <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
-              <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
-                  <div class="card-body pb-0">
-                    <button type="button" (click)='viewIncident(item.detailDataParams)'
-                      class="btn btn-transparent p-0 float-right">
-                      <i class="icon-eye"></i>
-                    </button>
-                    <div class="text-value">{{item.value}}</div>
-                    <div>{{item.name}}</div>
-                  </div>
+              <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="caChart2($event)" [colors]="ca1ChartColors" [data]="ca1DoughnutChartData"
+                    [labels]="ca1DoughnutChartLabels" [chartType]="ca1DoughnutChartType"
+                    [options]="ca1DoughnutChartOptions" [legend]="true">
+                  </canvas>
                 </div>
               </div>
             </div>
-          </fieldset>
-        </div>
-      </div>
-      <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Aging</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="caIncidentAgingSegmentClicked($event)" [colors]="ca2ChartColors"
-                  [data]="ca2DoughnutChartData" [labels]="ca2DoughnutChartLabels" [chartType]="ca2DoughnutChartType"
-                  [options]="ca2DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
+            <h3 class="accordion-toggle"><b>Incidents By Category</b></h3>
+            <div>
+              <div class="row" *ngFor="let rows of caChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="caChart3($event)" [colors]="caChartColors" [data]="caDoughnutChartData"
+                    [labels]="caDoughnutChartLabels" [chartType]="caDoughnutChartType"
+                    [options]="caDoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Priority</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)"
-                  (chartClick)="caIncidentPrioritySegmentClicked($event)" [colors]="ca1ChartColors"
-                  [data]="ca1DoughnutChartData" [labels]="ca1DoughnutChartLabels" [chartType]="ca1DoughnutChartType"
-                  [options]="ca1DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Category</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="caIncidentSegmentClicked($event)"
-                  [colors]="caChartColors" [data]="caDoughnutChartData" [labels]="caDoughnutChartLabels"
-                  [chartType]="caDoughnutChartType" [options]="caDoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
-            </div>
-            <div class="col col-sm-6">
-              <fieldset class="border p-2">
-                <legend class="w-auto dashboard-legend">Incidents By Status</legend>
-                <canvas baseChart (chartHover)="chartHovered($event)" (chartClick)="ca3IncidentSegmentClicked($event)"
-                  [colors]="ca3ChartColors" [data]="ca3DoughnutChartData" [labels]="ca3DoughnutChartLabels"
-                  [chartType]="ca3DoughnutChartType" [options]="ca3DoughnutChartOptions" [legend]="true">
-                </canvas>
-              </fieldset>
+            <h3 class="accordion-toggle"><b>Incidents By Status</b></h3>
+            <div>
+              <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
+                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{item.value}}</div>
+                      <div>{{item.name}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
+                <div class="col">
+                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                    (chartClick)="caChart4($event)" [colors]="ca3ChartColors" [data]="ca3DoughnutChartData"
+                    [labels]="ca3DoughnutChartLabels" [chartType]="ca3DoughnutChartType"
+                    [options]="ca3DoughnutChartOptions" [legend]="true">
+                  </canvas>
+                </div>
+              </div>
             </div>
           </div>
         </div>

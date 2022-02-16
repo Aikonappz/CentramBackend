@@ -5,7 +5,6 @@ import com.centram.common.vo.PermissionVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +51,19 @@ public class AppSecurityUtilityService {
         return (loggedInUser.getAuthorities()
                 .stream()
                 .filter(a -> a.getAuthority().equals("ORG_ADMIN"))
+                .count() > 0 && !loggedInUser.getAppManager());
+    }
+
+    /**
+     * check user is org_admin
+     *
+     * @param loggedInUser
+     * @return
+     */
+    public Boolean hasCategoryAdminAccess(LoggedInUser loggedInUser) {
+        return (loggedInUser.getAuthorities()
+                .stream()
+                .filter(a -> a.getAuthority().endsWith("_CATEGORY_ADMIN"))
                 .count() > 0 && !loggedInUser.getAppManager());
     }
 

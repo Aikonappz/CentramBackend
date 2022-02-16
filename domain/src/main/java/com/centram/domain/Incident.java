@@ -96,6 +96,10 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String moduleName;
 
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String actualModuleName;
+
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "sub_module_id", nullable = false)
@@ -105,6 +109,10 @@ public class Incident extends BaseEntity implements Serializable {
     @Transient
     @JsonView(Views.BasicView.class)
     private String subModuleName;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String actualSubModuleName;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull

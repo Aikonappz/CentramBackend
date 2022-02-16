@@ -54,7 +54,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String agingFilter, String raisedUserId, String assignedUserId, String status, Boolean escalated1stLevel, Boolean escalated2ndLevel, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String agingFilter, String raisedUserId, String assignedUserId, String status, Boolean allOpen, Boolean allClosed, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
@@ -65,7 +65,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReport(mId, smId, pId, agingFilter, uId, aId, intStatus, escalated1stLevel, escalated2ndLevel, reOpened, start, end, pageable, false, null, null);
+        return incidentService.incidentReport(mId, smId, pId, agingFilter, uId, aId, intStatus, allOpen, allClosed, reOpened, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)

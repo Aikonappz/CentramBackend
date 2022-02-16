@@ -55,7 +55,7 @@ public class IncidentApiController {
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{incidentId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE|SOLVE|READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE|SOLVE|READ',authentication.principal) || @appSecurityUtilityService.hasOrgAdminAccess(authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
     public ResponseEntity<Incident> getIncidentById(@ApiParam(value = "id of incident to return", required = true) @PathVariable("incidentId") BigInteger incidentId) {
         return new ResponseEntity<Incident>(incidentService.getIncidentById(incidentId), HttpStatus.OK);
     }
