@@ -116,7 +116,7 @@ public class Incident extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "title", nullable = false, columnDefinition = "varchar(255) not null")
+    @Column(name = "title", nullable = false, columnDefinition = "varchar(255) not null" )
     @JsonView(Views.BasicView.class)
     private String title;
 

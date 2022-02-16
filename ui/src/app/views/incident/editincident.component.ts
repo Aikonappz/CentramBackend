@@ -55,6 +55,7 @@ export class EditIncidentComponent implements OnInit {
   draftData: any = { "new": null, "existing": [] };
   referer: string;
   mode: string;
+  canEdit: boolean = true;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -78,41 +79,9 @@ export class EditIncidentComponent implements OnInit {
     this.incident.status = this.defaultStatus;
     this.hasAgentPermission = false;
     this.mngrDtl = new UserVO();
-    //this.ckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
-    //this.readOnlyckeditorToolbarConfig = AppUtility.EDITOR_CONFIG;
-    //this.readOnlyckeditorToolbarConfig.readOnly = true;
-    //console.log(this.ckeditorToolbarConfig);
-    //console.log(this.readOnlyckeditorToolbarConfig);
-  }
-
-  hasPermission(actions: string): boolean {
-    let modules = this.moduleName.split(",");
-    let actionList = actions.split(",");
-    for (let i in modules) {
-      if (this.loggedInUserService.hasPermissionByName(modules[i], actionList[i])) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  getTitle(state, parent) {
-    var data = [];
-    if (parent && parent.snapshot.data && parent.snapshot.data.title) {
-      data.push(parent.snapshot.data.title);
-    }
-    if (state && parent) {
-      data.push(... this.getTitle(state, state.firstChild(parent)));
-    }
-    return data;
-  }
-
-  ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.referer = this.route.snapshot.paramMap.get('referer');
-      //console.log(this.referer);
       this.mode = this.route.snapshot.paramMap.get('mode');
-      //console.log(this.mode);
     });
     for (let item in IncidentStatus) {
       if (item != "ALL" && item != "OPEN"
@@ -153,7 +122,6 @@ export class EditIncidentComponent implements OnInit {
         watchList: new FormControl('', [
         ]),
         fileInput: new FormControl(null, [
-          //Validators.required,
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -191,10 +159,8 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
         newStatus: new FormControl('', [
-          //Validators.required,
         ]),
         fileInput: new FormControl(null, [
-          //Validators.required,
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -213,6 +179,30 @@ export class EditIncidentComponent implements OnInit {
       this.callIncidentService(this.entityId);
     }
   }
+
+  hasPermission(actions: string): boolean {
+    let modules = this.moduleName.split(",");
+    let actionList = actions.split(",");
+    for (let i in modules) {
+      if (this.loggedInUserService.hasPermissionByName(modules[i], actionList[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  getTitle(state, parent) {
+    var data = [];
+    if (parent && parent.snapshot.data && parent.snapshot.data.title) {
+      data.push(parent.snapshot.data.title);
+    }
+    if (state && parent) {
+      data.push(... this.getTitle(state, state.firstChild(parent)));
+    }
+    return data;
+  }
+
+  ngOnInit(): void { }
 
   preapareSelect() {
     $(document).ready(function () {
@@ -440,13 +430,6 @@ export class EditIncidentComponent implements OnInit {
     this._location.back();
   }
 
-  makeTitleCase(str: string): string {
-    if (str != '' && typeof str != "undefined") {
-      return AppUtility.toTitleCase(str);
-    }
-    return '';
-  }
-
   callSaveIncidentService() {
     let returnPath = '/incident/user';
     if (this.referer === 'agent-all') {
@@ -509,25 +492,6 @@ export class EditIncidentComponent implements OnInit {
         this.populateSubmodule(this.incident.moduleId);
         let org = data.organisation;
         this.incident.organisation = { id: org.id, version: org.version };
-
-        if (
-          (
-            this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE')
-            &&
-            this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')
-          )
-          ||
-          (
-            this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'RAISE INCIDENT')
-            &&
-            this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'RAISE INCIDENT')
-          )
-        ) {
-          //console.log("has permission!");
-        } else {
-          this.goBack();
-        }
-
         for (let k in this.incident.communications) {
           this.incident.communications[k].communicatedBy.status = Status[this.incident.communications[k].communicatedBy.status];
         }
@@ -537,30 +501,54 @@ export class EditIncidentComponent implements OnInit {
         if (this.incident.raisedUser != null) {
           this.incident.raisedUser.status = Status[this.incident.raisedUser.status];
         }
-        // this.angForm.get('moduleId').setValue(this.incident.moduleId);
-        // this.angForm.get('subModuleId').setValue(this.incident.subModuleId);
-        // this.angForm.get('title').setValue(this.incident.title);
-        // this.angForm.get('watchList').setValue(this.incident.watchList.map(String));
-
-        //permission section
-        if (
-          this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE')
-          &&
-          this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')
-        ) {
+        let actualModuleName = data.actualModuleName;
+        let actualSubModuleName = data.actualSubModuleName;
+        let categoryAdminRoleName = "ORG_" + actualModuleName + "_CATEGORY_ADMIN";
+        let logedinUser = this.loggedInUserService.getLoggedInUser();
+        this.hasAgentPermission = false;
+        if (this.incident.raisedUser.id == logedinUser.userId) {
+          console.log("raised user who raised the incident");
+          // for user who raised the incident
+          this.canEdit = true;
+        } else if (this.incident.assignedUser != null && this.incident.assignedUser.id == logedinUser.userId) {
+          // for assigned agent who can edit, after assignment
+          console.log("assigned agent who can edit, after assignment");
+          this.canEdit = true;
           this.hasAgentPermission = true;
+        } else if (this.incident.assignedUser != null && this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
+          // for agent lead/manager who can edit, after assignment
+          console.log("agent lead/manager who can edit, after assignment");
+          this.canEdit = true;
+          this.hasAgentPermission = true;
+        } else if (this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
+          // for agent, agent lead/manager who can only view because incident not assigned yet to any one.
+          console.log("agent, agent lead/manager who can only view because incident not assigned yet to any one.");
+          this.canEdit = false;
+          this.hasAgentPermission = true;
+        } else if (this.loggedInUserService.hasRole("ORG_ADMIN")) {
+          // for org admin user only can view incident details
+          console.log("org admin user only can view incident details");
+          this.canEdit = false;
+        } else if (this.loggedInUserService.hasRole(categoryAdminRoleName)) {
+          // for category admin user only can view incident details
+          console.log("category admin user only can view incident details");
+          this.canEdit = false;
         } else {
-          this.hasAgentPermission = false;
+          console.log("user don't have any access to this incident");
+          // for user don't have any access to this incident
+          this.router.navigate(['/no-access']);
         }
         this.angForm.get('priorityId').setValue(this.incident.priority.id);
-        //this.angForm.get('status').setValue(this.incident.status);
-        //console.log(JSON.stringify(this.incident));
-        //this.angForm.markAllAsTouched();
+        /*this.angForm.get('status').setValue(this.incident.status);
+        console.log(JSON.stringify(this.incident));
+        this.angForm.markAllAsTouched();*/
+        //getagent manager details
         this.userService
           .getUserService(this.incident.raisedUser.managerId)
           .subscribe((data: any) => {
             this.mngrDtl = data;
           });
+        //check if has draft data. if so the populate fields
         if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
           this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
           if (this.draftData.existing.length > 0) {
@@ -581,14 +569,6 @@ export class EditIncidentComponent implements OnInit {
       });
   }
 
-  // @ViewChild("status") status;
-  // onChange(status: boolean, inp: string) {
-  //   //this.statusFlag = this.active_status.nativeElement.checked;
-  //   //console.log(status);
-  //   //console.log(inp);
-  //   this.statusFlag = status;
-  // }
-
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
     let c = 0;
@@ -607,7 +587,6 @@ export class EditIncidentComponent implements OnInit {
   }
 
   downloadFile(idFile: number) {
-    //window.alert(idFile);
     this.mediaService
       .downloadMediaService(idFile, {})
       .subscribe((data: any) => {
@@ -629,6 +608,13 @@ export class EditIncidentComponent implements OnInit {
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
+  }
+
+  makeTitleCase(str: string): string {
+    if (str != '' && typeof str != "undefined") {
+      return AppUtility.toTitleCase(str);
+    }
+    return '';
   }
 
 }

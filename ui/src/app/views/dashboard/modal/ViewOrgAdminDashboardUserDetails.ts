@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { MatPaginator } from "@angular/material/paginator";
+import { Router } from "@angular/router";
 import * as moment from "moment";
 import { BsModalRef, ModalOptions } from "ngx-bootstrap/modal";
 import { tap } from "rxjs/operators";
@@ -27,7 +28,7 @@ import { UserService } from "../../../service/UserService";
                 <ng-container matColumnDef="name">
                   <th class="w-20" mat-header-cell *matHeaderCellDef> Name </th>
                   <td mat-cell *matCellDef="let element">
-                    {{element.firstName}} {{element.lastName}}
+                    <a href="javascript:void(0);" (click)="redirectTo(element.id)" >{{element.firstName}} {{element.lastName}}</a>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="email">
@@ -74,6 +75,7 @@ export class ViewOrgAdminDashboardUserDetails implements OnInit {
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
     private service: UserService,
+    private router: Router,
     public options: ModalOptions,
     private loggedInUserService: LoggedInUserService,
   ) {
@@ -81,6 +83,11 @@ export class ViewOrgAdminDashboardUserDetails implements OnInit {
   ngOnInit(): void {
     this.datasource = new UserDataSource(this.service);
     this.datasource.loadUserVOs(0, 5, this.params);
+  }
+
+  redirectTo(id) {
+    this.bsModalRef.hide()
+    this.router.navigate(['/user/edit/' + id]);
   }
 
   ngAfterViewInit() {

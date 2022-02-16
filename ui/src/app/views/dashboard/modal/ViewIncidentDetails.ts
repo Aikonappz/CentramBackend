@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { MatPaginator } from "@angular/material/paginator";
+import { Router } from "@angular/router";
 import * as moment from "moment";
 import { BsModalRef, ModalOptions } from "ngx-bootstrap/modal";
 import { tap } from "rxjs/operators";
@@ -11,8 +12,8 @@ import { ReportService } from "../../../service/ReportService";
 
 
 @Component({
-    selector: 'modal-content',
-    template: `<div class="modal-header">
+  selector: 'modal-content',
+  template: `<div class="modal-header">
     <h6 class="modal-title pull-left"><i class="icon-eye"></i> View Incidents</h6>
     <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
       <span aria-hidden="true">&times;</span>
@@ -26,6 +27,7 @@ import { ReportService } from "../../../service/ReportService";
             <ng-container matColumnDef="incDtl">
               <th mat-header-cell *matHeaderCellDef> Incident Details </th>
               <td mat-cell *matCellDef="let element">
+              <a href="javascript:void(0);" (click)="redirectTo(type, element.id)" >
                 <span [ngClass]="{
                   'badge-sla-about-to-breach':element.status=='SLA_ABOUT_TO_BREACH' ,
                   'badge-sla-breached':element.status=='SLA_BREACHED' ,
@@ -33,7 +35,7 @@ import { ReportService } from "../../../service/ReportService";
                   'badge-re-opened':element.reOpened==true ,
                   'badge-closed':element.status=='CLOSED' ,
                   'badge':true
-                  }">{{element.incidentNo}}</span><br />
+                  }">{{element.incidentNo}}</span></a><br />
                 {{element.title}}<br />
                 {{element.priority.name}}<br />
                 {{formatDateTime(element.raisedAt)}}<br />
@@ -74,51 +76,63 @@ import { ReportService } from "../../../service/ReportService";
   </div>`
 })
 export class ViewIncidentDetails implements OnInit {
-    params: any;
-    displayedColumns = ['incDtl', 'slaAt', 'assignedUser', 'status',];
-    private datasource: ReportIncidentDataSource;
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    constructor(
-        private fb: FormBuilder,
-        public bsModalRef: BsModalRef,
-        private service: ReportService,
-        public options: ModalOptions,
-        private loggedInUserService: LoggedInUserService,
-    ) {
-    }
-    ngOnInit(): void {
-        this.datasource = new ReportIncidentDataSource(this.service);
-        this.datasource.loadData(0, 5, this.params);
-    }
+  type: string;
+  params: any;
+  displayedColumns = ['incDtl', 'slaAt', 'assignedUser', 'status',];
+  private datasource: ReportIncidentDataSource;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  constructor(
+    private fb: FormBuilder,
+    public bsModalRef: BsModalRef,
+    private service: ReportService,
+    public options: ModalOptions,
+    private router: Router,
+    private loggedInUserService: LoggedInUserService,
+  ) {
+  }
+  ngOnInit(): void {
+    this.datasource = new ReportIncidentDataSource(this.service);
+    this.datasource.loadData(0, 5, this.params);
+  }
 
-    ngAfterViewInit() {
-        this.datasource.counter$
-            .pipe(
-                tap((count) => {
-                    this.paginator.length = count;
-                })
-            )
-            .subscribe();
-        this.paginator.page
-            .pipe(
-                tap(() => this.loadData(this.params))
-            )
-            .subscribe();
-    }
+  ngAfterViewInit() {
+    this.datasource.counter$
+      .pipe(
+        tap((count) => {
+          this.paginator.length = count;
+        })
+      )
+      .subscribe();
+    this.paginator.page
+      .pipe(
+        tap(() => this.loadData(this.params))
+      )
+      .subscribe();
+  }
 
-    loadData(req = {}) {
-        this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+  loadData(req = {}) {
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+  }
+  formatDate(d: string) {
+    if (d != null && d != "") {
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
     }
-    formatDate(d: string) {
-        if (d != null && d != "") {
-            return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
-        }
-        return null;
+    return null;
+  }
+
+  redirectTo(type, id) {
+    this.bsModalRef.hide()
+    if (type == "agent") {
+      this.router.navigate(['/incident/agent-all/edit/' + id]);
+    } else {
+      this.router.navigate(['/incident/user/edit/' + id]);
     }
-    formatDateTime(d: string) {
-        if (d != null && d != "") {
-            return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
-        }
-        return null;
+  }
+
+  formatDateTime(d: string) {
+    if (d != null && d != "") {
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
+    return null;
+  }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { MatPaginator } from "@angular/material/paginator";
+import { Router } from "@angular/router";
 import * as moment from "moment";
 import { BsModalRef, ModalOptions } from "ngx-bootstrap/modal";
 import { tap } from "rxjs/operators";
@@ -25,7 +26,7 @@ import { OrganisationService } from "../../../service/OrganisationService";
                     <ng-container matColumnDef="name">
                         <th mat-header-cell *matHeaderCellDef> Name </th>
                         <td mat-cell *matCellDef="let element">
-                            {{element.name}}
+                            <a href="javascript:void(0);" (click)="redirectTo(element.id)" >{{element.name}}</a>                            
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="addressDtl">
@@ -75,6 +76,7 @@ export class ViewAppAdminDashboardDetails implements OnInit {
     constructor(
         private fb: FormBuilder,
         public bsModalRef: BsModalRef,
+        private router: Router,
         private service: OrganisationService,
         public options: ModalOptions,
         private loggedInUserService: LoggedInUserService,
@@ -98,6 +100,11 @@ export class ViewAppAdminDashboardDetails implements OnInit {
                 tap(() => this.loadData(this.params))
             )
             .subscribe();
+    }
+
+    redirectTo(id) {
+        this.bsModalRef.hide()
+        this.router.navigate(['/organization/edit/' + id]);
     }
 
     loadData(req = {}) {

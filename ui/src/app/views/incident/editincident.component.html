@@ -10,115 +10,6 @@
         </div>
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
-            <fieldset *ngIf="!newEntity" class="border p-2">
-              <legend class="w-auto">Incident</legend>
-              <div class="row">
-                <div class="col">
-                  <label class="form-col-form-label" for="titleReadOnly">Title</label>
-                  <textarea [readonly]="!newEntity" id="titleReadOnly" rows="4"
-                    class="form-control textarea-non-resizable"
-                    placeholder="Incident Title">{{incident.title}}</textarea>
-                </div>
-                <div class="col" *ngIf="hasAgentPermission">
-                  <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
-                  <select class="form-control" formControlName="priorityId" id="priorityId" name="priorityId">
-                    <option value="">-- Select Priority --</option>
-                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}} ({{e.description}})
-                    </option>
-                  </select>
-                  <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.priorityId.errors?.required">
-                      Priority is required.
-                    </div>
-                  </div>
-                </div>
-                <div class="col" *ngIf="hasAgentPermission">
-                  <label class="form-col-form-label" for="newStatus">New Status</label>
-                  <select class="form-control" formControlName="newStatus" id="newStatus" name="newStatus">
-                    <option value="">-- Change Status --</option>
-                    <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
-                  </select>
-                  <div *ngIf="f.newStatus.touched && f.newStatus.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.newStatus.errors?.required">
-                      Status is required.
-                    </div>
-                  </div>
-                </div>
-                <div class="col" *ngIf="!hasAgentPermission">
-                  <label class="form-col-form-label" for="statusReadOnly">Status</label>
-                  <input type="text" readonly value="{{incident.status}}" id="statusReadOnly" class="form-control">
-                </div>
-                <div class="col" *ngIf="!hasAgentPermission">
-                  <label class="form-col-form-label" for="priorityReadOnly">Priority</label>
-                  <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"
-                    class="form-control">
-                </div>
-              </div>
-              <div class="row row-margin-05">
-                <div class="col">
-                  <label class="form-col-form-label" for="moduleName">Category</label>
-                  <input type="text" id="moduleName" readonly value="{{makeTitleCase(incident.moduleName)}}"
-                    class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="subModuleName">Sub Category</label>
-                  <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
-                    class="form-control">
-                </div>
-                <div class="col"></div>
-              </div>
-              <div class="row row-margin-05">
-                <div class="col">
-                  <label class="form-col-form-label" for="userName">Employee Name</label>
-                  <input type="text" id="userName" readonly
-                    value="{{incident.raisedUser.firstName}} {{incident.raisedUser.lastName}}" class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="userEmail">Employee Email</label>
-                  <input type="text" id="userEmail" readonly value="{{incident.raisedUser.email}}" class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="userContactNo">Employee Contact No.</label>
-                  <input type="text" id="userContactNo" readonly value="{{incident.raisedUser.contactNo}}"
-                    class="form-control">
-                </div>
-              </div>
-              <div class="row row-margin-05">
-                <div class="col">
-                  <label class="form-col-form-label" for="userDepartment">Employee Department</label>
-                  <input type="text" id="userDepartment" readonly value="{{incident.raisedUser.department.name}}"
-                    class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="userLocation">Employee Location</label>
-                  <input type="text" id="userLocation" readonly value="{{incident.raisedUser.location.name}}"
-                    class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="userLocation">Employee Manager</label>
-                  <input type="text" id="userLocation" readonly value="{{mngrDtl.firstName}} {{mngrDtl.lastName}}"
-                    class="form-control">
-                </div>
-              </div>
-              <div class="row row-margin-05">
-                <div class="col">
-                  <label class="form-col-form-label" for="agentName">Agent Name</label>
-                  <input type="text" id="agentName" readonly
-                    value="{{incident.assignedUser?.firstName}} {{incident.assignedUser?.lastName}}"
-                    class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="agentEmail">Agent Email</label>
-                  <input type="text" id="agentEmail" readonly value="{{incident.assignedUser?.email}}"
-                    class="form-control">
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="agentContactNo">Agent Contact No.</label>
-                  <input type="text" id="agentContactNo" readonly value="{{incident.assignedUser?.contactNo}}"
-                    class="form-control">
-                </div>
-              </div>
-            </fieldset>
             <fieldset *ngIf="newEntity" class="border p-2">
               <legend class="w-auto">Incident</legend>
               <div class="row">
@@ -197,6 +88,124 @@
                 <div class="col"></div>
               </div>
             </fieldset>
+            <fieldset *ngIf="!newEntity" class="border p-2">
+              <legend class="w-auto">Incident</legend>
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label" for="titleReadOnly">Title</label>
+                  <textarea [readonly]="!newEntity" id="titleReadOnly" rows="4"
+                    class="form-control textarea-non-resizable"
+                    placeholder="Incident Title">{{incident.title}}</textarea>
+                </div>
+                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                  <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
+                  <select class="form-control" formControlName="priorityId" id="priorityId" name="priorityId">
+                    <option value="">-- Select Priority --</option>
+                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}} ({{e.description}})
+                    </option>
+                  </select>
+                  <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.priorityId.errors?.required">
+                      Priority is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col" *ngIf="hasAgentPermission&&!canEdit">
+                  <label class="form-col-form-label" for="priorityReadOnly">Priority</label>
+                  <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"
+                    class="form-control">
+                </div>
+                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                  <label class="form-col-form-label" for="newStatus">New Status</label>
+                  <select class="form-control" formControlName="newStatus" id="newStatus" name="newStatus">
+                    <option value="">-- Change Status --</option>
+                    <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
+                  </select>
+                  <div *ngIf="f.newStatus.touched && f.newStatus.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.newStatus.errors?.required">
+                      Status is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col" *ngIf="hasAgentPermission&&!canEdit">
+                  <label class="form-col-form-label" for="statusReadOnly">Status</label>
+                  <input type="text" readonly value="{{incident.status}}" id="statusReadOnly" class="form-control">
+                </div>
+                <div class="col" *ngIf="!hasAgentPermission">
+                  <label class="form-col-form-label" for="priorityReadOnly">Priority</label>
+                  <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"
+                    class="form-control">
+                </div>
+                <div class="col" *ngIf="!hasAgentPermission">
+                  <label class="form-col-form-label" for="statusReadOnly">Status</label>
+                  <input type="text" readonly value="{{incident.status}}" id="statusReadOnly" class="form-control">
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label" for="moduleName">Category</label>
+                  <input type="text" id="moduleName" readonly value="{{makeTitleCase(incident.moduleName)}}"
+                    class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="subModuleName">Sub Category</label>
+                  <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
+                    class="form-control">
+                </div>
+                <div class="col"></div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label" for="userName">Employee Name</label>
+                  <input type="text" id="userName" readonly
+                    value="{{incident.raisedUser.firstName}} {{incident.raisedUser.lastName}}" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="userEmail">Employee Email</label>
+                  <input type="text" id="userEmail" readonly value="{{incident.raisedUser.email}}" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="userContactNo">Employee Contact No.</label>
+                  <input type="text" id="userContactNo" readonly value="{{incident.raisedUser.contactNo}}"
+                    class="form-control">
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label" for="userDepartment">Employee Department</label>
+                  <input type="text" id="userDepartment" readonly value="{{incident.raisedUser.department.name}}"
+                    class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="userLocation">Employee Location</label>
+                  <input type="text" id="userLocation" readonly value="{{incident.raisedUser.location.name}}"
+                    class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="userLocation">Employee Manager</label>
+                  <input type="text" id="userLocation" readonly value="{{mngrDtl.firstName}} {{mngrDtl.lastName}}"
+                    class="form-control">
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label" for="agentName">Agent Name</label>
+                  <input type="text" id="agentName" readonly
+                    value="{{incident.assignedUser?.firstName}} {{incident.assignedUser?.lastName}}"
+                    class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="agentEmail">Agent Email</label>
+                  <input type="text" id="agentEmail" readonly value="{{incident.assignedUser?.email}}"
+                    class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="agentContactNo">Agent Contact No.</label>
+                  <input type="text" id="agentContactNo" readonly value="{{incident.assignedUser?.contactNo}}"
+                    class="form-control">
+                </div>
+              </div>
+            </fieldset>
             <div *ngIf="!newEntity" id="comments" class="row-margin-05">
               <h3 class="accordion-toggle"><b>{{incident.title}}&nbsp;&nbsp;[{{incident.incidentNo}}]</b>
                 <span class="float-right">
@@ -228,7 +237,7 @@
                 </div>
               </div>
             </div>
-            <fieldset class="border p-2">
+            <fieldset *ngIf="canEdit" class="border p-2">
               <legend *ngIf="newEntity" class="w-auto required-control-label">Incident Description</legend>
               <legend *ngIf="!newEntity" class="w-auto required-control-label">Update Incident</legend>
               <div class="row row-margin-05">
@@ -236,6 +245,8 @@
                   <!-- <label class="form-col-form-label required-control-label" for="message">Issue Details</label> -->
                   <ckeditor [config]="{readOnly:false}" formControlName="message" name="message" id="message">
                   </ckeditor>
+                  <!-- <ckeditor [config]="{readOnly:false,removePlugins:'about',removeButtons:'Cut,Copy,Paste,Undo,Redo,Anchor,'}"
+                    formControlName="message" name="message" id="message"> -->
                   <div *ngIf="f.message.touched && f.message.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.message.errors?.required">
                       Message is required.
@@ -264,11 +275,11 @@
             </fieldset>
           </div>
           <div class="card-footer">
-            <button *ngIf="hasPermission('WRITE,SOLVE')"
+            <button *ngIf="canEdit && hasPermission('WRITE,SOLVE')"
               [disabled]="!angForm.valid&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')"
               (click)="formSubmit('DRAFT')" type="button" class="btn btn-primary">Save
               as Draft</button>
-            <button *ngIf="hasPermission('WRITE,SOLVE')"
+            <button *ngIf="canEdit && hasPermission('WRITE,SOLVE')"
               [disabled]="!angForm.valid&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')"
               (click)="formSubmit('OPEN')" type="button" class="btn btn-primary">Submit</button>
             <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
