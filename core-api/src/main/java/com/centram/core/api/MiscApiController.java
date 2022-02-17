@@ -85,6 +85,9 @@ public class MiscApiController {
     @Autowired
     private VendorService vendorService;
 
+    @Autowired
+    private AssetModelService assetModelService;
+
     @ApiOperation(value = "Demo Request Api", nickname = "requestDemo", notes = "Demo Request Api", tags = {"misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
@@ -113,6 +116,16 @@ public class MiscApiController {
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Module>> getModules(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Asset Models", nickname = "getAssetModels", notes = "Get all Asset Models", response = PaginatedList.class, tags = {"misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value")
+    })
+    @RequestMapping(value = "/all-asset-model", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<List<AssetModel>> getAssetModels(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<List<AssetModel>>(assetModelService.getAssetModel(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find role by id", nickname = "getRoleById", notes = "Find role by id", response = Role.class, tags = {"misc",})

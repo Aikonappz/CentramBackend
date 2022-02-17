@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class AssetOrderApprovalDTO implements Serializable {
+public class AssetApprovalDTO implements Serializable {
     private static final long serialVersionUID = -1177123685524269476L;
     private BigInteger id;
     private Integer approverNo;

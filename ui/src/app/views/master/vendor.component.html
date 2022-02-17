@@ -31,7 +31,16 @@
                                 {{element.name}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="allocationType">
+                        <ng-container matColumnDef="conDtl">
+                            <th mat-header-cell *matHeaderCellDef> Contact Person Details </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.contactName}}<br />
+                                {{element.contactEmail}}<br />
+                                {{element.contactNumber}}<br />
+                                {{element.contactAddress}}
+                            </td>
+                        </ng-container>
+                        <ng-container *ngIf="hasAllocationType" matColumnDef="allocationType">
                             <th mat-header-cell *matHeaderCellDef> Incident Allocation Type </th>
                             <td mat-cell *matCellDef="let element">
                                 {{element.ticketAllocationType}}

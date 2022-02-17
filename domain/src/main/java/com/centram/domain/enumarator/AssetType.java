@@ -14,5 +14,6 @@ public enum AssetType {
     BASIC_PHONE,
     IPHONE,
     IPAD,
-    NOTEPAD
+    NOTEPAD,
+    SOFTWARE
 }

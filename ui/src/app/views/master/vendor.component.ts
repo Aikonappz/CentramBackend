@@ -1,13 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { DistributionList } from '../../model/DistributionList';
 import { Status } from '../../model/enumerator/Status';
-import { Priority } from '../../model/Priority';
 import { Vendor } from '../../model/Vendor';
-import { DistributionListDataSource } from '../../service/datasource/DistributionListDataSource';
 import { VendorDataSource } from '../../service/datasource/VendorDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
@@ -20,13 +18,16 @@ import { MiscService } from '../../service/MiscService';
 export class VendorComponent implements OnInit {
   moduleName: string = "VENDOR";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['name', 'allocationType', 'status', 'action'];
+  displayedColumns = ['name', 'conDtl', 'allocationType', 'status', 'action'];
   datasource: VendorDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  type: string;
+  hasAllocationType: boolean = true;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
+    private route: ActivatedRoute,
     private service: MiscService
   ) {
     router.events.subscribe(event => {
@@ -53,8 +54,21 @@ export class VendorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.datasource = new VendorDataSource(this.service);
-    this.datasource.loadData();
+    this.route.params.subscribe(params => {
+      this.type = this.route.snapshot.paramMap.get('type');
+      //console.log(this.type);
+      if (this.type == "asset") {
+        this.displayedColumns = ['name', 'conDtl', 'status', 'action'];
+        this.hasAllocationType = false;
+      } else {
+        this.displayedColumns = ['name', 'conDtl', 'allocationType', 'status', 'action'];
+        this.hasAllocationType = true;
+      }
+
+
+      this.datasource = new VendorDataSource(this.service);
+      this.datasource.loadData(0, 10, { vendorType: this.type.toUpperCase() });
+    });
   }
 
   ngAfterViewInit() {
@@ -67,16 +81,17 @@ export class VendorComponent implements OnInit {
       .subscribe();
     this.paginator.page
       .pipe(
-        tap(() => this.loadData())
+        tap(() => this.loadData({ vendorType: this.type.toUpperCase() }))
       )
       .subscribe();
   }
 
   edit(dl: DistributionList) {
-    this.router.navigate(['/master/vendor/edit/' + dl.id]);
+    this.router.navigate(['/master/vendor/' + this.type + '/edit/' + dl.id]);
   }
+
   add() {
-    this.router.navigate(['/master/vendor/add']);
+    this.router.navigate(['/master/vendor/' + this.type + '/add']);
   }
 
   updateStatus(vendor: Vendor) {
@@ -93,8 +108,7 @@ export class VendorComponent implements OnInit {
     }
   }
 
-  loadData() {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize);
+  loadData(req: any = {}) {
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
-
 }

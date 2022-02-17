@@ -4,8 +4,8 @@ package com.centram.core.api;
 import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
-import com.centram.core.service.AssetOrderService;
-import com.centram.domain.AssetOrder;
+import com.centram.core.service.AssetService;
+import com.centram.domain.Asset;
 import com.centram.domain.Incident;
 import com.centram.domain.User;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,15 +26,15 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "assset order", description = "Asset Order Api")
-@RequestMapping(value = "/api/v1/asset-order")
+@Api(value = "assset", description = "Asset Api")
+@RequestMapping(value = "/api/v1/asset")
 @Controller
-public class AssetOrderApiController {
+public class AssetApiController {
 
-    private static final Logger log = LoggerFactory.getLogger(AssetOrderApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(AssetApiController.class);
 
     @Autowired
-    private AssetOrderService assetOrderService;
+    private AssetService assetService;
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset order", nickname = "save", notes = "Save an asset order", tags = {"asset order",})
     @ApiResponses(value = {
@@ -42,48 +42,48 @@ public class AssetOrderApiController {
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','WRITE',authentication.principal)")
-    public ResponseEntity<AssetOrder> save(@ApiParam(value = "Asset Order object", required = true) @Valid @RequestBody AssetOrder body) {
-        return new ResponseEntity<AssetOrder>(assetOrderService.save(body), HttpStatus.OK);
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ADD ASSET','WRITE',authentication.principal)")
+    public ResponseEntity<Asset> save(@ApiParam(value = "Asset object", required = true) @Valid @RequestBody Asset body) {
+        return new ResponseEntity<Asset>(assetService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset order", nickname = "approveAssetOrder", notes = "Approve an asset order", tags = {"asset order",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset", nickname = "approveAsset", notes = "Approve an asset", tags = {"asset",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','APPROVE',authentication.principal)")
-    public ResponseEntity<AssetOrder> approveAssetOrder(@ApiParam(value = "Asset Order object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
-        return new ResponseEntity<AssetOrder>(assetOrderService.approveAssetOrder(body), HttpStatus.OK);
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','APPROVE',authentication.principal)")
+    public ResponseEntity<Asset> approveAsset(@ApiParam(value = "Asset object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
+        return new ResponseEntity<Asset>(assetService.approveAsset(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset order by Id", nickname = "getAssetOrderById", notes = "Find asset order by Id", response = Incident.class, tags = {"asset order",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset by Id", nickname = "getAssetById", notes = "Find asset by Id", response = Incident.class, tags = {"asset",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
             @ApiResponse(code = 404, message = "incident not found")
     })
     @JsonView({Views.DetailView.class,})
-    @RequestMapping(value = "/{assetOrderId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','READ|WRITE|APPROVE',authentication.principal)")
-    public ResponseEntity<AssetOrder> getAssetOrderById(@ApiParam(value = "id of asset order to return", required = true) @PathVariable("assetOrderId") BigInteger assetOrderId) {
-        return new ResponseEntity<AssetOrder>(assetOrderService.getAssetOrderById(assetOrderId), HttpStatus.OK);
+    @RequestMapping(value = "/{assetId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET,ADD ASSET','READ,READ|WRITE|APPROVE',authentication.principal)")
+    public ResponseEntity<Asset> getAssetById(@ApiParam(value = "id of asset to return", required = true) @PathVariable("assetOrderId") BigInteger assetId) {
+        return new ResponseEntity<Asset>(assetService.getAssetById(assetId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all asset orders", nickname = "getUserIncidents", notes = "Get all asset orders", response = PaginatedList.class, tags = {"asset order",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all assets", nickname = "getAssets", notes = "Get all assets", response = PaginatedList.class, tags = {"asset",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','READ|SEARCH',authentication.principal)")
-    public ResponseEntity<PaginatedList<AssetOrder>> getAssetOrders(
-            @ApiParam(value = "order no", defaultValue = "", required = false) @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|SEARCH',authentication.principal)")
+    public ResponseEntity<PaginatedList<Asset>> getAssets(
+            @ApiParam(value = "asset no", defaultValue = "", required = false) @RequestParam(value = "assetNo", defaultValue = "", required = false) String assetNo,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<AssetOrder>>(assetOrderService.getAssetOrders(orderNo, status, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Asset>>(assetService.getAssets(assetNo, status, pageable), HttpStatus.OK);
     }
 }

@@ -175,7 +175,7 @@ export class EditDlComponent implements OnInit {
         this.angForm.get('dlEmail').setValue(this.dl.dlEmail);
         this.angForm.get('dlName').setValue(this.dl.dlName);
         this.angForm.get('dlModuleId').setValue(moduleId);
-        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));
+        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(String));
         this.angForm.markAllAsTouched();
       });
   }

@@ -1,7 +1,7 @@
 package com.centram.core.service;
 
 
-import com.centram.common.dto.AssetOrderApprovalDTO;
+import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -68,18 +68,18 @@ public class AssetOrderService {
     }
 
     @Transactional(readOnly = false)
-    public AssetOrder approveAssetOrder(AssetOrderApprovalDTO assetOrderApprovalDTO) {
+    public AssetOrder approveAssetOrder(AssetApprovalDTO assetApprovalDTO) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<AssetOrder> assetOrderOptional = assetOrderRepository.findById(assetOrderApprovalDTO.getId());
+        Optional<AssetOrder> assetOrderOptional = assetOrderRepository.findById(assetApprovalDTO.getId());
         if (assetOrderOptional.isPresent()) {
             AssetOrder assetOrder = assetOrderOptional.get();
-            if (assetOrderApprovalDTO.getApproverNo() == 1) {
-                assetOrder.setApprovedUser1(assetOrderApprovalDTO.getApproval());
-                assetOrder.setApproverUser1Comment(assetOrderApprovalDTO.getFeedback());
+            if (assetApprovalDTO.getApproverNo() == 1) {
+                assetOrder.setApprovedUser1(assetApprovalDTO.getApproval());
+                assetOrder.setApproverUser1Comment(assetApprovalDTO.getFeedback());
                 assetOrder = assetOrderRepository.save(assetOrder);
-            } else if (assetOrderApprovalDTO.getApproverNo() == 2) {
-                assetOrder.setApprovedUser2(assetOrderApprovalDTO.getApproval());
-                assetOrder.setApproverUser2Comment(assetOrderApprovalDTO.getFeedback());
+            } else if (assetApprovalDTO.getApproverNo() == 2) {
+                assetOrder.setApprovedUser2(assetApprovalDTO.getApproval());
+                assetOrder.setApproverUser2Comment(assetApprovalDTO.getFeedback());
                 assetOrder = assetOrderRepository.save(assetOrder);
             } else {
                 throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
