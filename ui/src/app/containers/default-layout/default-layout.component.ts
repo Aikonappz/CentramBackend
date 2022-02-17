@@ -17,6 +17,7 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { ClientStorageService } from '../../service/ClientStorageService';
 import { Router } from '@angular/router';
 import { LogoutWarningComponent } from './modal/LogoutWarningComponent';
+import { LoggedInUser } from '../../model/LoggedInUser';
 declare var $: any;
 
 @Component({
@@ -34,7 +35,7 @@ export class DefaultLayoutComponent implements OnInit {
   public appDevName;
   public currentYear;
   private permissions: Permission[];
-  private loggedInUser: any;
+  private loggedInUser: LoggedInUser;
   private unreadNotifications: number;
   private menuAttributes: any;
   modalRef: BsModalRef;
@@ -95,14 +96,28 @@ export class DefaultLayoutComponent implements OnInit {
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {
                 this.menuAttributes = this.newNavItems[c].children[sm].attributes;
-                if (
-                  this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-                  this.menuAttributes.moduleName === this.permissions[k].moduleName &&
-                  this.permissions[k].actions.includes('READ') &&
-                  parentId === this.permissions[k].moduleParentId
-                ) {
-                  //console.log(this.newNavItems[c].children[sm]);
-                  childMenus.push(this.newNavItems[c].children[sm]);
+                if (typeof this.menuAttributes.licenceType !== 'undefined') {
+                  let licences = this.menuAttributes.licenceType.split(',');
+                  if (
+                    licences.includes(this.loggedInUser.licenseType) &&
+                    this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
+                    this.menuAttributes.moduleName === this.permissions[k].moduleName &&
+                    this.permissions[k].actions.includes('READ') &&
+                    parentId === this.permissions[k].moduleParentId
+                  ) {
+                    //console.log(this.newNavItems[c].children[sm]);
+                    childMenus.push(this.newNavItems[c].children[sm]);
+                  }
+                } else {
+                  if (
+                    this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
+                    this.menuAttributes.moduleName === this.permissions[k].moduleName &&
+                    this.permissions[k].actions.includes('READ') &&
+                    parentId === this.permissions[k].moduleParentId
+                  ) {
+                    //console.log(this.newNavItems[c].children[sm]);
+                    childMenus.push(this.newNavItems[c].children[sm]);
+                  }
                 }
               }
             }

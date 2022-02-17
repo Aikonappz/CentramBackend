@@ -35,6 +35,8 @@ export class EditVendorComponent implements OnInit {
   vendorModules: VendorModule[];
   angForm: FormGroup;
   ticketAllocationTypes: any;
+  type: string;
+  hasAllocationType: boolean = true;
   constructor(
     private fb: FormBuilder,
     private loggedInUserService: LoggedInUserService,
@@ -73,53 +75,113 @@ export class EditVendorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.angForm = this.fb.group({
-      dlModuleId: new FormControl(true, [
-        Validators.required,
-      ]),
-      dlSubModuleId: new FormControl(true, [
-        Validators.required,
-      ]),
-      name: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(255),
-      ]),
-      ticketAllocationType: new FormControl('', [
-        Validators.required,
-      ]),
-      status: new FormControl('ACTIVE', [
-      ]),
-      inHouse: new FormControl('1', [
-      ]),
+    this.route.params.subscribe(params => {
+      this.type = this.route.snapshot.paramMap.get('licenceType');
+      if (!this.route.snapshot.paramMap.has('id')) {
+        this.miscService
+          .modulesService()
+          .subscribe((data: any) => {
+            //console.log(JSON.stringify(data.content));
+            this.modules = data.content;
+            for (let i in this.modules) {
+              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null && this.modules[i].licenseType != null && this.modules[i].licenseType == this.type.toUpperCase()) {
+                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+                this.moduleList.push(this.modules[i]);
+              }
+            }
+          });
+      } else {
+        this.miscService
+          .modulesService()
+          .subscribe((data: any) => {
+            this.modules = data.content;
+            for (let i in this.modules) {
+              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
+                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+                this.moduleList.push(this.modules[i]);
+              }
+            }
+            this.newEntity = false;
+            this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+            this.callVendorService(this.entityId);
+          });
+      }
+      if (this.type == "asset") {
+        this.hasAllocationType = false;
+        this.angForm = this.fb.group({
+          dlModuleId: new FormControl(true, [
+            Validators.required,
+          ]),
+          dlSubModuleId: new FormControl(true, [
+            Validators.required,
+          ]),
+          name: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactName: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactEmail: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(255),
+            Validators.email,
+          ]),
+          contactNumber: new FormControl('', [
+            Validators.required,
+            Validators.pattern(this.phoneRegex),
+          ]),
+          contactAddress: new FormControl('', [
+            Validators.required,
+          ]),
+          ticketAllocationType: new FormControl('', [
+            //Validators.required,
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+          inHouse: new FormControl('1', [
+          ]),
+        });
+      } else {
+        this.hasAllocationType = true;
+        this.angForm = this.fb.group({
+          dlModuleId: new FormControl(true, [
+            Validators.required,
+          ]),
+          dlSubModuleId: new FormControl(true, [
+            Validators.required,
+          ]),
+          name: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactName: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactEmail: new FormControl('', [
+            Validators.required,
+            Validators.maxLength(255),
+            Validators.email,
+          ]),
+          contactNumber: new FormControl('', [
+            Validators.required,
+            Validators.pattern(this.phoneRegex),
+          ]),
+          contactAddress: new FormControl('', [
+            Validators.required,
+          ]),
+          ticketAllocationType: new FormControl('', [
+            Validators.required,
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+          inHouse: new FormControl('1', [
+          ]),
+        });
+      }
     });
-    if (!this.route.snapshot.paramMap.has('id')) {
-      this.miscService
-        .modulesService()
-        .subscribe((data: any) => {
-          this.modules = data.content;
-          for (let i in this.modules) {
-            if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
-              this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-              this.moduleList.push(this.modules[i]);
-            }
-          }
-        });
-    } else {
-      this.miscService
-        .modulesService()
-        .subscribe((data: any) => {
-          this.modules = data.content;
-          for (let i in this.modules) {
-            if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
-              this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-              this.moduleList.push(this.modules[i]);
-            }
-          }
-          this.newEntity = false;
-          this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-          this.callVendorService(this.entityId);
-        });
-    }
   }
 
   ngAfterViewInit() { }
@@ -139,9 +201,15 @@ export class EditVendorComponent implements OnInit {
       //console.log(this.angForm);
       this.vendor.inHouse = (this.angForm.controls['inHouse'].value == true) ? true : false;
       this.vendor.name = this.angForm.controls['name'].value;
+      this.vendor.contactAddress = this.angForm.controls['contactAddress'].value;
+      this.vendor.contactEmail = this.angForm.controls['contactEmail'].value;
+      this.vendor.contactName = this.angForm.controls['contactName'].value;
+      this.vendor.contactNumber = this.angForm.controls['contactNumber'].value;
       this.vendor.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       this.submoduleIds = this.angForm.controls['dlSubModuleId'].value;
-      this.vendor.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value;
+      this.vendor.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value == "" ? null : this.angForm.controls['ticketAllocationType'].value;
+      this.vendor.vendorType = this.type.toUpperCase() == "ASSET" ? 0 : 1;
+
       this.vendorModules = [];
       for (let i in this.submoduleIds) {
         this.vendorModules[i] = new DistributionListModule(
@@ -166,7 +234,7 @@ export class EditVendorComponent implements OnInit {
       .saveVendorService(this.vendor)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/master/vendor']);
+        this.router.navigate(['/master/vendor/' + this.type]);
       });
   }
 
@@ -177,24 +245,33 @@ export class EditVendorComponent implements OnInit {
         //console.log(JSON.stringify(data));
         this.vendor.id = data.id;
         this.vendor.name = data.name;
+        this.vendor.contactAddress = data.contactAddress;
+        this.vendor.contactEmail = data.contactEmail;
+        this.vendor.contactName = data.contactName;
+        this.vendor.contactNumber = data.contactNumber;
         this.vendor.status = data.status;
         this.vendor.version = data.version;
         this.vendor.vendorModules = data.vendorModules;
         this.vendor.ticketAllocationType = data.ticketAllocationType;
         this.vendor.inHouse = data.inHouse;
         //console.log(JSON.stringify(this.user));
-
+        this.populateSubmodule(this.vendor.vendorModules[0].moduleId);
         this.submoduleIds = [];
         let moduleId = null;
         for (let k in this.vendor.vendorModules) {
           this.submoduleIds.push(this.vendor.vendorModules[k].subModuleId);
           moduleId = this.vendor.vendorModules[k].moduleId;
         }
-        this.populateSubmodule(moduleId);
+        //this.populateSubmodule(moduleId);
         this.angForm.get('inHouse').setValue(this.vendor.inHouse);
         this.angForm.get('name').setValue(this.vendor.name);
+        this.angForm.get('contactAddress').setValue(this.vendor.contactAddress);
+        this.angForm.get('contactEmail').setValue(this.vendor.contactEmail);
+        this.angForm.get('contactName').setValue(this.vendor.contactName);
+        this.angForm.get('contactNumber').setValue(this.vendor.contactNumber);
         this.angForm.get('dlModuleId').setValue(moduleId);
-        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));
+        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(String));
+        this.angForm.get('dlSubModuleId').markAsTouched();
         this.angForm.get('ticketAllocationType').setValue(this.vendor.ticketAllocationType);
         this.statusFlag = String(this.vendor.status) == 'ACTIVE' ? true : false;
         this.angForm.markAllAsTouched();

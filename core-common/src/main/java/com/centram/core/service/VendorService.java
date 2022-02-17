@@ -10,6 +10,7 @@ import com.centram.core.repository.VendorRepository;
 import com.centram.domain.Vendor;
 import com.centram.domain.VendorModule;
 import com.centram.domain.enumarator.ActivityType;
+import com.centram.domain.enumarator.VendorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,7 @@ public class VendorService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Vendor> getVendors(String inHouse, Pageable pageable) {
+    public PaginatedList<Vendor> getVendors(String inHouse, VendorType vendorType, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Boolean hasFilter = (inHouse.equalsIgnoreCase(""))? false : true;
         Boolean inHouseFilter = false;
@@ -103,7 +104,7 @@ public class VendorService {
         }else{
             hasFilter = false;
         }
-        return new PaginatedList<Vendor>(vendorRepository.getByOrganisation(hasFilter, inHouseFilter, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Vendor>(vendorRepository.getByOrganisation(hasFilter, inHouseFilter, vendorType, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**

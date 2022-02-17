@@ -3,6 +3,7 @@ package com.centram.domain;
 import com.centram.common.view.Views;
 import com.centram.domain.enumarator.IncidentAllocationType;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -60,6 +61,30 @@ public class Vendor extends BaseEntity implements Serializable {
     private String name;
 
     @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "contact_name", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String contactName;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "contact_email", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String contactEmail;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "contact_number", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String contactNumber;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "contact_address", nullable = false, columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String contactAddress;
+
+    @ApiModelProperty(required = true, value = "")
     @Valid
     //@NotNull
     @Fetch(FetchMode.JOIN)
@@ -82,6 +107,14 @@ public class Vendor extends BaseEntity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private Status status;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "vendor_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private VendorType vendorType;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull

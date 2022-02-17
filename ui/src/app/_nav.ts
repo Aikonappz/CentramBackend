@@ -57,10 +57,16 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "DISTRIBUTION LIST" }
       },
       {
-        name: 'Vendor',
-        url: '/master/vendor',
+        name: 'Vendor -Incident',
+        url: '/master/vendor/incident',
         icon: 'icon-people',
-        attributes: { "moduleName": "VENDOR" }
+        attributes: { "moduleName": "VENDOR", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Vendor -Asset',
+        url: '/master/vendor/asset',
+        icon: 'icon-people',
+        attributes: { "moduleName": "VENDOR", "licenceType": "ALL,ASSET" }
       },
     ]
   },

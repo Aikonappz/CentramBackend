@@ -18,4 +18,5 @@ export class LoggedInUser {
     roles: string[];
     modulePermissions: Permission[];
     licenseType: LicenseType;
+    orgAdmin: boolean;
 }

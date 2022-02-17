@@ -145,7 +145,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'vendor',
+        path: 'vendor/:type',
         component: VendorComponent,
         pathMatch: 'full',
         data: {
@@ -153,7 +153,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'vendor/add',
+        path: 'vendor/:licenceType/add',
         component: EditVendorComponent,
         pathMatch: 'full',
         data: {
@@ -161,7 +161,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'vendor/edit/:id',
+        path: 'vendor/:licenceType/edit/:id',
         component: EditVendorComponent,
         pathMatch: 'full',
         data: {
@@ -174,6 +174,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class MasterRoutingModule { }

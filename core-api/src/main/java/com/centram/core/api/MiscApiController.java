@@ -10,6 +10,7 @@ import com.centram.core.service.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -436,10 +437,11 @@ public class MiscApiController {
     @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR,ORDER ASSET','READ,WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<PaginatedList<Vendor>> getVendors(
+            @ApiParam(value = "Vendor Type", defaultValue = "", required = false) @RequestParam(value = "vendorType", defaultValue = "INCIDENT", required = false) String vendorType,
             @ApiParam(value = "In House Vendor", defaultValue = "", required = false) @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(inHouse, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(inHouse, VendorType.valueOf(vendorType), pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a vendor", nickname = "saveVendor", notes = "Add a vendor", tags = {"misc",})
