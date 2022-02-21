@@ -1,13 +1,14 @@
 package com.centram.batch;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public class Batch {
-     /*System.out.println("=============Start ThreadPoolExecutor===============");
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        /*System.out.println("=============Start ThreadPoolExecutor===============");
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         for (int i = 1; i <= 5; i++) {
             Task task = new Task("Task ".concat(String.valueOf(i)));
@@ -55,7 +56,7 @@ public class Batch {
         //shut down the executor service now
         executor.shutdown();*/
 
-        /*CompletableFuture<String> future = CompletableFuture.supplyAsync(new Supplier<String>() {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(new Supplier<String>() {
             public String get() {
                 try {
                     TimeUnit.SECONDS.sleep(5);
@@ -69,5 +70,5 @@ public class Batch {
         // Block and get the result of the Future
         String result = future.get();
         System.out.println(result);
-    }*/
+    }
 }
