@@ -1,6 +1,8 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.enumarator.AssetType;
+import com.centram.domain.enumarator.ProductCategory;
 import com.centram.domain.enumarator.PurchaseType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
@@ -33,14 +35,12 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @Table(name = "asset",
-
         uniqueConstraints = {
-                @UniqueConstraint(name = "inc_no_usr_constraint", columnNames = {"incident_no", "assigned_user_id"})
+                @UniqueConstraint(name = "serial_no_org_constraint", columnNames = {"serial_no", "organisation_id"})
         },
         indexes = {
-                @Index(name = "incident_no_indx", columnList = "incident_no", unique = false)
+                @Index(name = "serial_no_indx", columnList = "serial_no", unique = false)
         }
-
 )
 @Audited
 public class Asset extends BaseEntity implements Serializable {
@@ -54,24 +54,32 @@ public class Asset extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = false, value = "")
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
     @Valid
-    @OneToOne
-    @JoinColumn(name = "asset_model_id", nullable = false, referencedColumnName = "id")
+    @Column(name = "product_category")
+    @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
-    private AssetModel assetModel;
+    private ProductCategory productCategory;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "serial_number", nullable = false, columnDefinition = "varchar(255) not null")
+    @Valid
+    @Column(name = "asset_type")
+    @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
-    private String serialNumber;
+    private AssetType assetType;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "asset_number", nullable = false, columnDefinition = "varchar(255) not null")
+    @Column(name = "model_no", columnDefinition = "varchar(255) not null")
+    private String modelNo;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "serial_no", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
-    private String assetNo;
+    private String serialNo;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "is_department", nullable = true)
@@ -82,7 +90,7 @@ public class Asset extends BaseEntity implements Serializable {
     @Valid
     @NotNull
     @OneToOne
-    @JoinColumn(name = "location_id", nullable = true, updatable = false, insertable = false, referencedColumnName = "id")
+    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Location location;
 
@@ -98,7 +106,7 @@ public class Asset extends BaseEntity implements Serializable {
     @Valid
     @NotNull
     @OneToOne
-    @JoinColumn(name = "raised_for_location_id", nullable = true, updatable = false, insertable = false, referencedColumnName = "id")
+    @JoinColumn(name = "raised_for_location_id", nullable = true, referencedColumnName = "id")
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Location raisedForLocation;
 
@@ -134,47 +142,6 @@ public class Asset extends BaseEntity implements Serializable {
     @Column(name = "is_available", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean isAvailable = false;
-
-    @ApiModelProperty(required = true, value = "")
-    @Valid
-    @NotNull
-    @OneToOne
-    @JoinColumn(name = "approver_user1_id", nullable = false, referencedColumnName = "id")
-    @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
-    private User approverUser1;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "approved_user1", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private Boolean approvedUser1 = false;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "approver_user1_comment", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private String approverUser1Comment;
-
-    @ApiModelProperty(required = true, value = "")
-    @Valid
-    @NotNull
-    @OneToOne
-    @JoinColumn(name = "approver_user2_id", nullable = false, referencedColumnName = "id")
-    @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
-    private User approverUser2;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "approved_user2", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private Boolean approvedUser2 = false;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "approver_user2_comment", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private String approverUser2Comment;
-
-    @ApiModelProperty(required = false, value = "")
-    @Column(name = "approved_at", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private LocalDateTime approvedAt;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "comment", nullable = true, columnDefinition = "varchar(2000) not null")

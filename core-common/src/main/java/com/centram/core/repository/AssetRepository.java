@@ -13,25 +13,15 @@ import java.math.BigInteger;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, BigInteger> {
-    @Query(value = "select ao from Asset ao where a.organisation.id = (:organisationId) and " +
+    @Query(value = "select a from Asset a where a.organisation.id = (:organisationId) and " +
             " ( " +
-            "   ((:status) = 'PENDING' and a.approvedUser1 = false and a.approvedUser2  = false ) " +
+            "   ((:serialNo) is not null and a.serialNo = (:serialNo)) " +
             "   OR " +
-            "   ((:status) = 'PARTIALLY_APPROVED' and a.approvedUser1 = true and a.approvedUser2  = false ) " +
-            "   OR " +
-            "   ((:status) = 'APPROVED' and a.approvedUser1 = true and a.approvedUser2  = true ) " +
-            "   OR " +
-            "   ((:status) is null) " +
-            " ) and " +
-            " ( " +
-            "   ((:assetNo) is not null and a.assetNo = (:assetNo)) " +
-            "   OR " +
-            "   ((:orderNo) is null) " +
+            "   ((:serialNo) is null) " +
             " ) "
     )
     Page<Asset> findAll(
-            @Param("assetNo") String orderNo,
-            @Param("status") String status,
+            @Param("serialNo") String serialNo,
             @Param("organisationId") BigInteger organisationId,
             Pageable pageable
     );

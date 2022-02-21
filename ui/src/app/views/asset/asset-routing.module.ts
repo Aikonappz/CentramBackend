@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AddAssetComponent } from './addasset.component';
 import { AddOrderComponent } from './addorder.component';
 import { ApproveOrderComponent } from './approveorder.component';
+import { AssetComponent } from './asset.component';
 import { OrderAssetComponent } from './orderasset.component';
 
 const routes: Routes = [
@@ -37,6 +39,23 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Approve Assets Order'
+        },
+      },
+
+      {
+        path: 'manage',
+        component: AssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Order Assets'
+        },
+      },
+      {
+        path: 'manage/add',
+        component: AddAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Assets'
         },
       },
     ]

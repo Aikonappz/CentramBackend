@@ -9,7 +9,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { AssetOrder } from '../../model/AssetOrder';
 import { AssetOrderService } from '../../service/AssetOrderService';
 import { LoggedInUser } from '../../model/LoggedInUser';
-import { AssetOrderApprovalDTO } from '../../model/AssetOrderApprovalDTO';
+import { AssetApprovalDTO } from '../../model/AssetApprovalDTO';
 declare var $: any;
 
 @Component({
@@ -120,7 +120,7 @@ export class ApproveOrderComponent implements OnInit {
   get f() { return this.angForm.controls; }
 
   formSubmit(mode: string) {
-    let assetOrderApprovalDTO = new AssetOrderApprovalDTO();
+    let assetOrderApprovalDTO = new AssetApprovalDTO();
     assetOrderApprovalDTO.id = this.assetOrder.id;
     let approved = mode == 'APPROVE' ? true : false;
     if (this.angForm.valid) {
@@ -156,7 +156,7 @@ export class ApproveOrderComponent implements OnInit {
     this._location.back();
   }
 
-  callApproveAssetOrder(assetOrderApprovalDTO: AssetOrderApprovalDTO) {
+  callApproveAssetOrder(assetOrderApprovalDTO: AssetApprovalDTO) {
     this.assetOrderService
       .approveAssetOrder(assetOrderApprovalDTO)
       .subscribe((data: any) => {

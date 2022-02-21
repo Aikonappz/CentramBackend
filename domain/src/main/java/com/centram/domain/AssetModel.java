@@ -58,7 +58,7 @@ public class AssetModel implements Serializable {
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "model_no", columnDefinition = "varchar(255) not null")
-    private String name;
+    private String modelNo;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
@@ -67,4 +67,9 @@ public class AssetModel implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private Status status;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "generate_asset_no")
+    private Boolean generateAssetNo;
 }

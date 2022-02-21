@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { ApiHttpService } from './ApiHttpService';
 import { AssetOrder, AssetOrderList } from '../model/AssetOrder';
-import { AssetOrderApprovalDTO } from '../model/AssetOrderApprovalDTO';
+import { AssetApprovalDTO } from '../model/AssetApprovalDTO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -12,7 +12,7 @@ export class AssetOrderService {
     saveAssetOrder(assetOrder: AssetOrder): Observable<AssetOrder> {
         return this.http.post('/v1/asset-order/', assetOrder);
     }
-    approveAssetOrder(assetOrderApprovalDTO: AssetOrderApprovalDTO): Observable<AssetOrder> {
+    approveAssetOrder(assetOrderApprovalDTO: AssetApprovalDTO): Observable<AssetOrder> {
         return this.http.put('/v1/asset-order/', assetOrderApprovalDTO);
     }
     assetOrdersService(request?: any): Observable<AssetOrderList> {

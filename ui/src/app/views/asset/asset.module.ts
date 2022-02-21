@@ -12,6 +12,8 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { OrderAssetComponent } from './orderasset.component';
 import { AddOrderComponent } from './addorder.component';
 import { ApproveOrderComponent } from './approveorder.component';
+import { AssetComponent } from './asset.component';
+import { AddAssetComponent } from './addasset.component';
 
 
 @NgModule({
@@ -19,6 +21,8 @@ import { ApproveOrderComponent } from './approveorder.component';
     OrderAssetComponent,
     AddOrderComponent,
     ApproveOrderComponent,
+    AssetComponent,
+    AddAssetComponent,
   ],
   imports: [
     CommonModule,

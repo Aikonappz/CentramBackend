@@ -68,7 +68,7 @@ import java.util.Set;
 @Entity
 @Table(name = "incident",
         uniqueConstraints = {
-                @UniqueConstraint(name = "inc_no_usr_constraint", columnNames = {"incident_no", "assigned_user_id"})
+                @UniqueConstraint(name = "inc_no_usr_constraint", columnNames = {"incident_no", "organisation_id"})
         },
         indexes = {
                 @Index(name = "incident_no_indx", columnList = "incident_no", unique = false)

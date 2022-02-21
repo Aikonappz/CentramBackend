@@ -1,4 +1,4 @@
-export class AssetOrderApprovalDTO {
+export class AssetApprovalDTO {
     id: number;
     approverNo: number;
     approval: boolean;

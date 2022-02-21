@@ -275,7 +275,7 @@ export class AddOrderComponent implements OnInit {
       }
       this.assetOrder.comment = this.angForm.controls['comment'].value;
       console.log(JSON.stringify(this.assetOrder));
-      this.callSaveIncidentService();
+      this.callSaveAssetOrderService();
     } else {
       console.log("Invalid Form!");
     }
@@ -285,7 +285,7 @@ export class AddOrderComponent implements OnInit {
     this._location.back();
   }
 
-  callSaveIncidentService() {
+  callSaveAssetOrderService() {
     this.assetOrderService
       .saveAssetOrder(this.assetOrder)
       .subscribe((data: any) => {

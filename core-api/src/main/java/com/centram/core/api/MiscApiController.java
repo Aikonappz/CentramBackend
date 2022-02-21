@@ -125,7 +125,7 @@ public class MiscApiController {
     })
     @RequestMapping(value = "/all-asset-model", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<AssetModel>> getAssetModels(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<List<AssetModel>>(assetModelService.getAssetModel(pageable), HttpStatus.OK);
+        return new ResponseEntity<List<AssetModel>>(assetModelService.getAssetModels(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find role by id", nickname = "getRoleById", notes = "Find role by id", response = Role.class, tags = {"misc",})

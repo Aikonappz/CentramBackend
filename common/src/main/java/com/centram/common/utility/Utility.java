@@ -58,6 +58,10 @@ public class Utility {
         return orderNoPrefix.concat(generateUniqueID());
     }
 
+    public static String assetNo(String assetNoPrefix) {
+        return assetNoPrefix.concat(generateUniqueID());
+    }
+
     public static Long generateUniqueIDOld() {
         final String DATE_FORMATTER = "yyMMddHHmmss";
         LocalDateTime localDateTime = LocalDateTime.now();

@@ -122,6 +122,12 @@ export const navItems: INavData[] = [
         icon: 'fa fa-outdent',
         attributes: { "moduleName": "ORDER ASSET" }
       },
+      {
+        name: 'Manage Asset',
+        url: '/asset/manage',
+        icon: 'fa fa-tasks',
+        attributes: { "moduleName": "MANAGE ASSET" }
+      },
     ]
   },
   {

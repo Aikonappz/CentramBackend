@@ -13,6 +13,7 @@ import { MapDLVO, MapDLVOList } from '../model/MapDLVO';
 import { DistributionList, DistributionListList } from '../model/DistributionList';
 import { Module } from '../model/Module';
 import { Vendor, VendorList } from '../model/Vendor';
+import { AssetModel } from '../model/AssetModel';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -99,6 +100,9 @@ export class MiscService {
     }
     modulesService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-module', { "params": request });
+    }
+    assetModelsService(request?: any): Observable<AssetModel> {
+        return this.http.get('/v1/misc/all-asset-model', { "params": request });
     }
     saveVendorService(vendor: Vendor): Observable<Vendor> {
         return this.http.post('/v1/misc/vendor', vendor);

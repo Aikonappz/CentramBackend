@@ -1,7 +1,6 @@
 package com.centram.core.api;
 
 
-import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.AssetService;
@@ -42,20 +41,9 @@ public class AssetApiController {
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ADD ASSET','WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','WRITE',authentication.principal)")
     public ResponseEntity<Asset> save(@ApiParam(value = "Asset object", required = true) @Valid @RequestBody Asset body) {
         return new ResponseEntity<Asset>(assetService.save(body), HttpStatus.OK);
-    }
-
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset", nickname = "approveAsset", notes = "Approve an asset", tags = {"asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
-    })
-    @JsonView(Views.DetailView.class)
-    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','APPROVE',authentication.principal)")
-    public ResponseEntity<Asset> approveAsset(@ApiParam(value = "Asset object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
-        return new ResponseEntity<Asset>(assetService.approveAsset(body), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset by Id", nickname = "getAssetById", notes = "Find asset by Id", response = Incident.class, tags = {"asset",})
@@ -66,7 +54,7 @@ public class AssetApiController {
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{assetId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET,ADD ASSET','READ,READ|WRITE|APPROVE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|WRITE|APPROVE',authentication.principal)")
     public ResponseEntity<Asset> getAssetById(@ApiParam(value = "id of asset to return", required = true) @PathVariable("assetOrderId") BigInteger assetId) {
         return new ResponseEntity<Asset>(assetService.getAssetById(assetId), HttpStatus.OK);
     }
@@ -80,10 +68,10 @@ public class AssetApiController {
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<Asset>> getAssets(
-            @ApiParam(value = "asset no", defaultValue = "", required = false) @RequestParam(value = "assetNo", defaultValue = "", required = false) String assetNo,
+            @ApiParam(value = "serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Asset>>(assetService.getAssets(assetNo, status, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Asset>>(assetService.getAssets(serialNo, status, pageable), HttpStatus.OK);
     }
 }
