@@ -9,65 +9,67 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class Batch {
-    /*public static void main(String[] args) {
-        System.out.println("=============EXAMPLE 1===============");
+     /*System.out.println("=============Start ThreadPoolExecutor===============");
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         for (int i = 1; i <= 5; i++) {
-            Task task = new Task("Task " + i);
+            Task task = new Task("Task ".concat(String.valueOf(i)));
             System.out.println("Created : " + task.getName());
             threadPoolExecutor.execute(task);
         }
-        threadPoolExecutor.shutdown();
-    }*/
+        threadPoolExecutor.shutdown();*/
 
-    /*public static void main(String[] args) {
-        System.out.println("=============EXAMPLE 2===============");
+        /*System.out.println("=============Start ScheduledThreadPoolExecutor===============");
         ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(2);
         Task task = new Task("Repeat Task");
-        System.out.println("Created : " + task.getName());
-        scheduledThreadPoolExecutor.scheduleWithFixedDelay(task, 2, 2, TimeUnit.SECONDS);
-    }*/
-   /* public static void main(String[] args) throws Exception {
-        // FutureTask is a concrete class that
-        // implements both Runnable and Future
-        FutureTask[] randomNumberTasks = new FutureTask[5];
+        System.out.println("Created : ".concat(task.getName()));
+        scheduledThreadPoolExecutor.scheduleWithFixedDelay(task, 2, 2, TimeUnit.SECONDS);*/
+
+        /*System.out.println("=============Start FutureTask===============");
+        // FutureTask is a concrete class that implements both Runnable and Future
+        List<FutureTask> futureTaskList = new LinkedList<FutureTask>();
         for (int i = 0; i < 5; i++) {
-            Task1 task1 = new Task1();
             // Create the FutureTask with Callable
-            randomNumberTasks[i] = new FutureTask(task1);
+            futureTaskList.add(new FutureTask(new Task1()));
             // As it implements Runnable, create Thread
             // with FutureTask
-            Thread t = new Thread(randomNumberTasks[i]);
-            t.start();
+            new Thread(futureTaskList.get(i)).start();
         }
-        for (int i = 0; i < 5; i++) {
+        for (FutureTask futureTask : futureTaskList) {
             // As it implements Future, we can call get()
-            System.out.println(randomNumberTasks[i].get());
+            System.out.println(futureTaskList.indexOf(futureTask) + " => " + futureTask.get());
             // This method blocks till the result is obtained
             // The get method can throw checked exceptions
             // like when it is interrupted. This is the reason
             // for adding the throws clause to main
-        }
-    }*/
+        }*/
 
-    public static void main(String[] args) {
+        /*System.out.println("=============Start ThreadPoolExecutor With Future return value===============");
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
-        List<Future<Integer>> resultList = new ArrayList<>();
-        Random random = new Random();
+        Map<Integer, Future<Integer>> futureMap = new LinkedHashMap<Integer, Future<Integer>>();
+        Task2 task2 = null;
         for (int i = 0; i < 4; i++) {
-            Integer number = random.nextInt(10);
-            Task2 calculator = new Task2(number);
-            Future<Integer> result = executor.submit(calculator);
-            resultList.add(result);
+            task2 = new Task2(new Random().nextInt(10));
+            futureMap.put(task2.getNumber(), executor.submit(task2));
         }
-        for (Future<Integer> future : resultList) {
-            try {
-                System.out.println("Future result is - " + " - " + future.get() + "; And Task done is " + future.isDone());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+        for (Map.Entry<Integer, Future<Integer>> entry : futureMap.entrySet()) {
+            System.out.println("Future value of ".concat(String.valueOf(entry.getKey())).concat(" factorial is - ").concat(" - ").concat(String.valueOf(entry.getValue().get())).concat("; and Task done is ").concat(String.valueOf(entry.getValue().isDone())));
         }
         //shut down the executor service now
-        executor.shutdown();
+        executor.shutdown();*/
+
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(new Supplier<String>() {
+            public String get() {
+                try {
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    throw new IllegalStateException(e);
+                }
+                return "Result of the asynchronous computation";
+            }
+        });
+
+        // Block and get the result of the Future
+        String result = future.get();
+        System.out.println(result);
     }
 }
