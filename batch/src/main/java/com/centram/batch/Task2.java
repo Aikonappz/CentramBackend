@@ -11,7 +11,10 @@ public class Task2 implements Callable<Integer> {
         this.number = number;
     }
 
-    @Override
+    public Integer getNumber() {
+        return number;
+    }
+
     public Integer call() throws Exception {
         int result = 1;
         if ((number == 0) || (number == 1)) {
@@ -22,7 +25,7 @@ public class Task2 implements Callable<Integer> {
                 TimeUnit.MILLISECONDS.sleep(20);
             }
         }
-        System.out.println("Result for number - " + number + " -> " + result);
+        //System.out.println("Result for number - ".concat(String.valueOf(number)).concat(" -> ").concat(String.valueOf(result)));
         return result;
     }
 }
