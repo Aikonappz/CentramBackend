@@ -14,6 +14,8 @@ import { AddOrderComponent } from './addorder.component';
 import { ApproveOrderComponent } from './approveorder.component';
 import { AssetComponent } from './asset.component';
 import { AddAssetComponent } from './addasset.component';
+import { RequestedAssetComponent } from './requested-asset.component';
+import { RequestAssetComponent } from './request-asset.component';
 
 
 @NgModule({
@@ -23,6 +25,8 @@ import { AddAssetComponent } from './addasset.component';
     ApproveOrderComponent,
     AssetComponent,
     AddAssetComponent,
+    RequestedAssetComponent,
+    RequestAssetComponent,
   ],
   imports: [
     CommonModule,

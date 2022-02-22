@@ -3,8 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { AddAssetComponent } from './addasset.component';
 import { AddOrderComponent } from './addorder.component';
 import { ApproveOrderComponent } from './approveorder.component';
+import { RequestedAssetComponent } from './requested-asset.component';
 import { AssetComponent } from './asset.component';
 import { OrderAssetComponent } from './orderasset.component';
+import { RequestAssetComponent } from './request-asset.component';
 
 const routes: Routes = [
   {
@@ -56,6 +58,22 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Add Assets'
+        },
+      },
+      {
+        path: 'requested',
+        component: RequestedAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Requested Assets'
+        },
+      },
+      {
+        path: 'request',
+        component: RequestAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Request Assets'
         },
       },
     ]

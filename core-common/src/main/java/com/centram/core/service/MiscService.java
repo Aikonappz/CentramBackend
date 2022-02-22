@@ -985,6 +985,7 @@ public class MiscService {
             mailValues.put("to", assetRequest.getUser().getEmail());
             appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
         } else if (assetRequest.getApproverComment() != null) {
+            
             List<UserVO> userVOS = userService.getUsersByRoles(Collections.singletonList("ORG_MANAGE_ASSET"));
 
            /* if (assetRequest.getApproved()) {
