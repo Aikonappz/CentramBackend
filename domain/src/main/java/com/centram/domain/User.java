@@ -177,6 +177,8 @@ public class User extends BaseEntity implements Serializable {
         this.department.setName(userVO.getDepartment());
         this.firstName = userVO.getFirstName();
         this.lastName = userVO.getLastName();
+        this.projectCode = userVO.getProjectCode();
+        this.managerId = userVO.getManagerId();
         this.email = userVO.getEmail();
         this.contactNo = userVO.getContactNo();
         this.organisation = new Organisation();

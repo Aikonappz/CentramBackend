@@ -56,11 +56,14 @@ public class AssetService {
     private NotificationService notificationService;
 
     @Transactional(readOnly = true)
-    public PaginatedList<Asset> getAssets(String serialNo, String status, Pageable pageable) {
+    public PaginatedList<Asset> getAssets(Integer productCategory, Integer assetType, String modelNo, String serialNo, Integer assetAvailable, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        serialNo = (serialNo.equalsIgnoreCase("")) ? null : serialNo;
-        status = (status.equalsIgnoreCase("")) ? null : status;
-        return new PaginatedList<Asset>(assetRepository.findAll(serialNo, loggedInUser.getOrganisationId(), pageable));
+        productCategory = productCategory == null ? -1 : productCategory;
+        assetType = assetType == null ? -1 : assetType;
+        modelNo = (modelNo == null || modelNo.equalsIgnoreCase("")) ? null : modelNo;
+        serialNo = (serialNo == null || serialNo.equalsIgnoreCase("")) ? null : serialNo;
+        assetAvailable = assetAvailable == null ? -1 : assetAvailable;
+        return new PaginatedList<Asset>(assetRepository.findAll(productCategory, assetType, modelNo, serialNo, assetAvailable, loggedInUser.getOrganisationId(), pageable));
     }
 
     @Transactional(readOnly = true)

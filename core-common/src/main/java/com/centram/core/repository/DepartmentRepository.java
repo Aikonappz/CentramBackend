@@ -20,7 +20,7 @@ public interface DepartmentRepository extends PagingAndSortingRepository<Departm
     Department getDepartmentByName(@Param("departmentName") String departmentName, @Param("organisationId") BigInteger organisationId);
 
     @Query("select d from Department d where d.organisation.id = (:organisationId)")
-    Page getDepartmentByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+    Page<Department> getDepartmentByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
 
     @Modifying
     @Query("update Department set status = (:status) where id in (:departmentIds)")

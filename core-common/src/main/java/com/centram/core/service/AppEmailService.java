@@ -261,6 +261,60 @@ public class AppEmailService {
         emailService.sendMail(mailMap);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Async("asyncExecutor")
+    public void sendAssetRequestUpdateEmail(Map<String, Object> mailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
+                Arrays.asList("BASE_EMAIL_TEMPLATE", "ASSET_REQUEST_EMAIL_TEMPLATE")
+        );
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("ASSET_REQUEST_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("subject")).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("body")).toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("ord_status", mailValues.get("ord_status"));
+        mailSubject = templateEngine.process(mailSubject, context);
+        String assetOrderLink = appBaseUrl.concat("/asset/request/approve/").concat(mailValues.get("asset_id").toString());
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("comment", mailValues.get("comment"));
+        context.setVariable("project", mailValues.get("project"));
+        context.setVariable("longTerm", mailValues.get("longTerm"));
+        context.setVariable("project", mailValues.get("project"));
+        context.setVariable("user", mailValues.get("user"));
+        context.setVariable("modelNo", mailValues.get("modelNo"));
+        context.setVariable("assetType", mailValues.get("assetType"));
+        context.setVariable("productCategory", mailValues.get("productCategory"));
+        context.setVariable("ntfy_link", assetOrderLink);
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", mailValues.get("recipient_name"));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", new String[]{mailValues.get("to").toString()});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("bcc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("ASSET REQUEST EMAIL TITLE: {}", mailSubject);
+        log.info("ASSET REQUEST EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        Notification notification = (Notification) mailValues.get("notification");
+        notification.setNotificationTitle(mailSubject);
+        notification.setNotificationBody(mailBody);
+        notificationService.save(notification);
+        emailService.sendMail(mailMap);
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")

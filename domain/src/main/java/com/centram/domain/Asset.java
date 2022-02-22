@@ -73,6 +73,7 @@ public class Asset extends BaseEntity implements Serializable {
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Column(name = "model_no", columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String modelNo;
 
     @ApiModelProperty(required = true, value = "")

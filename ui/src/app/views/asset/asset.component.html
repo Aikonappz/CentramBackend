@@ -32,22 +32,50 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="assetNo">Asset Number</label>
-                                        <input type="text" formControlName="assetNo" ngModel id="assetNo" name="assetNo"
-                                            class="form-control" placeholder="Asset Number" aria-label="Asset Number">
-                                    </div>
-                                    <div class="col">
-                                        <label class="form-col-form-label" for="status">Approval Status</label>
-                                        <select class="form-control" formControlName="status" ngModel id="status"
-                                            name="status">
-                                            <option value="">-- Select Approval Status--</option>
-                                            <option value="PENDING">Approval Pending</option>
-                                            <option value="PARTIALLY_APPROVED">Partially Approved</option>
-                                            <option value="APPROVED">Fully Approved</option>
+                                        <label class="form-col-form-label" for="productCategory">Product
+                                            Category</label>
+                                        <select class="form-control" #productCategory
+                                            (change)="populateChildValues($event.target.value)"
+                                            formControlName="productCategory" ngModel id="productCategory"
+                                            name="productCategory">
+                                            <option value="">-- Select Product Type --</option>
+                                            <option *ngFor="let e of productTypes" value="{{e}}">{{e}}</option>
                                         </select>
                                     </div>
-                                    <div class="col"></div>
-                                    <div class="col"></div>
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="assetType">Asset
+                                            Type
+                                            Category</label>
+                                        <select class="form-control" #assetType
+                                            (change)="populateAssetModels($event.target.value)"
+                                            formControlName="assetType" ngModel id="assetType" name="assetType">
+                                            <option value="">-- Select Asset Type --</option>
+                                            <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="modelNo">Model
+                                            No</label>
+                                        <select class="form-control" formControlName="modelNo" ngModel id="modelNo"
+                                            name="modelNo">
+                                            <option value="">-- Select Model No --</option>
+                                            <option *ngFor="let e of modelList" value="{{e}}">{{e}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="serialNumber">Serial No</label>
+                                        <input type="text" formControlName="serialNumber" ngModel id="serialNumber"
+                                            name="serialNumber" class="form-control">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="available">Available?</label>
+                                        <select class="form-control" formControlName="available" ngModel id="available"
+                                            name="available">
+                                            <option value="">-- Select --</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer">

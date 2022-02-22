@@ -6,12 +6,15 @@ import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
+import { AssetType } from '../../model/enumerator/AssetType';
 import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
+import { ProductCategory } from '../../model/enumerator/ProductCategory';
 import { Incident } from '../../model/Incident';
 import { Permission } from '../../model/Permssion';
 import { AssetService } from '../../service/AssetService';
 import { AssetDataSource } from '../../service/datasource/AssetDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { MiscService } from '../../service/MiscService';
 declare var $: any;
 
 @Component({
@@ -32,11 +35,16 @@ export class AssetComponent implements OnInit {
   angForm: FormGroup;
   searchedData: Object = {};
   incidentStatus: IncidentStatus;
+  assetList: Set<string> = new Set<string>();
+  modelList: Set<string> = new Set<string>();
+  assetModelList: any[] = [];
+  productTypes: Set<string> = new Set<string>();
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
     private service: AssetService,
+    private miscService: MiscService,
     private loggedInUserService: LoggedInUserService
   ) {
     router.events.subscribe(event => {
@@ -45,12 +53,25 @@ export class AssetComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.miscService
+      .assetModelsService()
+      .subscribe((data: any) => {
+        this.assetModelList = data;
+        for (let k in data) {
+          if (data[k].status == "ACTIVE")
+            this.productTypes.add(data[k].productCategory);
+        }
+      });
     this.angForm = this.fb.group({
-      assetNo: new FormControl('', [
+      productCategory: new FormControl('', [
       ]),
-      title: new FormControl('', [
+      assetType: new FormControl('', [
       ]),
-      status: new FormControl(null, [
+      modelNo: new FormControl(null, [
+      ]),
+      serialNumber: new FormControl(null, [
+      ]),
+      available: new FormControl(null, [
       ]),
     });
   }
@@ -101,7 +122,7 @@ export class AssetComponent implements OnInit {
 
   loadData(req?: Object) {
     //console.log(req);
-    if (this.searchedData.hasOwnProperty('assetNo')) {
+    if (this.searchedData.hasOwnProperty('productCategory')) {
       req = this.searchedData;
     }
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
@@ -121,30 +142,53 @@ export class AssetComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
-      let status = this.angForm.controls['status'].value;
-      let orderNo = this.angForm.controls['orderNo'].value;
+      let productCategory = this.angForm.controls['productCategory'].value;
+      let assetType = this.angForm.controls['assetType'].value;
+      let modelNo = this.angForm.controls['modelNo'].value;
+      let serialNumber = this.angForm.controls['serialNumber'].value;
+      let available = this.angForm.controls['available'].value;
+      console.log(productCategory);
       this.searchedData = {
-        "status": status == null ? '' : status,
-        "assetNo": orderNo == null ? '' : orderNo,
+        "productCategory": productCategory == "" || productCategory == null ? -1 : ProductCategory[productCategory],
+        "assetType": assetType == "" || assetType == null ? -1 : AssetType[assetType],
+        "modelNo": modelNo == "" || modelNo == null ? '' : modelNo,
+        "serialNo": serialNumber == "" || serialNumber == null ? '' : serialNumber,
+        "available": available == "" || available == null ? -1 : available,
       };
       this.loadData(this.searchedData);
-      //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");
     }
   }
 
-  @ViewChild("moduleId") moduleId;
-  populateSubmodule(moduleId) {
-    let c = 0;
-    if (moduleId != "") {
-      this.subModuleList = [];
-      for (let i = 0; i < this.permissions.length; i++) {
-        if (this.permissions[i].moduleParentId == moduleId) {
-          this.subModuleList[c] = this.permissions[i];
-          c++;
+  get f() { return this.angForm.controls; }
+
+  @ViewChild("productCategory") productCategory;
+  populateChildValues(productCategory: string) {
+    if (productCategory != "") {
+      this.assetList = new Set<string>();
+      this.modelList = new Set<string>();
+      for (let k in this.assetModelList) {
+        if (this.assetModelList[k].productCategory == productCategory && this.assetModelList[k].status == "ACTIVE") {
+          this.assetList.add(this.assetModelList[k].assetType);
+          this.modelList.add(this.assetModelList[k].modelNo);
         }
       }
+      this.angForm.controls['assetType'].setValue("");
+      this.angForm.controls['modelNo'].setValue("");
+    }
+  }
+
+  @ViewChild("assetType") assetType;
+  populateAssetModels(assetType: string) {
+    if (assetType != "") {
+      this.modelList = new Set<string>();
+      for (let k in this.assetModelList) {
+        if (this.assetModelList[k].assetType == assetType && this.assetModelList[k].status == "ACTIVE") {
+          this.modelList.add(this.assetModelList[k].modelNo);
+        }
+      }
+      this.angForm.controls['modelNo'].setValue("");
     }
   }
 }

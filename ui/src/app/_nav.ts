@@ -128,6 +128,12 @@ export const navItems: INavData[] = [
         icon: 'fa fa-tasks',
         attributes: { "moduleName": "MANAGE ASSET" }
       },
+      {
+        name: 'Request Asset',
+        url: '/asset/requested',
+        icon: 'fa fa-paper-plane',
+        attributes: { "moduleName": "REQUEST ASSET" }
+      },
     ]
   },
   {

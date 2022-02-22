@@ -29,9 +29,6 @@ export class AddAssetComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   angForm: FormGroup;
-  hasAgentPermission: boolean;
-  approver1List: any[] = [];
-  approver2List: any[] = [];
   departmentList: any[] = [];
   locationList: any[] = [];
   vendorList: any[] = [];
@@ -276,17 +273,6 @@ export class AddAssetComponent implements OnInit {
             }
           }
         });
-      this.userService
-        .getUsersService({ size: 2147483647 })
-        .subscribe((data: any) => {
-          let users = data.content;
-          for (let k in users) {
-            if (users[k].roleNames.includes('ORG_OUTBOUND_ASSET_APPROVER')) {
-              this.approver1List.push(users[k]);
-              this.approver2List.push(users[k]);
-            }
-          }
-        });
     } else {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
@@ -339,6 +325,8 @@ export class AddAssetComponent implements OnInit {
           this.modelList.add(this.assetModelList[k].modelNo);
         }
       }
+      this.angForm.controls['assetType'].setValue("");
+      this.angForm.controls['modelNo'].setValue("");
     }
   }
 
@@ -351,6 +339,7 @@ export class AddAssetComponent implements OnInit {
           this.modelList.add(this.assetModelList[k].modelNo);
         }
       }
+      this.angForm.controls['modelNo'].setValue("");
     }
   }
 
