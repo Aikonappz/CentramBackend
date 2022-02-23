@@ -1,4 +1,5 @@
 import { Base } from "./Base";
+import { MediaFile } from "./MediaFile";
 export class AssetRequest extends Base {
     id: number;
     productCategory: string;
@@ -11,6 +12,7 @@ export class AssetRequest extends Base {
     allocated: boolean;
     asset: any;
     user: any;
+    attachment: MediaFile;
     organisation: any;
     constructor() {
         super();

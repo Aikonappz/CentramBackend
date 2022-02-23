@@ -1,14 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
-import { RequestDemoDTO } from '../model/RequestDemoDTO';
 import { ApiHttpService } from './ApiHttpService';
-import { CommonResponse } from '../model/CommonResponse';
-import { LocationList, LocationVO } from '../model/LocationVO';
-import { Department, DepartmentList } from '../model/Department';
-import { Status } from '../model/enumerator/Status';
-import { Priority, PriorityList } from '../model/Priority';
-import { HolidayCalenderList } from '../model/HolidayCalender';
-import { Notification, NotificationList } from '../model/Notification';
 import { EntityType } from '../model/enumerator/EntityType';
 import { MediaType } from '../model/enumerator/MediaType';
 import { MediaFile } from '../model/MediaFile';

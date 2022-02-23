@@ -109,7 +109,7 @@
                                 <span [ngClass]="{'badge':true}">{{element.serialNo}}</span><br />
                                 Category : {{element.productCategory}}<br />
                                 Asset Type : {{element.assetType}}<br />
-                                Model No : {{element.modelNo}}<br />
+                                Model No : {{element?.modelNo}}<br />
                                 Term: {{element.longTerm==true? 'LONG' : 'SHORT'}}<br />
                                 Comment : {{element.comment}}<br />
                             </td>

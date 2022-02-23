@@ -7,6 +7,7 @@ import { RequestedAssetComponent } from './requested-asset.component';
 import { AssetComponent } from './asset.component';
 import { OrderAssetComponent } from './orderasset.component';
 import { RequestAssetComponent } from './request-asset.component';
+import { ActionAssetRequestComponent } from './approveasset.component';
 
 const routes: Routes = [
   {
@@ -32,7 +33,7 @@ const routes: Routes = [
         component: AddOrderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Order Assets'
+          title: 'Order New Assets'
         },
       },
       {
@@ -40,7 +41,7 @@ const routes: Routes = [
         component: ApproveOrderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Approve Assets Order'
+          title: 'Action Assets Order'
         },
       },
 
@@ -49,7 +50,7 @@ const routes: Routes = [
         component: AssetComponent,
         pathMatch: 'full',
         data: {
-          title: 'Order Assets'
+          title: 'Manage Assets'
         },
       },
       {
@@ -74,6 +75,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Request Assets'
+        },
+      },
+      {
+        path: 'request/action/:requestId',
+        component: ActionAssetRequestComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Request Action'
         },
       },
     ]

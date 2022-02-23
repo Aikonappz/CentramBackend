@@ -92,6 +92,11 @@ public class AssetRequest extends BaseEntity implements Serializable {
     private Boolean allocated = false;
 
     @ApiModelProperty(required = true, value = "")
+    @Column(name = "request_canceled", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private Boolean requestCanceled = false;
+
+    @ApiModelProperty(required = true, value = "")
     @Valid
     @NotNull
     @OneToOne
@@ -113,6 +118,12 @@ public class AssetRequest extends BaseEntity implements Serializable {
     @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
+    @Transient
+    private MediaFile attachment;
 
     public AssetRequest(@NotNull BigInteger id) {
         this.id = id;

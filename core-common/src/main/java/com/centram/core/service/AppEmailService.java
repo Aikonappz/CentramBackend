@@ -263,15 +263,15 @@ public class AppEmailService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")
-    public void sendAssetRequestUpdateEmail(Map<String, Object> mailValues) {
+    public void sendInboundAssetRequestUpdateEmail(Map<String, Object> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
-                Arrays.asList("BASE_EMAIL_TEMPLATE", "ASSET_REQUEST_EMAIL_TEMPLATE")
+                Arrays.asList("BASE_EMAIL_TEMPLATE", "INBOUND_ASSET_EMAIL_TEMPLATE")
         );
         String baseEmailTemplate = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
                 .findFirst().get().getConfigurationValue();
         AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("ASSET_REQUEST_EMAIL_TEMPLATE"))
+                .filter(ac -> ac.getConfigurationKey().equals("INBOUND_ASSET_EMAIL_TEMPLATE"))
                 .findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("subject")).toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("body")).toString();
@@ -282,17 +282,19 @@ public class AppEmailService {
         Context context = new Context(Locale.ENGLISH);
         context.setVariable("ord_status", mailValues.get("ord_status"));
         mailSubject = templateEngine.process(mailSubject, context);
-        String assetOrderLink = appBaseUrl.concat("/asset/request/approve/").concat(mailValues.get("asset_id").toString());
+        String link = appBaseUrl.concat("/asset/request/action/").concat(mailValues.get("asset_id").toString());
         context = new Context(Locale.ENGLISH);
+        context.setVariable("feedback", mailValues.get("feedback"));
+        context.setVariable("ord_status", mailValues.get("ord_status"));
         context.setVariable("comment", mailValues.get("comment"));
         context.setVariable("project", mailValues.get("project"));
         context.setVariable("longTerm", mailValues.get("longTerm"));
-        context.setVariable("project", mailValues.get("project"));
         context.setVariable("user", mailValues.get("user"));
+        context.setVariable("serialNo", mailValues.get("serialNo"));
         context.setVariable("modelNo", mailValues.get("modelNo"));
         context.setVariable("assetType", mailValues.get("assetType"));
         context.setVariable("productCategory", mailValues.get("productCategory"));
-        context.setVariable("ntfy_link", assetOrderLink);
+        context.setVariable("ntfy_link", link);
         mailBody = templateEngine.process(mailBody, context);
         context = new Context(Locale.ENGLISH);
         context.setVariable("recipient_name", mailValues.get("recipient_name"));

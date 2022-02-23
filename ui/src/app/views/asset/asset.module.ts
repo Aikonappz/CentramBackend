@@ -16,6 +16,7 @@ import { AssetComponent } from './asset.component';
 import { AddAssetComponent } from './addasset.component';
 import { RequestedAssetComponent } from './requested-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
+import { ActionAssetRequestComponent, } from './approveasset.component';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { RequestAssetComponent } from './request-asset.component';
     AddAssetComponent,
     RequestedAssetComponent,
     RequestAssetComponent,
+    ActionAssetRequestComponent,
   ],
   imports: [
     CommonModule,

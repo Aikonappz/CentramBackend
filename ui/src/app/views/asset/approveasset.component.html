@@ -1,0 +1,76 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Approve/Reject Asset Request</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <table class="table table-bordered table-striped table-sm">
+              <tr>
+                <td width="50%"><strong>Product Category</strong></td>
+                <td>{{assetRequest.productCategory}}</td>
+              </tr>
+              <tr>
+                <td><strong>Asset Type</strong></td>
+                <td>{{assetRequest.assetType}}</td>
+              </tr>
+              <tr>
+                <td><strong>Model No</strong></td>
+                <td>{{assetRequest?.modelNo}}</td>
+              </tr>
+              <tr>
+                <td><strong>Project Code</strong></td>
+                <td>{{assetRequest.user?.projectCode}}</td>
+              </tr>
+              <tr>
+                <td><strong>Long Term?</strong></td>
+                <td>{{assetRequest.longTerm==true? 'Yes' : 'No'}}</td>
+              </tr>
+              <tr>
+                <td><strong>Comment</strong></td>
+                <td>{{assetRequest.comment}}</td>
+              </tr>
+              <tr *ngIf="assetRequest.attachment!=null">
+                <td><strong>Attachment</strong></td>
+                <td>
+                  <span class="actionable-span"
+                    (click)="downloadFile(assetRequest.attachment.id)">{{assetRequest.attachment.fileName}}&nbsp;&nbsp;</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Approver Feedback</strong></td>
+                <td>
+                  <div *ngIf="assetRequest.approverComment==null">
+                    <textarea id="approverComment" rows="4" class="form-control textarea-non-resizable"
+                      formControlName="approverComment" id="approverComment" name="approverComment"
+                      placeholder="Approver Feedback"></textarea>
+                    <div *ngIf="f.approverComment.touched && f.approverComment.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="f.approverComment.errors?.required">
+                        Approver Feedback is required!
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="assetRequest.approverComment!=null">
+                    {{assetRequest.approved == true ? 'Approved' : 'Rejected'}}<br />
+                    {{assetRequest.approverComment}}
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="(canApprove)" [disabled]="!angForm.valid" type="button" (click)="formSubmit('APPROVE')"
+              class="btn btn-primary">Approve</button>
+            <button *ngIf="(canApprove)" [disabled]="!angForm.valid" type="button" (click)="formSubmit('REJECT')"
+              class="btn btn-danger">Reject</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

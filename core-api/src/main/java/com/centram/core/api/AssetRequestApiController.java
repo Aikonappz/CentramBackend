@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.AssetRequestService;
@@ -53,7 +54,7 @@ public class AssetRequestApiController {
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{assetRequestId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUEST ASSET','READ|WRITE|APPROVE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUEST ASSET','READ|WRITE|APPROVE',authentication.principal) || @assetRequestService.hasApprovalPermission(authentication.principal,#assetRequestId)")
     public ResponseEntity<AssetRequest> getAssetById(@ApiParam(value = "id of asset request to return", required = true) @PathVariable("assetRequestId") BigInteger assetRequestId) {
         return new ResponseEntity<AssetRequest>(assetRequestService.getAssetRequest(assetRequestId), HttpStatus.OK);
     }
@@ -76,5 +77,16 @@ public class AssetRequestApiController {
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<AssetRequest>>(assetRequestService.getAssetRequests(productCategory, assetType, modelNo, serialNo, approved, allocated, pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"asset request",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @JsonView(Views.DetailView.class)
+    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    @PreAuthorize("@assetRequestService.hasApprovalPermission(authentication.principal,#body.id)")
+    public ResponseEntity<AssetRequest> approveAssetRequest(@ApiParam(value = "Asset Order object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
+        return new ResponseEntity<AssetRequest>(assetRequestService.approveAssetRequest(body), HttpStatus.OK);
     }
 }

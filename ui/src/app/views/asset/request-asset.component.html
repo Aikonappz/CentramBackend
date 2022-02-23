@@ -10,81 +10,92 @@
         </div>
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
-            <fieldset class="border p-2">
-              <legend class="w-auto">Product Details</legend>
-              <div class="row">
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="productCategory">Product
-                    Category</label>
-                  <select class="form-control" #productCategory (change)="populateChildValues($event.target.value)"
-                    formControlName="productCategory" ngModel id="productCategory" name="productCategory">
-                    <option value="">-- Select Product Type --</option>
-                    <option *ngFor="let e of productTypes" value="{{e}}">{{e}}</option>
-                  </select>
-                  <div *ngIf="f.productCategory.touched && f.productCategory.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.productCategory.errors?.required">
-                      Product Category is required!
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="assetType">Asset Type
-                    Category</label>
-                  <select class="form-control" #assetType (change)="populateAssetModels($event.target.value)"
-                    formControlName="assetType" ngModel id="assetType" name="assetType">
-                    <option value="">-- Select Asset Type --</option>
-                    <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
-                  </select>
-                  <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.assetType.errors?.required">
-                      Asset Type is required!
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <label class="form-col-form-label" for="modelNo">Model No</label>
-                  <select class="form-control" formControlName="modelNo" ngModel id="modelNo" name="modelNo">
-                    <option value="">-- Select Model No --</option>
-                    <option *ngFor="let e of modelList" value="{{e}}">{{e}}</option>
-                  </select>
-                  <div *ngIf="f.modelNo.touched && f.modelNo.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.modelNo.errors?.required">
-                      Model No is required!
-                    </div>
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="productCategory">Product
+                  Category</label>
+                <select class="form-control" #productCategory (change)="populateChildValues($event.target.value)"
+                  formControlName="productCategory" ngModel id="productCategory" name="productCategory">
+                  <option value="">-- Select Product Type --</option>
+                  <option *ngFor="let e of productTypes" value="{{e}}">{{e}}</option>
+                </select>
+                <div *ngIf="f.productCategory.touched && f.productCategory.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.productCategory.errors?.required">
+                    Product Category is required!
                   </div>
                 </div>
               </div>
-              <div class="row row-margin-05">
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="longTerm">For
-                    Long Term?</label>
-                  <select class="form-control" formControlName="longTerm" ngModel id="longTerm" name="longTerm">
-                    <option value="">-- Select --</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                  <div *ngIf="f.longTerm.touched && f.longTerm.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.longTerm.errors?.required">
-                      Selection is required!
-                    </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="assetType">Asset Type
+                  Category</label>
+                <select class="form-control" #assetType (change)="populateAssetModels($event.target.value)"
+                  formControlName="assetType" ngModel id="assetType" name="assetType">
+                  <option value="">-- Select Asset Type --</option>
+                  <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
+                </select>
+                <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.assetType.errors?.required">
+                    Asset Type is required!
                   </div>
                 </div>
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="comment">Comment</label>
-                  <textarea formControlName="comment" ngModel id="comment" name="comment" rows="4"
-                    class="form-control textarea-non-resizable" placeholder="Comment"></textarea>
-                  <div *ngIf="f.comment.touched && f.comment.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.comment.errors?.required">
-                      Comment is required.
-                    </div>
-                    <div *ngIf="f.comment.errors?.maxlength">
-                      Allowed maxlength exceeds.
-                    </div>
-                  </div>
-                </div>
-                <div class="col"></div>
               </div>
-            </fieldset>
+              <div class="col">
+                <label class="form-col-form-label" for="modelNo">Model No</label>
+                <select class="form-control" formControlName="modelNo" ngModel id="modelNo" name="modelNo">
+                  <option value="">-- Select Model No --</option>
+                  <option *ngFor="let e of modelList" value="{{e}}">{{e}}</option>
+                </select>
+                <div *ngIf="f.modelNo.touched && f.modelNo.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.modelNo.errors?.required">
+                    Model No is required!
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="longTerm">For
+                  Long Term?</label>
+                <select class="form-control" formControlName="longTerm" ngModel id="longTerm" name="longTerm">
+                  <option value="">-- Select --</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+                <div *ngIf="f.longTerm.touched && f.longTerm.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.longTerm.errors?.required">
+                    Selection is required!
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="comment">Comment</label>
+                <textarea formControlName="comment" ngModel id="comment" name="comment" rows="4"
+                  class="form-control textarea-non-resizable" placeholder="Comment"></textarea>
+                <div *ngIf="f.comment.touched && f.comment.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.comment.errors?.required">
+                    Comment is required.
+                  </div>
+                  <div *ngIf="f.comment.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label " for="fileInput">Attachments </label>
+                <i class="icon-info"
+                  tooltip="Max file size can be 2 M.B and suported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png"></i>&nbsp;&nbsp;
+                <input (change)="getFileDetails($event)" type="file" id="fileInput" formControlName="fileInput"
+                  name="fileInput">
+                <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.fileInput.errors?.validAttachments">
+                    Supported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png.
+                  </div>
+                  <div *ngIf="f.fileInput.errors?.mustBeLessThan2MB">
+                    File size should be less than 3 MB.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="card-footer">
             <button *ngIf="hasPermission('WRITE,APPROVE')" [disabled]="!angForm.valid" type="button"

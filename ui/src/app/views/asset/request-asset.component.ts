@@ -12,6 +12,8 @@ import { AppUtility } from '../../config/AppUtility';
 import { ClientStorageService } from '../../service/ClientStorageService';
 import { AssetRequestService } from '../../service/AssetRequestService';
 import { AssetRequest } from '../../model/AssetRequest';
+import { EntityType } from '../../model/enumerator/EntityType';
+import { MediaType } from '../../model/enumerator/MediaType';
 declare var $: any;
 
 @Component({
@@ -37,6 +39,7 @@ export class RequestAssetComponent implements OnInit {
   modelList: Set<string> = new Set<string>();
   assetModelList: any[] = [];
   productTypes: Set<string> = new Set<string>();
+  selectedFiles?: FileList;
 
   constructor(
     private fb: FormBuilder,
@@ -74,7 +77,7 @@ export class RequestAssetComponent implements OnInit {
         Validators.required,
       ]),
       modelNo: new FormControl('', [
-        Validators.required,
+        //Validators.required,
       ]),
       longTerm: new FormControl('', [
         Validators.required,
@@ -82,6 +85,8 @@ export class RequestAssetComponent implements OnInit {
       comment: new FormControl('', [
         Validators.required,
         Validators.maxLength(255),
+      ]),
+      fileInput: new FormControl(null, [
       ]),
     }, {
     });
@@ -118,15 +123,10 @@ export class RequestAssetComponent implements OnInit {
     } else {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-      // this.callIncidentService(this.entityId);
     }
   }
 
   ngAfterViewInit() {
-    // this.angForm.get('isDepartment').setValue('1', { onlySelf: true });
-    // this.angForm.get('isAvailable').setValue('1', { onlySelf: true });
-    // this.angForm.get('isUnderWarranty').setValue('1', { onlySelf: true });
-    // this.angForm.get('purchaseType').setValue('OWNED', { onlySelf: true });
   }
 
   ngAfterContentInit() {
@@ -187,11 +187,28 @@ export class RequestAssetComponent implements OnInit {
     this.assetRequestService
       .saveAssetRequest(this.assetRequest)
       .subscribe((data: any) => {
-        this.router.navigate(['/asset/requested']);
+        if (typeof this.selectedFiles != "undefined") {
+          if (this.selectedFiles.length > 0) {
+            const formData: FormData = new FormData();
+            for (var i = 0; i < this.selectedFiles.length; i++) {
+              formData.append("file", this.selectedFiles[i]);
+            }
+            let headers = new Headers();
+            headers.append('Content-Type', 'multipart/form-data');
+            headers.set('Accept', 'application/json');
+            let commId = data.id;
+            this.mediaService
+              .saveMediaService(commId, EntityType.ASSET_REQUEST, MediaType.ASSET_REQUEST, formData, { 'headers': headers })
+              .subscribe((data: any) => {
+                this.router.navigate(['/asset/requested']);
+              });
+          } else {
+            this.router.navigate(['/asset/requested']);
+          }
+        } else {
+          this.router.navigate(['/asset/requested']);
+        }
       });
-  }
-
-  callIncidentService(id: number) {
   }
 
   formatDateTime(d: string) {
@@ -200,4 +217,32 @@ export class RequestAssetComponent implements OnInit {
     }
     return null;
   }
+
+  getFileDetails(event) {
+    for (var i = 0; i < event.target.files.length; i++) {
+      var name = event.target.files[i].name;
+      var type = event.target.files[i].type;
+      var size = event.target.files[i].size;
+      var modifiedDate = event.target.files[i].lastModifiedDate;
+      const file = this.angForm.controls['fileInput'];
+      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan2MB) {
+        return;
+      }
+      let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain", "application/x-msexcel", "application/x-excel", "application/vnd.ms-excel", "application/excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingm", "image/jpeg", "image/pjpeg", "image/png"];
+      if (!validMimeTpes.includes(type)) {
+        file.setErrors({ validAttachments: true, mustBeLessThan2MB: false });
+      } else if (size > (3145728)) {
+        file.setErrors({ validAttachments: false, mustBeLessThan2MB: true });
+      } else {
+        file.setErrors(null);
+        this.selectedFiles = event.target.files;
+      }
+      console.log('Name: ' + name + "\n" +
+        'Type: ' + type + "\n" +
+        'Last-Modified-Date: ' + modifiedDate + "\n" +
+        'Size: ' + Math.round(size / 1024) + " KB");
+    }
+  }
+
 }

@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -8,6 +9,8 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AssetRequestRepository;
 import com.centram.domain.AssetRequest;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.EntityType;
+import com.centram.domain.enumarator.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Service
 public class AssetRequestService {
@@ -34,6 +38,9 @@ public class AssetRequestService {
     @Autowired
     private MiscService miscService;
 
+    @Autowired
+    private MediaService mediaService;
+
     @Transactional(readOnly = true)
     public PaginatedList<AssetRequest> getAssetRequests(Integer productCategory, Integer assetType, String modelNo, String serialNo, Integer approved, Integer allocated, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -49,10 +56,11 @@ public class AssetRequestService {
     @Transactional(readOnly = true)
     public AssetRequest getAssetRequest(BigInteger assetId) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        AssetRequest assetRequest = assetRequestRepository.getAsset(loggedInUser.getUserId(), assetId);
+        AssetRequest assetRequest = assetRequestRepository.getAsset(assetId);
         if (assetRequest == null) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
+        assetRequest.setAttachment(mediaService.getMediaFile(EntityType.ASSET_REQUEST, MediaType.ASSET_REQUEST, assetId));
         return assetRequest;
     }
 
@@ -64,7 +72,33 @@ public class AssetRequestService {
             assetRequest.setUser(new User(userService.getUserById(loggedInUser.getUserId())));
         }
         assetRequest = assetRequestRepository.save(assetRequest);
-        miscService.sendAssetRequestUpdateEmail(assetRequest);
+        miscService.sendInboundAssetRequestUpdateEmail(assetRequest);
         return assetRequest;
+    }
+
+    @Transactional(readOnly = false)
+    public AssetRequest approveAssetRequest(AssetApprovalDTO assetApprovalDTO) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<AssetRequest> assetRequestOptional = assetRequestRepository.findById(assetApprovalDTO.getId());
+        if (assetRequestOptional.isPresent()) {
+            AssetRequest assetRequest = assetRequestOptional.get();
+            assetRequest.setApproved(assetApprovalDTO.getApproval());
+            assetRequest.setApproverComment(assetApprovalDTO.getFeedback());
+            assetRequest = assetRequestRepository.save(assetRequest);
+            miscService.sendInboundAssetRequestUpdateEmail(assetRequest);
+            return assetRequest;
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean hasApprovalPermission(LoggedInUser loggedInUser, BigInteger requestId) {
+        Optional<AssetRequest> assetRequestOptional = assetRequestRepository.findById(requestId);
+        if (assetRequestOptional.isPresent()) {
+            AssetRequest assetRequest = assetRequestOptional.get();
+            return loggedInUser.getUserId().compareTo(assetRequest.getUser().getManagerId()) == 0;
+        }
+        return false;
     }
 }

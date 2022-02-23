@@ -56,6 +56,6 @@ public interface AssetRequestRepository extends JpaRepository<AssetRequest, BigI
             @Param("pageable") Pageable pageable
     );
 
-    @Query("select ar from AssetRequest ar where ar.user.id = (:userId) and ar.id = (:id)")
-    AssetRequest getAsset(@Param("userId") BigInteger userId, @Param("id") BigInteger id);
+    @Query("select ar from AssetRequest ar where ar.id = (:id)")
+    AssetRequest getAsset(@Param("id") BigInteger id);
 }
