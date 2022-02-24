@@ -221,7 +221,7 @@ public class AppEmailService {
         context.setVariable("ord_no", mailValues.get("ord_no"));
         context.setVariable("ord_status", mailValues.get("ord_status"));
         mailSubject = templateEngine.process(mailSubject, context);
-        String assetOrderLink = appBaseUrl.concat("/asset/order/".concat(mailValues.get("approver_index").toString()).concat("/approve/")).concat(mailValues.get("order_id").toString());
+        String assetOrderLink = appBaseUrl.concat("/asset/order/".concat(mailValues.get("approver_index").toString()).concat("/action/")).concat(mailValues.get("order_id").toString());
         context = new Context(Locale.ENGLISH);
         context.setVariable("ord_no", mailValues.get("ord_no"));
         context.setVariable("dept_name", mailValues.get("dept_name"));

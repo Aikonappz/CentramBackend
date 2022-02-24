@@ -8,6 +8,7 @@ export class AssetRequest extends Base {
     longTerm: boolean;
     comment: string;
     approved: boolean;
+    requestCanceled: boolean;
     approverComment: string;
     allocated: boolean;
     asset: any;

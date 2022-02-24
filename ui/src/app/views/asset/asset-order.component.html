@@ -3,7 +3,7 @@
     <div class="col-sm-12">
       <div class="card">
         <div class="card-header" *ngIf="newEntity">
-          <strong>Order Asset</strong>
+          <strong>Order an Asset</strong>
         </div>
         <div class="card-header" *ngIf="!newEntity">
           <strong>Approve Order</strong>
@@ -11,13 +11,14 @@
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
             <fieldset class="border p-2">
-              <legend class="w-auto">Request</legend>
+              <legend class="w-auto">Requesting For</legend>
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="isDepartment">For
                     Department?</label>
                   <select class="form-control" formControlName="isDepartment" ngModel id="isDepartment"
                     name="isDepartment">
+                    <option value="">-- Select --</option>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
@@ -30,16 +31,26 @@
                 <div id="dept-inp" class="col">
                   <label class="form-col-form-label" for="department">Department</label>
                   <select class="form-control" formControlName="department" ngModel id="department" name="department">
+                    <option value="">-- Select Department --</option>
                     <option *ngFor="let e of departmentList" value="{{e.id}}">{{e.name}}</option>
                   </select>
-                  <div id="dept-err" class="alert alert-danger-custom d-none">Department is required!</div>
+                  <div *ngIf="f.department.touched && f.department.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.department.errors?.required">
+                      Department is required!
+                    </div>
+                  </div>
                 </div>
                 <div id="loc-inp" class="col d-none">
-                  <label class="form-col-form-label" for="departmentOrganisationName">Organization</label>
+                  <label class="form-col-form-label" for="location">Organization</label>
                   <select class="form-control" formControlName="location" ngModel id="location" name="location">
+                    <option value="">-- Select Organization --</option>
                     <option *ngFor="let e of locationList" value="{{e.id}}">{{e.name}}</option>
                   </select>
-                  <div id="loc-err" class="alert alert-danger-custom d-none">Organization is required!</div>
+                  <div *ngIf="f.location.touched && f.location.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.location.errors?.required">
+                      Organization is required!
+                    </div>
+                  </div>
                 </div>
                 <div class="col"></div>
                 <div class="col"></div>
@@ -96,6 +107,7 @@
                     Budget?</label>
                   <select class="form-control" formControlName="withinBudget" ngModel id="withinBudget"
                     name="withinBudget">
+                    <option value="">-- Select --</option>
                     <option value="1" selected>Yes</option>
                     <option value="0">No</option>
                   </select>
@@ -128,6 +140,7 @@
                     Agreement?</label>
                   <select class="form-control" formControlName="existingAgreement" ngModel id="existingAgreement"
                     name="existingAgreement">
+                    <option value="">-- Select --</option>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>

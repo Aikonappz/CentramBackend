@@ -931,7 +931,7 @@ public class MiscService {
                 mailValues.put("approver_index", 2);
                 mailValues.put("subject", "approver2MailSubject");
                 mailValues.put("body", "approver2MailBody");
-                mailValues.put("to", assetOrder.getApproverUser1().getEmail());
+                mailValues.put("to", assetOrder.getApproverUser2().getEmail());
                 appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
             }
             mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
@@ -943,6 +943,14 @@ public class MiscService {
             mailValues.put("to", assetOrder.getRaisedUser().getEmail());
             appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
         } else if (assetOrder.getApproverUser1Comment() != null && assetOrder.getApproverUser2Comment() != null) {
+            mailValues.put("notification", new Notification(null, null, assetOrder.getApproverUser1(), Status.PUSHED, NotificationType.INFO));
+            mailValues.put("recipient_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());
+            mailValues.put("feedback", assetOrder.getApproverUser2Comment());
+            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Approved" : "Rejected");
+            mailValues.put("subject", "approver2FeedbackMailSubject");
+            mailValues.put("body", "approver2FeedbackMailBody");
+            mailValues.put("to", assetOrder.getApproverUser1().getEmail());
+            appEmailService.sendOutBoundAssetUpdateEmail(mailValues);
             mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
             mailValues.put("feedback", assetOrder.getApproverUser2Comment());

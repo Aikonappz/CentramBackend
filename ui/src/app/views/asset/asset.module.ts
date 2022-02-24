@@ -9,26 +9,30 @@ import { MasterRoutingModule } from '../master/master-routing.module';
 import { CKEditorModule } from 'ckeditor4-angular';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { OrderAssetComponent } from './orderasset.component';
-import { AddOrderComponent } from './addorder.component';
-import { ApproveOrderComponent } from './approveorder.component';
+import { OrderedAssetComponent } from './ordered-asset.component';
+import { AssetOrderComponent } from './asset-order.component';
+import { OrderActionComponent } from './order-action.component';
 import { AssetComponent } from './asset.component';
 import { AddAssetComponent } from './addasset.component';
 import { RequestedAssetComponent } from './requested-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
 import { ActionAssetRequestComponent, } from './approveasset.component';
+import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
+import { AllocateAsset } from './model/AllocateAsset';
 
 
 @NgModule({
   declarations: [
-    OrderAssetComponent,
-    AddOrderComponent,
-    ApproveOrderComponent,
+    OrderedAssetComponent,
+    AssetOrderComponent,
+    OrderActionComponent,
     AssetComponent,
     AddAssetComponent,
     RequestedAssetComponent,
     RequestAssetComponent,
     ActionAssetRequestComponent,
+    IncommingRequestedAssetComponent,
+    AllocateAsset,
   ],
   imports: [
     CommonModule,

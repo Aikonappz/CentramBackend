@@ -23,10 +23,8 @@ export class AssetOrder extends Base {
     organisation: any;
     constructor() {
         super();
-
     }
 }
-
 export interface AssetOrderList {
     content: AssetOrder[];
     totalElements: number;

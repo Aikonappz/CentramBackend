@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BsModalRef, ModalOptions } from "ngx-bootstrap/modal";
-import { AssignUser } from "../../../model/AssignUser";
+import { IAssignUser } from "../../../model/IAssignUser";
 import { UserVO } from "../../../model/UserVO";
 import { IncidentService } from "../../../service/IncidentService";
 
@@ -82,7 +82,7 @@ export class AssignIncidentComponent implements OnInit {
     agentList: UserVO[];
     canAssign: boolean;
     selectedValues: Map<number, string>;
-    assignUser: Partial<AssignUser>;
+    assignUser: Partial<IAssignUser>;
     angFormAssign: FormGroup;
     incidents: number[] = [];
     incidentNos: string[] = [];

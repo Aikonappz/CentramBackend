@@ -1,12 +1,14 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.AllocateAssetDTO;
 import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AssetRequestRepository;
+import com.centram.domain.Asset;
 import com.centram.domain.AssetRequest;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.EntityType;
@@ -41,8 +43,11 @@ public class AssetRequestService {
     @Autowired
     private MediaService mediaService;
 
+    @Autowired
+    private AssetService assetService;
+
     @Transactional(readOnly = true)
-    public PaginatedList<AssetRequest> getAssetRequests(Integer productCategory, Integer assetType, String modelNo, String serialNo, Integer approved, Integer allocated, Pageable pageable) {
+    public PaginatedList<AssetRequest> getAssetRequests(Integer productCategory, Integer assetType, String modelNo, String serialNo, Integer approved, Integer allocated, Integer requestFrom, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         productCategory = productCategory == null ? -1 : productCategory;
         assetType = assetType == null ? -1 : assetType;
@@ -50,7 +55,8 @@ public class AssetRequestService {
         serialNo = (serialNo == null || serialNo.equalsIgnoreCase("")) ? null : serialNo;
         approved = approved == null ? -1 : approved;
         allocated = allocated == null ? -1 : allocated;
-        return new PaginatedList<AssetRequest>(assetRequestRepository.findAll(productCategory, assetType, modelNo, serialNo, approved, allocated, loggedInUser.getUserId(), pageable));
+        requestFrom = requestFrom == null ? -1 : requestFrom;
+        return new PaginatedList<AssetRequest>(assetRequestRepository.findAll(productCategory, assetType, modelNo, serialNo, approved, allocated, requestFrom, loggedInUser.getUserId(), pageable));
     }
 
     @Transactional(readOnly = true)
@@ -89,6 +95,30 @@ public class AssetRequestService {
             return assetRequest;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public AssetRequest allocateAssetRequest(AllocateAssetDTO allocateAssetDTO) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Asset asset = assetService.getAssetById(allocateAssetDTO.getAssetId());
+        if (asset == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        } else {
+            asset.setIsAvailable(!allocateAssetDTO.getAllocate());
+            asset = assetService.save(asset);
+            Optional<AssetRequest> assetRequestOptional = assetRequestRepository.findById(allocateAssetDTO.getRequestId());
+            if (assetRequestOptional.isPresent()) {
+                AssetRequest assetRequest = assetRequestOptional.get();
+                assetRequest.setAsset(allocateAssetDTO.getAllocate() ? asset : null);
+                assetRequest.setAllocated(allocateAssetDTO.getAllocate());
+                assetRequest.setItTeamComment(allocateAssetDTO.getFeedback());
+                assetRequest = assetRequestRepository.save(assetRequest);
+                //miscService.sendInboundAssetRequestUpdateEmail(assetRequest);
+                return assetRequest;
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            }
         }
     }
 

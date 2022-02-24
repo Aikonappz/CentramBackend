@@ -77,6 +77,11 @@ public class AssetRequest extends BaseEntity implements Serializable {
     private String comment;
 
     @ApiModelProperty(required = true, value = "")
+    @Column(name = "it_team_comment", nullable = false, columnDefinition = "varchar(2000) not null")
+    @JsonView(Views.BasicView.class)
+    private String itTeamComment;
+
+    @ApiModelProperty(required = true, value = "")
     @Column(name = "approved", nullable = false)
     @JsonView(Views.BasicView.class)
     private Boolean approved = false;

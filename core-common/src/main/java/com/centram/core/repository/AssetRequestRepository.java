@@ -13,7 +13,7 @@ import java.math.BigInteger;
 
 @Repository
 public interface AssetRequestRepository extends JpaRepository<AssetRequest, BigInteger> {
-    @Query("select ar from AssetRequest ar left join ar.asset a where ar.user.id = (:userId) and " +
+    @Query("select ar from AssetRequest ar left join ar.asset a where 1 = 1 and " +
             " ( " +
             "   ((:serialNo) is not null and (ar.asset is not null and ar.asset.serialNo = (:serialNo))) " +
             "   OR " +
@@ -43,6 +43,11 @@ public interface AssetRequestRepository extends JpaRepository<AssetRequest, BigI
             "   ((:allocated) <> -1 and ar.allocated = (:allocated)) " +
             "   OR " +
             "   ((:allocated) = -1) " +
+            " ) and " +
+            " ( " +
+            "   ((:requestFrom) <> -1 and ar.approved = true and ar.approverComment is not null) " +
+            "   OR " +
+            "   ((:requestFrom) = -1 and ar.user.id = (:userId)) " +
             " ) "
     )
     Page<AssetRequest> findAll(
@@ -52,6 +57,7 @@ public interface AssetRequestRepository extends JpaRepository<AssetRequest, BigI
             @Param("serialNo") String serialNo,
             @Param("approved") Integer approved,
             @Param("allocated") Integer allocated,
+            @Param("requestFrom") Integer requestFrom,
             @Param("userId") BigInteger userId,
             @Param("pageable") Pageable pageable
     );

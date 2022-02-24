@@ -42,7 +42,7 @@ public class AssetOrderService {
     private NotificationService notificationService;
 
     @Transactional(readOnly = true)
-    public PaginatedList<AssetOrder> getAssetOrders(String orderNo, String status, Pageable pageable) {
+    public PaginatedList<AssetOrder> getOrderedAssets(String orderNo, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         orderNo = (orderNo.equalsIgnoreCase("")) ? null : orderNo;
         status = (status.equalsIgnoreCase("")) ? null : status;

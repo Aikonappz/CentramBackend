@@ -6,7 +6,7 @@ import { AssetRequest, AssetRequestList } from '../../model/AssetRequest';
 import { AssetRequestService } from '../AssetRequestService';
 
 
-export class AssetRequestDataSource implements DataSource<AssetRequest>{
+export class RequestedAssetDataSource implements DataSource<AssetRequest>{
 
     private objSubject = new BehaviorSubject<AssetRequest[]>([]);
     private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -27,7 +27,7 @@ export class AssetRequestDataSource implements DataSource<AssetRequest>{
 
     loadData(pageNumber = 0, pageSize = 10, req = {}) {
         this.loadingSubject.next(true);
-        let defaultParam = { page: pageNumber, size: pageSize, requestFrom: -1 };
+        let defaultParam = { page: pageNumber, size: pageSize, requestFrom: 1 };
         let params = Object.assign(
             req,
             defaultParam

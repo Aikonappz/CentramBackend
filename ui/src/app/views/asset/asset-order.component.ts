@@ -17,14 +17,13 @@ import { AssetOrderService } from '../../service/AssetOrderService';
 declare var $: any;
 
 @Component({
-  selector: 'app-addorder',
-  templateUrl: './addorder.component.html',
-  styleUrls: ['./addorder.component.scss']
+  selector: 'app-asset-order',
+  templateUrl: './asset-order.component.html',
+  styleUrls: ['./asset-order.component.scss']
 })
-export class AddOrderComponent implements OnInit {
+export class AssetOrderComponent implements OnInit {
   moduleName: string = "ORDER ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'OPEN';
   statusFlag: boolean = true;
@@ -61,6 +60,7 @@ export class AddOrderComponent implements OnInit {
     });
     this.angForm = this.fb.group({
       isDepartment: new FormControl('', [
+        Validators.required,
       ]),
       department: new FormControl('', [
       ]),
@@ -80,6 +80,7 @@ export class AddOrderComponent implements OnInit {
         Validators.maxLength(10),
       ]),
       withinBudget: new FormControl('', [
+        Validators.required,
       ]),
       approverUser1: new FormControl('', [
         Validators.required,
@@ -91,6 +92,7 @@ export class AddOrderComponent implements OnInit {
         Validators.required,
       ]),
       existingAgreement: new FormControl('', [
+        Validators.required,
       ]),
       vendor: new FormControl('', [
         Validators.required,
@@ -99,8 +101,33 @@ export class AddOrderComponent implements OnInit {
         Validators.required,
         Validators.maxLength(255),
       ]),
+    }, {
+      validators: this.customValidations(),
     });
     this.assetOrder = new AssetOrder();
+  }
+
+  customValidations() {
+    return (formGroup: FormGroup) => {
+      if (formGroup.controls['isDepartment'].value == "1") {
+        if (formGroup.controls['department'].value == "") {
+          formGroup.controls['department'].setErrors({ required: true });
+        } else {
+          formGroup.controls['department'].setErrors(null);
+        }
+      } else {
+        formGroup.controls['department'].setErrors(null);
+      }
+      if (formGroup.controls['isDepartment'].value == "0") {
+        if (formGroup.controls['location'].value == "") {
+          formGroup.controls['location'].setErrors({ required: true })
+        } else {
+          formGroup.controls['location'].setErrors(null);
+        }
+      } else {
+        formGroup.controls['location'].setErrors(null);
+      }
+    };
   }
 
   hasPermission(actions: string): boolean {
@@ -129,15 +156,12 @@ export class AddOrderComponent implements OnInit {
     this.route.params.subscribe(params => {
       //console.log(this.route.snapshot.paramMap.get('referer'));
     });
-
     this.assetList = Object.values(AssetType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
-
     this.purchaseTypeList = Object.values(PurchaseType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
-
     if (!this.route.snapshot.paramMap.has('id')) {
       this.miscService
         .departmentsService()
@@ -180,7 +204,7 @@ export class AddOrderComponent implements OnInit {
           }
         });
       this.userService
-        .getUsersService({ size: 2147483647 })
+        .getUsersService({ size: AppUtility.MAX_PAGE_SIZE })
         .subscribe((data: any) => {
           let users = data.content;
           for (let k in users) {
@@ -198,9 +222,9 @@ export class AddOrderComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.angForm.get('isDepartment').setValue('1', { onlySelf: true });
-    this.angForm.get('existingAgreement').setValue('1', { onlySelf: true });
-    this.angForm.get('withinBudget').setValue('1', { onlySelf: true });
+    // this.angForm.get('isDepartment').setValue('1', { onlySelf: true });
+    // this.angForm.get('existingAgreement').setValue('1', { onlySelf: true });
+    // this.angForm.get('withinBudget').setValue('1', { onlySelf: true });
   }
 
   ngAfterContentInit() {
@@ -221,21 +245,6 @@ export class AddOrderComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
-      if ($('#isDepartment').val() == 1) {
-        if ($('#department').val() == "") {
-          $('#dept-err').removeClass('d-none');
-          return false;
-        } else {
-          $('#dept-err').addClass('d-none');
-        }
-      } else {
-        if ($('#location').val() == "") {
-          $('#loc-err').removeClass('d-none');
-          return false;
-        } else {
-          $('#loc-err').addClass('d-none');
-        }
-      }
       this.assetOrder.isDepartment = this.angForm.controls['isDepartment'].value == 1 ? true : false;
       if (this.assetOrder.isDepartment) {
         for (let k in this.departmentList) {
@@ -289,18 +298,7 @@ export class AddOrderComponent implements OnInit {
     this.assetOrderService
       .saveAssetOrder(this.assetOrder)
       .subscribe((data: any) => {
-        this.router.navigate(['/asset/order']);
+        this.router.navigate(['/asset/ordered']);
       });
   }
-
-  callIncidentService(id: number) {
-  }
-
-  formatDateTime(d: string) {
-    if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
-    }
-    return null;
-  }
-
 }

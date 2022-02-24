@@ -16,6 +16,9 @@ export class AssetRequestService {
     approveAssetRequest(assetApprovalDTO: AssetApprovalDTO): Observable<AssetRequest> {
         return this.http.put('/v1/asset-request/', assetApprovalDTO);
     }
+    allocateAssetRequest(allocateAsset: any): Observable<AssetRequest> {
+        return this.http.put('/v1/asset-request/allocate', allocateAsset);
+    }
     assetRequestsService(request?: any): Observable<AssetRequestList> {
         return this.http.get('/v1/asset-request/all', { "params": request });
     }

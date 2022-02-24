@@ -6,38 +6,31 @@ import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
-import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
-import { Incident } from '../../model/Incident';
-import { Permission } from '../../model/Permssion';
 import { AssetOrderService } from '../../service/AssetOrderService';
 import { AssetOrderDataSource } from '../../service/datasource/AssetOrderDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 declare var $: any;
 
 @Component({
-  selector: 'app-orderasset',
-  templateUrl: './orderasset.component.html',
-  styleUrls: ['./orderasset.component.scss']
+  selector: 'app-ordered-asset',
+  templateUrl: './ordered-asset.component.html',
+  styleUrls: ['./ordered-asset.component.scss']
 })
-export class OrderAssetComponent implements OnInit {
+export class OrderedAssetComponent implements OnInit {
   moduleName: string = "ORDER ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['orderFor', 'assetDtl', 'vendorDtl', 'approverDtl',];
   private datasource: AssetOrderDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  statusList: any = [];
-  permissions: Permission[] = [];
-  moduleList: Permission[] = [];
-  subModuleList: Permission[];
   angForm: FormGroup;
   searchedData: Object = {};
-  incidentStatus: IncidentStatus;
+
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
     private service: AssetOrderService,
-    private loggedInUserService: LoggedInUserService
+    private loggedInUserService: LoggedInUserService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -47,8 +40,6 @@ export class OrderAssetComponent implements OnInit {
     });
     this.angForm = this.fb.group({
       orderNo: new FormControl('', [
-      ]),
-      title: new FormControl('', [
       ]),
       status: new FormControl(null, [
       ]),
@@ -91,12 +82,8 @@ export class OrderAssetComponent implements OnInit {
       .subscribe();
   }
 
-  edit(inc: Incident) {
-    this.router.navigate(['/incident/user/edit/' + inc.id]);
-  }
-
   add(mode: string) {
-    this.router.navigate(['/asset/order/add/']);
+    this.router.navigate(['/asset/order/']);
   }
 
   loadData(req?: Object) {
@@ -127,24 +114,11 @@ export class OrderAssetComponent implements OnInit {
         "status": status == null ? '' : status,
         "orderNo": orderNo == null ? '' : orderNo,
       };
+      //console.log(JSON.stringify(this.searchedData));
       this.loadData(this.searchedData);
-      //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");
     }
   }
 
-  @ViewChild("moduleId") moduleId;
-  populateSubmodule(moduleId) {
-    let c = 0;
-    if (moduleId != "") {
-      this.subModuleList = [];
-      for (let i = 0; i < this.permissions.length; i++) {
-        if (this.permissions[i].moduleParentId == moduleId) {
-          this.subModuleList[c] = this.permissions[i];
-          c++;
-        }
-      }
-    }
-  }
 }

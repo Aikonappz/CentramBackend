@@ -19,7 +19,7 @@ import { IncidentService } from '../../service/IncidentService';
 import { MiscService } from '../../service/MiscService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { UserService } from '../../service/UserService';
-import { AssignUser } from '../../model/AssignUser';
+import { IAssignUser } from '../../model/IAssignUser';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 declare var $: any;
 
@@ -423,7 +423,7 @@ export class AgentIncidentComponent implements OnInit {
       ignoreBackdropClick: true,
       class: 'modal-bg',
     };
-    const initialState: Partial<AssignUser> = {
+    const initialState: Partial<IAssignUser> = {
       agentList: this.agentList,
       canAssign: (this.canAssignNow && this.selectedValues.size > 0) ? true : false,
       selectedValues: this.selectedValues

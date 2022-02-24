@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AddAssetComponent } from './addasset.component';
-import { AddOrderComponent } from './addorder.component';
-import { ApproveOrderComponent } from './approveorder.component';
+import { AssetOrderComponent } from './asset-order.component';
+import { OrderActionComponent } from './order-action.component';
 import { RequestedAssetComponent } from './requested-asset.component';
 import { AssetComponent } from './asset.component';
-import { OrderAssetComponent } from './orderasset.component';
+import { OrderedAssetComponent } from './ordered-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
 import { ActionAssetRequestComponent } from './approveasset.component';
+import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 
 const routes: Routes = [
   {
@@ -18,27 +19,27 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'order'
+        redirectTo: 'ordered'
       },
       {
-        path: 'order',
-        component: OrderAssetComponent,
+        path: 'ordered',
+        component: OrderedAssetComponent,
         pathMatch: 'full',
         data: {
           title: 'Ordered Assets'
         },
       },
       {
-        path: 'order/add',
-        component: AddOrderComponent,
+        path: 'order',
+        component: AssetOrderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Order New Assets'
+          title: 'Order Assets'
         },
       },
       {
-        path: 'order/:approver/approve/:id',
-        component: ApproveOrderComponent,
+        path: 'order/:approver/action/:id',
+        component: OrderActionComponent,
         pathMatch: 'full',
         data: {
           title: 'Action Assets Order'
@@ -83,6 +84,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Request Action'
+        },
+      },
+      {
+        path: 'requested/incomming',
+        component: IncommingRequestedAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Requested Asset'
         },
       },
     ]

@@ -1274,9 +1274,3 @@ export class ViewUserDashboardDetails implements OnInit {
     return null;
   }
 }
-
-
-function ViewOrgAdminVendorDetail(ViewOrgAdminVendorDetail: any, arg1: ModalOptions<Object> & { initialState: { params: any; }; }): BsModalRef<any> {
-  throw new Error('Function not implemented.');
-}
-

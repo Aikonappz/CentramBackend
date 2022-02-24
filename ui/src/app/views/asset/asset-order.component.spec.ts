@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ApproveOrderComponent } from './approveorder.component';
+import { AssetOrderComponent, } from './asset-order.component';
 
-describe('ApproveOrderComponent', () => {
-  let component: ApproveOrderComponent;
-  let fixture: ComponentFixture<ApproveOrderComponent>;
+describe('AddOrderComponent', () => {
+  let component: AssetOrderComponent;
+  let fixture: ComponentFixture<AssetOrderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ApproveOrderComponent]
+      declarations: [AssetOrderComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApproveOrderComponent);
+    fixture = TestBed.createComponent(AssetOrderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

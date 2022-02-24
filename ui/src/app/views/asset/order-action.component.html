@@ -55,15 +55,24 @@
               <tr>
                 <td><strong>Approver 1 Feedback</strong></td>
                 <td>
-                  {{assetOrder.approverUser1?.firstName}} {{assetOrder.approverUser1?.lastName}}<br />
-                  {{assetOrder.approverUser1Comment==null? 'Not Yet' : assetOrder.approvedUser1==true? 'Yes' :
-                  'No'}}<br />
+                  <div *ngIf="assetOrder.approverUser1Comment!=null">
+                    {{assetOrder.approverUser1?.firstName}} {{assetOrder.approverUser1?.lastName}}<br />
+                    {{assetOrder.approverUser1Comment==null? 'No Action Yet' : assetOrder.approvedUser1==true?
+                    'Approved'
+                    :
+                    'Rejected'}}
+                  </div>
                   <div *ngIf="assetOrder.approverUser1Comment==null">
                     <textarea *ngIf="canApprove1" id="approverUser1Comment" rows="4"
                       class="form-control textarea-non-resizable" formControlName="approverUser1Comment"
                       id="approverUser1Comment" name="approverUser1Comment"
                       placeholder="Approver 1 Feedback"></textarea>
-                    <div id="feedback1-err" class="alert alert-danger-custom d-none">Feedback is required!</div>
+                    <div *ngIf="f.approverUser1Comment.touched && f.approverUser1Comment.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="f.approverUser1Comment.errors?.required">
+                        Feedback is required!
+                      </div>
+                    </div>
                   </div>
                   <div *ngIf="assetOrder.approverUser1Comment!=null">
                     {{assetOrder.approverUser1Comment}}
@@ -73,15 +82,23 @@
               <tr>
                 <td><strong>Approver 2 Feedback</strong></td>
                 <td>
-                  {{assetOrder.approverUser2?.firstName}} {{assetOrder.approverUser2?.lastName}}<br />
-                  {{assetOrder.approverUser2Comment==null? 'Not Yet' : assetOrder.approvedUser2==true? 'Yes' :
-                  'No'}}<br />
+                  <div *ngIf="assetOrder.approverUser2Comment!=null">
+                    {{assetOrder.approverUser2?.firstName}} {{assetOrder.approverUser2?.lastName}}<br />
+                    Status : {{assetOrder.approverUser2Comment==null? 'No Action Yet' : assetOrder.approvedUser2==true?
+                    'Approved' :
+                    'Rejected'}}
+                  </div>
                   <div *ngIf="assetOrder.approverUser2Comment==null">
                     <textarea *ngIf="canApprove2" id="approverUser2Comment" rows="4"
                       class="form-control textarea-non-resizable" formControlName="approverUser2Comment"
                       id="approverUser2Comment" name="approverUser2Comment"
                       placeholder="Approver 2 Feedback"></textarea>
-                    <div id="feedback2-err" class="alert alert-danger-custom d-none">Feedback is required!</div>
+                    <div *ngIf="f.approverUser2Comment.touched && f.approverUser2Comment.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="f.approverUser2Comment.errors?.required">
+                        Feedback is required!
+                      </div>
+                    </div>
                   </div>
                   <div *ngIf="assetOrder.approverUser2Comment!=null">
                     {{assetOrder.approverUser2Comment}}

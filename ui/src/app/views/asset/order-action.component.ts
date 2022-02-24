@@ -13,20 +13,16 @@ import { AssetApprovalDTO } from '../../model/AssetApprovalDTO';
 declare var $: any;
 
 @Component({
-  selector: 'app-approveorder',
-  templateUrl: './approveorder.component.html',
-  styleUrls: ['./approveorder.component.scss']
+  selector: 'app-order-action',
+  templateUrl: './order-action.component.html',
+  styleUrls: ['./order-action.component.scss']
 })
-export class ApproveOrderComponent implements OnInit {
+export class OrderActionComponent implements OnInit {
   moduleName: string = "ORDER ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
-  defaultStatus: any = 'OPEN';
-  statusFlag: boolean = true;
   entityId: number;
   angForm: FormGroup;
-  hasAgentPermission: boolean;
   assetOrder: AssetOrder;
   approver: number;
   canApprove1: boolean = false;
@@ -90,23 +86,23 @@ export class ApproveOrderComponent implements OnInit {
             Validators.required,
             Validators.maxLength(255),
           ]),
+          approverUser2Comment: new FormControl('', [
+          ]),
         });
       } else if (this.approver == 2) {
         this.angForm = this.fb.group({
+          approverUser1Comment: new FormControl('', [
+          ]),
           approverUser2Comment: new FormControl('', [
             Validators.required,
             Validators.maxLength(255),
           ]),
         });
       }
-    });
-    if (!this.route.snapshot.paramMap.has('id')) {
-      this.goBack();
-    } else {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callAssetOrderService(this.entityId);
-    }
+    });
   }
 
   ngAfterViewInit() {
@@ -125,27 +121,15 @@ export class ApproveOrderComponent implements OnInit {
     let approved = mode == 'APPROVE' ? true : false;
     if (this.angForm.valid) {
       if (this.canApprove1) {
-        if ($('#approverUser1Comment').val() == "") {
-          $('#feedback1-err').removeClass('d-none');
-          return false;
-        } else {
-          $('#feedback1-err').addClass('d-none');
-          assetOrderApprovalDTO.approverNo = 1;
-          assetOrderApprovalDTO.approval = approved;
-          assetOrderApprovalDTO.feedback = this.angForm.controls['approverUser1Comment'].value;
-        }
+        assetOrderApprovalDTO.approverNo = 1;
+        assetOrderApprovalDTO.approval = approved;
+        assetOrderApprovalDTO.feedback = this.angForm.controls['approverUser1Comment'].value;
       } else if (this.canApprove2) {
-        if ($('#approverUser2Comment').val() == "") {
-          $('#feedback2-err').removeClass('d-none');
-          return false;
-        } else {
-          $('#feedback2-err').addClass('d-none');
-          assetOrderApprovalDTO.approverNo = 2;
-          assetOrderApprovalDTO.approval = approved;
-          assetOrderApprovalDTO.feedback = this.angForm.controls['approverUser2Comment'].value;
-        }
+        assetOrderApprovalDTO.approverNo = 2;
+        assetOrderApprovalDTO.approval = approved;
+        assetOrderApprovalDTO.feedback = this.angForm.controls['approverUser2Comment'].value;
       }
-      console.log(JSON.stringify(assetOrderApprovalDTO));
+      //console.log(JSON.stringify(assetOrderApprovalDTO));
       this.callApproveAssetOrder(assetOrderApprovalDTO);
     } else {
       console.log("Invalid Form!");
@@ -175,7 +159,7 @@ export class ApproveOrderComponent implements OnInit {
           } else {
             this.canApprove1 = true;
           }
-        } else if (this.approver == 2 && this.assetOrder.approverUser2.id == this.loggedInUser.userId) {
+        } else if (this.approver == 2 && this.assetOrder.approverUser2.id == this.loggedInUser.userId && this.assetOrder.approvedUser1) {
           if (this.assetOrder.approverUser2Comment != null) {
             this.canApprove2 = false;
           } else {

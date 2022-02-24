@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.AllocateAssetDTO;
 import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
@@ -66,7 +67,7 @@ public class AssetRequestApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUEST ASSET','READ|SEARCH',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUEST ASSET,REQUESTED ASSET','READ|SEARCH,READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<AssetRequest>> getAssetRequests(
             @ApiParam(value = "Product Category", defaultValue = "-1", required = false) @RequestParam(value = "productCategory", defaultValue = "-1", required = false) Integer productCategory,
             @ApiParam(value = "Asset Type", defaultValue = "-1", required = false) @RequestParam(value = "assetType", defaultValue = "-1", required = false) Integer assetType,
@@ -74,9 +75,10 @@ public class AssetRequestApiController {
             @ApiParam(value = "serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
             @ApiParam(value = "approved", defaultValue = "-1", required = false) @RequestParam(value = "approved", defaultValue = "-1", required = false) Integer approved,
             @ApiParam(value = "allocated", defaultValue = "-1", required = false) @RequestParam(value = "allocated", defaultValue = "-1", required = false) Integer allocated,
+            @ApiParam(value = "request from ", defaultValue = "-1", required = false) @RequestParam(value = "requestFrom", defaultValue = "-1", required = false) Integer requestFrom,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<AssetRequest>>(assetRequestService.getAssetRequests(productCategory, assetType, modelNo, serialNo, approved, allocated, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<AssetRequest>>(assetRequestService.getAssetRequests(productCategory, assetType, modelNo, serialNo, approved, allocated, requestFrom, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"asset request",})
@@ -89,4 +91,16 @@ public class AssetRequestApiController {
     public ResponseEntity<AssetRequest> approveAssetRequest(@ApiParam(value = "Asset Order object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
         return new ResponseEntity<AssetRequest>(assetRequestService.approveAssetRequest(body), HttpStatus.OK);
     }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Allocate/Deallocate an asset", nickname = "allocateAssetRequest", notes = "Allocate/Deallocate an asset", tags = {"asset request",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Invalid input")
+    })
+    @JsonView(Views.DetailView.class)
+    @RequestMapping(value = "/allocate", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUESTED ASSET','ALLOCATE|DEALLOCATE',authentication.principal)")
+    public ResponseEntity<AssetRequest> allocateAssetRequest(@ApiParam(value = "Allocate Asset Request", required = true) @Valid @RequestBody AllocateAssetDTO body) {
+        return new ResponseEntity<AssetRequest>(assetRequestService.allocateAssetRequest(body), HttpStatus.OK);
+    }
+
 }

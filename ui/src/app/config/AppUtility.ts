@@ -17,6 +17,7 @@ export class AppUtility {
     public static APP_ACTIVITY_CHECK_INTERVAL = 15000;
     public static APP_LOGOUT_WARNING_INTERVAL = 10;
     public static APP_NON_ACTIVITY_LOGOUT_INTERVAL = 20;
+    public static MAX_PAGE_SIZE = 2147483647;
 
     public static EDITOR_CONFIG = {
         readOnly: false,
