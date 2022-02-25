@@ -16,6 +16,7 @@ import com.centram.domain.enumarator.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.Optional;
 
+import static com.centram.common.utility.Utility.orderNo;
+
 @Service
 public class AssetRequestService {
     private static final Logger log = LoggerFactory.getLogger(AssetRequestService.class);
+
+    @Value("${app.default.inbound.asset.req.prefix}")
+    public String inboundAssetReqPrefix;
 
     @Autowired
     private AssetRequestRepository assetRequestRepository;
@@ -74,11 +80,12 @@ public class AssetRequestService {
     public AssetRequest save(AssetRequest assetRequest) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (assetRequest.getId() == null) {
+            assetRequest.setAssetRequestNo(orderNo(inboundAssetReqPrefix));
             assetRequest.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
             assetRequest.setUser(new User(userService.getUserById(loggedInUser.getUserId())));
         }
         assetRequest = assetRequestRepository.save(assetRequest);
-        miscService.sendInboundAssetRequestUpdateEmail(assetRequest);
+        miscService.sendInboundAssetRequestUpdateEmail(assetRequest, null);
         return assetRequest;
     }
 
@@ -91,7 +98,7 @@ public class AssetRequestService {
             assetRequest.setApproved(assetApprovalDTO.getApproval());
             assetRequest.setApproverComment(assetApprovalDTO.getFeedback());
             assetRequest = assetRequestRepository.save(assetRequest);
-            miscService.sendInboundAssetRequestUpdateEmail(assetRequest);
+            miscService.sendInboundAssetRequestUpdateEmail(assetRequest, null);
             return assetRequest;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
@@ -99,7 +106,7 @@ public class AssetRequestService {
     }
 
     @Transactional(readOnly = false)
-    public AssetRequest allocateAssetRequest(AllocateAssetDTO allocateAssetDTO) {
+    public AssetRequest assetRequestAction(AllocateAssetDTO allocateAssetDTO) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Asset asset = assetService.getAssetById(allocateAssetDTO.getAssetId());
         if (asset == null) {
@@ -114,7 +121,7 @@ public class AssetRequestService {
                 assetRequest.setAllocated(allocateAssetDTO.getAllocate());
                 assetRequest.setItTeamComment(allocateAssetDTO.getFeedback());
                 assetRequest = assetRequestRepository.save(assetRequest);
-                //miscService.sendInboundAssetRequestUpdateEmail(assetRequest);
+                miscService.sendInboundAssetRequestUpdateEmail(assetRequest, asset.getSerialNo());
                 return assetRequest;
             } else {
                 throw new AppException(GenericErrorCode.DATA_NOT_FOUND);

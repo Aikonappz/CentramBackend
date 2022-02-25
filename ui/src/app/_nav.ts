@@ -123,13 +123,13 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "ORDER ASSET" }
       },
       {
-        name: 'Manage Asset',
-        url: '/asset/manage',
+        name: 'Asset Inventory',
+        url: '/asset/inventory',
         icon: 'fa fa-tasks',
         attributes: { "moduleName": "MANAGE ASSET" }
       },
       {
-        name: 'Request Asset',
+        name: 'Requested Asset',
         url: '/asset/requested',
         icon: 'fa fa-paper-plane',
         attributes: { "moduleName": "REQUEST ASSET" }
@@ -137,7 +137,7 @@ export const navItems: INavData[] = [
       {
         name: 'Requested Asset',
         url: '/asset/requested/incomming',
-        icon: 'fa fa-paper-plane',
+        icon: 'fa fa-paper-fighter-jet',
         attributes: { "moduleName": "REQUESTED ASSET" }
       },
     ]

@@ -281,9 +281,11 @@ public class AppEmailService {
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
         context.setVariable("ord_status", mailValues.get("ord_status"));
+        context.setVariable("ord_no", mailValues.get("ord_no"));
         mailSubject = templateEngine.process(mailSubject, context);
         String link = appBaseUrl.concat("/asset/request/action/").concat(mailValues.get("asset_id").toString());
         context = new Context(Locale.ENGLISH);
+        context.setVariable("ord_no", mailValues.get("ord_no"));
         context.setVariable("feedback", mailValues.get("feedback"));
         context.setVariable("ord_status", mailValues.get("ord_status"));
         context.setVariable("comment", mailValues.get("comment"));

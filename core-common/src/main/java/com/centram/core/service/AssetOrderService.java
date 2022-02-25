@@ -12,6 +12,7 @@ import com.centram.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,11 @@ import static com.centram.common.utility.Utility.orderNo;
 
 @Service
 public class AssetOrderService {
+
     private static final Logger log = LoggerFactory.getLogger(AssetOrderService.class);
 
-    @Autowired
-    private AssetOrderRepository assetOrderRepository;
+    @Value("${app.default.outbound.asset.req.prefix}")
+    public String outboundAssetReqPrefix;
 
     @Autowired
     private OrganisationService organisationService;
@@ -39,8 +41,16 @@ public class AssetOrderService {
     private MiscService miscService;
 
     @Autowired
-    private NotificationService notificationService;
+    private AssetOrderRepository assetOrderRepository;
 
+    /**
+     * get all Ordered Assets
+     *
+     * @param orderNo
+     * @param status
+     * @param pageable
+     * @return
+     */
     @Transactional(readOnly = true)
     public PaginatedList<AssetOrder> getOrderedAssets(String orderNo, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -49,16 +59,28 @@ public class AssetOrderService {
         return new PaginatedList<AssetOrder>(assetOrderRepository.findAll(orderNo, status, loggedInUser.getOrganisationId(), pageable));
     }
 
+    /**
+     * get Asset Order By Id
+     *
+     * @param id
+     * @return
+     */
     @Transactional(readOnly = true)
     public AssetOrder getAssetOrderById(BigInteger id) {
         return assetOrderRepository.getById(id);
     }
 
+    /**
+     * Save Asset Order
+     *
+     * @param assetOrder
+     * @return
+     */
     @Transactional(readOnly = false)
     public AssetOrder save(AssetOrder assetOrder) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (assetOrder.getId() == null) {
-            assetOrder.setOrderNo(orderNo("ORD"));
+            assetOrder.setOrderNo(orderNo(outboundAssetReqPrefix));
             assetOrder.setRaisedUser(new User(userService.getUserById(loggedInUser.getUserId())));
             assetOrder.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         }
@@ -67,8 +89,14 @@ public class AssetOrderService {
         return assetOrder;
     }
 
+    /**
+     * take action on Asset Order
+     *
+     * @param assetApprovalDTO
+     * @return
+     */
     @Transactional(readOnly = false)
-    public AssetOrder approveAssetOrder(AssetApprovalDTO assetApprovalDTO) {
+    public AssetOrder assetOrderAction(AssetApprovalDTO assetApprovalDTO) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<AssetOrder> assetOrderOptional = assetOrderRepository.findById(assetApprovalDTO.getId());
         if (assetOrderOptional.isPresent()) {

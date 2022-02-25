@@ -13,7 +13,7 @@
             <div class="row">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="productCategory">Product
-                  Category</label>
+                  Type</label>
                 <select class="form-control" #productCategory (change)="populateChildValues($event.target.value)"
                   formControlName="productCategory" ngModel id="productCategory" name="productCategory">
                   <option value="">-- Select Product Type --</option>
@@ -21,13 +21,13 @@
                 </select>
                 <div *ngIf="f.productCategory.touched && f.productCategory.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.productCategory.errors?.required">
-                    Product Category is required!
+                    Product Type is required!
                   </div>
                 </div>
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="assetType">Asset Type
-                  Category</label>
+                </label>
                 <select class="form-control" #assetType (change)="populateAssetModels($event.target.value)"
                   formControlName="assetType" ngModel id="assetType" name="assetType">
                   <option value="">-- Select Asset Type --</option>
@@ -81,7 +81,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label " for="fileInput">Attachments </label>
+                <label class="form-col-form-label " for="fileInput">Attachment</label>
                 <i class="icon-info"
                   tooltip="Max file size can be 2 M.B and suported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png"></i>&nbsp;&nbsp;
                 <input (change)="getFileDetails($event)" type="file" id="fileInput" formControlName="fileInput"

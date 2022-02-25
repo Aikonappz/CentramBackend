@@ -8,7 +8,6 @@ import com.centram.common.view.Views;
 import com.centram.core.service.AssetOrderService;
 import com.centram.domain.AssetOrder;
 import com.centram.domain.Incident;
-import com.centram.domain.User;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "assset order", description = "Asset Order Api")
+@Api(value = "Assset Order", description = "Asset Order Api")
 @RequestMapping(value = "/api/v1/asset-order")
 @Controller
 public class AssetOrderApiController {
@@ -40,9 +39,10 @@ public class AssetOrderApiController {
     @Autowired
     private AssetOrderService assetOrderService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset order", nickname = "save", notes = "Save an asset order", tags = {"asset order",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset order", nickname = "save", notes = "Save an asset order", tags = {"Asset Order",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
@@ -51,22 +51,11 @@ public class AssetOrderApiController {
         return new ResponseEntity<AssetOrder>(assetOrderService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset order", nickname = "approveAssetOrder", notes = "Approve an asset order", tags = {"asset order",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset order by Id", nickname = "getAssetOrderById", notes = "Find asset order by Id", response = Incident.class, tags = {"Asset Order",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
-    })
-    @JsonView(Views.DetailView.class)
-    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','APPROVE',authentication.principal)")
-    public ResponseEntity<AssetOrder> approveAssetOrder(@ApiParam(value = "AssetApprovalDTO object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
-        return new ResponseEntity<AssetOrder>(assetOrderService.approveAssetOrder(body), HttpStatus.OK);
-    }
-
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset order by Id", nickname = "getAssetOrderById", notes = "Find asset order by Id", response = Incident.class, tags = {"asset order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "incident not found")
+            @ApiResponse(code = 200, message = "Successful Operation", response = AssetOrder.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{assetOrderId}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -75,10 +64,11 @@ public class AssetOrderApiController {
         return new ResponseEntity<AssetOrder>(assetOrderService.getAssetOrderById(assetOrderId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all ordered assets", nickname = "getOrderedAssets", notes = "Get all ordered assets", response = PaginatedList.class, tags = {"asset order",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all ordered assets", nickname = "getOrderedAssets", notes = "Get all ordered assets", response = PaginatedList.class, tags = {"Asset Order",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
@@ -89,5 +79,17 @@ public class AssetOrderApiController {
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<AssetOrder>>(assetOrderService.getOrderedAssets(orderNo, status, pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset order", nickname = "assetOrderAction", notes = "Approve an asset order", tags = {"Asset Order",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.DetailView.class)
+    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','APPROVE',authentication.principal)")
+    public ResponseEntity<AssetOrder> assetOrderAction(@ApiParam(value = "AssetApprovalDTO object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
+        return new ResponseEntity<AssetOrder>(assetOrderService.assetOrderAction(body), HttpStatus.OK);
     }
 }

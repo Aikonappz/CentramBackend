@@ -12,11 +12,11 @@ import { MediaService } from '../../service/MediaService';
 declare var $: any;
 
 @Component({
-  selector: 'app-approveasset',
-  templateUrl: './approveasset.component.html',
-  styleUrls: ['./approveasset.component.scss']
+  selector: 'app-action-asset',
+  templateUrl: './action-asset.component.html',
+  styleUrls: ['./action-asset.component.scss']
 })
-export class ActionAssetRequestComponent implements OnInit {
+export class AssetRequestActionComponent implements OnInit {
   moduleName: string = "ORDER ASSET";
   newEntity: boolean = true;
   entityId: number;
@@ -48,7 +48,7 @@ export class ActionAssetRequestComponent implements OnInit {
       this.requestId = Number(this.route.snapshot.paramMap.get('requestId'));
       //console.log(this.approver);
       if (isNaN(this.requestId)) {
-        this.goBack();
+        this.router.navigate(['/dashboard']);
       }
       this.newEntity = false;
       this.entityId = this.requestId;
@@ -129,7 +129,7 @@ export class ActionAssetRequestComponent implements OnInit {
         //console.log(this.assetRequest);
         if (this.loggedInUser.userId != this.assetRequest.user.managerId) {
           //console.log("no right to visit!");
-          this.goBack();
+          this.router.navigate(['/dashboard']);
         } else if (this.loggedInUser.userId == this.assetRequest.user.managerId && this.assetRequest.approverComment != null) {
           //console.log("already feedback provided!");
           this.canApprove = false;
@@ -139,7 +139,7 @@ export class ActionAssetRequestComponent implements OnInit {
           this.canApprove = true;
         } else {
           //console.log("can't provide feedback!");
-          this.goBack();
+          this.router.navigate(['/dashboard']);
         }
       });
   }

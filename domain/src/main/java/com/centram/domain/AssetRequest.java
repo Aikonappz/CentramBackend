@@ -66,6 +66,12 @@ public class AssetRequest extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String modelNo;
 
+    @ApiModelProperty(required = false, value = "")
+    @NotNull
+    @Column(name = "asset_request_no", updatable = false, insertable = true, nullable = false, columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
+    private String assetRequestNo;
+
     @ApiModelProperty(required = true, value = "")
     @Column(name = "long_term", nullable = false)
     @JsonView(Views.BasicView.class)
@@ -77,7 +83,7 @@ public class AssetRequest extends BaseEntity implements Serializable {
     private String comment;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "it_team_comment", nullable = false, columnDefinition = "varchar(2000) not null")
+    @Column(name = "it_team_comment", nullable = true, columnDefinition = "varchar(2000)")
     @JsonView(Views.BasicView.class)
     private String itTeamComment;
 

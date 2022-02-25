@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AddAssetComponent } from './addasset.component';
+import { AddAssetComponent } from './add-asset.component';
 import { AssetOrderComponent } from './asset-order.component';
 import { OrderActionComponent } from './order-action.component';
 import { RequestedAssetComponent } from './requested-asset.component';
-import { AssetComponent } from './asset.component';
+import { AssetInventoryComponent } from './asset-inventory.component';
 import { OrderedAssetComponent } from './ordered-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
-import { ActionAssetRequestComponent } from './approveasset.component';
+import { AssetRequestActionComponent } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 
 const routes: Routes = [
@@ -47,20 +47,28 @@ const routes: Routes = [
       },
 
       {
-        path: 'manage',
-        component: AssetComponent,
+        path: 'inventory',
+        component: AssetInventoryComponent,
         pathMatch: 'full',
         data: {
-          title: 'Manage Assets'
+          title: 'Assets Inventory'
         },
       },
       {
-        path: 'manage/add',
+        path: 'inventory/add',
         component: AddAssetComponent,
         pathMatch: 'full',
         data: {
-          title: 'Add Assets'
+          title: 'Add Asset'
         },
+      },
+      {
+        path: 'inventory/edit/:id',
+        component: AddAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Asset'
+        }
       },
       {
         path: 'requested',
@@ -75,12 +83,12 @@ const routes: Routes = [
         component: RequestAssetComponent,
         pathMatch: 'full',
         data: {
-          title: 'Request Assets'
+          title: 'Request Asset'
         },
       },
       {
         path: 'request/action/:requestId',
-        component: ActionAssetRequestComponent,
+        component: AssetRequestActionComponent,
         pathMatch: 'full',
         data: {
           title: 'Request Action'

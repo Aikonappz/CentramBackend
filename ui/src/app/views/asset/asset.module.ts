@@ -12,11 +12,11 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { OrderedAssetComponent } from './ordered-asset.component';
 import { AssetOrderComponent } from './asset-order.component';
 import { OrderActionComponent } from './order-action.component';
-import { AssetComponent } from './asset.component';
-import { AddAssetComponent } from './addasset.component';
+import { AssetInventoryComponent } from './asset-inventory.component';
+import { AddAssetComponent } from './add-asset.component';
 import { RequestedAssetComponent } from './requested-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
-import { ActionAssetRequestComponent, } from './approveasset.component';
+import { AssetRequestActionComponent, } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 import { AllocateAsset } from './model/AllocateAsset';
 
@@ -26,11 +26,11 @@ import { AllocateAsset } from './model/AllocateAsset';
     OrderedAssetComponent,
     AssetOrderComponent,
     OrderActionComponent,
-    AssetComponent,
+    AssetInventoryComponent,
     AddAssetComponent,
     RequestedAssetComponent,
     RequestAssetComponent,
-    ActionAssetRequestComponent,
+    AssetRequestActionComponent,
     IncommingRequestedAssetComponent,
     AllocateAsset,
   ],

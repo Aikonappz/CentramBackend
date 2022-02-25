@@ -963,33 +963,34 @@ public class MiscService {
     }
 
     @Async("asyncExecutor")
-    public void sendInboundAssetRequestUpdateEmail(AssetRequest assetRequest) {
+    public void sendInboundAssetRequestUpdateEmail(AssetRequest assetRequest, String oldSerialNo) {
         Map<String, Object> mailValues = new HashMap<String, Object>();
         mailValues.put("productCategory", assetRequest.getProductCategory().name());
         mailValues.put("assetType", assetRequest.getAssetType().name());
         mailValues.put("modelNo", assetRequest.getModelNo() != null ? assetRequest.getModelNo() : "");
-        mailValues.put("serialNo", assetRequest.getAsset() != null ? assetRequest.getAsset().getSerialNo() : "");
+        mailValues.put("serialNo", oldSerialNo == null ? assetRequest.getAsset() != null ? assetRequest.getAsset().getSerialNo() : "" : oldSerialNo);
         mailValues.put("user", assetRequest.getUser().getFirstName() + " " + assetRequest.getUser().getLastName());
         mailValues.put("project", assetRequest.getUser().getProjectCode());
         mailValues.put("longTerm", assetRequest.getLongTerm() ? "YES" : "NO");
         mailValues.put("comment", assetRequest.getComment());
         mailValues.put("asset_id", assetRequest.getId());
-        if (assetRequest.getAllocated()) {
+        mailValues.put("ord_no", assetRequest.getAssetRequestNo());
+        if (assetRequest.getItTeamComment() != null) {
             mailValues.put("notification", new Notification(null, null, assetRequest.getUser(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetRequest.getUser().getFirstName() + " " + assetRequest.getUser().getLastName());
-            mailValues.put("feedback", "");
+            mailValues.put("feedback", assetRequest.getItTeamComment());
             mailValues.put("ord_status", "");
-            mailValues.put("subject", "allocatedMailSubject");
-            mailValues.put("body", "allocatedMailBody");
+            mailValues.put("subject", assetRequest.getAllocated() ? "allocatedMailSubject" : "deallocatedMailSubject");
+            mailValues.put("body", assetRequest.getAllocated() ? "allocatedMailBody" : "deallocatedMailBody");
             mailValues.put("to", assetRequest.getUser().getEmail());
             appEmailService.sendInboundAssetRequestUpdateEmail(mailValues);
             User manager = new User(userService.getUserById(assetRequest.getUser().getManagerId()));
-            mailValues.put("notification", new Notification(null, null, manager, Status.PUSHED, NotificationType.ACTIONABLE));
+            mailValues.put("notification", new Notification(null, null, manager, Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", manager.getFirstName() + " " + manager.getLastName());
-            mailValues.put("feedback", "");
+            mailValues.put("feedback", assetRequest.getItTeamComment());
             mailValues.put("ord_status", "");
-            mailValues.put("subject", "allocatedMailSubject");
-            mailValues.put("body", "allocatedMailBody");
+            mailValues.put("subject", assetRequest.getAllocated() ? "allocatedMailSubject" : "deallocatedMailSubject");
+            mailValues.put("body", assetRequest.getAllocated() ? "allocatedMailBody" : "deallocatedMailBody");
             mailValues.put("to", assetRequest.getUser().getEmail());
             appEmailService.sendInboundAssetRequestUpdateEmail(mailValues);
         } else if (!assetRequest.getAllocated() && assetRequest.getApproverComment() == null) {

@@ -24,16 +24,9 @@ declare var $: any;
 export class RequestAssetComponent implements OnInit {
   moduleName: string = "REQUEST ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
-  defaultStatus: any = 'OPEN';
-  statusFlag: boolean = true;
   entityId: number;
   angForm: FormGroup;
-  departmentList: any[] = [];
-  locationList: any[] = [];
-  vendorList: any[] = [];
-  purchaseTypeList: any[] = [];
   assetRequest: AssetRequest;
   assetList: Set<string> = new Set<string>();
   modelList: Set<string> = new Set<string>();
@@ -172,7 +165,7 @@ export class RequestAssetComponent implements OnInit {
       this.assetRequest.modelNo = this.angForm.controls['modelNo'].value == "" ? null : this.angForm.controls['modelNo'].value;
       this.assetRequest.longTerm = this.angForm.controls['longTerm'].value == 1 ? true : false;
       this.assetRequest.comment = this.angForm.controls['comment'].value;
-      //console.log(JSON.stringify(this.asset));
+      //console.log(JSON.stringify(this.assetRequest));
       this.callSaveAssetService();
     } else {
       console.log("Invalid Form!");
@@ -244,5 +237,4 @@ export class RequestAssetComponent implements OnInit {
         'Size: ' + Math.round(size / 1024) + " KB");
     }
   }
-
 }

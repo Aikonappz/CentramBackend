@@ -7,10 +7,8 @@ import * as moment from 'moment';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
 import { AssetType } from '../../model/enumerator/AssetType';
-import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 import { ProductCategory } from '../../model/enumerator/ProductCategory';
 import { Incident } from '../../model/Incident';
-import { Permission } from '../../model/Permssion';
 import { AssetService } from '../../service/AssetService';
 import { AssetDataSource } from '../../service/datasource/AssetDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
@@ -18,23 +16,18 @@ import { MiscService } from '../../service/MiscService';
 declare var $: any;
 
 @Component({
-  selector: 'app-asset',
-  templateUrl: './asset.component.html',
-  styleUrls: ['./asset.component.scss']
+  selector: 'app-asset-inventory',
+  templateUrl: './asset-inventory.component.html',
+  styleUrls: ['./asset-inventory.component.scss']
 })
-export class AssetComponent implements OnInit {
+export class AssetInventoryComponent implements OnInit {
   moduleName: string = "MANAGE ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['assetDtl', 'locdept', 'vendorDtl',];
+  displayedColumns = ['assetDtl', 'locdept', 'vendorDtl', 'action'];
   private datasource: AssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  statusList: any = [];
-  permissions: Permission[] = [];
-  moduleList: Permission[] = [];
-  subModuleList: Permission[];
   angForm: FormGroup;
   searchedData: Object = {};
-  incidentStatus: IncidentStatus;
   assetList: Set<string> = new Set<string>();
   modelList: Set<string> = new Set<string>();
   assetModelList: any[] = [];
@@ -113,11 +106,11 @@ export class AssetComponent implements OnInit {
   }
 
   edit(inc: Incident) {
-    this.router.navigate(['/asset/edit/' + inc.id]);
+    this.router.navigate(['/asset/inventory/edit/' + inc.id]);
   }
 
   add(mode: string) {
-    this.router.navigate(['/asset/manage/add/']);
+    this.router.navigate(['/asset/inventory/add/']);
   }
 
   loadData(req?: Object) {
@@ -133,13 +126,11 @@ export class AssetComponent implements OnInit {
     }
     return null;
   }
-
   loadPage() {
     this.angForm.reset();
     this.searchedData = {};
     this.loadData({});
   }
-
   formSubmit() {
     if (this.angForm.valid) {
       let productCategory = this.angForm.controls['productCategory'].value;
@@ -191,4 +182,19 @@ export class AssetComponent implements OnInit {
       this.angForm.controls['modelNo'].setValue("");
     }
   }
+
+  download() {
+    this.service
+      .downloadAssetsService(this.searchedData)
+      .subscribe((data: any) => {
+        //console.log(data);
+        let blob = new Blob([data], { type: "text/csv" });
+        let url = window.URL.createObjectURL(blob);
+        let pwa = window.open(url);
+        if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+          alert('Please disable your Pop-up blocker and try again.');
+        }
+      });
+  }
+
 }

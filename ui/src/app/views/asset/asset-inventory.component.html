@@ -5,13 +5,30 @@
                 <div class="card-header ">
                     <div class="row">
                         <div class="col-md-10">
-                            <i class="fa fa-align-justify"></i> Assets
+                            <i class="fa fa-align-justify"></i> Assets Inventory
                         </div>
                         <div class="col-md-2 float-right">
                             <div class="btn-group d-flex justify-content-between" dropdown>
                                 <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
                                         class="caret"></span></button>
                                 <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                    <!-- <li role="menuitem">
+                                        <a *ngIf="hasPermission('WRITE')" class="dropdown-item"
+                                            href="assets/downloads/assets.csv"><i class="icon-arrow-up-circle"></i>
+                                            Upload(Template)</a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a *ngIf="hasPermission('WRITE')" class="dropdown-item" (click)="upload()"
+                                            href="javascript:void(0);">
+                                            <i class="icon-cloud-upload"></i> Upload
+                                        </a>
+                                    </li> -->
+                                    <li role="menuitem">
+                                        <a class="dropdown-item" (click)="download()" *ngIf="hasPermission('READ')"
+                                            href="javascript:void(0);">
+                                            <i class="icon-cloud-download"></i> Download
+                                        </a>
+                                    </li>
                                     <li role="menuitem">
                                         <a class="dropdown-item" (click)="add()" *ngIf="hasPermission('WRITE')"
                                             href="javascript:void(0);">
@@ -26,14 +43,14 @@
                 <div class="card-body">
                     <div *ngIf="hasPermission('SEARCH')" class="card ">
                         <div class="card-header">
-                            <i class="fa fa-search"></i>Search Asset
+                            <i class="fa fa-search"></i>Search Assets
                         </div>
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="productCategory">Product
-                                            Category</label>
+                                            Type</label>
                                         <select class="form-control" #productCategory
                                             (change)="populateChildValues($event.target.value)"
                                             formControlName="productCategory" ngModel id="productCategory"
@@ -45,7 +62,7 @@
                                     <div class="col">
                                         <label class="form-col-form-label" for="assetType">Asset
                                             Type
-                                            Category</label>
+                                        </label>
                                         <select class="form-control" #assetType
                                             (change)="populateAssetModels($event.target.value)"
                                             formControlName="assetType" ngModel id="assetType" name="assetType">
@@ -64,8 +81,8 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="serialNumber">Serial No</label>
-                                        <input type="text" formControlName="serialNumber" ngModel id="serialNumber"
-                                            name="serialNumber" class="form-control">
+                                        <input type="text" formControlName="serialNumber" placeholder="Serial No."
+                                            ngModel id="serialNumber" name="serialNumber" class="form-control">
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="available">Available?</label>
@@ -94,7 +111,7 @@
                             <th mat-header-cell *matHeaderCellDef>Asset Details</th>
                             <td mat-cell *matCellDef="let element">
                                 <span [ngClass]="{'badge':true}">{{element.serialNo}}</span><br />
-                                Category : {{element.productCategory}}<br />
+                                Product Type : {{element.productCategory}}<br />
                                 Asset Type : {{element.assetType}}<br />
                                 Model No : {{element.modelNo}}<br />
                                 Under Warranty: {{element.isUnderWarranty==true? 'YES' : 'NO'}}<br />
@@ -122,6 +139,36 @@
                                 <div *ngIf="element.purchaseType=='RENTED'">
                                     Rental Start Date: {{formatDateTime(element.rentalStartAt)}}<br />
                                     Rental End Date: {{formatDateTime(element.rentalEndAt)}}<br />
+                                </div>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef> Action </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="btn-group" dropdown>
+                                    <button dropdownToggle type="button"
+                                        class="btn btn-primary dropdown-toggle">Actions<span
+                                            class="caret"></span></button>
+                                    <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                        <!-- <li role="menuitem">
+                                            <a class="dropdown-item" (click)="view(element)"
+                                                *ngIf="hasPermission('READ')" href="javascript:void(0);">
+                                                <i class="icon-eye"></i> View
+                                            </a>
+                                        </li> -->
+                                        <!-- <li role="menuitem">
+                                            <a class="dropdown-item" (click)="updateStatus(element)"
+                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
+                                                <i class="icon-ban"></i> Change Status
+                                            </a>
+                                        </li> -->
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="edit(element)"
+                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
+                                                <i class="icon-pencil"></i>Edit
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </td>
                         </ng-container>

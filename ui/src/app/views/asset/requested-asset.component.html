@@ -33,7 +33,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="productCategory">Product
-                                            Category</label>
+                                            Type</label>
                                         <select class="form-control" #productCategory
                                             (change)="populateChildValues($event.target.value)"
                                             formControlName="productCategory" ngModel id="productCategory"
@@ -44,8 +44,7 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="assetType">Asset
-                                            Type
-                                            Category</label>
+                                            Type</label>
                                         <select class="form-control" #assetType
                                             (change)="populateAssetModels($event.target.value)"
                                             formControlName="assetType" ngModel id="assetType" name="assetType">
@@ -64,8 +63,8 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="serialNumber">Serial No</label>
-                                        <input type="text" formControlName="serialNumber" ngModel id="serialNumber"
-                                            name="serialNumber" class="form-control">
+                                        <input type="text" placeholder="Serial No..." formControlName="serialNumber"
+                                            ngModel id="serialNumber" name="serialNumber" class="form-control">
                                     </div>
                                 </div>
                                 <div class="row ">
@@ -106,8 +105,8 @@
                         <ng-container matColumnDef="reqDtl">
                             <th mat-header-cell *matHeaderCellDef>Request Details</th>
                             <td mat-cell *matCellDef="let element">
-                                <span [ngClass]="{'badge':true}">{{element.serialNo}}</span><br />
-                                Category : {{element.productCategory}}<br />
+                                <span [ngClass]="{'badge':true}">{{element.assetRequestNo}}</span><br />
+                                Product Type : {{element.productCategory}}<br />
                                 Asset Type : {{element.assetType}}<br />
                                 Model No : {{element?.modelNo}}<br />
                                 Term: {{element.longTerm==true? 'LONG' : 'SHORT'}}<br />
@@ -124,7 +123,7 @@
                                     Status : Rejected!<br />
                                     Comment : {{element.approverComment}}
                                 </div>
-                                <div *ngIf="element.approverComment!=null && element.approved==false">
+                                <div *ngIf="element.approverComment!=null && element.approved==true">
                                     Status : Approved!<br />
                                     Comment : {{element.approverComment}}
                                 </div>
@@ -134,7 +133,7 @@
                             <th mat-header-cell *matHeaderCellDef>Asset Details</th>
                             <td mat-cell *matCellDef="let element">
                                 <div *ngIf="element.asset!=null">
-                                    Category : {{element.asset?.productCategory}}<br />
+                                    Product Type : {{element.asset?.productCategory}}<br />
                                     Asset Type : {{element.asset?.assetType}}<br />
                                     Model No : {{element.asset?.modelNo}}<br />
                                     Serial No : {{element.asset?.serialNo}}<br />

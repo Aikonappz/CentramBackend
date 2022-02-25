@@ -16,17 +16,14 @@ import { AssetService } from '../../service/AssetService';
 declare var $: any;
 
 @Component({
-  selector: 'app-addasset',
-  templateUrl: './addasset.component.html',
-  styleUrls: ['./addasset.component.scss']
+  selector: 'app-add-asset',
+  templateUrl: './add-asset.component.html',
+  styleUrls: ['./add-asset.component.scss']
 })
 export class AddAssetComponent implements OnInit {
   moduleName: string = "MANAGE ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
-  defaultStatus: any = 'OPEN';
-  statusFlag: boolean = true;
   entityId: number;
   angForm: FormGroup;
   departmentList: any[] = [];
@@ -274,9 +271,49 @@ export class AddAssetComponent implements OnInit {
           }
         });
     } else {
+      this.miscService
+        .departmentsService()
+        .subscribe((data: any) => {
+          if (typeof data.content !== 'undefined') {
+            let departments = data.content;
+            this.departmentList = [];
+            let c = 0;
+            for (let indx = 0; indx < departments.length; indx++) {
+              if (departments[indx].status == "ACTIVE") {
+                this.departmentList[c++] = Object.assign({ "id": departments[indx].id, "name": departments[indx].name, "version": departments[indx].version });
+              }
+            }
+          }
+          this.miscService
+            .locationsService()
+            .subscribe((data: any) => {
+              if (typeof data.content !== 'undefined') {
+                let locations = data.content;
+                this.locationList = [];
+                let c = 0;
+                for (let indx = 0; indx < locations.length; indx++) {
+                  if (locations[indx].status == "ACTIVE") {
+                    this.locationList[c++] = Object.assign({ "id": locations[indx].id, "name": locations[indx].name, "officeName": locations[indx].officeName, "version": locations[indx].version });
+                  }
+                }
+                this.miscService
+                  .vendorsService()
+                  .subscribe((data: any) => {
+                    let vendors = data.content;
+                    this.vendorList = [];
+                    let c = 0;
+                    for (let indx = 0; indx < vendors.length; indx++) {
+                      if (String(vendors[indx].status) == 'ACTIVE') {
+                        this.vendorList[c++] = vendors[indx];
+                      }
+                    }
+                  });
+              }
+            });
+        });
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-      // this.callIncidentService(this.entityId);
+      this.callAssetService(this.entityId);
     }
   }
 
@@ -399,11 +436,55 @@ export class AddAssetComponent implements OnInit {
     this.assetService
       .saveAsset(this.asset)
       .subscribe((data: any) => {
-        this.router.navigate(['/asset/manage']);
+        this.router.navigate(['/asset/inventory']);
       });
   }
 
-  callIncidentService(id: number) {
+  callAssetService(id: number) {
+    this.assetService
+      .assetService(id)
+      .subscribe((data: any) => {
+        this.asset = data;
+        this.asset.raisedUser = { id: this.asset.raisedUser.id, version: this.asset.raisedUser.version };
+        this.asset.organisation = { id: this.asset.organisation.id, version: this.asset.organisation.version };
+        this.angForm.get('productCategory').setValue(this.asset.productCategory);
+        this.populateChildValues(this.asset.productCategory);
+        this.angForm.get('assetType').setValue(this.asset.assetType);
+        this.populateAssetModels(this.asset.assetType);
+        this.angForm.get('modelNo').setValue(this.asset.modelNo);
+        this.angForm.get('serialNumber').setValue(this.asset.serialNo);
+        this.angForm.get('isDepartment').setValue(this.asset.isDepartment ? "1" : "0");
+        if (this.asset.isDepartment == true) {
+          $('#dept-inp').removeClass("d-none");
+          $('#loc-inp').addClass("d-none");
+          this.asset.location = null;
+          this.angForm.get('department').setValue(String(this.asset.department.id));
+        } else {
+          $('#dept-inp').addClass("d-none");
+          $('#loc-inp').removeClass("d-none");
+          this.asset.department = null;
+          this.angForm.get('location').setValue(String(this.asset.location.id));
+        }
+        this.angForm.get('raisedForLocation').setValue(String(this.asset.raisedForLocation.id));
+        this.angForm.get('isUnderWarranty').setValue(this.asset.isUnderWarranty ? "1" : "0");
+        this.angForm.get('warrantyExpiredAt').setValue(moment(this.asset.warrantyExpiredAt).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+        this.angForm.get('purchaseType').setValue(this.asset.purchaseType);
+        if (this.asset.purchaseType != "OWNED") {
+          this.angForm.get('rentalStartAt').setValue(moment(this.asset.rentalStartAt).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+          this.angForm.get('rentalEndAt').setValue(moment(this.asset.rentalEndAt).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+          $('.rentalStartAt').removeClass("d-none");
+          $('.rentalEndAt').removeClass("d-none");
+          $('.rentalStartAt-proxy').addClass("d-none");
+          $('.rentalEndAt-proxy').addClass("d-none");
+        } else {
+          $('.rentalStartAt').addClass("d-none");
+          $('.rentalEndAt').addClass("d-none");
+          $('.rentalStartAt-proxy').removeClass("d-none");
+          $('.rentalEndAt-proxy').removeClass("d-none");
+        }
+        this.angForm.get('vendor').setValue(String(this.asset.vendor.id));
+        this.angForm.get('comment').setValue(String(this.asset.comment));
+      });
   }
 
   formatDateTime(d: string) {
@@ -412,5 +493,4 @@ export class AddAssetComponent implements OnInit {
     }
     return null;
   }
-
 }

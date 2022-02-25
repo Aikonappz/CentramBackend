@@ -49,17 +49,16 @@ public class Utility {
         return uniqueId(requestIdPrefix);
     }
 
-    public static String incidentNo(String incidentNoPrefix) {
-        return incidentNoPrefix.concat(generateUniqueID());
-    }
-
-
     public static String orderNo(String orderNoPrefix) {
         return orderNoPrefix.concat(generateUniqueID());
     }
 
     public static String assetNo(String assetNoPrefix) {
         return assetNoPrefix.concat(generateUniqueID());
+    }
+
+    public static String incidentNo(String incidentNoPrefix) {
+        return incidentNoPrefix.concat(generateUniqueID());
     }
 
     public static Long generateUniqueIDOld() {

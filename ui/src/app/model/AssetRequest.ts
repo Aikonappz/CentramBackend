@@ -5,6 +5,7 @@ export class AssetRequest extends Base {
     productCategory: string;
     assetType: string;
     modelNo: string;
+    assetRequestNo:string;
     longTerm: boolean;
     comment: string;
     approved: boolean;

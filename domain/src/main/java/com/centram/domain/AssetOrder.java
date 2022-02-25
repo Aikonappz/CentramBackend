@@ -50,7 +50,7 @@ public class AssetOrder extends BaseEntity implements Serializable {
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "order_no", nullable = true)
+    @Column(name = "order_no", updatable = false, insertable = true, nullable = false, columnDefinition = "varchar(255) default null")
     @JsonView(Views.BasicView.class)
     private String orderNo;
 

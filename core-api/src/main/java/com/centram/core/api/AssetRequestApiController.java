@@ -3,11 +3,11 @@ package com.centram.core.api;
 
 import com.centram.common.dto.AllocateAssetDTO;
 import com.centram.common.dto.AssetApprovalDTO;
+import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.AssetRequestService;
 import com.centram.domain.AssetRequest;
-import com.centram.domain.User;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -26,19 +26,22 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "assset request", description = "Asset Request Api")
+@Api(value = "Assset Request", description = "Asset Request Api")
 @RequestMapping(value = "/api/v1/asset-request")
 @Controller
 public class AssetRequestApiController {
 
     private static final Logger log = LoggerFactory.getLogger(AssetRequestApiController.class);
+    @Autowired
+    private AppSecurityUtilityService appSecurityUtilityService;
 
     @Autowired
     private AssetRequestService assetRequestService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset request", nickname = "save", notes = "Save an asset request", tags = {"asset request",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset request", nickname = "save", notes = "Save an asset request", tags = {"Asset Request",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
@@ -47,11 +50,11 @@ public class AssetRequestApiController {
         return new ResponseEntity<AssetRequest>(assetRequestService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset request by Id", nickname = "getAssetRequestById", notes = "Find asset request by Id", response = AssetRequest.class, tags = {"asset request",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset request by Id", nickname = "getAssetRequestById", notes = "Find asset request by Id", response = AssetRequest.class, tags = {"Asset Request",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "incident not found")
+            @ApiResponse(code = 200, message = "Successful Operation", response = AssetRequest.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{assetRequestId}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -60,10 +63,11 @@ public class AssetRequestApiController {
         return new ResponseEntity<AssetRequest>(assetRequestService.getAssetRequest(assetRequestId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all asset request", nickname = "getAssetRequests", notes = "Get all asset requsts", response = PaginatedList.class, tags = {"asset request",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all asset request", nickname = "getAssetRequests", notes = "Get all asset requsts", response = PaginatedList.class, tags = {"Asset Request",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
@@ -81,26 +85,28 @@ public class AssetRequestApiController {
         return new ResponseEntity<PaginatedList<AssetRequest>>(assetRequestService.getAssetRequests(productCategory, assetType, modelNo, serialNo, approved, allocated, requestFrom, pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"asset request",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"Asset Request",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
     @PreAuthorize("@assetRequestService.hasApprovalPermission(authentication.principal,#body.id)")
-    public ResponseEntity<AssetRequest> approveAssetRequest(@ApiParam(value = "Asset Order object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
+    public ResponseEntity<AssetRequest> approveAssetRequest(@ApiParam(value = "AssetApprovalDTO object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
         return new ResponseEntity<AssetRequest>(assetRequestService.approveAssetRequest(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Allocate/Deallocate an asset", nickname = "allocateAssetRequest", notes = "Allocate/Deallocate an asset", tags = {"asset request",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Allocate/Deallocate an asset", nickname = "assetRequestAction", notes = "Allocate/Deallocate an asset", tags = {"Asset Request",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/allocate", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUESTED ASSET','ALLOCATE|DEALLOCATE',authentication.principal)")
-    public ResponseEntity<AssetRequest> allocateAssetRequest(@ApiParam(value = "Allocate Asset Request", required = true) @Valid @RequestBody AllocateAssetDTO body) {
-        return new ResponseEntity<AssetRequest>(assetRequestService.allocateAssetRequest(body), HttpStatus.OK);
+    public ResponseEntity<AssetRequest> assetRequestAction(@ApiParam(value = "AllocateAssetDTO object", required = true) @Valid @RequestBody AllocateAssetDTO body) {
+        return new ResponseEntity<AssetRequest>(assetRequestService.assetRequestAction(body), HttpStatus.OK);
     }
 
 }

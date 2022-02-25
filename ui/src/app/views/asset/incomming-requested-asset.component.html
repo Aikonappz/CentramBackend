@@ -33,7 +33,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="productCategory">Product
-                                            Category</label>
+                                            Type</label>
                                         <select class="form-control" #productCategory
                                             (change)="populateChildValues($event.target.value)"
                                             formControlName="productCategory" ngModel id="productCategory"
@@ -45,7 +45,7 @@
                                     <div class="col">
                                         <label class="form-col-form-label" for="assetType">Asset
                                             Type
-                                            Category</label>
+                                        </label>
                                         <select class="form-control" #assetType
                                             (change)="populateAssetModels($event.target.value)"
                                             formControlName="assetType" ngModel id="assetType" name="assetType">
@@ -100,7 +100,7 @@
                             <td mat-cell *matCellDef="let element">
                                 <span *ngIf="element.asset!=null"
                                     [ngClass]="{'badge':true}">{{element.asset?.serialNo}}</span><br />
-                                Category : {{element.productCategory}}<br />
+                                Product Type : {{element.productCategory}}<br />
                                 Asset Type : {{element.assetType}}<br />
                                 Model No : {{element?.modelNo}}<br />
                                 Term: {{element.longTerm==true? 'LONG' : 'SHORT'}}<br />

@@ -3,13 +3,13 @@
     <div class="col-sm-12">
       <div class="card">
         <div class="card-header">
-          <strong>Approve/Reject Asset Request</strong>
+          <strong>Asset Request - {{assetRequest.assetRequestNo}}</strong>
         </div>
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
             <table class="table table-bordered table-striped table-sm">
               <tr>
-                <td width="50%"><strong>Product Category</strong></td>
+                <td width="50%"><strong>Product Type</strong></td>
                 <td>{{assetRequest.productCategory}}</td>
               </tr>
               <tr>

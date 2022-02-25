@@ -21,4 +21,7 @@ export class AssetService {
     assetService(id: number, request?: any): Observable<Asset> {
         return this.http.get('/v1/asset/' + id, { "params": request });
     }
+    downloadAssetsService(request?: any): Observable<any> {
+        return this.http.get('/v1/asset/download', { "params": request, responseType: 'blob' });
+    }
 }
