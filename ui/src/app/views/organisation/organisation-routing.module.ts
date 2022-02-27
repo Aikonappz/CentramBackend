@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { EditOrganisationComponent, } from './editorganisation.component';
+import { EditOrganisationComponent, } from './edit-organisation.component';
 import { OrganisationComponent } from './organisation.component';
 import { OrgSettingsComponent } from './orgsettings.component';
 

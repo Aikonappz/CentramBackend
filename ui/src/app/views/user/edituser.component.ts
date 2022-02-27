@@ -61,7 +61,6 @@ export class EditUserComponent implements OnInit {
     this.user.status = this.defaultStatus;
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.rolesList = this.loggedInUser.roles;
-
     if (this.rolesList.includes('APP_ADMIN')) {
       this.angForm = new FormGroup({
         firstName: new FormControl('', [
@@ -84,13 +83,13 @@ export class EditUserComponent implements OnInit {
         employeeId: new FormControl('NA', [
           Validators.required,
         ]),
-        managerId: new FormControl('NA', [
-          //Validators.required,
+        managerId: new FormControl(null, [
+          Validators.required,
         ]),
         projectCode: new FormControl('NA', [
           //Validators.required
         ]),
-        roles: new FormControl('', [
+        roles: new FormControl(null, [
           Validators.required
         ]),
         department: new FormControl('', [
@@ -103,10 +102,8 @@ export class EditUserComponent implements OnInit {
           //Validators.required
         ]),
         status: new FormControl(true, [
-
         ]),
         userType: new FormControl(true, [
-
         ]),
       });
     } else {
@@ -150,10 +147,8 @@ export class EditUserComponent implements OnInit {
           //Validators.required
         ]),
         status: new FormControl(true, [
-
         ]),
         userType: new FormControl(true, [
-
         ]),
       });
     }
@@ -198,7 +193,7 @@ export class EditUserComponent implements OnInit {
           this.c = 0;
           for (let indx = 0; indx < this.roles.length; indx++) {
             if (this.roles[indx].status == 1) {
-              this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+              this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "displayName": this.roles[indx].displayName, "description": this.roles[indx].description, "name": this.roles[indx].name });
             }
           }
         });
@@ -255,10 +250,10 @@ export class EditUserComponent implements OnInit {
           this.usrList = [];
           for (let indx = 0; indx < this.users.length; indx++) {
             if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
-              this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
+              this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
             }
           }
-          this.preapareSelect();
+          //this.preapareSelect();
           //console.log(JSON.stringify(this.usrList));
         });
     } else {
@@ -285,7 +280,7 @@ export class EditUserComponent implements OnInit {
             this.c = 0;
             for (let indx = 0; indx < this.roles.length; indx++) {
               if (this.roles[indx].status == 1) {
-                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "displayName": this.roles[indx].displayName, "description": this.roles[indx].description, "name": this.roles[indx].name });
               }
             }
             this.userService
@@ -297,7 +292,7 @@ export class EditUserComponent implements OnInit {
                 this.usrList = [];
                 for (let indx = 0; indx < this.users.length; indx++) {
                   if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
-                    this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
+                    this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
                   }
                 }
                 if (this.route.snapshot.paramMap.has('id')) {
@@ -333,7 +328,7 @@ export class EditUserComponent implements OnInit {
             this.c = 0;
             for (let indx = 0; indx < this.roles.length; indx++) {
               if (this.roles[indx].status == 1) {
-                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "name": this.roles[indx].name });
+                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "displayName": this.roles[indx].displayName, "description": this.roles[indx].description, "name": this.roles[indx].name });
               }
             }
             this.miscService
@@ -371,7 +366,7 @@ export class EditUserComponent implements OnInit {
                         this.usrList = [];
                         for (let indx = 0; indx < this.users.length; indx++) {
                           if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
-                            this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].employeeId });
+                            this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
                           }
                         }
                         this.miscService
@@ -416,13 +411,6 @@ export class EditUserComponent implements OnInit {
 
   preapareSelect() {
     $(document).ready(function () {
-      $('#managerId').selectize({
-        maxItems: 1,
-        onItemAdd: function (value, $item) {
-        },
-        onItemRemove: function (value) {
-        }
-      });
     })
   }
 
@@ -435,13 +423,13 @@ export class EditUserComponent implements OnInit {
 
   formSubmit() {
     //console.log(this.angForm);
-    let managerId = $('#managerId').val();
-    if (managerId == '') {
-      $('#managerId-error').removeClass('d-none');
-      return false;
-    } else {
-      $('#managerId-error').addClass('d-none');
-    }
+    // let managerId = $('#managerId').val();
+    // if (managerId == '') {
+    //   $('#managerId-error').removeClass('d-none');
+    //   return false;
+    // } else {
+    //   $('#managerId-error').addClass('d-none');
+    // }
     //console.log(managerId);
     if (this.angForm.valid) {
       if (this.statusFlag === false) {
@@ -457,7 +445,7 @@ export class EditUserComponent implements OnInit {
       this.user.contactNo = this.angForm.controls['contactNo'].value;
       this.user.secContactNo = this.angForm.controls['secContactNo'].value;
       this.user.employeeId = this.angForm.controls['employeeId'].value;
-      this.user.managerId = managerId;
+      this.user.managerId = this.angForm.controls['managerId'].value;
       this.user.projectCode = this.angForm.controls['projectCode'].value;
       this.user.projectCode = this.angForm.controls['projectCode'].value;
       this.user.roles = this.angForm.controls['roles'].value;
@@ -543,7 +531,7 @@ export class EditUserComponent implements OnInit {
         this.user.vendor = new Vendor();
         this.user.vendor.id = data.vendorId;
         //console.log(JSON.stringify(this.user));
-
+        //console.log(this.user.roles.map(String));
         this.angForm.get('firstName').setValue(this.user.firstName);
         this.angForm.get('lastName').setValue(this.user.lastName);
         this.angForm.get('email').setValue(this.user.email);
@@ -551,7 +539,7 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('secContactNo').setValue(this.user.secContactNo);
         this.angForm.get('employeeId').setValue(this.user.employeeId);
         this.angForm.get('projectCode').setValue(this.user.projectCode);
-        this.angForm.get('roles').setValue(this.user.roles.map(String));
+        this.angForm.get('roles').setValue(this.user.roles.map(Number));
         this.angForm.get('managerId').setValue(this.user.managerId);
         if (this.user.vendor.id != null) {
           this.angForm.get('vendorId').setValue(this.user.vendor.id);
@@ -585,7 +573,7 @@ export class EditUserComponent implements OnInit {
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         this.angForm.markAllAsTouched();
-        this.preapareSelect();
+        //this.preapareSelect();
       });
   }
 

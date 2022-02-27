@@ -1,8 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditUserComponent } from './edituser.component';
-
-import { UserComponent } from './user.component';
-
 describe('EditUserComponent', () => {
   let component: EditUserComponent;
   let fixture: ComponentFixture<EditUserComponent>;

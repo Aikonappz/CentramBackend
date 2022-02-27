@@ -16,10 +16,10 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="name">Name</label>
                   <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
-                    placeholder="Name" aria-label="Name">
+                    placeholder="Organization Name" aria-label="Organization Name">
                   <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.name.errors?.required">
-                      Name is required.
+                      Organization Name is required.
                     </div>
                     <div *ngIf="f.name.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -27,9 +27,9 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="add1">Addr1</label>
+                  <label class="form-col-form-label required-control-label" for="add1">Address Line 1</label>
                   <input type="text" formControlName="add1" ngModel id="add1" name="add1" class="form-control"
-                    placeholder="Addr1" aria-label="Addr1">
+                    placeholder="Address Line 1" aria-label="Address Line 1">
                   <div *ngIf="f.add1.touched && f.add1.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.add1.errors?.required">
                       Addr1 is required.
@@ -40,9 +40,9 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label " for="add2">Addr2</label>
+                  <label class="form-col-form-label " for="add2">Address Line 2</label>
                   <input type="text" formControlName="add2" ngModel id="add2" name="add2" class="form-control"
-                    placeholder="Addr2" aria-label="Addr2">
+                    placeholder="Address Line 2" aria-label="Address Line 2 ">
                   <div *ngIf="f.add2.touched && f.add2.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.add2.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -120,11 +120,10 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="licenseType">License Type</label>
-                  <select class="form-control select2-single" formControlName="licenseType" ngModel id="licenseType"
-                    name="licenseType">
-                    <option value="">-- Select License Type --</option>
-                    <option *ngFor="let e of licenseTypes" value="{{e}}">{{e}}</option>
-                  </select>
+                  <ng-select [items]="licenseTypes" placeholder="-- Select License Type --"
+                    formControlName="licenseType" id="licenseType" licenseType name="licenseType" bindLabel="label"
+                    bindValue="value">
+                  </ng-select>
                   <div *ngIf="f.licenseType.touched && f.licenseType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseType.errors?.required">
                       Licence Type is required.

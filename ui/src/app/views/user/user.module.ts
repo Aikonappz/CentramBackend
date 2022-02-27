@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserSettingsComponent } from './usersettings.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     BsDropdownModule.forRoot(),
     ReactiveFormsModule,
     TabsModule,
+    NgSelectModule,
   ],
   declarations: [
     UserComponent,

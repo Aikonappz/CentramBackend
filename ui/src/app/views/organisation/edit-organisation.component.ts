@@ -3,7 +3,7 @@ import { UserService } from '../../service/UserService';
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { DatePipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { LocationVO } from '../../model/LocationVO';
 import { Role } from '../../model/Role';
 import { Department } from '../../model/Department';
@@ -23,14 +23,14 @@ import { ContactPerson } from '../../model/ContactPerson';
 declare var $: any;
 
 @Component({
-  selector: 'app-edituser',
-  templateUrl: './editorganisation.component.html',
-  styleUrls: ['./editorganisation.component.scss']
+  selector: 'app-edit-organisation',
+  templateUrl: './edit-organisation.component.html',
+  styleUrls: ['./edit-organisation.component.scss']
 })
 export class EditOrganisationComponent implements OnInit {
   moduleName: string = "ORGANIZATION";
-  actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  licenseTypes: string[];
+  //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
+  licenseTypes: any[] = [];
   panRegex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
   tanRegex = /^([a-zA-Z]){4}([0-9]){5}([a-zA-Z]){1}?$/;
   gstinRegex = /\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}/;
@@ -46,10 +46,10 @@ export class EditOrganisationComponent implements OnInit {
   departments: Department[];
   angForm: FormGroup;
   oldStatus: boolean = false;
+
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
-    private datePipe: DatePipe,
     private route: ActivatedRoute,
     private _location: Location,
     private titleService: Title,
@@ -65,10 +65,12 @@ export class EditOrganisationComponent implements OnInit {
     });
     this.user = new User();
     this.user.status = this.defaultStatus;
-    const licenseTypeList = Object.values(LicenseType)
+    Object.values(LicenseType)
       .filter((value) => typeof value === "string")
-      .map((value) => (value as string));
-    this.licenseTypes = licenseTypeList;
+      .map((value) => (value as string))
+      .forEach((item, index) => {
+        this.licenseTypes.push({ value: item, label: item, });
+      });
     this.org = new Organisation();
     this.org.status = this.defaultStatus;
   }
@@ -202,18 +204,18 @@ export class EditOrganisationComponent implements OnInit {
       }, {
         validators: StartEndDateValidation('licenseStart', 'licenseEnd')
       });
-      this.miscService
-        .locationsService()
-        .subscribe((data: any) => {
-          //console.log("load locations");
-          this.locations = data.content;
-        });
-      this.miscService
-        .departmentsService()
-        .subscribe((data: any) => {
-          //console.log("load departments");
-          this.departments = data.content;
-        });
+      // this.miscService
+      //   .locationsService()
+      //   .subscribe((data: any) => {
+      //     //console.log("load locations");
+      //     this.locations = data.content;
+      //   });
+      // this.miscService
+      //   .departmentsService()
+      //   .subscribe((data: any) => {
+      //     //console.log("load departments");
+      //     this.departments = data.content;
+      //   });
     } else {
       this.angForm = this.fb.group({
         name: new FormControl('', [
@@ -312,28 +314,35 @@ export class EditOrganisationComponent implements OnInit {
       }, {
         validators: StartEndDateValidation('licenseStart', 'licenseEnd')
       });
-      this.miscService
-        .locationsService()
-        .subscribe((data: any) => {
-          //console.log("load locations");
-          this.locations = data.content;
-          this.miscService
-            .departmentsService()
-            .subscribe((data: any) => {
-              //console.log("load departments");
-              this.departments = data.content;
-              if (this.route.snapshot.paramMap.has('id')) {
-                if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
-                  //console.log("load provided id data...");
-                  this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-                  this.newEntity = false;
-                  this.callGetUserService(this.entityId);
-                }
-              }
-            });
-        });
+      if (this.route.snapshot.paramMap.has('id')) {
+        if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
+          //console.log("load provided id data...");
+          this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+          this.newEntity = false;
+          this.callGetUserService(this.entityId);
+        }
+      }
+      // this.miscService
+      //   .locationsService()
+      //   .subscribe((data: any) => {
+      //     //console.log("load locations");
+      //     this.locations = data.content;
+      //     this.miscService
+      //       .departmentsService()
+      //       .subscribe((data: any) => {
+      //         //console.log("load departments");
+      //         this.departments = data.content;
+      //         if (this.route.snapshot.paramMap.has('id')) {
+      //           if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
+      //             //console.log("load provided id data...");
+      //             this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+      //             this.newEntity = false;
+      //             this.callGetUserService(this.entityId);
+      //           }
+      //         }
+      //       });
+      //   });
     }
-    this.initSelectBoxes();
   }
 
   ngAfterViewInit() { }
@@ -343,10 +352,6 @@ export class EditOrganisationComponent implements OnInit {
   get f() { return this.angForm.controls; }
 
   initSelectBoxes() {
-    //$('#name').fastselect();
-    // $('#licenseType').select2();
-    // $('#department').select2();
-    // $('#location').select2();
   }
 
   formSubmit() {
@@ -473,7 +478,6 @@ export class EditOrganisationComponent implements OnInit {
         this.org.contactPersons = data.contactPersons;
         this.org.setting = data.setting == null ? new Setting() : data.setting;
         //console.log(JSON.stringify(this.org));
-
         this.angForm.get('licenseType').setValue(this.org.licenseType);
         this.angForm.get('licenseStart').setValue(moment(this.org.licenseStart).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
         this.angForm.get('licenseEnd').setValue(moment(this.org.licenseEnd).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
@@ -487,19 +491,16 @@ export class EditOrganisationComponent implements OnInit {
         this.angForm.get('name').setValue(this.org.name);
         this.statusFlag = String(this.org.status) == 'ACTIVE' ? true : false;
         this.oldStatus = String(this.org.status) == 'ACTIVE' ? true : false;
-
-
         this.angForm.get('keyPersonName1').setValue(this.org.contactPersons[0].name);
         this.angForm.get('keyPersonEmail1').setValue(this.org.contactPersons[0].email);
         this.angForm.get('keyPersonContact1').setValue(this.org.contactPersons[0].contactNo);
         this.angForm.get('keyPersonName2').setValue(this.org.contactPersons[1].name);
         this.angForm.get('keyPersonEmail2').setValue(this.org.contactPersons[1].email);
         this.angForm.get('keyPersonContact2').setValue(this.org.contactPersons[1].contactNo);
-
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.markAllAsTouched();
-        this.initSelectBoxes();
+        //this.initSelectBoxes();
       });
   }
 
@@ -507,4 +508,5 @@ export class EditOrganisationComponent implements OnInit {
   onChange(status: boolean, inp: string) {
     this.statusFlag = status;
   }
+
 }

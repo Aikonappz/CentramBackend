@@ -43,7 +43,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "user", description = "User Api")
+@Api(value = "User", description = "User Api")
 @RequestMapping(value = "/api/v1/user")
 @Controller
 public class UserApiController {
@@ -68,9 +68,10 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(value = "SignIn Api", nickname = "SignIn", notes = "SignIn user", tags = {"user",})
+    @ApiOperation(value = "SignIn Api", nickname = "SignIn", notes = "SignIn user", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<LoggedInUserVO> login(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
@@ -93,9 +94,9 @@ public class UserApiController {
      *
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Logout", nickname = "logout", notes = "logout", response = CommonResponse.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Logout", nickname = "logout", notes = "logout", response = CommonResponse.class, tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
+            @ApiResponse(code = 200, message = "Successful Operation", response = CommonResponse.class),
     })
     @RequestMapping(value = "/sign-out", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<CommonResponse> logout() {
@@ -108,9 +109,10 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(value = "Forgot Password Api", nickname = "forgotPassword", notes = "Forgot Password Api", tags = {"user",})
+    @ApiOperation(value = "Forgot Password Api", nickname = "forgotPassword", notes = "Forgot Password Api", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/forgot-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<CommonResponse> forgotPassword(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
@@ -123,9 +125,10 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(value = "Reset Password Api", nickname = "resetPassword", notes = "Reset Password Api", tags = {"user",})
+    @ApiOperation(value = "Reset Password Api", nickname = "resetPassword", notes = "Reset Password Api", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/reset-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<CommonResponse> resetPassword(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
@@ -138,11 +141,11 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Change Password", nickname = "changePassword", notes = "Change Password", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Change Password", nickname = "changePassword", notes = "Change Password", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid organisation supplied"),
             @ApiResponse(code = 404, message = "User not found"),
-            @ApiResponse(code = 405, message = "Validation exception")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/change-password", consumes = {"application/json"}, method = RequestMethod.PUT)
     public ResponseEntity<Void> changePassword(@ApiParam(value = "ChangePasswordDTO object", required = true) @Valid @RequestBody UserDTO body) {
@@ -159,10 +162,11 @@ public class UserApiController {
      * @param pageable
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Users", nickname = "getUsers", notes = "Get all Users", response = PaginatedList.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Users", nickname = "getUsers", notes = "Get all Users", response = PaginatedList.class, tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class, responseContainer = "List"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER,MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE|SEARCH,WRITE|SEARCH,',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
@@ -183,7 +187,7 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a user", nickname = "save", notes = "Save a user", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a user", nickname = "save", notes = "Save a user", tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -200,7 +204,7 @@ public class UserApiController {
      * @param status
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateStatus", notes = "Update status of user's", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateStatus", notes = "Update status of user's", tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "User not found")
@@ -218,7 +222,7 @@ public class UserApiController {
      * @param userId
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by Id", nickname = "getUserById", notes = "Find user by Id", response = UserVO.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by Id", nickname = "getUserById", notes = "Find user by Id", response = UserVO.class, tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -235,7 +239,7 @@ public class UserApiController {
      *
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = Resource.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = Resource.class, tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -257,7 +261,7 @@ public class UserApiController {
      * @return
      * @throws IOException
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload users data csv", nickname = "uploadUsersData", notes = "Upload users data", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload users data csv", nickname = "uploadUsersData", notes = "Upload users data", tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Validation exception")
     })
@@ -275,7 +279,7 @@ public class UserApiController {
      * @param actionName
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by module/submodule permission", nickname = "getUsersByModuleAndAction", notes = "Find user by module/submodule permission", response = UserVO.class, responseContainer = "List", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by module/submodule permission", nickname = "getUsersByModuleAndAction", notes = "Find user by module/submodule permission", response = UserVO.class, responseContainer = "List", tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = UserVO.class, responseContainer = "List")
     })
@@ -288,7 +292,7 @@ public class UserApiController {
     }
 
     /*
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by multi Id", nickname = "getUserByIds", notes = "Find user by multi Id", response = UserVO.class, responseContainer = "List", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by multi Id", nickname = "getUserByIds", notes = "Find user by multi Id", response = UserVO.class, responseContainer = "List", tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class, responseContainer = "List")
     })
@@ -297,7 +301,7 @@ public class UserApiController {
     public ResponseEntity<Page<UserVO>> getUserByIds(@NotNull @ApiParam(value = "Ids to filter by", required = true) @Valid @RequestParam(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<Page<UserVO>>(userService.getUserByIds(ids, pageable), HttpStatus.OK);
     }
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by username", nickname = "getUserByUserName", notes = "Find user by username", response = UserVO.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by username", nickname = "getUserByUserName", notes = "Find user by username", response = UserVO.class, tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
             @ApiResponse(code = 400, message = "Invalid username supplied"),
@@ -308,7 +312,7 @@ public class UserApiController {
     public ResponseEntity<UserVO> getUserByUserName(@ApiParam(value = "userName of user to return", required = true) @PathVariable("userName") String userName) {
         return new ResponseEntity<UserVO>(userService.getUserByUserName(userName), HttpStatus.OK);
     }
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get user settings", nickname = "getUserSettings", notes = "Get user settings", response = UserDTO.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get user settings", nickname = "getUserSettings", notes = "Get user settings", response = UserDTO.class, tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -318,7 +322,7 @@ public class UserApiController {
     public ResponseEntity<UserDTO> getUserSettings() {
         return new ResponseEntity<UserDTO>(userService.getUserSettings(), HttpStatus.OK);
     }
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload user profile photo", nickname = "uploadUserProfile", notes = "Upload user profile photo", tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload user profile photo", nickname = "uploadUserProfile", notes = "Upload user profile photo", tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid organisation supplied"),
             @ApiResponse(code = 404, message = "User not found"),
@@ -329,7 +333,7 @@ public class UserApiController {
     public ResponseEntity<UserDTO> uploadUserProfile(HttpServletRequest request) {
         return new ResponseEntity<UserDTO>(userService.uploadUserProfile(request), HttpStatus.OK);
     }
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get User Activity", nickname = "getActivityLogs", notes = "Get User Activity", response = List.class, tags = {"user",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get User Activity", nickname = "getActivityLogs", notes = "Get User Activity", response = List.class, tags = {"User",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),

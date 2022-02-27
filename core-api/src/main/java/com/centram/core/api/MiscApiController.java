@@ -39,7 +39,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "misc", description = "Misc API")
+@Api(value = "Misc", description = "Misc API")
 @RequestMapping(value = "/api/v1/misc")
 @Controller
 public class MiscApiController {
@@ -88,50 +88,54 @@ public class MiscApiController {
     @Autowired
     private AssetModelService assetModelService;
 
-    @ApiOperation(value = "Demo Request Api", nickname = "requestDemo", notes = "Demo Request Api", tags = {"misc",})
+    @ApiOperation(value = "Request a demo", nickname = "requestADemo", notes = "Request a demo", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<CommonResponse> requestDemo(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody RequestDemoDTO body) {
+    public ResponseEntity<CommonResponse> requestADemo(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody RequestDemoDTO body) {
         return new ResponseEntity<CommonResponse>(miscService.requestDemo(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find module by id", nickname = "getModuleById", notes = "Find module by id", response = Module.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find module by id", nickname = "getModuleById", notes = "Find module by id", response = Module.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Role.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "Module not found")
+            @ApiResponse(code = 200, message = "Successful Operation", response = Module.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/module/{moduleId}", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<Module> getModuleById(@ApiParam(value = "id of module", required = true) @PathVariable("moduleId") BigInteger moduleId) {
         return new ResponseEntity<Module>(moduleService.getModuleById(moduleId), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Modules", nickname = "getModules", notes = "Get all Modules", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Modules", nickname = "getModules", notes = "Get all Modules", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Module>> getModules(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Asset Models", nickname = "getAssetModels", notes = "Get all Asset Models", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Asset Models", nickname = "getAssetModels", notes = "Get all Asset Models", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-asset-model", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<AssetModel>> getAssetModels(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<List<AssetModel>>(assetModelService.getAssetModels(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find role by id", nickname = "getRoleById", notes = "Find role by id", response = Role.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find role by id", nickname = "getRoleById", notes = "Find role by id", response = Role.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Role.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 404, message = "Role not found")
     })
     @RequestMapping(value = "/role/{roleId}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -139,17 +143,18 @@ public class MiscApiController {
         return new ResponseEntity<Role>(roleService.getById(roleId), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Roles", nickname = "getRoles", notes = "Get all Roles", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Roles", nickname = "getRoles", notes = "Get all Roles", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-role", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Role>> getRoles(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Role>>(roleService.getRoles(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find department by id", nickname = "getDepartentById", notes = "Find department by id", response = Department.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find department by id", nickname = "getDepartentById", notes = "Find department by id", response = Department.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -161,7 +166,7 @@ public class MiscApiController {
         return new ResponseEntity<Department>(departmentService.getById(departmentId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all departments", nickname = "getDepartments", notes = "Get all departments", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all departments", nickname = "getDepartments", notes = "Get all departments", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -172,7 +177,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Department>>(departmentService.getDepartments(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a department", nickname = "saveDepartment", notes = "Add a department", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a department", nickname = "saveDepartment", notes = "Add a department", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -182,7 +187,7 @@ public class MiscApiController {
         return new ResponseEntity<Department>(departmentService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of department's", nickname = "updateStatus", notes = "Update status of department's", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of department's", nickname = "updateStatus", notes = "Update status of department's", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Department not found")
@@ -197,7 +202,7 @@ public class MiscApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a location", nickname = "saveLocation", notes = "Add a location", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a location", nickname = "saveLocation", notes = "Add a location", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -207,7 +212,7 @@ public class MiscApiController {
         return new ResponseEntity<Location>(locationService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of location's", nickname = "updateStatus", notes = "Update status of location's", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of location's", nickname = "updateStatus", notes = "Update status of location's", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "Location not found")
@@ -219,7 +224,7 @@ public class MiscApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -231,7 +236,7 @@ public class MiscApiController {
         return new ResponseEntity<Location>(locationService.getById(locationId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -242,7 +247,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a Priority", nickname = "savePriority", notes = "Add a Priority", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a Priority", nickname = "savePriority", notes = "Add a Priority", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -252,7 +257,7 @@ public class MiscApiController {
         return new ResponseEntity<Priority>(priorityService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of priorityies", nickname = "updatePrioritiesStatus", notes = "Update status of priorityies", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of priorityies", nickname = "updatePrioritiesStatus", notes = "Update status of priorityies", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
             @ApiResponse(code = 404, message = "priority not found")
@@ -264,7 +269,7 @@ public class MiscApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find priority by id", nickname = "getPriorityById", notes = "Find priority by id", response = Location.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find priority by id", nickname = "getPriorityById", notes = "Find priority by id", response = Location.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -276,7 +281,7 @@ public class MiscApiController {
         return new ResponseEntity<Priority>(priorityService.getById(priorityId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all priorities", nickname = "getPriorities", notes = "Get all priorities", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all priorities", nickname = "getPriorities", notes = "Get all priorities", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -287,7 +292,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all holiday calenders", nickname = "getHolidayCalenders", notes = "Get holiday calenders", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all holiday calenders", nickname = "getHolidayCalenders", notes = "Get holiday calenders", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -298,7 +303,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<HolidayCalender>>(holidayCalenderService.getHolidayCalenders(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find holiday calender id", nickname = "getHolidayCalenderById", notes = "Find holiday calender id", response = Location.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find holiday calender id", nickname = "getHolidayCalenderById", notes = "Find holiday calender id", response = Location.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -310,7 +315,7 @@ public class MiscApiController {
         return new ResponseEntity<HolidayCalender>(holidayCalenderService.getById(holidayCallenderId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload holiday calender data csv", nickname = "uploadHolidayCalenderData", notes = "Upload holiday calender data", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload holiday calender data csv", nickname = "uploadHolidayCalenderData", notes = "Upload holiday calender data", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Validation exception")
     })
@@ -323,7 +328,7 @@ public class MiscApiController {
         return new ResponseEntity<HolidayCalender>(holidayCalenderService.uploadHolidayCalenderData(multipartFile, holidayCalender), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad holiday celender", nickname = "downloadHolidayCalender", notes = "Download holiday celender", response = Resource.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad holiday celender", nickname = "downloadHolidayCalender", notes = "Download holiday celender", response = Resource.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -340,7 +345,7 @@ public class MiscApiController {
                 .body(resource);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Notifications", nickname = "getHolidayCalenders", notes = "Get all Notifications", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Notifications", nickname = "getHolidayCalenders", notes = "Get all Notifications", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -355,7 +360,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Notification>>(notificationService.getNotifications(searchValue, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find notification id", nickname = "getNotificationById", notes = "Find notification id", response = Notification.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find notification id", nickname = "getNotificationById", notes = "Find notification id", response = Notification.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -367,7 +372,7 @@ public class MiscApiController {
         return new ResponseEntity<Notification>(notificationService.getById(notificationId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update notification status", nickname = "updateNotificationStatus", notes = "Update notification status", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update notification status", nickname = "updateNotificationStatus", notes = "Update notification status", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -380,7 +385,7 @@ public class MiscApiController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add notification", nickname = "saveNotification", notes = "Add notification", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add notification", nickname = "saveNotification", notes = "Add notification", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -392,7 +397,7 @@ public class MiscApiController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find mapdl by id", nickname = "getDistributionListById", notes = "Find mapdl by id", response = Department.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find mapdl by id", nickname = "getDistributionListById", notes = "Find mapdl by id", response = Department.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -405,7 +410,7 @@ public class MiscApiController {
         return new ResponseEntity<DistributionList>(distributionListService.getById(dlid), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all map dl", nickname = "getDistributionLists", notes = "Get all map dl", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all map dl", nickname = "getDistributionLists", notes = "Get all map dl", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -417,7 +422,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<DistributionList>>(distributionListService.getDistributionLists(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a map dl", nickname = "saveMapDL", notes = "Add a map dl", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a map dl", nickname = "saveMapDL", notes = "Add a map dl", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })
@@ -428,7 +433,7 @@ public class MiscApiController {
         return new ResponseEntity<DistributionList>(distributionListService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find vendor by id", nickname = "getVendorById", notes = "Find vendor by id", response = Department.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find vendor by id", nickname = "getVendorById", notes = "Find vendor by id", response = Department.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
@@ -441,7 +446,7 @@ public class MiscApiController {
         return new ResponseEntity<Vendor>(vendorService.getById(vendorId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all vendor", nickname = "getVendors", notes = "Get all vendor", response = PaginatedList.class, tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all vendor", nickname = "getVendors", notes = "Get all vendor", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
             @ApiResponse(code = 400, message = "Invalid status value")
@@ -457,7 +462,7 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(inHouse, VendorType.valueOf(vendorType), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a vendor", nickname = "saveVendor", notes = "Add a vendor", tags = {"misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a vendor", nickname = "saveVendor", notes = "Add a vendor", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Invalid input")
     })

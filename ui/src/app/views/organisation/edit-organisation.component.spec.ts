@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EditOrganisationComponent } from './editorganisation.component';
+import { EditOrganisationComponent } from './edit-organisation.component';
 
 describe('EditOrganisation', () => {
   let component: EditOrganisationComponent;

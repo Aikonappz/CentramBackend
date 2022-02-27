@@ -74,8 +74,15 @@ export class OrgSettingsComponent implements OnInit {
         Validators.maxLength(5),
         Validators.pattern(this.alphaNumericRegex),
       ]),
+      outboundAssetRequestPrefix: new FormControl('', [
+        Validators.maxLength(5),
+        Validators.pattern(this.alphaNumericRegex),
+      ]),
+      inboundAssetRequestPrefix: new FormControl('', [
+        Validators.maxLength(5),
+        Validators.pattern(this.alphaNumericRegex),
+      ]),
       ticketAllocationType: new FormControl('', [
-
       ]),
     });
     this.callgetOrganisationSettingService()
@@ -91,6 +98,8 @@ export class OrgSettingsComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       this.setting.assetPrefix = this.angForm.controls['assetPrefix'].value;
+      this.setting.inboundAssetRequestPrefix = this.angForm.controls['inboundAssetRequestPrefix'].value;
+      this.setting.outboundAssetRequestPrefix = this.angForm.controls['outboundAssetRequestPrefix'].value;
       this.setting.incidentPrefix = this.angForm.controls['incidentPrefix'].value;
       this.callsetOrganisationSettingService();
     } else {
@@ -101,8 +110,8 @@ export class OrgSettingsComponent implements OnInit {
   goBack() { this._location.back(); }
 
   callsetOrganisationSettingService() {
-    this.setting.assetPrefix = this.angForm.controls['assetPrefix'].value;
-    this.setting.incidentPrefix = this.angForm.controls['incidentPrefix'].value;
+    //this.setting.assetPrefix = this.angForm.controls['assetPrefix'].value;
+    //this.setting.incidentPrefix = this.angForm.controls['incidentPrefix'].value;
     //this.setting.ticketAllocationType = TicketAllocationType[String(this.angForm.controls['ticketAllocationType'].value)];
     this.setting.ticketAllocationType = 1;
     this.service
@@ -123,6 +132,8 @@ export class OrgSettingsComponent implements OnInit {
           this.setting = data;
           this.angForm.get('assetPrefix').setValue(this.setting.assetPrefix);
           this.angForm.get('incidentPrefix').setValue(this.setting.incidentPrefix);
+          this.angForm.get('inboundAssetRequestPrefix').setValue(this.setting.inboundAssetRequestPrefix);
+          this.angForm.get('outboundAssetRequestPrefix').setValue(this.setting.outboundAssetRequestPrefix);
           this.angForm.get('ticketAllocationType').setValue(this.setting.ticketAllocationType);
         } else {
           this.canEdit = true;

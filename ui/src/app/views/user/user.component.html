@@ -92,22 +92,17 @@
                                 <div *ngIf="!roles.includes('APP_ADMIN')" class="row row-margin-05">
                                     <div class="col-sm-3">
                                         <label class="form-col-form-label" for="location">User Type</label>
-                                        <select data-live-search="true" data-style="btn-primary" formControlName="userType"
-                                            ngModel class="form-control" id="userType" name="userType">
-                                            <option value="">ALL</option>
-                                            <option value="USER">Employee</option>
-                                            <option value="AGENT">Agent</option>
-                                        </select>
+                                        <ng-select [items]="filterTypes" placeholder="ALL" formControlName="userType"
+                                            id="userType" userType name="userType" bindLabel="label" bindValue="id">
+                                        </ng-select>
                                     </div>
                                     <div class="col-sm-3">
                                         <div class=" vendor-col">
                                             <label class="form-col-form-label " for="vendorId">Vendor</label>
-                                            <select class="form-control" formControlName="vendorId" ngModel
-                                                id="vendorId" name="vendorId">
-                                                <option value="">-- Select Vendor --</option>
-                                                <option *ngFor="let e of vendorList" value="{{e.id}}">{{e.name}}
-                                                </option>
-                                            </select>
+                                            <ng-select [items]="vendorList" placeholder="-- Select Vendor --"
+                                                formControlName="vendorId" id="vendorId" vendorId name="vendorId"
+                                                bindLabel="name" bindValue="id">
+                                            </ng-select>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">

@@ -38,6 +38,8 @@ export class UserComponent implements OnInit, OnDestroy {
   loggedInUser: LoggedInUser;
   vendorList: any[];
   c: number = 0;
+  searchedData: Object = {};
+  filterTypes: any[] = [];
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -62,9 +64,9 @@ export class UserComponent implements OnInit, OnDestroy {
       ]),
       status: new FormControl('ALL', [
       ]),
-      vendorId: new FormControl('', [
+      vendorId: new FormControl(null, [
       ]),
-      userType: new FormControl("ALL", [
+      userType: new FormControl(null, [
       ]),
     });
     this.usr = new User();
@@ -85,6 +87,7 @@ export class UserComponent implements OnInit, OnDestroy {
             }
           }
         });
+      this.filterTypes = [{ "id": '', "label": "ALL" }, { "id": 'USER', "label": "Employee" }, { "id": 'AGENT', label: "Agent" }];
     }
   }
 
@@ -93,13 +96,13 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   onHidden(): void {
-    console.log('Dropdown is hidden');
+    //console.log('Dropdown is hidden');
   }
   onShown(): void {
-    console.log('Dropdown is shown');
+    //console.log('Dropdown is shown');
   }
   isOpenChange(): void {
-    console.log('Dropdown state is changed');
+    //console.log('Dropdown state is changed');
   }
 
   toggleDropdown($event: MouseEvent): void {
@@ -140,7 +143,6 @@ export class UserComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
@@ -149,11 +151,15 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   loadData(req = {}) {
+    if (this.searchedData.hasOwnProperty('email')) {
+      req = this.searchedData;
+    }
     this.datasource.loadUserVOs(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
 
   loadPage() {
     this.angForm.reset();
+    this.searchedData = {};
     this.loadData({});
     this.usr.status = this.defaultStatus;
   }
@@ -222,12 +228,13 @@ export class UserComponent implements OnInit, OnDestroy {
       this.usr.email = this.angForm.controls['userEmail'].value;
       this.usr.employeeId = this.angForm.controls['userEmployeeId'].value;
       this.usr.status = this.statusFlag;
-      this.loadData({
+      this.searchedData = {
         "email": this.usr.email == null ? '' : this.usr.email,
         "employeeId": this.usr.employeeId == null ? '' : this.usr.employeeId,
         "status": this.usr.status,
-        "vendorId": vendorId,
-      });
+        "vendorId": vendorId == null ? '' : vendorId,
+      };
+      this.loadData(this.searchedData);
       //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");

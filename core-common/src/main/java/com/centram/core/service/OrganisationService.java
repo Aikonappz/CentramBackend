@@ -6,12 +6,10 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.OrganisationRepository;
-
 import com.centram.domain.MediaFile;
 import com.centram.domain.Organisation;
 import com.centram.domain.Setting;
 import com.centram.domain.enumarator.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -20,13 +18,12 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.persistence.EntityManager;
@@ -44,26 +41,27 @@ public class OrganisationService {
 
     private static final Logger log = LoggerFactory.getLogger(OrganisationService.class);
 
+    @Value("${app.default.outbound.asset.req.prefix}")
+    public String outboundAssetReqPrefix;
+
+    @Value("${app.default.inbound.asset.req.prefix}")
+    public String inboundAssetReqPrefix;
+
+    @Value("${app.default.asset.prefix}")
+    public String appDefaultAssetPrefix;
+
+    @Value("${app.default.incident.prefix}")
+    public String appDefaultIncidentPrefix;
+
     @Lazy
     @Autowired
     private UserService userService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private MediaService mediaService;
-
-
 
     @Autowired
     private OrganisationRepository organisationRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     @Autowired
     private MiscService miscService;
@@ -78,12 +76,12 @@ public class OrganisationService {
     }
 
     /**
-     * Create/Update new Organisation
+     * save Organisation
      *
      * @param organisation
      * @return
      */
-    @Transactional
+    @Transactional(readOnly = false)
     public Organisation save(Organisation organisation) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Organisation newOrganisation = null;
@@ -109,11 +107,10 @@ public class OrganisationService {
      * @param status
      * @param organisationIds
      */
-    @Transactional
+    @Transactional(readOnly = false)
     public void updateStatus(Status status, List<BigInteger> organisationIds) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         organisationRepository.updateStatus(status, LocalDateTime.now(), organisationIds);
-
     }
 
     /**
@@ -138,7 +135,7 @@ public class OrganisationService {
      * @param request
      * @return
      */
-    @Transactional
+    @Transactional(readOnly = false)
     public OrganisationDTO uploadOrganisationLogo(HttpServletRequest request) {
         OrganisationDTO organisationDTO = new OrganisationDTO();
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -174,10 +171,14 @@ public class OrganisationService {
             throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
         }
         //organisationDTO.setMediaFile(mediaService.save(mediaFile));
-
         return organisationDTO;
     }
 
+    /**
+     * get active organisations
+     *
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<Organisation> getActiveOrganisations() {
         return organisationRepository.findAll();
@@ -193,15 +194,7 @@ public class OrganisationService {
     public PaginatedList<Organisation> getOrganisations(String name, Status status, LicenseType licenseType, Pageable pageable) {
         name = (!name.equals("")) ? "%" + name.toUpperCase() + "%" : null;
         log.info("Name => {}, Status => {}", name, status);
-        return new PaginatedList<Organisation>(organisationRepository.findAll(
-                name,
-                status.ordinal(),
-                licenseType.ordinal(),
-                pageable
-        )
-        );
-
-
+        return new PaginatedList<Organisation>(organisationRepository.findAll(name, status.ordinal(), licenseType.ordinal(), pageable));
         /*CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Organisation> criteriaQuery = criteriaBuilder.createQuery(Organisation.class);
         Root<Organisation> root = criteriaQuery.from(Organisation.class);
@@ -235,17 +228,30 @@ public class OrganisationService {
         if (organisation == null) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
+        if (organisation.getSetting().getAssetPrefix() == null || organisation.getSetting().getAssetPrefix().equalsIgnoreCase("")) {
+            organisation.getSetting().setAssetPrefix(appDefaultAssetPrefix);
+        }
+        if (organisation.getSetting().getIncidentPrefix() == null || organisation.getSetting().getIncidentPrefix().equalsIgnoreCase("")) {
+            organisation.getSetting().setIncidentPrefix(appDefaultIncidentPrefix);
+        }
+        if (organisation.getSetting().getInboundAssetRequestPrefix() == null || organisation.getSetting().getInboundAssetRequestPrefix().equalsIgnoreCase("")) {
+            organisation.getSetting().setInboundAssetRequestPrefix(inboundAssetReqPrefix);
+        }
+        if (organisation.getSetting().getOutboundAssetRequestPrefix() == null || organisation.getSetting().getOutboundAssetRequestPrefix().equalsIgnoreCase("")) {
+            organisation.getSetting().setOutboundAssetRequestPrefix(outboundAssetReqPrefix);
+        }
         return organisation.getSetting();
     }
 
     /**
+     * update Organization settings
+     *
      * @param setting
      */
-    @Transactional
+    @Transactional(readOnly = false)
     public Setting updateOrganisationSettings(Setting setting) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         organisationRepository.updateSetting(setting, LocalDateTime.now(), loggedInUser.getOrganisationId());
-
         return setting;
     }
 

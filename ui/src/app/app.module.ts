@@ -66,6 +66,7 @@ import { ErrormessageComponent } from './views/errormessage/errormessage.compone
 import { PushNotificationsModule } from 'ng-push-ivy';
 import { ClientStorageService } from './service/ClientStorageService';
 import { ChatComponent } from './views/chat/chat.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
@@ -94,6 +95,8 @@ import { ChatComponent } from './views/chat/chat.component';
     MatProgressBarModule,
     ModalModule.forRoot(),
     PushNotificationsModule,
+
+    NgSelectModule,
   ],
   declarations: [
     AppComponent,

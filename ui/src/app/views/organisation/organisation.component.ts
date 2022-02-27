@@ -12,6 +12,7 @@ import { Organisation } from '../../model/Organisation';
 import { OrganisationDataSource } from '../../service/datasource/OrganisationDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { OrganisationService } from '../../service/OrganisationService';
+import { OrganisationDetailModal } from './modal/OrganisationDetailModal';
 
 @Component({
   selector: 'app-organisation',
@@ -51,38 +52,31 @@ export class OrganisationComponent implements OnInit, OnDestroy {
       orgName: new FormControl('', [
         Validators.maxLength(255)
       ]),
-      status: new FormControl('ALL', [
-
-      ]),
+      status: new FormControl('ALL', []),
     });
     this.org = new Organisation();
     this.org.status = this.defaultStatus;
   }
-
   onHidden(): void {
-    console.log('Dropdown is hidden');
+    //console.log('Dropdown is hidden');
   }
   onShown(): void {
-    console.log('Dropdown is shown');
+    //console.log('Dropdown is shown');
   }
   isOpenChange(): void {
-    console.log('Dropdown state is changed');
+    //console.log('Dropdown state is changed');
   }
-
   toggleDropdown($event: MouseEvent): void {
     $event.preventDefault();
     $event.stopPropagation();
     this.drStatus.isOpen = !this.drStatus.isOpen;
   }
-
   change(value: boolean): void {
     this.drStatus.isOpen = value;
   }
-
   hasPermission(action: string): boolean {
     return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
   }
-
   getTitle(state, parent) {
     var data = [];
     if (parent && parent.snapshot.data && parent.snapshot.data.title) {
@@ -93,16 +87,13 @@ export class OrganisationComponent implements OnInit, OnDestroy {
     }
     return data;
   }
-
   ngOnInit(): void {
     this.datasource = new OrganisationDataSource(this.service);
     this.datasource.loadData();
   }
-
   ngOnDestroy() {
     this.drStatus.isOpen = false;
   }
-
   ngAfterViewInit() {
     this.datasource.counter$
       .pipe(
@@ -118,11 +109,9 @@ export class OrganisationComponent implements OnInit, OnDestroy {
       )
       .subscribe();
   }
-
   loadData(req = {}) {
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
-
   updateStatus(org: Organisation) {
     let res = window.confirm("Are you sure?")
     if (res) {
@@ -153,14 +142,11 @@ export class OrganisationComponent implements OnInit, OnDestroy {
     }
     return null;
   }
-
   get f() { return this.angForm.controls; }
-
   @ViewChild("status") status;
   onChange(inp: string) {
     this.statusFlag = inp;
   }
-
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
@@ -172,7 +158,6 @@ export class OrganisationComponent implements OnInit, OnDestroy {
       console.log("Invalid Form!");
     }
   }
-
   view(element: Organisation) {
     const config: ModalOptions = {
       backdrop: 'static',
@@ -184,115 +169,9 @@ export class OrganisationComponent implements OnInit, OnDestroy {
     const initialState = {
       org: element
     };
-    this.modalRef = this.modalService.show(ViewOrganisationDetail,
+    this.modalRef = this.modalService.show(OrganisationDetailModal,
       Object.assign({}, config, { initialState })
     );
-  }
-
-}
-
-@Component({
-  selector: 'modal-content',
-  template: `<div class="modal-header">
-  <h6 class="modal-title pull-left"><i class="icon-eye"></i> View Organisation Details</h6>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-<div class="modal-body">
-  <div class="row">
-      <div class="col-sm-12">
-          <div class="card ">
-              <table class="table table-bordered">
-                  <tr>
-                      <td>Name</td>
-                      <td>{{org.name}}</td>
-                  </tr>
-                  <tr>
-                      <td>Add1</td>
-                      <td>{{org.add1}}</td>
-                  </tr>
-                  <tr>
-                      <td>Add2</td>
-                      <td>{{org.add2}}</td>
-                  </tr>
-                  <tr>
-                      <td>City</td>
-                      <td>{{org.city}}</td>
-                  </tr>
-                  <tr>
-                      <td>Pincode</td>
-                      <td>{{org.pincode}}</td>
-                  </tr>
-                  <tr>
-                      <td>PAN</td>
-                      <td>{{org.pan}}</td>
-                  </tr>
-                  <tr>
-                      <td>TAN</td>
-                      <td>{{org.tan}}</td>
-                  </tr>
-                  <tr>
-                      <td>GSTIN</td>
-                      <td>{{org.gstin}}</td>
-                  </tr>
-                  <tr>
-                      <td>License Type</td>
-                      <td>{{org.licenseType}}</td>
-                  </tr>
-                  <tr>
-                      <td>License Start</td>
-                      <td>{{formatDate(org.licenseStart)}}</td>
-                  </tr>
-                  <tr>
-                      <td>License End</td>
-                      <td>{{formatDate(org.licenseEnd)}}</td>
-                  </tr>
-                  <tr>
-                      <td>Contact Persons</td>
-                      <td>
-                      <p *ngIf="org.contactPersons.length > 0">Key person 1 name - {{org.contactPersons[0].name}}</p>
-                      <p *ngIf="org.contactPersons.length > 0">Key person 1 email - {{org.contactPersons[0].email}}</p>
-                      <p *ngIf="org.contactPersons.length > 0">Key person 1 contact - {{org.contactPersons[0].contactNo}}</p>
-                      <hr/>
-                      <p *ngIf="org.contactPersons.length > 1">Key person 2 name - {{org.contactPersons[1].name}}</p>
-                      <p *ngIf="org.contactPersons.length > 1">Key person 2 email - {{org.contactPersons[1].email}}</p>
-                      <p *ngIf="org.contactPersons.length > 1">Key person 2 contact - {{org.contactPersons[1].contactNo}}</p>                         
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>Status</td>
-                      <td>{{org.status}}</td>
-                  </tr>
-              </table>
-          </div>
-      </div>
-  </div>
-</div>`
-})
-export class ViewOrganisationDetail implements OnInit {
-  org: Organisation;
-  constructor(
-    private fb: FormBuilder,
-    public bsModalRef: BsModalRef,
-    private service: OrganisationService,
-    public options: ModalOptions,
-  ) {
-  }
-  ngOnInit() {
-  }
-
-  ngAfterViewInit() {
-  }
-
-  ngAfterContentInit() {
-  }
-
-  formatDate(d: string) {
-    if (d != null && d != "") {
-      return moment.utc(d).tz(AppUtility.APP_DEFAULT_TIMEZONE).format(AppUtility.APP_VIEW_DATE_FORMAT);
-    }
-    return null;
   }
 
 }

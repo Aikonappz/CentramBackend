@@ -45,6 +45,16 @@ public class Role implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
+    @Column(name = "display_name", columnDefinition = "varchar(255) not null")
+    private String displayName;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "description", columnDefinition = "varchar(1000) not null")
+    private String description;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;

@@ -18,9 +18,11 @@ import java.io.Serializable;
 public class Setting implements Serializable {
     private static final long serialVersionUID = 2149040960400918629L;
     @Enumerated(EnumType.ORDINAL)
-    private IncidentAllocationType ticketAllocationType;
     private String incidentPrefix;
     private String assetPrefix;
+    private String outboundAssetRequestPrefix;
+    private String inboundAssetRequestPrefix;
+    private IncidentAllocationType ticketAllocationType;
 
     public Setting(IncidentAllocationType ticketAllocationType) {
         this.ticketAllocationType = ticketAllocationType;

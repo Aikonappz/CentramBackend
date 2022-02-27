@@ -27,7 +27,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "organisation", description = "Organisation API")
+@Api(value = "Organisation", description = "Organisation API")
 @RequestMapping(value = "/api/v1/organisation")
 @Controller
 public class OrganisationApiController {
@@ -40,9 +40,10 @@ public class OrganisationApiController {
     @Autowired
     private OrganisationService organisationService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add an organisation", nickname = "addOrganisation", notes = "Add an organisation", tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add an organisation", nickname = "addOrganisation", notes = "Add an organisation", tags = {"Organisation",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','WRITE',authentication.principal)")
@@ -50,10 +51,10 @@ public class OrganisationApiController {
         return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of an organisation", nickname = "updateStatus", notes = "Update status of an organisation", tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of an organisation", nickname = "updateStatus", notes = "Update status of an organisation", tags = {"Organisation",})
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Organisation not found")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/{ids}/{status}", method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','WRITE',authentication.principal)")
@@ -62,11 +63,12 @@ public class OrganisationApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find organisation by Id", nickname = "getOrganisationById", notes = "Find organisation by Id", response = Organisation.class, tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find organisation by Id", nickname = "getOrganisationById", notes = "Find organisation by Id", response = Organisation.class, tags = {"Organisation",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(code = 200, message = "Successful Operation", response = User.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 404, message = "Organization not found")
     })
     @RequestMapping(value = "/{organisationId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
@@ -74,10 +76,11 @@ public class OrganisationApiController {
         return new ResponseEntity<Organisation>(organisationService.getOrganisationById(organisationId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all organisation", nickname = "getOrganisations", notes = "Get all Organisation", response = PaginatedList.class, tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all organisation", nickname = "getOrganisations", notes = "Get all Organisation", response = PaginatedList.class, tags = {"Organisation",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
@@ -90,11 +93,12 @@ public class OrganisationApiController {
         return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(name, Status.valueOf(status), LicenseType.valueOf(licenseType), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get organisation settings", nickname = "getOrganisationSettings", notes = "Get organisation settings", response = Setting.class, tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get organisation settings", nickname = "getOrganisationSettings", notes = "Get organisation settings", response = Setting.class, tags = {"Organisation",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 404, message = "Organization not found")
     })
     @RequestMapping(value = "/get-settings", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
@@ -102,11 +106,11 @@ public class OrganisationApiController {
         return new ResponseEntity<Setting>(organisationService.getOrganisationSettings(), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update organisation settings", nickname = "updateOrganisationSettings", notes = "Update organisation settings", tags = {"organisation",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update organisation settings", nickname = "updateOrganisationSettings", notes = "Update organisation settings", tags = {"Organisation",})
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid organisation supplied"),
             @ApiResponse(code = 404, message = "Organisation not found"),
-            @ApiResponse(code = 405, message = "Validation exception")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/set-settings", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
@@ -114,7 +118,7 @@ public class OrganisationApiController {
         return new ResponseEntity<Setting>(organisationService.updateOrganisationSettings(body), HttpStatus.OK);
     }
 
-    /*@ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload organisation logo", nickname = "uploadOrganisationLogo", notes = "Upload organisation logo", tags = {"organisation",})
+    /*@ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload organisation logo", nickname = "uploadOrganisationLogo", notes = "Upload organisation logo", tags = {"Organisation",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid organisation supplied"),
             @ApiResponse(code = 404, message = "Organisation not found"),

@@ -83,7 +83,7 @@ public class MiscService {
     private NotificationService notificationService;
 
     /**
-     * Onboard request mail
+     * Onboard request
      *
      * @param requestDemoDTO
      * @return
