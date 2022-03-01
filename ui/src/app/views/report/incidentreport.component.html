@@ -33,13 +33,10 @@
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="moduleId">Category</label>
-                                        <select #moduleId (change)="populateSubmodule($event.target.value)"
-                                            class="form-control" formControlName="moduleId" ngModel id="moduleId"
-                                            name="moduleId">
-                                            <option value="">-- Select Module --</option>
-                                            <option *ngFor="let e of moduleList" value="{{e.id}}">
-                                                {{e.customerModuleName}}</option>
-                                        </select>
+                                        <ng-select #moduleId (change)="populateSubmodule($event)" [items]="moduleList"
+                                            placeholder="-- Select Module --" formControlName="moduleId" id="moduleId"
+                                            moduleId name="moduleId" bindLabel="customerModuleName" bindValue="id">
+                                        </ng-select>
                                         <div *ngIf="f.moduleId.touched && f.moduleId.invalid"
                                             class="alert alert-danger-custom">
                                             <div *ngIf="f.moduleId.errors?.required">
@@ -50,13 +47,9 @@
                                     <div class="col">
                                         <label class="form-col-form-label" for="subModuleId">Sub
                                             Category</label>
-                                        <select class="form-control" formControlName="subModuleId" ngModel
-                                            id="subModuleId" name="subModuleId">
-                                            <option value="">-- Select Sub Module --</option>
-                                            <option *ngFor="let e of subModuleList" value="{{e.id}}">
-                                                {{e.customerModuleName}}
-                                            </option>
-                                        </select>
+                                        <ng-select [items]="subModuleList" placeholder="-- Select Sub Module --"
+                                            formControlName="subModuleId" id="subModuleId" moduleId name="subModuleId"
+                                            bindLabel="customerModuleName" bindValue="id"></ng-select>
                                         <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid"
                                             class="alert alert-danger-custom">
                                             <div *ngIf="f.subModuleId.errors?.required">
@@ -66,12 +59,10 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="priorityId">Priority</label>
-                                        <select class="form-control" formControlName="priorityId" ngModel
-                                            id="priorityId" name="priorityId">
-                                            <option value="">-- Select Priority --</option>
-                                            <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
-                                            </option>
-                                        </select>
+                                        <ng-select [items]="priorities" placeholder="-- Select Priority --"
+                                            formControlName="priorityId" id="priorityId" priorityId name="priorityId"
+                                            bindLabel="name" bindValue="id">
+                                        </ng-select>
                                     </div>
                                 </div>
                                 <div class="row row-margin-05">
@@ -102,11 +93,10 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="status">Incident Status</label>
-                                        <select class="form-control" formControlName="status" ngModel id="status"
-                                            name="status">
-                                            <option value="">-- Select Incident Status--</option>
-                                            <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
-                                        </select>
+                                        <ng-select [items]="statusList" placeholder="-- Select Incident Status --"
+                                            formControlName="status" id="status" status name="status" bindLabel="value"
+                                            bindValue="key">
+                                        </ng-select>
                                     </div>
                                 </div>
                             </div>

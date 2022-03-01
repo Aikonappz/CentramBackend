@@ -12,8 +12,7 @@ import { IncidentReportComponent } from './incidentreport.component';
 import { EscalationReportComponent } from './escalationreport.component';
 import { ReopenReportComponent } from './reopenreport.component';
 import { AgingReportComponent } from './agingreport.component';
-
-
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -33,6 +32,7 @@ import { AgingReportComponent } from './agingreport.component';
     TabsModule,
     ReportRoutingModule,
     BsDropdownModule.forRoot(),
+    NgSelectModule,
   ]
 })
 export class ReportModule { }

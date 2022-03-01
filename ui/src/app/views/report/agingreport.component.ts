@@ -85,6 +85,7 @@ export class AgingReportComponent implements OnInit {
     this.miscService.modulesService({ "sort": "name,asc" })
       .subscribe((result: any) => {
         this.allModuleList = result.content;
+        this.moduleList = [];
         let m;
         for (let i in this.allModuleList) {
           if (this.allModuleList[i].appModule == false && this.allModuleList[i].parentModuleId == null) {
@@ -199,7 +200,7 @@ export class AgingReportComponent implements OnInit {
       }
       this.searchedData = {
         "status": status == null ? '' : status,
-        "priorityId": status == null ? '' : priorityId,
+        "priorityId": priorityId == null ? '' : priorityId,
         "subModuleId": subModuleId == null ? '' : subModuleId,
         "moduleId": moduleId == null ? '' : moduleId,
         "start": start,
@@ -214,12 +215,12 @@ export class AgingReportComponent implements OnInit {
 
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
-    let c = 0;
-    if (moduleId != "") {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
       this.subModuleList = [];
       let sm;
       for (let i = 0; i < this.allModuleList.length; i++) {
-        if (this.allModuleList[i].appModule == false && this.allModuleList[i].parentModuleId == moduleId) {
+        if (this.allModuleList[i].appModule == false && this.allModuleList[i].parentModuleId == moduleId.id) {
           if (this.loggedInUserService.isAgentLead() || this.loggedInUserService.isOrgAdmin() || this.loggedInUserService.isAgentManager()) {
             sm = this.allModuleList[i];
             sm.customerModuleName = AppUtility.toTitleCase(sm.customerModuleName);
@@ -235,4 +236,5 @@ export class AgingReportComponent implements OnInit {
       }
     }
   }
+
 }
