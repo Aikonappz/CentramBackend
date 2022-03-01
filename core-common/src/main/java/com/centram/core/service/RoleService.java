@@ -84,6 +84,25 @@ public class RoleService {
     }
 
     /**
+     * @param displayName
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Role getByDisplayName(String displayName) {
+        Role role = redisService.getRoleByDisplayName(displayName);
+        if (role == null) {
+            Optional<Role> optionalRole = roleRepository.findByDisplayName(displayName);
+            if (optionalRole.isPresent()) {
+                role = optionalRole.get();
+                redisService.saveRoleByDisplayName(displayName, role);
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            }
+        }
+        return role;
+    }
+
+    /**
      * @param roles
      * @return
      */
@@ -93,6 +112,21 @@ public class RoleService {
         Role role = null;
         for (String roleName : roles) {
             role = this.getByName(roleName);
+            roleList.add(role);
+        }
+        return roleList;
+    }
+
+    /**
+     * @param displayNames
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Role> getByDisplayNames(List<String> displayNames) {
+        List<Role> roleList = new ArrayList<Role>();
+        Role role = null;
+        for (String displayName : displayNames) {
+            role = this.getByDisplayName(displayName);
             roleList.add(role);
         }
         return roleList;

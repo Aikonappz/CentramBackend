@@ -2,7 +2,7 @@
   <configuration default="false" name="CoreApp" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="com.centram.core.CoreApp" />
     <module name="core-api" />
-    <option name="PROGRAM_PARAMETERS" value="--spring.config.location=$PROJECT_DIR$/properties/application-local.properties --illegal-access=warn" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.config.location=$PROJECT_DIR$/properties/application-local.properties --illegal-access=warn --send.email=true" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.centram.core.*" />

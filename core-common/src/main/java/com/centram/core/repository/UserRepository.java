@@ -18,10 +18,16 @@ import java.util.List;
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, BigInteger> {
 
-    @Query("select u from User u where upper(u.employeeId) = upper((:employeeId)) and u.organisation.id = (:organisationId)")
+    @Query(value = "select u from User u where UPPER(u.employeeId) = UPPER((:employeeId)) and " +
+            " ( " +
+            "   ((:organisationId) is not null and u.organisation.id = (:organisationId)) " +
+            "   OR " +
+            "   ((:organisationId) is null) " +
+            " ) "
+    )
     User getUserByEmployeeId(@Param("employeeId") String employeeId, @Param("organisationId") BigInteger organisationId);
 
-    @Query("select u from User u where upper(u.email) = upper((:email)) and u.organisation.id = (:organisationId)")
+    @Query("select u from User u where UPPER(u.email) = UPPER((:email)) and u.organisation.id = (:organisationId)")
     User getUserByEmail(@Param("email") String email, @Param("organisationId") BigInteger organisationId);
 
     @Query("select u from User u where u.email in (:emails) and u.organisation.id = (:organisationId)")
@@ -89,7 +95,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             "   ((:status) = 2) " +
             " ) and " +
             " ( " +
-            "   ((:email) is not null and upper(u.email) like (:email)) " +
+            "   ((:email) is not null and UPPER(u.email) like (:email)) " +
             "   OR " +
             "   ((:email) is null) " +
             " ) and " +
@@ -103,7 +109,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             "   ((:filterType) is null) " +
             " ) and " +
             " ( " +
-            "   ((:employeeId) is not null and upper(u.employee_id) like (:employeeId)) " +
+            "   ((:employeeId) is not null and UPPER(u.employee_id) like (:employeeId)) " +
             "   OR " +
             "   ((:employeeId) is null)" +
             " ) ", nativeQuery = true

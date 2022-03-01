@@ -111,4 +111,5 @@ export class VendorComponent implements OnInit {
   loadData(req: any = {}) {
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
+  
 }

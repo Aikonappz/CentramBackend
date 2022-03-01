@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ public class HolidayCalenderService {
     @Autowired
     private OrganisationService organisationService;
 
+    @Autowired
+    private ProxyService proxyService;
 
     /**
      * get location
@@ -114,8 +117,9 @@ public class HolidayCalenderService {
             }
             holidayCalender.setHolidays(holidays);
             holidayCalender.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-
-            return holidayCalenderRepository.save(holidayCalender);
+            return proxyService.saveHolidayCalender(holidayCalender);
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(GenericErrorCode.CALENDER_DATA_EXIST);
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_PROCESSING_ISSUE);
         }

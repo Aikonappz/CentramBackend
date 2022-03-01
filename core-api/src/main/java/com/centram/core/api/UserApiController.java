@@ -189,7 +189,8 @@ public class UserApiController {
      */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a user", nickname = "save", notes = "Save a user", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
@@ -206,7 +207,8 @@ public class UserApiController {
      */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateStatus", notes = "Update status of user's", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
@@ -224,8 +226,9 @@ public class UserApiController {
      */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by Id", nickname = "getUserById", notes = "Find user by Id", response = UserVO.class, tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 200, message = "Successful Operation", response = User.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -241,8 +244,9 @@ public class UserApiController {
      */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = Resource.class, tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = Resource.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
@@ -263,7 +267,9 @@ public class UserApiController {
      */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload users data csv", nickname = "uploadUsersData", notes = "Upload users data", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Validation exception")
+            @ApiResponse(code = 405, message = "Validation exception"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
@@ -281,7 +287,9 @@ public class UserApiController {
      */
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by module/submodule permission", nickname = "getUsersByModuleAndAction", notes = "Find user by module/submodule permission", response = UserVO.class, responseContainer = "List", tags = {"User",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = UserVO.class, responseContainer = "List")
+            @ApiResponse(code = 200, message = "Successful Operation", response = UserVO.class, responseContainer = "List"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/find-by-modules-permissions", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<List<UserVO>> getUsersByModuleAndAction(

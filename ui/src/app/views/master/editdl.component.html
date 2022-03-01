@@ -13,11 +13,9 @@
             <div class="row">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="dlModuleId">Category</label>
-                <select #dlModuleId (change)="populateSubmodule($event.target.value)" class="form-control"
-                  formControlName="dlModuleId" ngModel id="dlModuleId" name="dlModuleId">
-                  <option value="">-- Select Category --</option>
-                  <option *ngFor="let e of moduleList" value="{{e.id}}">{{e.customerModuleName}}</option>
-                </select>
+                <ng-select [items]="moduleList" #dlModuleId (change)="populateSubmodule($event)"
+                  placeholder="-- Select Category --" formControlName="dlModuleId" id="dlModuleId" name="dlModuleId"
+                  bindLabel="customerModuleName" bindValue="id"></ng-select>
                 <div *ngIf="f.dlModuleId.touched && f.dlModuleId.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.dlModuleId.errors?.required">
                     Category is required.
@@ -26,11 +24,9 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="dlSubModuleId">Sub Category</label>
-                <select multiple class="form-control" formControlName="dlSubModuleId" ngModel id="dlSubModuleId"
-                  name="dlSubModuleId">
-                  <option *ngFor="let e of subModuleList" value="{{e.id}}">{{e.customerModuleName}}
-                  </option>
-                </select>
+                <ng-select [items]="subModuleList" [multiple]="true" placeholder="-- Select Sub Category --"
+                  formControlName="dlSubModuleId" id="dlSubModuleId" name="dlSubModuleId" bindLabel="customerModuleName"
+                  bindValue="id"></ng-select>
                 <div *ngIf="f.dlSubModuleId.touched && f.dlSubModuleId.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.dlSubModuleId.errors?.required">
                     Sub Category is required.

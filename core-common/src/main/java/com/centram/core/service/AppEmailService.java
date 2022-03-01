@@ -573,6 +573,82 @@ public class AppEmailService {
     }
 
     /**
+     * Send upload result mail
+     *
+     * @param
+     * @param mailValues
+     */
+    @Transactional
+    //@Async("asyncExecutor")
+    public void sendUploadResult(Map<String, Object> mailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "UPLOAD_RESULT_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("UPLOAD_RESULT_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("mailSubject")).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("mailBody")).toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("upload_tp", mailValues.get("upload_tp").toString());
+        mailSubject = templateEngine.process(mailSubject, context);
+        templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("upload_tp", mailValues.get("upload_tp").toString());
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", mailValues.get("recipient_name").toString().concat(","));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", new String[]{mailValues.get("to").toString()});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        if (mailValues.containsKey("file")) {
+            mailMap.put("file", mailValues.get("file").toString());
+        }
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("UPLOAD RESULT EMAIL TITLE: {}", mailSubject);
+        log.info("UPLOAD RESULT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
+        Boolean hasUploadIssue = (Boolean) mailValues.get("has_issue");
+        if (hasUploadIssue) {
+            notificationService.save(
+                    Collections.singletonList(
+                            new Notification(
+                                    mailSubject, mailValues.get("upload_tp") + " file import has some issues! Please refer your email for reference.",
+                                    new User((UserVO) mailValues.get("user")),
+                                    Status.PUSHED,
+                                    NotificationType.INFO
+                            )
+                    )
+            );
+        } else {
+            notificationService.save(
+                    Collections.singletonList(
+                            new Notification(
+                                    mailSubject,
+                                    mailBody,
+                                    new User((UserVO) mailValues.get("user")),
+                                    Status.PUSHED,
+                                    NotificationType.INFO
+                            )
+                    )
+            );
+        }
+    }
+
+    /**
      * Send welcome mail
      *
      * @param userVO

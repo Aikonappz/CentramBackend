@@ -21,7 +21,6 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 export class EditDepartmentComponent implements OnInit {
   moduleName: string = "DEPARTMENT";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;
@@ -67,9 +66,7 @@ export class EditDepartmentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.route.snapshot.paramMap.has('id')) {
-
-    } else {
+    if (!this.route.snapshot.paramMap.has('id')) {} else {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callGetUserService(this.entityId);
@@ -135,4 +132,5 @@ export class EditDepartmentComponent implements OnInit {
     //console.log(inp);
     this.statusFlag = status;
   }
+  
 }

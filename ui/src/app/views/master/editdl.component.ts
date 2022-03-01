@@ -6,7 +6,6 @@ import { Location } from '@angular/common';
 import { MiscService } from '../../service/MiscService';
 import { AppUtility } from '../../config/AppUtility';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
-import { Module } from '../../model/Module';
 import { DistributionList } from '../../model/DistributionList';
 import { DistributionListModule } from '../../model/DistributionListModule';
 declare var $: any;
@@ -19,18 +18,20 @@ declare var $: any;
 export class EditDlComponent implements OnInit {
   moduleName: string = "DEPARTMENT";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
-  modules: Module[] = [];
-  moduleList: Module[] = [];
-  subModuleList: Module[];
-  submoduleIds: number[];
+  modules: any[] = [];
+  moduleList: any[] = [];
+  subModuleList: any[] = [];
+  submoduleIds: number[] = [];
   statusFlag: boolean = true;
   entityId: number;
   dl: DistributionList;
-  dlms: DistributionListModule[];
+  dlms: DistributionListModule[]=[];
   angForm: FormGroup;
+
+  nameList: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private loggedInUserService: LoggedInUserService,
@@ -48,6 +49,9 @@ export class EditDlComponent implements OnInit {
     });
     this.dl = new DistributionList();
     //this.dept.status = this.defaultStatus;
+    for (let k = 1; k <= 10; k++) {
+      this.nameList.push({ id: "P" + k, label: "P" + k });
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -67,17 +71,17 @@ export class EditDlComponent implements OnInit {
 
   ngOnInit(): void {
     this.angForm = this.fb.group({
-      dlModuleId: new FormControl(true, [
+      dlModuleId: new FormControl(null, [
         Validators.required,
       ]),
-      dlSubModuleId: new FormControl(true, [
+      dlSubModuleId: new FormControl(null, [
         Validators.required,
       ]),
-      dlName: new FormControl('', [
+      dlName: new FormControl(null, [
         Validators.required,
         Validators.maxLength(255),
       ]),
-      dlEmail: new FormControl('', [
+      dlEmail: new FormControl(null, [
         Validators.required,
         Validators.maxLength(255),
         Validators.email,
@@ -88,6 +92,7 @@ export class EditDlComponent implements OnInit {
         .modulesService()
         .subscribe((data: any) => {
           this.modules = data.content;
+          this.moduleList = [];
           for (let i in this.modules) {
             if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
               this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
@@ -100,6 +105,7 @@ export class EditDlComponent implements OnInit {
         .modulesService()
         .subscribe((data: any) => {
           this.modules = data.content;
+          this.moduleList = [];
           for (let i in this.modules) {
             if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
               this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
@@ -164,29 +170,28 @@ export class EditDlComponent implements OnInit {
         this.dl.version = data.version;
         this.dl.distributionListModules = data.distributionListModules;
         //console.log(JSON.stringify(this.user));
-
         this.submoduleIds = [];
         let moduleId = null;
         for (let k in this.dl.distributionListModules) {
           this.submoduleIds.push(this.dl.distributionListModules[k].subModuleId);
           moduleId = this.dl.distributionListModules[k].moduleId;
         }
-        this.populateSubmodule(moduleId);
+        this.populateSubmodule({ id: moduleId });
         this.angForm.get('dlEmail').setValue(this.dl.dlEmail);
         this.angForm.get('dlName').setValue(this.dl.dlName);
         this.angForm.get('dlModuleId').setValue(moduleId);
-        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(String));
+        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));
         this.angForm.markAllAsTouched();
       });
   }
 
   @ViewChild("dlModuleId") dlModuleId;
   populateSubmodule(mId) {
-    let c = 0;
-    if (mId != "") {
+    if (typeof mId !== 'undefined') {
+      let c = 0;
       this.subModuleList = [];
       for (let i = 0; i < this.modules.length; i++) {
-        if (this.modules[i].parentModuleId == mId) {
+        if (this.modules[i].parentModuleId == mId.id) {
           this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
           this.subModuleList.push(this.modules[i]);
           c++;
@@ -194,4 +199,5 @@ export class EditDlComponent implements OnInit {
       }
     }
   }
+
 }

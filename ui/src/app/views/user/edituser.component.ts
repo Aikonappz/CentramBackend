@@ -42,6 +42,7 @@ export class EditUserComponent implements OnInit {
   rolesList: string[];
   loggedInUser: LoggedInUser;
   angForm: FormGroup;
+  userTypes = [{ "id": 'Employee', "label": "Employee" }, { "id": 'Agent', label: "Agent" }];
   constructor(
     private route: ActivatedRoute,
     private _location: Location,
@@ -92,18 +93,18 @@ export class EditUserComponent implements OnInit {
         roles: new FormControl(null, [
           Validators.required
         ]),
-        department: new FormControl('', [
+        department: new FormControl(null, [
           //Validators.required
         ]),
-        location: new FormControl('', [
+        location: new FormControl(null, [
           //Validators.required
         ]),
-        vendorId: new FormControl('', [
+        vendorId: new FormControl(null, [
           //Validators.required
         ]),
         status: new FormControl(true, [
         ]),
-        userType: new FormControl(true, [
+        userType: new FormControl('Employee', [
         ]),
       });
     } else {
@@ -128,8 +129,8 @@ export class EditUserComponent implements OnInit {
         employeeId: new FormControl('NA', [
           Validators.required,
         ]),
-        managerId: new FormControl('NA', [
-          //Validators.required,
+        managerId: new FormControl(null, [
+          Validators.required,
         ]),
         projectCode: new FormControl('NA', [
           //Validators.required
@@ -137,18 +138,19 @@ export class EditUserComponent implements OnInit {
         roles: new FormControl('', [
           Validators.required
         ]),
-        department: new FormControl('', [
+        department: new FormControl(null, [
           //Validators.required
         ]),
-        location: new FormControl('', [
+        location: new FormControl(null, [
           Validators.required
         ]),
-        vendorId: new FormControl('', [
+        vendorId: new FormControl(null, [
           //Validators.required
         ]),
         status: new FormControl(true, [
         ]),
-        userType: new FormControl(true, [
+        userType: new FormControl('Employee', [
+          Validators.required
         ]),
       });
     }
@@ -378,7 +380,6 @@ export class EditUserComponent implements OnInit {
                             for (let indx = 0; indx < vendors.length; indx++) {
                               if (String(vendors[indx].status) == 'ACTIVE') {
                                 this.vendorList[this.c++] = vendors[indx];
-                                //Object.assign({ "id": vendors[indx].id, "version": vendors[indx].version, "name": vendors[indx].name });
                               }
                             }
                           });
@@ -396,17 +397,6 @@ export class EditUserComponent implements OnInit {
           });
       }
     }
-
-    $(function () {
-      $('#userType').change(function () {
-        if ($(this).val() == 'Employee') {
-          $('.vendor-col').addClass('d-none');
-          $('#vendorId').val('');
-        } else if ($(this).val() == 'Agent') {
-          $('.vendor-col').removeClass('d-none');
-        }
-      });
-    });
   }
 
   preapareSelect() {
@@ -458,16 +448,25 @@ export class EditUserComponent implements OnInit {
       this.user.location = null;
       this.user.department = null;
       if (location != "") {
-        let loc = new LocationVO();
-        loc.version = location.split("__")[1];
-        loc.id = location.split("__")[0];
-        this.user.location = loc;
+        for (let i in this.locations) {
+          if (this.locations[i].id == location) {
+            let loc = new LocationVO();
+            loc.version = this.locations[i].version;
+            loc.id = this.locations[i].id;
+            this.user.location = loc;
+            console.log(loc);
+          }
+        }
       }
       if (department != "") {
-        let dept = new Department();
-        dept.version = department.split("__")[1];
-        dept.id = department.split("__")[0];
-        this.user.department = dept;
+        for (let i in this.departments) {
+          if (this.departments[i].id == department) {
+            let dept = new Department();
+            dept.version = this.departments[i].version;
+            dept.id = this.departments[i].id;
+            this.user.department = dept;
+          }
+        }
       }
       let vendorId = this.angForm.controls['vendorId'].value;
       if (vendorId != '' && this.angForm.controls['userType'].value == 'Agent') {
@@ -485,7 +484,6 @@ export class EditUserComponent implements OnInit {
       } else {
         this.user.vendor = null;
       }
-
       /* process department and location */
       this.user.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user);
@@ -543,28 +541,24 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('managerId').setValue(this.user.managerId);
         if (this.user.vendor.id != null) {
           this.angForm.get('vendorId').setValue(this.user.vendor.id);
-          $(function () {
-            $('#userType').val('Agent');
-            $('.vendor-col').removeClass('d-none');
-          });
+          this.angForm.get('userType').setValue('Agent');
+          $('.vendor-col').removeClass('d-none');
         } else {
-          $(function () {
-            $('#userType').val('Employee');
-            $('.vendor-col').addClass('d-none');
-          });
+          this.angForm.get('userType').setValue('Employee');
+          $('.vendor-col').addClass('d-none');
         }
         if (!this.loggedInUserService.appManager()) {
           if (typeof this.departments !== 'undefined') {
             for (var i = 0; i < this.departments.length; i++) {
               if (this.departments[i].id == this.user.department.id) {
-                this.angForm.get('department').setValue(this.user.department.id + '__' + this.departments[i].version);
+                this.angForm.get('department').setValue(Number(this.user.department.id));
               }
             }
           }
           if (typeof this.locations !== 'undefined') {
             for (var i = 0; i < this.locations.length; i++) {
               if (this.locations[i].id == this.user.location.id) {
-                this.angForm.get('location').setValue(this.user.location.id + '__' + this.locations[i].version);
+                this.angForm.get('location').setValue(Number(this.user.location.id));
               }
             }
           }
@@ -572,7 +566,7 @@ export class EditUserComponent implements OnInit {
         this.statusFlag = String(this.user.status) == 'ACTIVE' ? true : false;
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
-        this.angForm.markAllAsTouched();
+        //this.angForm.markAllAsTouched();
         //this.preapareSelect();
       });
   }
@@ -581,4 +575,20 @@ export class EditUserComponent implements OnInit {
   onChange(status: boolean, inp: string) {
     this.statusFlag = status;
   }
+
+  @ViewChild("userType") userType;
+  changeUsertype(userType) {
+    if (typeof userType !== 'undefined') {
+      //console.log(userType);
+      $(function () {
+        if (userType.id == 'Employee') {
+          $('.vendor-col').addClass('d-none');
+          $('#vendorId').val('');
+        } else if (userType.id == 'Agent') {
+          $('.vendor-col').removeClass('d-none');
+        }
+      });
+    }
+  }
+
 }

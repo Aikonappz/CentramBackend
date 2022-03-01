@@ -22,7 +22,7 @@ public interface NotificationRepository extends JpaRepository<Notification, BigI
 
     @Query(value = "select * from notification n where n.user_id = (:id) and " +
             " ( " +
-            "   ((:searchValue) is not null and (upper(n.notification_title) like (:searchValue) or upper(n.notification_body) like (:searchValue))) " +
+            "   ((:searchValue) is not null and (UPPER(n.notification_title) like (:searchValue) or UPPER(n.notification_body) like (:searchValue))) " +
             "   OR " +
             "   ((:searchValue) is null) " +
             " ) " +

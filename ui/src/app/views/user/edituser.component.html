@@ -117,12 +117,9 @@
             <div [ngClass]="{'d-none': rolesList.includes('APP_ADMIN'),'row row-margin-05':true}">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="location">Location</label>
-                <select data-live-search="true" data-style="btn-primary" class="form-control" formControlName="location"
-                  ngModel id="location" name="location">
-                  <option value="">-- Select Location --</option>
-                  <option *ngFor="let e of locations" data-tokens="{{e.name}}" value="{{e.id}}__{{e.version}}">
-                    {{e.name}} - {{e.officeName}}</option>
-                </select>
+                <ng-select [items]="locations" placeholder="-- Select Location --" formControlName="location"
+                  id="location" location name="location" bindLabel="name" bindValue="id">
+                </ng-select>
                 <div *ngIf="f.location.touched && f.location.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.location.errors?.required">
                     Location is required.
@@ -131,10 +128,9 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label" for="department">Department</label>
-                <select class="form-control" formControlName="department" ngModel id="department" name="department">
-                  <option value="">-- Select Department --</option>
-                  <option *ngFor="let e of departments" value="{{e.id}}__{{e.version}}">{{e.name}}</option>
-                </select>
+                <ng-select [items]="departments" placeholder="-- Select Department --" formControlName="department"
+                  id="department" department name="department" bindLabel="name" bindValue="id">
+                </ng-select>
                 <div *ngIf="f.department.touched && f.department.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.department.errors?.required">
                     Department is required.
@@ -147,19 +143,27 @@
             <div [ngClass]="{'d-none': rolesList.includes('APP_ADMIN'),'row row-margin-05':true}">
               <div class="col">
                 <label class="form-col-form-label" for="location">User Type</label>
-                <select data-live-search="true" data-style="btn-primary" formControlName="userType" ngModel
+                <!-- <select data-live-search="true" data-style="btn-primary" formControlName="userType" ngModel
                   class="form-control" id="userType" name="userType">
-                  <option selected value="Employee">Employee</option>
+                  <option value="Employee">Employee</option>
                   <option value="Agent">Agent</option>
-                </select>
+                </select> -->
+                <ng-select [items]="userTypes" placeholder="-- Select User Type --" formControlName="userType"
+                  id="userType" (change)="changeUsertype($event)" #userType name="userType" bindLabel="label"
+                  bindValue="id">
+                </ng-select>
+                <div *ngIf="f.userType.touched && f.userType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.userType.errors?.required">
+                    User Type is required.
+                  </div>
+                </div>
               </div>
               <div class="col">
                 <div class="d-none vendor-col">
                   <label class="form-col-form-label " for="vendorId">Vendor</label>
-                  <select class="form-control" formControlName="vendorId" ngModel id="vendorId" name="vendorId">
-                    <option value="">-- Select Vendor --</option>
-                    <option *ngFor="let e of vendorList" value="{{e.id}}">{{e.name}}</option>
-                  </select>
+                  <ng-select [items]="vendorList" placeholder="-- Select Vendor --" formControlName="vendorId"
+                    id="vendorId" vendorId name="vendorId" bindLabel="name" bindValue="id">
+                  </ng-select>
                 </div>
               </div>
               <div class="col"></div>

@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, } from '@angular/core';
-
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
@@ -23,9 +22,9 @@ export class EditPriorityComponent implements OnInit {
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;
   entityId: number;
-  prty: Priority;
-  timeList: string[] = [];
-  nameList: string[] = [];
+  priority: Priority;
+  timeList: any[] = [];
+  nameList: any[] = [];
   angForm: FormGroup;
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -43,40 +42,39 @@ export class EditPriorityComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
-      name: new FormControl('', [
+      name: new FormControl(null, [
         Validators.required,
         Validators.maxLength(255),
       ]),
-      description: new FormControl('', [
+      description: new FormControl(null, [
         Validators.required,
         Validators.maxLength(2000),
       ]),
-      sla: new FormControl('', [
+      sla: new FormControl(null, [
         Validators.required,
       ]),
       status: new FormControl('ACTIVE', [
       ]),
     });
-    this.prty = new Priority();
-    this.prty.status = this.defaultStatus;
+    this.priority = new Priority();
+    this.priority.status = this.defaultStatus;
     if (environment.production == false) {
-      this.timeList.push("00:05");
-      this.timeList.push("00:07");
-      this.timeList.push("00:10");
-      this.timeList.push("00:13");
-      this.timeList.push("00:15");
-      this.timeList.push("00:18");
-      this.timeList.push("00:20");
-      this.timeList.push("00:25");
+      this.timeList.push({ id: "00:05", label: "00:05 hrs" });
+      this.timeList.push({ id: "00:07", label: "00:07 hrs" });
+      this.timeList.push({ id: "00:10", label: "00:10 hrs" });
+      this.timeList.push({ id: "00:15", label: "00:15 hrs" });
+      this.timeList.push({ id: "00:20", label: "00:20 hrs" });
+      this.timeList.push({ id: "00:25", label: "00:25 hrs" });
+      this.timeList.push({ id: "00:30", label: "00:30 hrs" });
     }
     let tmList = AppUtility.getSlaList(500);
     for (let k = 0; k < tmList.length; k++) {
       if (k != 0) {
-        this.timeList.push(tmList[k]);
+        this.timeList.push({ id: tmList[k], label: tmList[k] + " hrs" });
       }
     }
     for (let k = 1; k <= 10; k++) {
-      this.nameList.push("P" + k);
+      this.nameList.push({ id: "P" + k, label: "P" + k });
     }
   }
 
@@ -96,9 +94,7 @@ export class EditPriorityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.route.snapshot.paramMap.has('id')) {
-
-    } else {
+    if (!this.route.snapshot.paramMap.has('id')) { } else {
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.newEntity = false;
       this.callGetPriorityService(this.entityId);
@@ -120,11 +116,11 @@ export class EditPriorityComponent implements OnInit {
         }
       }
       //console.log(this.angForm);      
-      this.prty.name = this.angForm.controls['name'].value;
-      this.prty.description = this.angForm.controls['description'].value;
-      this.prty.sla = this.angForm.controls['sla'].value;
+      this.priority.name = this.angForm.controls['name'].value;
+      this.priority.description = this.angForm.controls['description'].value;
+      this.priority.sla = this.angForm.controls['sla'].value;
       /* process department and location */
-      this.prty.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
+      this.priority.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user.status);
       this.callSavePriorityService();
     } else {
@@ -136,7 +132,7 @@ export class EditPriorityComponent implements OnInit {
 
   callSavePriorityService() {
     this.service
-      .savePriorityService(this.prty)
+      .savePriorityService(this.priority)
       .subscribe((data: any) => {
         //console.log(data);
         this.router.navigate(['/master/priority']);
@@ -148,22 +144,20 @@ export class EditPriorityComponent implements OnInit {
       .priorityService(id)
       .subscribe((data: any) => {
         //console.log(JSON.stringify(data));
-        this.prty.id = data.id;
-        this.prty.name = data.name;
-        this.prty.description = data.description;
-        this.prty.sla = data.sla;
-        this.prty.status = data.status;
-        this.prty.version = data.version;
+        this.priority.id = data.id;
+        this.priority.name = data.name;
+        this.priority.description = data.description;
+        this.priority.sla = data.sla;
+        this.priority.status = data.status;
+        this.priority.version = data.version;
         //console.log(JSON.stringify(this.user));
-
-        this.angForm.get('name').setValue(this.prty.name);
-        this.angForm.get('description').setValue(this.prty.description);
-        this.angForm.get('sla').setValue(this.prty.sla);
-
-        this.statusFlag = String(this.prty.status) == 'ACTIVE' ? true : false;
+        this.angForm.get('name').setValue(this.priority.name);
+        this.angForm.get('description').setValue(this.priority.description);
+        this.angForm.get('sla').setValue(this.priority.sla);
+        this.statusFlag = String(this.priority.status) == 'ACTIVE' ? true : false;
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
-        this.angForm.markAllAsTouched();
+        //this.angForm.markAllAsTouched();
       });
   }
 

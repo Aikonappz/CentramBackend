@@ -13,8 +13,10 @@ import java.util.Optional;
 
 @Repository
 public interface RoleRepository extends PagingAndSortingRepository<Role, BigInteger> {
-    @Query("select r from Role r where upper(r.name) in (:roles)")
+    @Query("select r from Role r where UPPER(r.name) in (:roles)")
     List<Role> getByRoleNames(@Param("roles") List<String> roles);
 
     Optional<Role> findByName(@Param("name") String name);
+
+    Optional<Role> findByDisplayName(@Param("displayName") String displayName);
 }

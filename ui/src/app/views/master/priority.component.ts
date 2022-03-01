@@ -6,7 +6,6 @@ import { tap } from 'rxjs/operators';
 import { Status } from '../../model/enumerator/Status';
 import { LocationVO } from '../../model/LocationVO';
 import { Priority } from '../../model/Priority';
-import { LocationDataSource } from '../../service/datasource/LocationDataSource';
 import { PriorityDataSource } from '../../service/datasource/PriorityDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
@@ -64,7 +63,6 @@ export class PriorityComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())

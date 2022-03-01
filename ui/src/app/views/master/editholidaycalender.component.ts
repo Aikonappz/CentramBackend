@@ -21,7 +21,7 @@ export class EditHolidayCalenderComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   hc: HolidayCalender;
-  yearList: number[];
+  yearList: any[];
   angForm: FormGroup;
   selectedFiles?: FileList;
   locations: LocationVO[];
@@ -43,10 +43,10 @@ export class EditHolidayCalenderComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
-      location: new FormControl('', [
+      location: new FormControl(null, [
         Validators.required,
       ]),
-      year: new FormControl('', [
+      year: new FormControl(null, [
         Validators.required,
       ]),
       fileInput: new FormControl(null, [
@@ -102,7 +102,7 @@ export class EditHolidayCalenderComponent implements OnInit {
     let c = 0;
     this.yearList = [];
     for (let i = 2021; i <= 2099; i++) {
-      this.yearList.push(i);
+      this.yearList.push({ id: String(i), label: String(i) });
     }
 
     if (!this.route.snapshot.paramMap.has('id')) {

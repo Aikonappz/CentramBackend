@@ -25,16 +25,16 @@ export class EditVendorComponent implements OnInit {
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
-  modules: Module[] = [];
-  moduleList: Module[] = [];
-  subModuleList: Module[];
+  modules: any[] = [];
+  moduleList: any[] = [];
+  subModuleList: any[] = [];
   submoduleIds: number[];
   statusFlag: boolean = true;
   entityId: number;
   vendor: Vendor;
-  vendorModules: VendorModule[];
+  vendorModules: VendorModule[] = [];
   angForm: FormGroup;
-  ticketAllocationTypes: any;
+  ticketAllocationTypes: any[] = [];
   type: string;
   hasAllocationType: boolean = true;
   constructor(
@@ -54,9 +54,12 @@ export class EditVendorComponent implements OnInit {
     });
     this.vendor = new Vendor();
     this.vendor.status = this.defaultStatus;
-    this.ticketAllocationTypes = Object.values(TicketAllocationType)
+    let ticketAllocationTypes = Object.values(TicketAllocationType)
       .filter((value) => typeof value === "string")
-      .map((value) => (value as string));
+      .map((value) => (value as string));      
+    for (let k in ticketAllocationTypes) {
+      this.ticketAllocationTypes.push({ id: ticketAllocationTypes[k], label: ticketAllocationTypes[k] });
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -82,6 +85,7 @@ export class EditVendorComponent implements OnInit {
           .modulesService()
           .subscribe((data: any) => {
             //console.log(JSON.stringify(data.content));
+            this.moduleList = [];
             this.modules = data.content;
             for (let i in this.modules) {
               if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null && this.modules[i].licenseType != null && this.modules[i].licenseType == this.type.toUpperCase()) {
@@ -95,6 +99,7 @@ export class EditVendorComponent implements OnInit {
           .modulesService()
           .subscribe((data: any) => {
             this.modules = data.content;
+            this.moduleList = [];
             for (let i in this.modules) {
               if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
                 this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
@@ -109,33 +114,33 @@ export class EditVendorComponent implements OnInit {
       if (this.type == "asset") {
         this.hasAllocationType = false;
         this.angForm = this.fb.group({
-          dlModuleId: new FormControl(true, [
+          dlModuleId: new FormControl(null, [
             Validators.required,
           ]),
-          dlSubModuleId: new FormControl(true, [
+          dlSubModuleId: new FormControl(null, [
             Validators.required,
           ]),
-          name: new FormControl('', [
-            Validators.required,
-            Validators.maxLength(255),
-          ]),
-          contactName: new FormControl('', [
+          name: new FormControl(null, [
             Validators.required,
             Validators.maxLength(255),
           ]),
-          contactEmail: new FormControl('', [
+          contactName: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactEmail: new FormControl(null, [
             Validators.required,
             Validators.maxLength(255),
             Validators.email,
           ]),
-          contactNumber: new FormControl('', [
+          contactNumber: new FormControl(null, [
             Validators.required,
             Validators.pattern(this.phoneRegex),
           ]),
-          contactAddress: new FormControl('', [
+          contactAddress: new FormControl(null, [
             Validators.required,
           ]),
-          ticketAllocationType: new FormControl('', [
+          ticketAllocationType: new FormControl(null, [
             //Validators.required,
           ]),
           status: new FormControl('ACTIVE', [
@@ -146,33 +151,33 @@ export class EditVendorComponent implements OnInit {
       } else {
         this.hasAllocationType = true;
         this.angForm = this.fb.group({
-          dlModuleId: new FormControl(true, [
+          dlModuleId: new FormControl(null, [
             Validators.required,
           ]),
-          dlSubModuleId: new FormControl(true, [
+          dlSubModuleId: new FormControl(null, [
             Validators.required,
           ]),
-          name: new FormControl('', [
-            Validators.required,
-            Validators.maxLength(255),
-          ]),
-          contactName: new FormControl('', [
+          name: new FormControl(null, [
             Validators.required,
             Validators.maxLength(255),
           ]),
-          contactEmail: new FormControl('', [
+          contactName: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactEmail: new FormControl(null, [
             Validators.required,
             Validators.maxLength(255),
             Validators.email,
           ]),
-          contactNumber: new FormControl('', [
+          contactNumber: new FormControl(null, [
             Validators.required,
             Validators.pattern(this.phoneRegex),
           ]),
-          contactAddress: new FormControl('', [
+          contactAddress: new FormControl(null, [
             Validators.required,
           ]),
-          ticketAllocationType: new FormControl('', [
+          ticketAllocationType: new FormControl(null, [
             Validators.required,
           ]),
           status: new FormControl('ACTIVE', [
@@ -209,7 +214,6 @@ export class EditVendorComponent implements OnInit {
       this.submoduleIds = this.angForm.controls['dlSubModuleId'].value;
       this.vendor.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value == "" ? null : this.angForm.controls['ticketAllocationType'].value;
       this.vendor.vendorType = this.type.toUpperCase() == "ASSET" ? 0 : 1;
-
       this.vendorModules = [];
       for (let i in this.submoduleIds) {
         this.vendorModules[i] = new DistributionListModule(
@@ -255,7 +259,7 @@ export class EditVendorComponent implements OnInit {
         this.vendor.ticketAllocationType = data.ticketAllocationType;
         this.vendor.inHouse = data.inHouse;
         //console.log(JSON.stringify(this.user));
-        this.populateSubmodule(this.vendor.vendorModules[0].moduleId);
+        this.populateSubmodule({ id: this.vendor.vendorModules[0].moduleId });
         this.submoduleIds = [];
         let moduleId = null;
         for (let k in this.vendor.vendorModules) {
@@ -270,21 +274,21 @@ export class EditVendorComponent implements OnInit {
         this.angForm.get('contactName').setValue(this.vendor.contactName);
         this.angForm.get('contactNumber').setValue(this.vendor.contactNumber);
         this.angForm.get('dlModuleId').setValue(moduleId);
-        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(String));
+        this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));
         this.angForm.get('dlSubModuleId').markAsTouched();
         this.angForm.get('ticketAllocationType').setValue(this.vendor.ticketAllocationType);
         this.statusFlag = String(this.vendor.status) == 'ACTIVE' ? true : false;
-        this.angForm.markAllAsTouched();
+        //this.angForm.markAllAsTouched();
       });
   }
 
   @ViewChild("dlModuleId") dlModuleId;
   populateSubmodule(mId) {
-    let c = 0;
-    if (mId != "") {
+    if (typeof mId !== 'undefined') {
+      let c = 0;
       this.subModuleList = [];
       for (let i = 0; i < this.modules.length; i++) {
-        if (this.modules[i].parentModuleId == mId) {
+        if (this.modules[i].parentModuleId == mId.id) {
           this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
           this.subModuleList.push(this.modules[i]);
           c++;

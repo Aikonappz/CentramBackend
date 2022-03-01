@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface DistributionListRepository extends JpaRepository<DistributionList, BigInteger> {
-    @Query("select mdl from DistributionList mdl join mdl.organisation org where upper(mdl.dlName) = upper((:name)) and org.id = (:organisationId)")
+    @Query("select mdl from DistributionList mdl join mdl.organisation org where UPPER(mdl.dlName) = UPPER((:name)) and org.id = (:organisationId)")
     DistributionList getByName(@Param("name") String name, @Param("organisationId") BigInteger organisationId);
 
     @Query("select mdl from DistributionList mdl join mdl.distributionListModules dlm join mdl.organisation org where dlm.moduleId = (:moduleId) and dlm.subModuleId = (:subModuleId) and org.id = (:organisationId)")

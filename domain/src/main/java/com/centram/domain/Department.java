@@ -66,4 +66,14 @@ public class Department extends BaseEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "organisation_id", referencedColumnName = "id")
     private Organisation organisation;
+
+    public Department(@NotNull BigInteger id) {
+        this.id = id;
+    }
+
+    public Department(Long version, BigInteger id) {
+        super(version);
+        this.id = id;
+    }
+
 }

@@ -332,12 +332,6 @@ public class UserService implements UserDetailsService {
                 user.setOrganisation(new Organisation(user.getOrganisation().getId(), user.getOrganisation().getVersion()));
             }
         }
-        /*if (user.getDepartment().getId() != null) {
-            user.setDepartment(departmentService.getById(user.getDepartment().getId()));
-        }
-        if (user.getLocation().getId() != null) {
-            user.setLocation(locationService.getById(user.getLocation().getId()));
-        }*/
         UserVO userVO = new UserVO(userRepository.save(user));
         List<String> roleNames = new ArrayList<>();
         for (BigInteger roleId : userVO.getRoles()) {
@@ -433,6 +427,7 @@ public class UserService implements UserDetailsService {
                     "Roles",
                     "Location",
                     "Department",
+                    "Vendor",
                     "Status"
             );
             csvPrinter.printRecord(data);
@@ -448,6 +443,7 @@ public class UserService implements UserDetailsService {
                         String.join(",", uv.getRoleNames()),
                         uv.getLocation(),
                         uv.getDepartment(),
+                        uv.getVendor(),
                         uv.getStatus().toString()
                 );
                 csvPrinter.printRecord(data);
@@ -579,7 +575,7 @@ public class UserService implements UserDetailsService {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
         List<Map<String, String>> values = new ArrayList<Map<String, String>>();
-        List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID");
+        List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID", "VENDOR");
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
              CSVParser csvParser = new CSVParser(fileReader,
                      CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())
@@ -593,9 +589,8 @@ public class UserService implements UserDetailsService {
                                 .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()))
                 );
             }
-            //System.out.println(values);
+            //log.info("Uploaded Users data => {}", values);
             miscService.saveBulkUploadedData(values);
-
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
         }

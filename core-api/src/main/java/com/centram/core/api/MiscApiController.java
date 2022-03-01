@@ -168,8 +168,9 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all departments", nickname = "getDepartments", notes = "Get all departments", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-department", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT,ORGANISATION,USER,ORDER ASSET','READ,WRITE,WRITE,WRITE',authentication.principal)")
@@ -177,9 +178,10 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Department>>(departmentService.getDepartments(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a department", nickname = "saveDepartment", notes = "Add a department", tags = {"Misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a department", nickname = "saveDepartment", notes = "Save a department", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/department", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
@@ -190,7 +192,9 @@ public class MiscApiController {
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of department's", nickname = "updateStatus", notes = "Update status of department's", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Department not found")
+            @ApiResponse(code = 404, message = "Department not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/department/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
@@ -202,9 +206,10 @@ public class MiscApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a location", nickname = "saveLocation", notes = "Add a location", tags = {"Misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a location", nickname = "saveLocation", notes = "Save a location", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/location", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','READ',authentication.principal)")
@@ -215,7 +220,9 @@ public class MiscApiController {
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of location's", nickname = "updateStatus", notes = "Update status of location's", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Location not found")
+            @ApiResponse(code = 404, message = "Location not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/location/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','WRITE',authentication.principal)")
@@ -226,9 +233,11 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find location by id", nickname = "getLocationById", notes = "Find location by id", response = Location.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "Location not found")
+            @ApiResponse(code = 404, message = "Location not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/location/{locationId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION','READ',authentication.principal)")
@@ -238,8 +247,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Locations", nickname = "getLocations", notes = "Get all Locations", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-location", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION,ORGANISATION,USER,ORDER ASSET','READ,WRITE,WRITE,WRITE',authentication.principal)")
@@ -247,9 +258,10 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a Priority", nickname = "savePriority", notes = "Add a Priority", tags = {"Misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a Priority", nickname = "savePriority", notes = "Save a Priority", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/priority", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','WRITE',authentication.principal)")
@@ -260,7 +272,9 @@ public class MiscApiController {
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of priorityies", nickname = "updatePrioritiesStatus", notes = "Update status of priorityies", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "priority not found")
+            @ApiResponse(code = 404, message = "priority not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','WRITE',authentication.principal)")
     @RequestMapping(value = "/priority/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
@@ -271,9 +285,11 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find priority by id", nickname = "getPriorityById", notes = "Find priority by id", response = Location.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "Location not found")
+            @ApiResponse(code = 404, message = "Priority not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/priority/{priorityId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','READ',authentication.principal)")
@@ -283,8 +299,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all priorities", nickname = "getPriorities", notes = "Get all priorities", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-priority", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY,MY INCIDENTS,MY GROUP INCIDENTS,REPORT,','READ,WRITE|SEARCH,WRITE|SEARCH,READ',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
@@ -294,8 +312,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all holiday calenders", nickname = "getHolidayCalenders", notes = "Get holiday calenders", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-holiday-callender", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
@@ -305,9 +325,11 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find holiday calender id", nickname = "getHolidayCalenderById", notes = "Find holiday calender id", response = Location.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "holiday calender not found")
+            @ApiResponse(code = 404, message = "Holiday calender not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
@@ -317,7 +339,8 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload holiday calender data csv", nickname = "uploadHolidayCalenderData", notes = "Upload holiday calender data", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Validation exception")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/upload-holiday-calender", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','WRITE',authentication.principal)")
@@ -330,8 +353,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad holiday celender", nickname = "downloadHolidayCalender", notes = "Download holiday celender", response = Resource.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful operation", response = Resource.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
@@ -347,8 +372,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Notifications", nickname = "getHolidayCalenders", notes = "Get all Notifications", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-notifications", produces = {"application/json"}, method = RequestMethod.GET)
     @JsonView(Views.ListView.class)
@@ -362,9 +389,9 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find notification id", nickname = "getNotificationById", notes = "Find notification id", response = Notification.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Location.class),
+            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "holiday calender not found")
+            @ApiResponse(code = 404, message = "Notification not found")
     })
     @JsonView(Views.BasicView.class)
     @RequestMapping(value = "/notification/{notificationId}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -374,7 +401,8 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update notification status", nickname = "updateNotificationStatus", notes = "Update notification status", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/notification/{ids}/{status}", method = RequestMethod.GET)
     public ResponseEntity updateNotificationStatus(
@@ -385,9 +413,10 @@ public class MiscApiController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add notification", nickname = "saveNotification", notes = "Add notification", tags = {"Misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save notification", nickname = "saveNotification", notes = "Save notification", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/notification", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity saveNotification(
@@ -401,7 +430,9 @@ public class MiscApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "MapDl not found")
+            @ApiResponse(code = 404, message = "MapDl not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/distribution-list/{dlid}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','READ',authentication.principal)")
@@ -412,8 +443,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all map dl", nickname = "getDistributionLists", notes = "Get all map dl", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-distribution-list", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','READ',authentication.principal)")
@@ -422,9 +455,10 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<DistributionList>>(distributionListService.getDistributionLists(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a map dl", nickname = "saveMapDL", notes = "Add a map dl", tags = {"Misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a map dl", nickname = "saveMapDL", notes = "Save a map dl", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/distribution-list", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DISTRIBUTION LIST','WRITE',authentication.principal)")
@@ -437,7 +471,9 @@ public class MiscApiController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "successful operation", response = Department.class),
             @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "MapDl not found")
+            @ApiResponse(code = 404, message = "MapDl not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/vendor/{vendorId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR','READ',authentication.principal)")
@@ -448,8 +484,10 @@ public class MiscApiController {
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all vendor", nickname = "getVendors", notes = "Get all vendor", response = PaginatedList.class, tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-vendor", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR,ORDER ASSET','READ,WRITE',authentication.principal)")
@@ -462,9 +500,10 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(inHouse, VendorType.valueOf(vendorType), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add a vendor", nickname = "saveVendor", notes = "Add a vendor", tags = {"Misc",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a vendor", nickname = "saveVendor", notes = "Save a vendor", tags = {"Misc",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/vendor", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR','WRITE',authentication.principal)")

@@ -1,18 +1,13 @@
 import { Component, OnInit, ViewChild, } from '@angular/core';
-
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Location } from '@angular/common';
 import { LocationVO } from '../../model/LocationVO';
-
 import { MiscService } from '../../service/MiscService';
-
 import { Status } from '../../model/enumerator/Status';
-
 import { countryWithTimeZones } from '../../model/_countryWithTimeZones';
 import { CountryWithTimeZone } from '../../model/CountryWithTimeZone';
-import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { StartEndTimeValidation } from '../../validator/StartEndTimeValidation';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
@@ -25,7 +20,6 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 export class EditLocationComponent implements OnInit {
   moduleName: string = "LOCATION";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;
@@ -34,7 +28,7 @@ export class EditLocationComponent implements OnInit {
   countries = countryWithTimeZones;
   uniqueCountries: any[] = [];
   filterdCountry: CountryWithTimeZone[];
-  timeList: string[];
+  timeList: any[] = [];
   angForm: FormGroup;
 
   constructor(
@@ -52,30 +46,30 @@ export class EditLocationComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
-      country: new FormControl('', [
+      country: new FormControl(null, [
         Validators.required,
       ]),
-      timezone: new FormControl('', [
+      timezone: new FormControl(null, [
         Validators.required,
       ]),
-      state: new FormControl('', [
+      state: new FormControl(null, [
         Validators.maxLength(255),
       ]),
-      city: new FormControl('', [
+      city: new FormControl(null, [
         Validators.maxLength(255),
       ]),
-      name: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(255),
-      ]),
-      officeName: new FormControl('', [
+      name: new FormControl(null, [
         Validators.required,
         Validators.maxLength(255),
       ]),
-      opsStartTime: new FormControl('', [
+      officeName: new FormControl(null, [
+        Validators.required,
+        Validators.maxLength(255),
+      ]),
+      opsStartTime: new FormControl(null, [
         Validators.required,
       ]),
-      opsEndTime: new FormControl('', [
+      opsEndTime: new FormControl(null, [
         Validators.required,
       ]),
       status: new FormControl('ACTIVE', [
@@ -85,13 +79,18 @@ export class EditLocationComponent implements OnInit {
     });
     this.loc = new LocationVO();
     this.loc.status = this.defaultStatus;
-    this.timeList = AppUtility.getDayHourList(30);
+    let timeList = AppUtility.getDayHourList(30);
+    for (let k in timeList) {
+      this.timeList.push({ id: timeList[k], label: timeList[k] });
+    }
     const uniqueCountryList = [...new Set(this.countries.map(item => item.country_name))];
     //console.log(uniqueCountryList);
-    this.uniqueCountries = uniqueCountryList;
+    for (let k in uniqueCountryList) {
+      this.uniqueCountries.push({ id: uniqueCountryList[k], label: uniqueCountryList[k] });
+    }
     this.uniqueCountries.sort(function (a, b) {
-      if (b.country_name > a.country_name) return -1;
-      if (a.country_name > b.country_name) return 1;
+      if (b.label > a.label) return -1;
+      if (a.label > b.label) return 1;
       return 0;
     });
   }
@@ -183,7 +182,7 @@ export class EditLocationComponent implements OnInit {
         this.loc.officeName = data.officeName;
         //console.log(JSON.stringify(this.user));
 
-        this.populateTimezone(this.loc.country);
+        this.populateTimezone({ id: this.loc.country });
         this.angForm.get('name').setValue(this.loc.name);
         this.angForm.get('opsStartTime').setValue(this.loc.opsStartTime);
         this.angForm.get('opsEndTime').setValue(this.loc.opsEndTime);
@@ -196,7 +195,7 @@ export class EditLocationComponent implements OnInit {
         this.statusFlag = String(this.loc.status) == 'ACTIVE' ? true : false;
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
-        this.angForm.markAllAsTouched();
+        //this.angForm.markAllAsTouched();
       });
   }
 
@@ -207,15 +206,16 @@ export class EditLocationComponent implements OnInit {
 
   @ViewChild("country") country;
   populateTimezone(countryVal) {
-    let c = 0;
-    if (countryVal != "") {
+    if (typeof countryVal !== 'undefined') {
+      let c = 0;
       this.filterdCountry = [];
       for (let i = 0; i < this.countries.length; i++) {
-        if (this.countries[i].country_name == countryVal) {
+        if (this.countries[i].country_name == countryVal.id) {
           this.filterdCountry[c] = this.countries[i];
           c++;
         }
       }
     }
   }
+
 }

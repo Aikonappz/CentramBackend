@@ -62,7 +62,6 @@ export class DepartmentComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())

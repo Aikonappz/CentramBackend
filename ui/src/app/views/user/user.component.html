@@ -54,11 +54,17 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-3">
-                                        <label class="form-col-form-label" for="userEmployeeId">Employee
-                                            Id.</label>
+                                        <label class="form-col-form-label" for="userEmployeeId">Employee Id.</label>
                                         <input type="text" formControlName="userEmployeeId" ngModel id="userEmployeeId"
                                             name="userEmail" class="form-control" placeholder="Employee Id."
                                             aria-label="Employee Id.">
+                                    </div>
+                                    <div *ngIf="!roles.includes('APP_ADMIN')" class="col-sm-3">
+                                        <label class="form-col-form-label " for="vendorId">Vendor</label>
+                                        <ng-select [items]="vendorList" placeholder="-- Select Vendor --"
+                                            formControlName="vendorId" id="vendorId" vendorId name="vendorId"
+                                            bindLabel="name" bindValue="id">
+                                        </ng-select>
                                     </div>
                                     <div class="col-sm-6">
                                         <label class="form-col-form-label " for="status">Status</label>
@@ -80,32 +86,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
-                                        <div class="d-none">
-                                            <label class="form-col-form-label" for="userEmail">Email</label>
-                                            <input type="text" formControlName="userEmail" ngModel id="userEmail"
-                                                name="userEmail" class="form-control" placeholder="Email"
-                                                aria-label="Email">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div *ngIf="!roles.includes('APP_ADMIN')" class="row row-margin-05">
-                                    <div class="col-sm-3">
-                                        <label class="form-col-form-label" for="location">User Type</label>
-                                        <ng-select [items]="filterTypes" placeholder="ALL" formControlName="userType"
-                                            id="userType" userType name="userType" bindLabel="label" bindValue="id">
-                                        </ng-select>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class=" vendor-col">
-                                            <label class="form-col-form-label " for="vendorId">Vendor</label>
-                                            <ng-select [items]="vendorList" placeholder="-- Select Vendor --"
-                                                formControlName="vendorId" id="vendorId" vendorId name="vendorId"
-                                                bindLabel="name" bindValue="id">
-                                            </ng-select>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-3 d-none">
+                                        <label class="form-col-form-label" for="userEmail">Email</label>
+                                        <input type="text" formControlName="userEmail" ngModel id="userEmail"
+                                            name="userEmail" class="form-control" placeholder="Email"
+                                            aria-label="Email">
                                     </div>
                                 </div>
                             </div>

@@ -21,6 +21,8 @@ public enum GenericErrorCode implements ErrorCode {
     PROFILE_INACTIVE("User profile inactive! Please contact System Admin."),
     HOLIDAY_CALENDER_MASTER_DATA_MISSING("Holiday calender master data missing!"),
     ASSET_DATA_EXIST("ASSET WITH SAME SERIAL NO ALREADY EXIST!"),
+    CALENDER_DATA_EXIST("HOLIDAY CALENDER ALREADY EXIST!"),
+    PRIORITY_DATA_EXIST("PRIORITY ALREADY EXIST!"),
     ;
 
     private final String template;

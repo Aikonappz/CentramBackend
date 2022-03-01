@@ -105,4 +105,13 @@ public class Location extends BaseEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "organisation_id", referencedColumnName = "id")
     private Organisation organisation;
+
+    public Location(@NotNull BigInteger id) {
+        this.id = id;
+    }
+
+    public Location(Long version, BigInteger id) {
+        super(version);
+        this.id = id;
+    }
 }

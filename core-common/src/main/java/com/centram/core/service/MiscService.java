@@ -2,6 +2,8 @@ package com.centram.core.service;
 
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.RequestDemoDTO;
+import com.centram.common.exeception.AppException;
+import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.IncidentEmailVO;
@@ -11,6 +13,9 @@ import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +27,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,6 +87,9 @@ public class MiscService {
     @Value("${app.mail.reply.email}")
     private String appReplyToEmail;
 
+    @Value("${app.temp.path}")
+    private String appTmpPath;
+
     @Autowired
     private NotificationService notificationService;
 
@@ -109,41 +120,44 @@ public class MiscService {
         UserVO userVO = new UserVO();
         User user = new User();
         String password = null;
+        int rowNo = 2;
+        Map<Integer, String> rowWiseIssues = new LinkedHashMap<Integer, String>();
         for (Map<String, String> data : dataList) {
             user = new User();
             if (data.get("FIRST_NAME") == null || data.get("FIRST_NAME").trim().equals("")) {
-                //TODO: have to decide
+                rowWiseIssues.put(rowNo, "First Name Required!");
                 continue;
             } else {
                 user.setFirstName(data.get("FIRST_NAME").trim());
             }
             if (data.get("LAST_NAME") == null || data.get("LAST_NAME").trim().equals("")) {
-                //TODO: have to decide
+                rowWiseIssues.put(rowNo, "Last Name Required!");
                 continue;
             } else {
                 user.setLastName(data.get("LAST_NAME").trim());
             }
             if (data.get("EMAIL") == null || data.get("EMAIL").trim().equals("")) {
-                //TODO: have to decide
+                rowWiseIssues.put(rowNo, "User Email Required!");
                 continue;
             } else {
                 User u = userService.getUserByEmail(data.get("EMAIL").trim());
                 if (u != null) {
+                    rowWiseIssues.put(rowNo, "User With Same Email already Exist!");
                     continue;
                 }
                 user.setEmail(data.get("EMAIL").trim());
             }
             if (data.get("CONTACT_NO") == null || data.get("CONTACT_NO").trim().equals("")) {
-                //TODO: have to decide
+                rowWiseIssues.put(rowNo, "Contact No Required!");
                 continue;
             } else {
                 user.setContactNo(data.get("CONTACT_NO").trim());
             }
             if (data.get("ROLES") == null || data.get("ROLES").trim().equals("")) {
-                //TODO: have to decide
+                rowWiseIssues.put(rowNo, "Roles Required!");
                 continue;
             } else {
-                List<Role> roles = roleService.getByNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
+                List<Role> roles = roleService.getByDisplayNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
                 if (roles != null && roles.size() > 0) {
                     user.setRoles(roles
                             .stream()
@@ -151,6 +165,7 @@ public class MiscService {
                             .collect(Collectors.toList())
                     );
                 } else {
+                    rowWiseIssues.put(rowNo, "Provided Roles are not valid!");
                     continue;
                 }
             }
@@ -160,10 +175,12 @@ public class MiscService {
                 user.setSecContactNo(data.get("SEC_CONTACT_NO").trim());
             }
             if (data.get("EMP_ID") == null || data.get("EMP_ID").trim().equals("")) {
-                user.setEmployeeId(null);
+                rowWiseIssues.put(rowNo, "Employee Id Required!");
+                continue;
             } else {
                 User u = userService.getUserByEmployeeId(data.get("EMP_ID").trim());
                 if (u != null) {
+                    rowWiseIssues.put(rowNo, "User With Same Employee ID already Exist!");
                     continue;
                 }
                 user.setEmployeeId(data.get("EMP_ID").trim());
@@ -174,29 +191,47 @@ public class MiscService {
                 user.setProjectCode(data.get("PROJECT_CODE").trim());
             }
             if (data.get("MANAGER_ID") == null || data.get("MANAGER_ID").trim().equals("")) {
-                user.setManagerId(null);
+                rowWiseIssues.put(rowNo, "Manager Id Required!");
+                continue;
             } else {
                 User u = userService.getUserByEmployeeId(data.get("MANAGER_ID").trim());
                 if (u != null) {
                     user.setManagerId(u.getId());
+                } else {
+                    rowWiseIssues.put(rowNo, "Manager Id is not valid!");
+                    continue;
                 }
             }
-            if (data.get("LOCATION") != null && !data.get("LOCATION").trim().equals("")) {
-                Location location = locationService.getByLocationName(data.get("LOCATION").trim());
-                if (location != null) {
-                    user.setLocation(location);
+            if (!loggedInUserDTO.getAppManager()) {
+                if (data.get("LOCATION") == null || data.get("LOCATION").trim().equals("")) {
+                    rowWiseIssues.put(rowNo, "Location Required!");
+                    continue;
+                } else {
+                    Location location = locationService.getByLocationName(data.get("LOCATION").trim().toUpperCase(Locale.ROOT));
+                    if (location != null) {
+                        user.setLocation(location);
+                    } else {
+                        rowWiseIssues.put(rowNo, "Location is not valid!");
+                        continue;
+                    }
                 }
-            }
-            if (data.get("DEPARTMENT") != null && !data.get("DEPARTMENT").trim().equals("")) {
-                Department department = departmentService.getByDepartmentName(data.get("DEPARTMENT").trim());
-                if (department != null) {
-                    user.setDepartment(department);
+                if (data.get("DEPARTMENT") != null && !data.get("DEPARTMENT").trim().equals("")) {
+                    Department department = departmentService.getByDepartmentName(data.get("DEPARTMENT").trim().toUpperCase(Locale.ROOT));
+                    if (department != null) {
+                        user.setDepartment(department);
+                    } else {
+                        rowWiseIssues.put(rowNo, "Department is not valid!");
+                        continue;
+                    }
                 }
-            }
-            if (data.get("VENDOR") != null && !data.get("VENDOR").trim().equals("")) {
-                Vendor vendor = vendorService.getByName(data.get("VENDOR").trim());
-                if (vendor != null) {
-                    user.setVendor(vendor);
+                if (data.get("VENDOR") != null && !data.get("VENDOR").trim().equals("")) {
+                    Vendor vendor = vendorService.getByName(data.get("VENDOR").trim().toUpperCase(Locale.ROOT));
+                    if (vendor != null) {
+                        user.setVendor(vendor);
+                    } else {
+                        rowWiseIssues.put(rowNo, "Vendor is not valid!");
+                        continue;
+                    }
                 }
             }
             if (loggedInUserDTO.getOrganisationId() != null) {
@@ -211,7 +246,7 @@ public class MiscService {
             userVO = new UserVO(user);
             userVO.setPassword(password);
             userVOS.add(userVO);
-            //System.out.println(data);
+            rowNo++;
         }
         log.info("{}", users);
         if (users.size() > 0) {
@@ -227,12 +262,54 @@ public class MiscService {
                     mailValues = new HashMap<>();
                     log.info("email : {}, password: {}", userVO.getEmail(), userVO.getPassword());
                     mailValues.put("password", userVO.getPassword());
-                    this.sendOnboardMail(userVO, mailValues);
+                    //this.sendOnboardMail(userVO, mailValues);
                 }
             }
         }
+        if (dataList.size() > 0) {
+            Map<String, Object> mailValues = new HashMap<>();
+            mailValues.put("upload_tp", "User");
+            mailValues.put("to", loggedInUserDTO.getEmail());
+            mailValues.put("recipient_name", loggedInUserDTO.getName());
+            mailValues.put("user", userService.getUserById(loggedInUserDTO.getUserId()));
+            mailValues.put("has_issue", false);
+            mailValues.put("mailSubject", "successSubject");
+            mailValues.put("mailBody", "successBody");
+            if (rowWiseIssues.size() > 0) {
+                String filePath = appTmpPath.concat("/user-bulk-upload-issues" + System.currentTimeMillis() + ".csv");
+                mailValues.put("file", filePath);
+                mailValues.put("has_issue", true);
+                mailValues.put("mailSubject", "failureSubject");
+                mailValues.put("mailBody", "failureBody");
+                this.saveUploadIssueFile(filePath, rowWiseIssues);
+            }
+            appEmailService.sendUploadResult(mailValues);
+        }
     }
 
+    private void saveUploadIssueFile(String absoluteFilePath, Map<Integer, String> rowWiseIssues) {
+        List<String> data = new ArrayList<String>();
+        try (
+                CSVPrinter csvPrinter = CSVFormat.DEFAULT
+                        .withQuoteMode(QuoteMode.MINIMAL)
+                        .print(new File(absoluteFilePath), StandardCharsets.UTF_8)
+        ) {
+            data = Arrays.asList(
+                    "Line Number",
+                    "Issue Details"
+            );
+            csvPrinter.printRecord(data);
+            for (Map.Entry<Integer, String> entry : rowWiseIssues.entrySet()) {
+                data = Arrays.asList(
+                        String.valueOf(entry.getKey()),
+                        entry.getValue()
+                );
+                csvPrinter.printRecord(data);
+            }
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
+    }
 
     /**
      * notify user incident update via mail and notification

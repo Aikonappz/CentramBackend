@@ -18,8 +18,7 @@ import { DistributionListComponent } from './distributionlist.component';
 import { EditDlComponent } from './editdl.component';
 import { EditVendorComponent } from './editvendor.component';
 import { VendorComponent } from './vendor.component';
-
-
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -45,6 +44,7 @@ import { VendorComponent } from './vendor.component';
     ReactiveFormsModule,
     TabsModule,
     BsDropdownModule.forRoot(),
+    NgSelectModule,
   ]
 })
 export class MasterModule { }

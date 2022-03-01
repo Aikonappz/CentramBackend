@@ -43,12 +43,12 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:status) = 9) " +
             " ) and " +
             " ( " +
-            "   ((:incidentNo) is not null and upper(i.incidentNo) like (:incidentNo)) " +
+            "   ((:incidentNo) is not null and UPPER(i.incidentNo) like (:incidentNo)) " +
             "   OR " +
             "   ((:incidentNo) is null) " +
             " ) and " +
             " ( " +
-            "   ((:title) is not null and upper(i.title) like (:title)) " +
+            "   ((:title) is not null and UPPER(i.title) like (:title)) " +
             "   OR " +
             "   ((:title) is null) " +
             " ) "
@@ -88,12 +88,12 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:assignedUserId) is null) " +
             " ) and " +
             " ( " +
-            "   ((:incidentNo) is not null and upper(i.incidentNo) like (:incidentNo)) " +
+            "   ((:incidentNo) is not null and UPPER(i.incidentNo) like (:incidentNo)) " +
             "   OR " +
             "   ((:incidentNo) is null) " +
             " ) and " +
             " ( " +
-            "   ((:title) is not null and upper(i.title) like (:title)) " +
+            "   ((:title) is not null and UPPER(i.title) like (:title)) " +
             "   OR " +
             "   ((:title) is null) " +
             " ) "

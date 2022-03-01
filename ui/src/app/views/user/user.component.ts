@@ -13,6 +13,8 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { MiscService } from '../../service/MiscService';
+import { ViewUserDetail } from './modal/ViewUserDetail';
+import { UploadUserComponent } from './modal/UploadUserComponent';
 
 @Component({
   selector: 'app-user',
@@ -66,8 +68,8 @@ export class UserComponent implements OnInit, OnDestroy {
       ]),
       vendorId: new FormControl(null, [
       ]),
-      userType: new FormControl(null, [
-      ]),
+      // userType: new FormControl(null, [
+      // ]),
     });
     this.usr = new User();
     this.usr.status = this.defaultStatus;
@@ -195,7 +197,7 @@ export class UserComponent implements OnInit, OnDestroy {
       initialState: {
       }
     };
-    this.modalRef = this.modalService.show(UserUploadComponent, config);
+    this.modalRef = this.modalService.show(UploadUserComponent, config);
     this.modalRef.content.closeBtnName = 'Close';
   }
 
@@ -224,7 +226,7 @@ export class UserComponent implements OnInit, OnDestroy {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       let vendorId = this.angForm.controls['vendorId'].value;
-      let userType = this.angForm.controls['userType'].value;
+      //let userType = this.angForm.controls['userType'].value;
       this.usr.email = this.angForm.controls['userEmail'].value;
       this.usr.employeeId = this.angForm.controls['userEmployeeId'].value;
       this.usr.status = this.statusFlag;
@@ -257,199 +259,4 @@ export class UserComponent implements OnInit, OnDestroy {
     );
   }
 
-}
-
-@Component({
-  selector: 'modal-content',
-  template: `<div class="modal-header">
-  <h6 class="modal-title pull-left"><i class="icon-eye"></i> View User Details</h6>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-<div class="modal-body">
-  <div class="row">
-      <div class="col-sm-12">
-          <div class="card ">
-              <table class="table table-bordered">
-                  <tr>
-                      <td>Name</td>
-                      <td>{{usr.firstName}} {{usr.lastName}}</td>
-                  </tr>
-                  <tr>
-                      <td>Email</td>
-                      <td>{{usr.email}}</td>
-                  </tr>
-                  <tr>
-                      <td>Contact</td>
-                      <td>
-                      <b>{{usr.contactNo}}</b><br/>
-                         {{usr.secContactNo}}
-                      </td>
-                  </tr>
-                  <tr>
-                      <td>Employee Id.</td>
-                      <td>{{usr.employeeId}}</td>
-                  </tr>
-                  <tr>
-                      <td>Project Code</td>
-                      <td>{{usr.projectCode}}</td>
-                  </tr>
-                  <tr>
-                      <td>Roles</td>
-                      <td>{{usr.roleNames.join(',')}}</td>
-                  </tr>
-                  <tr>
-                      <td>Location</td>
-                      <td>{{usr.location}} - {{usr.locationOfficeName}}</td>
-                  </tr>
-                  <tr>
-                      <td>Department</td>
-                      <td>{{usr.department}}</td>
-                  </tr>
-                  <tr>
-                      <td>Organization</td>
-                      <td>{{usr.organisation}}</td>
-                  </tr>
-                  <tr>
-                      <td>Status</td>
-                      <td>{{usr.status}}</td>
-                  </tr>
-              </table>
-          </div>
-      </div>
-  </div>
-</div>`
-})
-export class ViewUserDetail implements OnInit {
-  usr: UserVO;
-  constructor(
-    private fb: FormBuilder,
-    public bsModalRef: BsModalRef,
-    private service: UserService,
-    public options: ModalOptions,
-  ) {
-  }
-  ngOnInit() {
-  }
-
-  ngAfterViewInit() {
-  }
-
-  ngAfterContentInit() {
-  }
-}
-
-@Component({
-  selector: 'modal-content',
-  template: `<div class="modal-header">
-  <h6 class="modal-title pull-left"><i class="fa fa-upload"></i> Upload Bulk User</h6>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-<div class="modal-body">
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="card ">          
-          <form [formGroup]="angFormUpload" (ngSubmit)="uploadFile()" novalidate>
-              <div class="card-body">
-                  <div class="row">
-                      <div class="col">                          
-                          <input (change)="getFileDetails($event)"  type="file" id="fileInput" formControlName="fileInput" 
-                          name="fileInput">                          
-                          <div *ngIf="uf.fileInput.touched && uf.fileInput.invalid" class="alert alert-danger-custom">
-                            <div *ngIf="uf.fileInput.errors?.required">
-                              File is required.
-                            </div>
-                            <div *ngIf="uf.fileInput.errors?.mustBeCSVFile">
-                              File should be CSV.
-                            </div>
-                            <div *ngIf="uf.fileInput.errors?.mustBeLessThan2MB">
-                              File should be less than 3 MB.
-                            </div>
-                          </div>
-                      </div>
-                      <div class="col w-10 justify-content-around d-flex flex-column">
-                          <div>
-                              <button [disabled]="!angFormUpload.valid" type="submit" class="btn btn-primary btn-sm">
-                                  <i class="fa fa-upload"></i> Upload
-                              </button>
-                          </div>                          
-                      </div>
-                  </div>
-              </div>
-          </form>
-      </div>
-    </div>
-  </div>
-</div>`
-})
-export class UserUploadComponent implements OnInit {
-  angFormUpload: FormGroup;
-  selectedFiles?: FileList;
-  constructor(
-    private fb: FormBuilder,
-    public bsModalRef: BsModalRef,
-    private userService: UserService
-  ) {
-    this.angFormUpload = this.fb.group({
-      fileInput: new FormControl(null, [
-        Validators.required,
-      ]),
-    });
-  }
-  ngOnInit() { }
-
-  ngAfterViewInit() { }
-
-  ngAfterContentInit() { }
-
-  get uf() { return this.angFormUpload.controls; }
-
-  getFileDetails(event) {
-    for (var i = 0; i < event.target.files.length; i++) {
-      var name = event.target.files[i].name;
-      var type = event.target.files[i].type;
-      var size = event.target.files[i].size;
-      var modifiedDate = event.target.files[i].lastModifiedDate;
-      const file = this.angFormUpload.controls['fileInput'];
-      if (file.errors && !file.errors.mustBeCSVFile && !file.errors.mustBeLessThan2MB) {
-        return;
-      }
-      //console.log(type != "text/csv");
-      let validMimeTpes = ["text/csv", "application/vnd.ms-excel",];
-      if (!validMimeTpes.includes(type)) {
-        file.setErrors({ mustBeCSVFile: true, mustBeLessThan2MB: false });
-      } else if (size > (3145728)) {
-        file.setErrors({ mustBeCSVFile: false, mustBeLessThan2MB: true });
-      } else {
-        file.setErrors(null);
-        this.selectedFiles = event.target.files;
-      }
-      console.log('Name: ' + name + "\n" +
-        'Type: ' + type + "\n" +
-        'Last-Modified-Date: ' + modifiedDate + "\n" +
-        'Size: ' + Math.round(size / 1024) + " KB");
-    }
-  }
-
-  uploadFile() {
-    if (this.angFormUpload.valid) {
-      const file: File | null = this.selectedFiles.item(0);
-      const formData: FormData = new FormData();
-      formData.append('file', file, file.name);
-      let headers = new Headers();
-      headers.append('Content-Type', 'multipart/form-data');
-      headers.set('Accept', 'application/json');
-      //console.log(formData);
-      this.userService
-        .uploadUsersService(formData, { 'headers': headers })
-        .subscribe((data: any) => {
-          this.bsModalRef.hide();
-        });
-    } else {
-      console.log("Invalid Form!");
-    }
-  }
 }

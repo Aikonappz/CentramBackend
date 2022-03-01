@@ -32,6 +32,9 @@ public class EmailService {
     @Value("${app.mail.reply.email}")
     private String replyTo;
 
+    @Value("${send.email:true}")
+    private Boolean sendEmail;
+
     public void sendMail(Map<String, Object> mailMap) {
         MimeMessage message = javaMailSender.createMimeMessage();
         String[] bcc = mailMap.containsKey("bcc") ? (String[]) mailMap.get("bcc") : new String[]{};
@@ -54,7 +57,7 @@ public class EmailService {
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new MailParseException(e);
         }
-        if (to.length > 0) {
+        if (to.length > 0 && sendEmail) {
             javaMailSender.send(message);
         }
     }

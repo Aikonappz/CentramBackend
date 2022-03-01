@@ -13,12 +13,8 @@
             <div class="row">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="location">Location</label>
-                <select data-live-search="true" data-style="btn-primary" class="form-control" formControlName="location"
-                  ngModel id="location" name="location">
-                  <option value="">-- Select Location --</option>
-                  <option *ngFor="let e of locations" data-tokens="{{e.name}}" value="{{e.id}}">
-                    {{e.name}}</option>
-                </select>
+                <ng-select [items]="locations" placeholder="-- Select Location --" formControlName="location"
+                  id="location" name="location" bindLabel="name" bindValue="id"></ng-select>
                 <div *ngIf="f.location.touched && f.location.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.location.errors?.required">
                     Location is required.
@@ -27,11 +23,8 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="year">Calender Year</label>
-                <select class="form-control" formControlName="year" ngModel id="year" name="year">
-                  <option value="">-- Select Calender Year --</option>
-                  <option *ngFor="let e of yearList" value="{{e}}">{{e}}
-                  </option>
-                </select>
+                <ng-select [items]="yearList" placeholder="-- Select Location --" formControlName="year"
+                  id="year" name="year" bindLabel="label" bindValue="id"></ng-select>
                 <div *ngIf="f.year.touched && f.year.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.year.errors?.required">
                     Calender Year is required.

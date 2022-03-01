@@ -6,13 +6,12 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.PriorityRepository;
-
 import com.centram.domain.Priority;
-import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,8 @@ public class PriorityService {
     @Autowired
     private OrganisationService organisationService;
 
-
+    @Autowired
+    private ProxyService proxyService;
 
     /**
      * get priority
@@ -74,8 +74,12 @@ public class PriorityService {
     public Priority save(Priority priority) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         priority.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-
-        return priorityRepository.save(priority);
+        try {
+            priority = proxyService.savePriority(priority);
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(GenericErrorCode.PRIORITY_DATA_EXIST);
+        }
+        return priority;
     }
 
     /**

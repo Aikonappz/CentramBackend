@@ -144,7 +144,7 @@ public class User extends BaseEntity implements Serializable {
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "location_id", nullable = true, updatable = false, insertable = false, referencedColumnName = "id")
+    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Location location;
 

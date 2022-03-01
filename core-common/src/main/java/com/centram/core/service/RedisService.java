@@ -75,6 +75,15 @@ public class RedisService {
     public Role getRoleByName(String roleName) {
         return null;
     }
+    @CachePut(value = "role", key = "#displayName")
+    public Role saveRoleByDisplayName(String displayName, Role role) {
+        return role;
+    }
+
+    @Cacheable(value = "role", key = "#displayName")
+    public Role getRoleByDisplayName(String displayName) {
+        return null;
+    }
     /*ROLE*/
 
     /*PERMISSION*/
