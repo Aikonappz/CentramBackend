@@ -65,6 +65,20 @@ export class AssignedIncidentComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.angForm = this.fb.group({
+      incidentNo: new FormControl('', [
+      ]),
+      moduleId: new FormControl(null, [
+      ]),
+      subModuleId: new FormControl(null, [
+      ]),
+      priorityId: new FormControl(null, [
+      ]),
+      status: new FormControl(null, [
+      ]),
+      title: new FormControl('', [
+      ]),
+    });
     for (let item in IncidentStatus) {
       if (item != "ALL") {
         this.statusList.push({ "key": item, "value": IncidentStatus[item] });
@@ -74,24 +88,6 @@ export class AssignedIncidentComponent implements OnInit {
       if (b.key > a.key) return -1;
       if (a.key > b.key) return 1;
       return 0;
-    });
-    this.angForm = this.fb.group({
-      incidentNo: new FormControl(null, [
-      ]),
-      moduleId: new FormControl(null, [
-      ]),
-      subModuleId: new FormControl(null, [
-      ]),
-      priorityId: new FormControl(null, [
-      ]),
-      // raisedUser: new FormControl(null, [
-      // ]),
-      // assignedUser: new FormControl(null, [
-      // ]),
-      status: new FormControl(null, [
-      ]),
-      title: new FormControl('', [
-      ]),
     });
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     // this.userService.getUsersService({})
@@ -243,7 +239,7 @@ export class AssignedIncidentComponent implements OnInit {
         "title": title == null ? '' : title,
         "status": status == null ? '' : status,
         "assignedUserId": this.loggedInUser.userId,
-        "priorityId": status == null ? '' : priorityId,
+        "priorityId": priorityId == null ? '' : priorityId,
         "subModuleId": subModuleId == null ? '' : subModuleId,
         "moduleId": moduleId == null ? '' : moduleId,
       };
@@ -272,13 +268,13 @@ export class AssignedIncidentComponent implements OnInit {
 
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
-    let c = 0;
-    if (moduleId != "") {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
       this.subModuleList = [];
       this.moduleIds = [];
       let p;
       for (let i = 0; i < this.permissions.length; i++) {
-        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId && this.permissions[i].licenseType == "INCIDENT") {
+        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == "INCIDENT") {
           p = new Permission(this.permissions[i]);
           p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
           this.subModuleList[c] = p;
@@ -306,8 +302,8 @@ export class AssignedIncidentComponent implements OnInit {
 
   @ViewChild("subModuleId") subModuleId;
   populateUser(subModuleId) {
-    let c = 0;
-    if (subModuleId != "") {
+    if (typeof subModuleId !== 'undefined') {
+      let c = 0;
       let moduleId = this.moduleIds[0];
       this.moduleIds = [];
       this.moduleIds.push(moduleId);
@@ -350,4 +346,5 @@ export class AssignedIncidentComponent implements OnInit {
   logSelection() {
     this.selection.selected.forEach(s => console.log(s.id));
   }
+
 }

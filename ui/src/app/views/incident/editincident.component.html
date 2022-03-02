@@ -15,11 +15,10 @@
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="moduleId">Category</label>
-                  <select #moduleId (change)="populateSubmodule($event.target.value)" class="form-control"
-                    formControlName="moduleId" ngModel id="moduleId" name="moduleId">
-                    <option value="">-- Select Category --</option>
-                    <option *ngFor="let e of moduleList" value="{{e.moduleId}}">{{e.customerModuleName}}</option>
-                  </select>
+                  <ng-select [items]="moduleList" placeholder="-- Select Category --" #moduleId
+                    (change)="populateSubmodule($event)" formControlName="moduleId" id="moduleId" name="moduleId"
+                    bindLabel="customerModuleName" bindValue="moduleId">
+                  </ng-select>
                   <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.moduleId.errors?.required">
                       Category is required.
@@ -31,12 +30,10 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="subModuleId">Sub Category</label>
-                  <select class="form-control" formControlName="subModuleId" ngModel id="subModuleId"
-                    name="subModuleId">
-                    <option value="">-- Select Sub Category --</option>
-                    <option *ngFor="let e of subModuleList" value="{{e.moduleId}}">{{e.customerModuleName}}
-                    </option>
-                  </select>
+                  <ng-select [items]="subModuleList" placeholder="-- Select Sub Category --"
+                    formControlName="subModuleId" id="subModuleId" name="subModuleId" bindLabel="customerModuleName"
+                    bindValue="moduleId">
+                  </ng-select>
                   <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.subModuleId.errors?.required">
                       Sub Category is required.
@@ -48,11 +45,8 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
-                  <select class="form-control" formControlName="priorityId" ngModel id="priorityId" name="priorityId">
-                    <option value="">-- Select Priority --</option>
-                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}} ({{e.description}})
-                    </option>
-                  </select>
+                  <ng-select [items]="priorities" placeholder="-- Select Priority --" formControlName="priorityId"
+                    id="priorityId" name="priorityId" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.priorityId.errors?.required">
                       Priority is required.
@@ -64,17 +58,16 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label" for="watchList">Watch List</label>
-                  <select multiple class="form-control" formControlName="watchList" ngModel id="watchList"
-                    name="watchList">
-                    <option *ngFor="let e of users" value="{{e.email}}">{{e.email}}</option>
-                  </select>
+                  <ng-select [multiple]="true" [items]="users" placeholder="-- Select Watch List People --"
+                    formControlName="watchList" id="watchList" name="watchList" bindLabel="email" bindValue="email">
+                  </ng-select>
                 </div>
                 <div class="col"></div>
               </div>
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="title">Title</label>
-                  <textarea formControlName="title" ngModel id="title" name="title" rows="4"
+                  <textarea formControlName="title" id="title" name="title" rows="4"
                     class="form-control textarea-non-resizable" placeholder="Incident Title"></textarea>
                   <div *ngIf="f.title.touched && f.title.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.title.errors?.required">
@@ -99,11 +92,8 @@
                 </div>
                 <div class="col" *ngIf="hasAgentPermission&&canEdit">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
-                  <select class="form-control" formControlName="priorityId" id="priorityId" name="priorityId">
-                    <option value="">-- Select Priority --</option>
-                    <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}} ({{e.description}})
-                    </option>
-                  </select>
+                  <ng-select [items]="priorities" placeholder="-- Select Priority --" formControlName="priorityId"
+                    id="priorityId" name="priorityId" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.priorityId.touched && f.priorityId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.priorityId.errors?.required">
                       Priority is required.
@@ -117,10 +107,8 @@
                 </div>
                 <div class="col" *ngIf="hasAgentPermission&&canEdit">
                   <label class="form-col-form-label" for="newStatus">New Status</label>
-                  <select class="form-control" formControlName="newStatus" id="newStatus" name="newStatus">
-                    <option value="">-- Change Status --</option>
-                    <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
-                  </select>
+                  <ng-select [items]="statusList" placeholder="-- Change Status --" formControlName="newStatus"
+                    id="newStatus" name="newStatus" bindLabel="value" bindValue="key"></ng-select>
                   <div *ngIf="f.newStatus.touched && f.newStatus.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.newStatus.errors?.required">
                       Status is required.
@@ -276,11 +264,11 @@
           </div>
           <div class="card-footer">
             <button *ngIf="canEdit && hasPermission('WRITE,SOLVE')"
-              [disabled]="!angForm.valid&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')"
+              [disabled]="!angForm.valid||(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')"
               (click)="formSubmit('DRAFT')" type="button" class="btn btn-primary">Save
               as Draft</button>
             <button *ngIf="canEdit && hasPermission('WRITE,SOLVE')"
-              [disabled]="!angForm.valid&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')"
+              [disabled]="!angForm.valid||(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')"
               (click)="formSubmit('OPEN')" type="button" class="btn btn-primary">Submit</button>
             <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
           </div>

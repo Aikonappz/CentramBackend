@@ -77,7 +77,7 @@ export class AgentIncidentComponent implements OnInit {
       return 0;
     });
     this.angForm = this.fb.group({
-      incidentNo: new FormControl(null, [
+      incidentNo: new FormControl('', [
       ]),
       moduleId: new FormControl(null, [
         Validators.required,
@@ -87,7 +87,7 @@ export class AgentIncidentComponent implements OnInit {
       ]),
       priorityId: new FormControl(null, [
       ]),
-      raisedUser: new FormControl(null, [
+      raisedUser: new FormControl('', [
       ]),
       assignedUser: new FormControl(null, [
       ]),
@@ -219,12 +219,12 @@ export class AgentIncidentComponent implements OnInit {
   }
 
   loadData(req = {}) {
-    //console.log(req);
     if (this.searchedData.hasOwnProperty('incidentNo')) {
       req = this.searchedData;
     }
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
+
   formatDateTime(d: string) {
     if (d != null && d != "") {
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
@@ -253,7 +253,7 @@ export class AgentIncidentComponent implements OnInit {
         "title": title == null ? '' : title,
         "status": status == null ? '' : status,
         "assignedUserId": assignedUserId == null ? '' : assignedUserId,
-        "priorityId": status == null ? '' : priorityId,
+        "priorityId": priorityId == null ? '' : priorityId,
         "subModuleId": subModuleId == null ? '' : subModuleId,
         "moduleId": moduleId == null ? '' : moduleId,
       };
@@ -267,10 +267,18 @@ export class AgentIncidentComponent implements OnInit {
       //   "moduleId": moduleId == null ? '' : moduleId,
       // });
       this.selection.clear();
-      //console.log(moduleId);
-      //console.log(subModuleId);
-      if (subModuleId != null && subModuleId.replace(/\s/g, "") != ""
-        && moduleId != null && moduleId.replace(/\s/g, "") != "") {
+      // console.log(moduleId);
+      // console.log(subModuleId);
+      // if (
+      //   subModuleId != null && subModuleId.replace(/\s/g, "") != ""
+      //   &&
+      //   moduleId != null && moduleId.replace(/\s/g, "") != ""
+      // ) {
+      //   this.canAssignNow = true;
+      // } else {
+      //   this.canAssignNow = false;
+      // }
+      if (subModuleId != null && moduleId != null) {
         this.canAssignNow = true;
       } else {
         this.canAssignNow = false;
@@ -282,20 +290,20 @@ export class AgentIncidentComponent implements OnInit {
 
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
-    let c = 0;
-    if (moduleId != "") {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
       this.subModuleList = [];
       this.moduleIds = [];
       let p;
       for (let i = 0; i < this.permissions.length; i++) {
-        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId && this.permissions[i].licenseType == "INCIDENT") {
+        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == "INCIDENT") {
           p = new Permission(this.permissions[i]);
           p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
           this.subModuleList[c] = p;
           c++;
         }
       }
-      this.moduleIds.push(moduleId);
+      this.moduleIds.push(moduleId.moduleId);
       let params = {
         "moduleIds": this.moduleIds.join(','),
         "actionName": 'SOLVE',
@@ -304,6 +312,7 @@ export class AgentIncidentComponent implements OnInit {
       this.userService
         .getUsersByModuleAndAction(params)
         .subscribe((data: UserVO[]) => {
+          this.agentList = [];
           for (let i = 0; i < data.length; i++) {
             if (
               this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD')
@@ -327,11 +336,11 @@ export class AgentIncidentComponent implements OnInit {
   @ViewChild("subModuleId") subModuleId;
   populateUser(subModuleId) {
     let c = 0;
-    if (subModuleId != "") {
+    if (typeof subModuleId !== 'undefined') {
       let moduleId = this.moduleIds[0];
       this.moduleIds = [];
       this.moduleIds.push(moduleId);
-      this.moduleIds.push(subModuleId);
+      this.moduleIds.push(subModuleId.moduleId);
       let params = {
         "moduleIds": this.moduleIds.join(','),
         "actionName": 'SOLVE',
@@ -340,6 +349,7 @@ export class AgentIncidentComponent implements OnInit {
       this.userService
         .getUsersByModuleAndAction(params)
         .subscribe((data: UserVO[]) => {
+          this.agentList = [];
           for (let i = 0; i < data.length; i++) {
             if (
               this.loggedInUserService.hasRole('ORG_INCIDENT_AGENT_LEAD')
@@ -432,4 +442,5 @@ export class AgentIncidentComponent implements OnInit {
       Object.assign({}, config, { initialState })
     );
   }
+  
 }

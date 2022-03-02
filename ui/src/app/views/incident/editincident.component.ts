@@ -31,7 +31,6 @@ declare var $: any;
 export class EditIncidentComponent implements OnInit {
   moduleName: string = "MY INCIDENTS,MY GROUP INCIDENTS";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
   defaultStatus: any = 'OPEN';
   statusFlag: boolean = true;
@@ -39,7 +38,7 @@ export class EditIncidentComponent implements OnInit {
   permissions: Permission[] = [];
   moduleList: Permission[] = [];
   subModuleList: Permission[];
-  priorities: Priority[] = [];
+  priorities: any[] = [];
   roles: Role[] = [];
   users: UserVO[] = [];
   incident: Incident;
@@ -106,22 +105,22 @@ export class EditIncidentComponent implements OnInit {
     }
     if (!this.route.snapshot.paramMap.has('id')) {
       this.angForm = this.fb.group({
-        moduleId: new FormControl('', [
+        moduleId: new FormControl(null, [
           Validators.required,
         ]),
-        subModuleId: new FormControl('', [
+        subModuleId: new FormControl(null, [
           Validators.required,
         ]),
-        priorityId: new FormControl('', [
+        priorityId: new FormControl(null, [
           Validators.required,
         ]),
         title: new FormControl('', [
           Validators.required,
           Validators.maxLength(255),
         ]),
-        watchList: new FormControl('', [
+        watchList: new FormControl(null, [
         ]),
-        fileInput: new FormControl(null, [
+        fileInput: new FormControl('', [
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -130,6 +129,9 @@ export class EditIncidentComponent implements OnInit {
       this.miscService.prioritiesService({ "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
+          for (let k in this.priorities) {
+            this.priorities[k].label = this.priorities[k].name + " (" + this.priorities[k].description + ") ";
+          }
           this.userService.getUsersService()
             .subscribe((result: UserVOListResponse) => {
               let logedinUser = this.loggedInUserService.getLoggedInUser();
@@ -141,7 +143,7 @@ export class EditIncidentComponent implements OnInit {
               if (this.mode === 'draft' && this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
                 this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
                 if (this.draftData.new != null) {
-                  this.populateSubmodule(this.draftData.new.moduleId);
+                  this.populateSubmodule({ moduleId: this.draftData.new.moduleId });
                   this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
                   this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
                   this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
@@ -150,17 +152,16 @@ export class EditIncidentComponent implements OnInit {
                   this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
                 }
               }
-              this.preapareSelect();
             });
         });
     } else {
       this.angForm = this.fb.group({
-        priorityId: new FormControl('', [
+        priorityId: new FormControl(null, [
           Validators.required,
         ]),
-        newStatus: new FormControl('', [
+        newStatus: new FormControl(null, [
         ]),
-        fileInput: new FormControl(null, [
+        fileInput: new FormControl('', [
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -169,6 +170,9 @@ export class EditIncidentComponent implements OnInit {
       this.miscService.prioritiesService({ "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
+          for (let k in this.priorities) {
+            this.priorities[k].label = this.priorities[k].name + " (" + this.priorities[k].description + ") ";
+          }
           this.userService.getUsersService()
             .subscribe((result: UserVOListResponse) => {
               this.users = result.content;
@@ -204,36 +208,6 @@ export class EditIncidentComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  preapareSelect() {
-    $(document).ready(function () {
-      let v = [];
-      $('#watchList').selectize({
-        plugins: ["remove_button"],
-        //maxItems: 3
-        onItemAdd: function (value, $item) {
-          let selected = value.split(":");
-          let index = selected[0];
-          let val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
-          // var input = $('#watchList');
-          // let v = input.val();
-          // v.push(val);
-          // input.val(v);
-          // input.trigger('input'); // Use for Chrome/Firefox/Edge
-          // input.trigger('change'); // Use for Chrome/Firefox/Edge + IE11
-        },
-        onItemRemove: function (value) {
-          let selected = value.split(":");
-          let index = selected[0];
-          let val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
-          console.log(index + '==' + val);
-        }
-      });
-      // $('#moduleId').selectize({
-      //   maxItems: 1
-      // });
-    })
-  }
-
   ngAfterViewInit() { }
 
   ngAfterContentInit() {
@@ -267,17 +241,17 @@ export class EditIncidentComponent implements OnInit {
     if (this.angForm.valid) {
       //console.log(this.angForm);
       // prepare incident  object
-      let selected = null;
-      let index = null;
-      let val = null;
-      let watchers = $('#watchList').val();
-      for (let k in watchers) {
-        selected = watchers[k].split(":");
-        index = selected[0];
-        val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
-        console.log(index + '==' + val);
-        watchers[k] = val;
-      }
+      // let selected = null;
+      // let index = null;
+      // let val = null;
+      // let watchers = $('#watchList').val();
+      // for (let k in watchers) {
+      //   selected = watchers[k].split(":");
+      //   index = selected[0];
+      //   val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
+      //   console.log(index + '==' + val);
+      //   watchers[k] = val;
+      // }
       if (sts === "DRAFT") {
         let returnPath = '/incident/user';
         if (this.referer === 'agent-all') {
@@ -300,7 +274,7 @@ export class EditIncidentComponent implements OnInit {
           inc.moduleId = this.angForm.controls['moduleId'].value;
           inc.subModuleId = this.angForm.controls['subModuleId'].value;
           inc.title = this.angForm.controls['title'].value;
-          inc.watchList = watchers;
+          inc.watchList = this.angForm.controls['watchList'].value;
           inc.priority = priority;
           inc.status = sts;
           ic = new IncidentCommunication();
@@ -354,7 +328,7 @@ export class EditIncidentComponent implements OnInit {
           this.incident.moduleId = this.angForm.controls['moduleId'].value;
           this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
           this.incident.title = this.angForm.controls['title'].value;
-          this.incident.watchList = watchers;
+          this.incident.watchList = this.angForm.controls['watchList'].value;
           this.incident.assignedUser = null;
           this.incident.raisedUser = null;
           this.incident.priority = priority;
@@ -489,7 +463,7 @@ export class EditIncidentComponent implements OnInit {
         this.incident.subModuleName = data.subModuleName;
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
-        this.populateSubmodule(this.incident.moduleId);
+        this.populateSubmodule({ moduleId: this.incident.moduleId });
         let org = data.organisation;
         this.incident.organisation = { id: org.id, version: org.version };
         for (let k in this.incident.communications) {
@@ -571,12 +545,12 @@ export class EditIncidentComponent implements OnInit {
 
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
-    let c = 0;
-    if (moduleId != "") {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
       this.subModuleList = [];
       let p;
       for (let i = 0; i < this.permissions.length; i++) {
-        if (this.permissions[i].moduleParentId == moduleId && this.permissions[i].licenseType == 'INCIDENT') {
+        if (this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == 'INCIDENT') {
           p = new Permission(this.permissions[i]);
           p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
           this.subModuleList[c] = p;

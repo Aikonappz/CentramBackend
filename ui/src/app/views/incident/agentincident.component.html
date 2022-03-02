@@ -21,14 +21,14 @@
                 <div class="card-body">
                     <div *ngIf="hasPermission('SEARCH')" class="card ">
                         <div class="card-header">
-                            <i class="fa fa-search"></i> Search Group Incident
+                            <i class="fa fa-search"></i> Search Group Incidents
                         </div>
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="incidentNo">Incident Number</label>
-                                        <input type="text" formControlName="incidentNo" ngModel id="incidentNo"
+                                        <input type="text" formControlName="incidentNo" id="incidentNo"
                                             name="incidentNo" class="form-control" placeholder="Incident Number"
                                             aria-label="Incident Number">
                                     </div>
@@ -39,13 +39,11 @@
                                     <div class="col">
                                         <label class="form-col-form-label required-control-label"
                                             for="moduleId">Category</label>
-                                        <select #moduleId (change)="populateSubmodule($event.target.value)"
-                                            class="form-control" formControlName="moduleId" ngModel id="moduleId"
-                                            name="moduleId">
-                                            <option value="">-- Select Category --</option>
-                                            <option *ngFor="let e of moduleList" value="{{e.moduleId}}">
-                                                {{e.customerModuleName}}</option>
-                                        </select>
+                                        <ng-select [items]="moduleList" placeholder="-- Select Category --" #moduleId
+                                            (change)="populateSubmodule($event)" formControlName="moduleId"
+                                            id="moduleId" name="moduleId" bindLabel="customerModuleName"
+                                            bindValue="moduleId">
+                                        </ng-select>
                                         <div *ngIf="f.moduleId.touched && f.moduleId.invalid"
                                             class="alert alert-danger-custom">
                                             <div *ngIf="f.moduleId.errors?.required">
@@ -56,14 +54,11 @@
                                     <div class="col">
                                         <label class="form-col-form-label required-control-label" for="subModuleId">Sub
                                             Category</label>
-                                        <select class="form-control" #subModuleId
-                                            (change)="populateUser($event.target.value)" formControlName="subModuleId"
-                                            ngModel id="subModuleId" name="subModuleId">
-                                            <option value="">-- Select Sub Category --</option>
-                                            <option *ngFor="let e of subModuleList" value="{{e.moduleId}}">
-                                                {{e.customerModuleName}}
-                                            </option>
-                                        </select>
+                                        <ng-select [items]="subModuleList" #subModuleId (change)="populateUser($event)"
+                                            placeholder="-- Select Sub Category --" formControlName="subModuleId"
+                                            id="subModuleId" name="subModuleId" bindLabel="customerModuleName"
+                                            bindValue="moduleId">
+                                        </ng-select>
                                         <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid"
                                             class="alert alert-danger-custom">
                                             <div *ngIf="f.subModuleId.errors?.required">
@@ -73,24 +68,21 @@
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="priorityId">Priority</label>
-                                        <select class="form-control" formControlName="priorityId" ngModel
-                                            id="priorityId" name="priorityId">
-                                            <option value="">-- Select Priority --</option>
-                                            <option *ngFor="let e of priorities" value="{{e.id}}">{{e.name}}
-                                            </option>
-                                        </select>
+                                        <ng-select [items]="priorities" placeholder="-- Select Priority --"
+                                            formControlName="priorityId" id="priorityId" name="priorityId"
+                                            bindLabel="name" bindValue="id"></ng-select>
                                     </div>
                                 </div>
                                 <div class="row row-margin-05">
                                     <div class="col">
                                         <label class="form-col-form-label" for="title">Incident Title</label>
-                                        <textarea formControlName="title" ngModel id="title" name="title" rows="4"
+                                        <textarea formControlName="title" id="title" name="title" rows="4"
                                             class="form-control textarea-non-resizable"
                                             placeholder="Incident Title"></textarea>
                                     </div>
                                     <!-- <div class="col">
                                         <label class="form-col-form-label" for="raisedUser">Raised User</label>
-                                        <select class="form-control" formControlName="raisedUser" ngModel
+                                        <select class="form-control" formControlName="raisedUser"
                                             id="raisedUser" name="raisedUser">
                                             <option value="">-- Select Raised User--</option>
                                             <option *ngFor="let e of userList" value="{{e.id}}">{{e.email}}</option>
@@ -98,24 +90,20 @@
                                     </div> -->
                                     <div class="col">
                                         <label class="form-col-form-label" for="assignedUser">Assigned User</label>
-                                        <select class="form-control" formControlName="assignedUser" ngModel
-                                            id="assignedUser" name="assignedUser">
-                                            <option value="">-- Select Assigned User--</option>
-                                            <option *ngFor="let e of agentList" value="{{e.id}}">{{e.email}}</option>
-                                        </select>
+                                        <ng-select [items]="agentList" placeholder="-- Select Assigned User --"
+                                            formControlName="assignedUser" id="assignedUser" name="assignedUser"
+                                            bindLabel="email" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="status">Incident Status</label>
-                                        <select class="form-control" formControlName="status" ngModel id="status"
-                                            name="status">
-                                            <option value="">-- Select Incident Status--</option>
-                                            <option *ngFor="let e of statusList" value="{{e.key}}">{{e.value}}</option>
-                                        </select>
+                                        <ng-select [items]="statusList" placeholder="-- Select Incident Status --"
+                                            formControlName="status" id="status" name="status" bindLabel="value"
+                                            bindValue="key"></ng-select>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary btn-sm">
+                                <button type="submit" [disabled]="!angForm.valid" class="btn btn-primary btn-sm">
                                     <i class="fa fa-search"></i> Search
                                 </button>
                                 <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">

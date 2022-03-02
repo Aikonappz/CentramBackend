@@ -10,73 +10,77 @@ import { IncidentService } from "../../../service/IncidentService";
     template: `<div class="modal-header">
     <h6 class="modal-title pull-left"><i class="fa fa-male"></i> Assign Incident To User</h6>
     <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
-      <span aria-hidden="true">&times;</span>
+        <span aria-hidden="true">&times;</span>
     </button>
-  </div>
-  <div class="modal-body">
+</div>
+<div class="modal-body">
     <div class="row">
-      <div class="col-sm-12">
-        <div class="card ">
-          <div [ngClass]="{'d-none': canAssign === true, 'card-body' : true }">
-            <div class="row">
-              <h6>Please search with module, submodule and select incident to assign an user!</h6>
-            </div>
-          </div>
-          <form [ngClass]="{'d-none': canAssign === false}" [formGroup]="angFormAssign" (ngSubmit)="assignIncident()"
-            novalidate>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="assignUser">Agent</label>
-                  <select class="form-control" formControlName="assignUser" id="assignUser" name="assignUser">
-                    <option *ngFor="let e of agentList" value="{{e.id}}">{{e.email}}</option>
-                  </select>
-                  <div *ngIf="uf.assignUser.touched && uf.assignUser.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="uf.assignUser.errors?.required">
-                      Please select agent to assign.
+        <div class="col-sm-12">
+            <div class="card ">
+                <div [ngClass]="{'d-none': canAssign === true, 'card-body' : true }">
+                    <div class="row">
+                        <h6>Please search with module, submodule and select incident to assign an user!</h6>
                     </div>
-                  </div>
                 </div>
-                <div class="col">
-                  <input type="hidden" [(ngModel)]="incidents" formControlName="incidents" ngModel id="incidents"
-                    name="incidents">
-                  <label class="form-col-form-label required-control-label" for="incidents">Incident</label>
-                  <textarea formControlName="selectedIncidents" class="form-control textarea-non-resizable"
-                    id="selectedIncidents" name="selectedIncidents" readonly>
+                <form [ngClass]="{'d-none': canAssign === false}" [formGroup]="angFormAssign"
+                    (ngSubmit)="assignIncident()" novalidate>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <label class="form-col-form-label required-control-label" for="assignUser">Agent</label>
+                                <ng-select [items]="agentList" placeholder="-- Select Assigned User --"
+                                    formControlName="assignUser" id="assignUser" name="assignUser" bindLabel="email"
+                                    bindValue="id"></ng-select>
+                                <div *ngIf="uf.assignUser.touched && uf.assignUser.invalid"
+                                    class="alert alert-danger-custom">
+                                    <div *ngIf="uf.assignUser.errors?.required">
+                                        Please select agent to assign.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <input type="hidden" [(ngModel)]="incidents" formControlName="incidents" ngModel
+                                    id="incidents" name="incidents">
+                                <label class="form-col-form-label required-control-label"
+                                    for="incidents">Incident</label>
+                                <textarea formControlName="selectedIncidents"
+                                    class="form-control textarea-non-resizable" id="selectedIncidents"
+                                    name="selectedIncidents" readonly>
                                 </textarea>
-                  <div *ngIf="uf.incidents.touched && uf.incidents.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="uf.incidents.errors?.required">
-                      Please select incident.
+                                <div *ngIf="uf.incidents.touched && uf.incidents.invalid"
+                                    class="alert alert-danger-custom">
+                                    <div *ngIf="uf.incidents.errors?.required">
+                                        Please select incident.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-margin-05">
+                            <div class="col">
+                                <label class="form-col-form-label required-control-label" for="comment">Comment</label>
+                                <textarea formControlName="comment" id="comment" name="comment" rows="4"
+                                    class="form-control textarea-non-resizable"></textarea>
+                                <div *ngIf="uf.comment.touched && uf.comment.invalid" class="alert alert-danger-custom">
+                                    <div *ngIf="uf.comment.errors?.required">
+                                        Comment is required!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row row-margin-05">
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="comment">Comment</label>
-                  <textarea formControlName="comment" id="comment" name="comment" rows="4"
-                    class="form-control textarea-non-resizable"></textarea>
-                  <div *ngIf="uf.comment.touched && uf.comment.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="uf.comment.errors?.required">
-                      Comment is required!
+                    <div class="card-footer">
+                        <button [disabled]="!angFormAssign.valid" type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa fa-male"></i> Assign
+                        </button>
+                        <button type="button" (click)="bsModalRef.hide()" class="btn btn-danger btn-sm">
+                            <i class="fa fa-close"></i> Cancel
+                        </button>
                     </div>
-                  </div>
-                </div>
-              </div>
+                </form>
             </div>
-            <div class="card-footer">
-              <button [disabled]="!angFormAssign.valid" type="submit" class="btn btn-primary btn-sm">
-                <i class="fa fa-male"></i> Assign
-              </button>
-              <button type="button" (click)="bsModalRef.hide()" class="btn btn-danger btn-sm">
-                <i class="fa fa-close"></i> Cancel
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>`
+</div>`
 })
 export class AssignIncidentComponent implements OnInit {
     agentList: UserVO[];

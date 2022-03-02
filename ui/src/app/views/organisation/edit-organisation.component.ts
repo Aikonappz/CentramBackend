@@ -127,7 +127,7 @@ export class EditOrganisationComponent implements OnInit {
           Validators.pattern(this.gstinRegex),
           //Validators.required
         ]),
-        licenseType: new FormControl('', [
+        licenseType: new FormControl(null, [
           Validators.required
         ]),
         licenseStart: new FormControl('', [
@@ -252,7 +252,7 @@ export class EditOrganisationComponent implements OnInit {
           Validators.pattern(this.gstinRegex),
           //Validators.required
         ]),
-        licenseType: new FormControl('', [
+        licenseType: new FormControl(null, [
           Validators.required
         ]),
         licenseStart: new FormControl('', [

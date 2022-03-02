@@ -14,6 +14,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AssignedIncidentComponent } from './assignedincident.component';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 import { AgentIncidentComponent } from './agentincident.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { AgentIncidentComponent } from './agentincident.component';
     CKEditorModule,
     TooltipModule.forRoot(),
     BsDropdownModule.forRoot(),
+    NgSelectModule,
   ]
 })
 export class IncidentModule { }

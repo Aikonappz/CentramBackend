@@ -56,9 +56,9 @@ export class UserIncidentComponent implements OnInit {
       return 0;
     });
     this.angForm = this.fb.group({
-      incidentNo: new FormControl('', [
+      incidentNo: new FormControl(null, [
       ]),
-      title: new FormControl('', [
+      title: new FormControl(null, [
       ]),
       status: new FormControl(null, [
       ]),
@@ -103,7 +103,6 @@ export class UserIncidentComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
@@ -140,6 +139,7 @@ export class UserIncidentComponent implements OnInit {
     }
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
+
   formatDateTime(d: string) {
     if (d != null && d != "") {
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
@@ -197,4 +197,5 @@ export class UserIncidentComponent implements OnInit {
     let role = this.hasPermission("READ") ? "USER" : "AGENT";
     return role;
   }
+
 }
