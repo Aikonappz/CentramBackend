@@ -26,7 +26,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "incident", description = "Incident Api")
+@Api(value = "Incident", description = "Incident Api")
 @RequestMapping(value = "/api/v1/incident")
 @Controller
 public class IncidentApiController {
@@ -36,9 +36,10 @@ public class IncidentApiController {
     @Autowired
     private IncidentService incidentService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an incident", nickname = "save", notes = "Save an incident", tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an incident", nickname = "save", notes = "Save an incident", tags = {"Incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Invalid input")
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
@@ -47,11 +48,11 @@ public class IncidentApiController {
         return new ResponseEntity<Incident>(incidentService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find incident by Id", nickname = "getIncidentById", notes = "Find incident by Id", response = Incident.class, tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find incident by Id", nickname = "getIncidentById", notes = "Find incident by Id", response = Incident.class, tags = {"Incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "incident not found")
+            @ApiResponse(code = 200, message = "Successful Operation", response = User.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{incidentId}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -60,10 +61,11 @@ public class IncidentApiController {
         return new ResponseEntity<Incident>(incidentService.getIncidentById(incidentId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all user incidents", nickname = "getUserIncidents", notes = "Get all user incidents", response = PaginatedList.class, tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all user incidents", nickname = "getUserIncidents", notes = "Get all user incidents", response = PaginatedList.class, tags = {"Incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
@@ -77,10 +79,11 @@ public class IncidentApiController {
         return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserIncidents(incidentNo, title, status, pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all agent incidents", nickname = "getAgentIncidents", notes = "Get all agent incidents", response = PaginatedList.class, tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all agent incidents", nickname = "getAgentIncidents", notes = "Get all agent incidents", response = PaginatedList.class, tags = {"Incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/agent", produces = {"application/json"}, method = RequestMethod.GET)
@@ -100,9 +103,10 @@ public class IncidentApiController {
         ), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Assign user to Incidents", nickname = "assignIncidents", notes = "Assign user to Incidents", tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Assign agent to Incidents", nickname = "assignIncidents", notes = "Assign agent to Incidents", tags = {"Incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 404, message = "Incident not found")
     })
     @RequestMapping(value = "/assign/{ids}/{userId}/{comment}", produces = {"application/json"}, method = RequestMethod.GET)
@@ -116,9 +120,10 @@ public class IncidentApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Reopen an Incident", nickname = "reopenIncident", notes = "Reopen an Incident", tags = {"incident",})
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Reopen an Incident", nickname = "reopenIncident", notes = "Reopen an Incident", tags = {"Incident",})
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 404, message = "Incident not found")
     })
     @RequestMapping(value = "/reopen/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.GET)
