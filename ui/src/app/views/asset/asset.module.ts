@@ -19,6 +19,7 @@ import { RequestAssetComponent } from './request-asset.component';
 import { AssetRequestActionComponent, } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 import { AllocateAsset } from './model/AllocateAsset';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { AllocateAsset } from './model/AllocateAsset';
     CKEditorModule,
     TooltipModule.forRoot(),
     BsDropdownModule.forRoot(),
+    NgSelectModule,
   ]
 })
 export class AssetModule { }

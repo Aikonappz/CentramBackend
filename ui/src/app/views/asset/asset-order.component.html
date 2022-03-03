@@ -11,17 +11,19 @@
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
             <fieldset class="border p-2">
-              <legend class="w-auto">Requesting For</legend>
+              <legend class="w-auto">Request Details</legend>
               <div class="row">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="isDepartment">For
-                    Department?</label>
+                  <label class="form-col-form-label required-control-label" for="isDepartment">For any
+                    Specific Department?</label>
                   <select class="form-control" formControlName="isDepartment" ngModel id="isDepartment"
                     name="isDepartment">
                     <option value="">-- Select --</option>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
+                  <ng-select [items]="roles" placeholder="-- Select Roles --" formControlName="roles" id="roles"
+                  [multiple]="true" roles name="roles" bindLabel="displayName" bindValue="id">
                   <div *ngIf="f.isDepartment.touched && f.isDepartment.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.isDepartment.errors?.required">
                       Selection is required!
@@ -57,7 +59,7 @@
               </div>
             </fieldset>
             <fieldset class=" border p-2">
-              <legend class="w-auto">Asset</legend>
+              <legend class="w-auto">Asset Details</legend>
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="assetType">Asset Type</label>

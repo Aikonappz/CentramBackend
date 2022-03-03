@@ -9,17 +9,19 @@ import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
 import { ForgotPasswordComponent } from './views/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './views/reset-password/reset-password.component';
-import { RequestDemoComponent } from './views/request-demo/request-demo.component';
 import { LogoutComponent } from './views/logout/logout.component';
 import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { environment } from '../environments/environment';
+import { LandingComponent } from './views/landing/landing.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'sign-in',
-    resolve: { myData: CheckLoggedInOuter },
+    component: LandingComponent,
+    data: {
+      title: environment.appName
+    },
     pathMatch: 'full',
   },
   {
@@ -54,14 +56,14 @@ export const routes: Routes = [
       title: environment.appName + ' - ' + 'Reset Password'
     }
   },
-  {
-    path: 'request-demo',
-    component: RequestDemoComponent,
-    resolve: { myData: CheckLoggedInOuter },
-    data: {
-      title: environment.appName + ' - ' + 'Request a Demo'
-    }
-  },
+  // {
+  //   path: 'request-demo',
+  //   component: RequestDemoComponent,
+  //   resolve: { myData: CheckLoggedInOuter },
+  //   data: {
+  //     title: environment.appName + ' - ' + 'Request a Demo'
+  //   }
+  // },
   {
     path: 'sign-out',
     component: LogoutComponent,

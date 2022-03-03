@@ -67,6 +67,7 @@ import { PushNotificationsModule } from 'ng-push-ivy';
 import { ClientStorageService } from './service/ClientStorageService';
 import { ChatComponent } from './views/chat/chat.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { LandingComponent } from './views/landing/landing.component';
 
 @NgModule({
   imports: [
@@ -95,7 +96,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
     MatProgressBarModule,
     ModalModule.forRoot(),
     PushNotificationsModule,
-
     NgSelectModule,
   ],
   declarations: [
@@ -104,6 +104,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     P404Component,
     P500Component,
     RegisterComponent,
+    LandingComponent,
     LoginComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,

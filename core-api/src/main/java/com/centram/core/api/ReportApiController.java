@@ -44,6 +44,7 @@ public class ReportApiController {
     private String dateFormat;
     @Autowired
     private AppSecurityUtilityService appSecurityUtilityService;
+
     @Autowired
     private ReportService reportService;
 

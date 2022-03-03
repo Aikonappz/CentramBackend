@@ -1,0 +1,197 @@
+<header class="top-header">
+  <div class="container">
+    <div class="row justify-content-between align-items-center">
+      <a href="/" class="logo"><img src="assets/img/logo.png"></a>
+      <nav class="nav">
+        <ul>
+          <li><a href="javascript:void(0);" (click)="onClickScroll('home')">Home</a></li>
+          <li><a href="javascript:void(0);" (click)="onClickScroll('about-us')">About Us</a></li>
+          <li><a href="javascript:void(0);" (click)="onClickScroll('request-demo')">Request a Demo</a></li>
+        </ul>
+      </nav>
+      <a class="custom-btn" href="/sign-in">sign in</a>
+    </div>
+  </div>
+</header>
+<div class="banner banner-images" id="home">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 col-lmd-6 col-12">
+        <div class="banner-content">
+          <span>Powerful Packed Services</span>
+          <h1>We Provide Solution On Your Business</h1>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.</p>
+          <a class="custom-btn2" href="/sign-in">sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<section class="section-one why-images" id="about-us">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-8 col-12">
+        <div class="page-content text-center">
+          <h2>Why Centram?</h2>
+          <p>At present, most organizations maintain support incidents/assets owned by employees in excel
+            sheets/paperwork and face major challenges in keeping track of it.
+            Centram helps organizations to monitor and track these under two umbrellas.
+            Incident Management: Self Service portal to raise incidents, communicate with support agents and
+            closure.
+          <p>
+          <p>Asset Management – Track Allocation/deallocation of assets to employees; helps in exit formalities.</p>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-lg-4 col-md-4 col-12">
+            <div class="counter">
+              <strong>10</strong>
+              <h4>Years of Experience</h4>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-12">
+            <div class="counter">
+              <strong>95+</strong>
+              <h4>Happy Customers</h4>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-12">
+            <div class="counter">
+              <strong>100%</strong>
+              <h4>Satisfaction</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-4 col-12">
+        <div class="content-holder">
+          <div class="icon-part">
+            <img src="assets/img/icon01.png" alt="Quality Services">
+            <h4>Quality Services</h4>
+          </div>
+          <div class="data">
+            <p>Lorem ipsum dolor sit amet, conse ctetur adipiscing elit, sed do eiusmod typing incididunt ut labore
+              et
+              dolore.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 col-12">
+        <div class="content-holder">
+          <div class="icon-part">
+            <img src="assets/img/icon02.png" alt="Valuable Ideas">
+            <h4>Valuable Ideas</h4>
+          </div>
+          <div class="data">
+            <p>Lorem ipsum dolor sit amet, conse ctetur adipiscing elit, sed do eiusmod typing incididunt ut labore
+              et
+              dolore.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 col-12">
+        <div class="content-holder">
+          <div class="icon-part">
+            <img src="assets/img/icon03.png" alt="Budget Friendly">
+            <h4>Budget Friendly</h4>
+          </div>
+          <div class="data">
+            <p>Lorem ipsum dolor sit amet, conse ctetur adipiscing elit, sed do eiusmod typing incididunt ut labore
+              et
+              dolore.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section-login login-images">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-8 col-12">
+        <div class="heading-group text-center">
+          <h3>We Provide The Solutions To Grow
+            Your Business Faster</h3>
+          <p>We must explain to you how all this mistaken idea of denouncing </p>
+          <a class="loging-btn" href="/sign-in">sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section-form form-images" id="request-demo">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-6 col-12">
+        <div class="heading-group-dark text-center">
+          <h3>Request a Demo</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore.</p>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <input type="text" formControlName="name" class="form-control-custom" id="name" name="name"
+                placeholder="Name">
+              <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger alert-danger-custom">
+                <div *ngIf="f.name.errors?.required">
+                  Name is required.
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <input type="email" formControlName="email" class="form-control-custom" id="email" name="email"
+                placeholder="Email">
+              <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger alert-danger-custom">
+                <div *ngIf="f.email.errors?.required">
+                  Email is required.
+                </div>
+                <div *ngIf="f.email.errors?.email">
+                  Invalid input! Only email allowed.
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-12">
+              <input type="tel" formControlName="phone" class="form-control-custom" id="phone" name="phone"
+                placeholder="Phone Number">
+              <div *ngIf="f.phone.touched && f.phone.invalid" class="alert alert-danger alert-danger-custom">
+                <div *ngIf="f.phone.errors?.required">
+                  Phone is required.
+                </div>
+                <div *ngIf="f.phone.errors?.pattern">
+                  Invalid input! Only phone numbers allowed.
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-12 text-center">
+              <button [disabled]="!angForm.valid" type="submit" class="btn-submit">Request</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <a href="/" class="logo-footer"><img src="assets/img/logo.png"></a>
+      <ul class="footer-social">
+        <li><a target="_blank" href="#"><i class="fa fa-facebook"></i></a></li>
+        <li><a target="_blank" href="#"><i class="fa fa-instagram"></i> </a></li>
+        <li><a target="_blank" href="#"><i class="fa fa-linkedin"></i> </a></li>
+        <li><a target="_blank" href="#"><i class="fa fa-pinterest"></i> </a></li>
+      </ul>
+      <nav class="nav">
+        <ul>
+          <li><a href="javascript:void(0);" (click)="onClickScroll('home')">Home</a></li>
+          <li><a href="javascript:void(0);" (click)="onClickScroll('about-us')">About Us</a></li>
+          <li><a href="javascript:void(0);" (click)="onClickScroll('request-demo')">Request a Demo</a></li>
+          <li><a href="/sign-in">Sign in</a></li>
+        </ul>
+      </nav>
+      <p class="copy-right">Centram © All Rights Reserved</p>
+    </div>
+  </div>
+</footer>
