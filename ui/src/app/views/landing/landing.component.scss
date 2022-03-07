@@ -534,7 +534,7 @@ background-size: cover;
    display: inline-block;
    vertical-align: top;
 }
-.custom-btn2{
+a.custom-btn2{
     border-radius: 50px;
     background: #0eacee;
     padding: 10px 33px;
@@ -544,7 +544,7 @@ background-size: cover;
      display: inline-block;
    vertical-align: top;
 }
-.custom-btn2:hover{
+a.custom-btn2:hover{
 color: #fff;
 }
 
@@ -561,6 +561,10 @@ color: #fff;
 }
 .page-content h2{
     font-size: 60px;
+    margin-bottom: 25px;
+}
+.page-content p{
+    margin-bottom: 20px;
 }
 .counter{
     margin: 15px 0px;
@@ -683,6 +687,15 @@ color: #000;
     text-transform: uppercase;
     color: #fff;
     font-size: 14px;
+}
+.alert-danger-custom{
+
+}
+
+.alert-danger-custom div {
+    padding: 2px 8px;
+    font-size: 13px;
+    text-transform: capitalize;
 }
 
 .footer{
