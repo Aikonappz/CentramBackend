@@ -22,12 +22,12 @@
 /************VARIABLE CSS***********/
 
 body {
-    font-family: var(--font-family) !important;
-    font-weight: var(--main-font-weight);
-    font-size: var(--main-font-size);
-    color: var(--main-text-color);
-    line-height: var(--main-line-heigh);
-    background: var(--main-bg-color);
+    font-family:'Montserrat', sans-serif;
+    font-weight:400px;
+    font-size:16px;
+    color: #222830;
+    line-height:25px;
+    background: #fff;
     letter-spacing: 0.4px;
     margin: 0px;
     padding: 0px;
@@ -78,7 +78,7 @@ h6 {
     font-size: 20px;
     color: #0d141e;
     line-height: 30px;
-    font-family:var(--font-title) !important;
+    font-family:'Khand', sans-serif;
 }
 
 .h1,
@@ -97,7 +97,7 @@ p {
     color: #2e2e2e;
     font-size: 16px;
     line-height: 26px;
-    font-family: var(--font-family);
+   font-family:'Montserrat', sans-serif;
 }
 
 b,
@@ -150,7 +150,7 @@ div#recaptcha1 {
     color: #6a6a6a;
     line-height: 30px;
     padding-bottom: 40px;
-    font-family: var(--font-rubik);
+    font-family:'Montserrat', sans-serif;
 }
 
 .font-bold {
@@ -270,7 +270,7 @@ header.top-header{
 width: 100%;
     display: inline-block;
     vertical-align: top;
-  
+  background-color: #fff;
   
     z-index: 9999;
     padding:10px 0px; 
@@ -280,7 +280,7 @@ header.top-header .logo{
 }
 .nav {
 
-    font-family: var(--font-title);
+    font-family:'Khand', sans-serif;
       
         align-self: center;
 }
@@ -534,7 +534,7 @@ background-size: cover;
    display: inline-block;
    vertical-align: top;
 }
-.custom-btn2{
+a.custom-btn2{
     border-radius: 50px;
     background: #0eacee;
     padding: 10px 33px;
@@ -544,7 +544,7 @@ background-size: cover;
      display: inline-block;
    vertical-align: top;
 }
-.custom-btn2:hover{
+a.custom-btn2:hover{
 color: #fff;
 }
 
@@ -561,6 +561,10 @@ color: #fff;
 }
 .page-content h2{
     font-size: 60px;
+    margin-bottom: 25px;
+}
+.page-content p{
+    margin-bottom: 20px;
 }
 .counter{
     margin: 15px 0px;
@@ -568,7 +572,7 @@ color: #fff;
 
 }
 .counter strong{
-font-family: var(--font-title);
+    font-family: "Khand", sans-serif;
 font-size: 60px;
 
 }
@@ -683,6 +687,15 @@ color: #000;
     text-transform: uppercase;
     color: #fff;
     font-size: 14px;
+}
+.alert-danger-custom{
+
+}
+
+.alert-danger-custom div {
+    padding: 2px 8px;
+    font-size: 13px;
+    text-transform: capitalize;
 }
 
 .footer{
