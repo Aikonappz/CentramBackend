@@ -22,12 +22,12 @@
 /************VARIABLE CSS***********/
 
 body {
-    font-family: var(--font-family) !important;
-    font-weight: var(--main-font-weight);
-    font-size: var(--main-font-size);
-    color: var(--main-text-color);
-    line-height: var(--main-line-heigh);
-    background: var(--main-bg-color);
+    font-family:'Montserrat', sans-serif;
+    font-weight:400px;
+    font-size:16px;
+    color: #222830;
+    line-height:25px;
+    background: #fff;
     letter-spacing: 0.4px;
     margin: 0px;
     padding: 0px;
@@ -78,7 +78,7 @@ h6 {
     font-size: 20px;
     color: #0d141e;
     line-height: 30px;
-    font-family:var(--font-title) !important;
+    font-family:'Khand', sans-serif;
 }
 
 .h1,
@@ -97,7 +97,7 @@ p {
     color: #2e2e2e;
     font-size: 16px;
     line-height: 26px;
-    font-family: var(--font-family);
+   font-family:'Montserrat', sans-serif;
 }
 
 b,
@@ -150,7 +150,7 @@ div#recaptcha1 {
     color: #6a6a6a;
     line-height: 30px;
     padding-bottom: 40px;
-    font-family: var(--font-rubik);
+    font-family:'Montserrat', sans-serif;
 }
 
 .font-bold {
@@ -270,7 +270,7 @@ header.top-header{
 width: 100%;
     display: inline-block;
     vertical-align: top;
-  
+  background-color: #fff;
   
     z-index: 9999;
     padding:10px 0px; 
@@ -280,7 +280,7 @@ header.top-header .logo{
 }
 .nav {
 
-    font-family: var(--font-title);
+    font-family:'Khand', sans-serif;
       
         align-self: center;
 }
@@ -568,7 +568,7 @@ color: #fff;
 
 }
 .counter strong{
-font-family: var(--font-title);
+    font-family: "Khand", sans-serif;
 font-size: 60px;
 
 }
