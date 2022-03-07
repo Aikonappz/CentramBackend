@@ -3,6 +3,9 @@ package com.centram.core.repository;
 
 import com.centram.common.vo.CategoryLocationVO;
 import com.centram.domain.Module;
+import com.centram.domain.enumarator.LicenseType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +16,10 @@ import java.util.List;
 
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
+
+    @Query("select m from Module m where m.licenseType = (:licenseType)")
+    Page<Module> findAll(@Param("licenseType") Integer licenseType, Pageable pageable);
+
     @Query("select m from Module m where m.appModule = false and m.parentModuleId is null")
     List<Module> getCategories();
 

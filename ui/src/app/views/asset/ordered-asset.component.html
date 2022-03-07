@@ -33,19 +33,15 @@
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="orderNo">Order Number</label>
-                                        <input type="text" formControlName="orderNo" ngModel id="orderNo" name="orderNo"
+                                        <input type="text" formControlName="orderNo" id="orderNo" name="orderNo"
                                             class="form-control" placeholder="Incident Number"
                                             aria-label="Order Number">
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="status">Approval Status</label>
-                                        <select class="form-control" formControlName="status" ngModel id="status"
-                                            name="status">
-                                            <option value="">-- Select Approval Status--</option>
-                                            <option value="PENDING">Approval Pending</option>
-                                            <option value="PARTIALLY_APPROVED">Partially Approved</option>
-                                            <option value="APPROVED">Fully Approved</option>
-                                        </select>
+                                        <ng-select [items]="statusList" placeholder="-- Select Approval Status --"
+                                            formControlName="status" id="status" status name="status" bindLabel="label"
+                                            bindValue="id"></ng-select>
                                     </div>
                                     <div class="col"></div>
                                     <div class="col"></div>
@@ -64,9 +60,13 @@
                     <hr *ngIf="hasPermission('SEARCH')" />
                     <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="orderFor">
-                            <th mat-header-cell *matHeaderCellDef>Order For Details</th>
+                            <th mat-header-cell *matHeaderCellDef>Order Details</th>
                             <td mat-cell *matCellDef="let element">
-                                <span [ngClass]="{'badge':true}">{{element.orderNo}}</span><br />
+                                <span [ngClass]="{
+                                    'badge-sla-about-to-breach':element.approvedUser1==false ,
+                                    'badge-closed':element.approvedUser1==true ,
+                                    'badge':true
+                                    }">{{element.orderNo}}</span><br />
                                 <div *ngIf="element.isDepartment==true">
                                     Department: {{element.department?.name}}<br />
                                 </div>
@@ -76,30 +76,9 @@
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="assetDtl">
-                            <th mat-header-cell *matHeaderCellDef>Asset Details</th>
+                            <th mat-header-cell *matHeaderCellDef>Requested Date</th>
                             <td mat-cell *matCellDef="let element">
-                                Asset Type: {{element.assetType}}<br />
-                                Quantity: {{element.quantity}}<br />
-                                Cost: {{element.cost}}<br />
-                                <div *ngIf="element.withinBudget==true">
-                                    With In Budget: Yes
-                                </div>
-                                <div *ngIf="element.withinBudget==false">
-                                    With In Budget: No
-                                </div>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="vendorDtl">
-                            <th mat-header-cell *matHeaderCellDef>Vendor Details</th>
-                            <td mat-cell *matCellDef="let element">
-                                Name: {{element.vendor.name}}<br />
-                                Purchase Type: {{element.purchaseType}}<br />
-                                <div *ngIf="element.existingAgreement==true">
-                                    Existing Agreement: Yes
-                                </div>
-                                <div *ngIf="element.existingAgreement==false">
-                                    Existing Agreement: No
-                                </div>
+                                {{formatDateTime(element.createdDate)}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="approverDtl">
@@ -119,6 +98,24 @@
                                     }">
                                     {{element.approverUser2.firstName}} {{element.approverUser2.lastName}}
                                 </span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef> Action </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="btn-group" dropdown>
+                                    <button dropdownToggle type="button"
+                                        class="btn btn-primary dropdown-toggle">Actions<span
+                                            class="caret"></span></button>
+                                    <ul *dropdownMenu class="dropdown-menu" role="menu">
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" (click)="view(element)"
+                                                *ngIf="hasPermission('READ')" href="javascript:void(0);">
+                                                <i class="icon-eye"></i> View
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </td>
                         </ng-container>
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

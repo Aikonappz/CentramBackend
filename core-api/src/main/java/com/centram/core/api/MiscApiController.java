@@ -116,8 +116,11 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Module>> getModules(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<Module>> getModules(
+            @NotNull @ApiParam(value = "License Type", required = false) @Valid @RequestParam(value = "licenseType", required = false) String licenseType,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Asset Models", nickname = "getAssetModels", notes = "Get all Asset Models", response = PaginatedList.class, tags = {"Misc",})

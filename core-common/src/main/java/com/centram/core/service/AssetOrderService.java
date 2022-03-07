@@ -9,6 +9,7 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AssetOrderRepository;
 import com.centram.domain.AssetOrder;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.PurchaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static com.centram.common.utility.Utility.orderNo;
@@ -83,6 +86,16 @@ public class AssetOrderService {
             assetOrder.setOrderNo(orderNo(outboundAssetReqPrefix));
             assetOrder.setRaisedUser(new User(userService.getUserById(loggedInUser.getUserId())));
             assetOrder.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+        }
+        if (assetOrder.getPurchaseType() == PurchaseType.RENTED) {
+            ZonedDateTime rentStartAt = ZonedDateTime.of(assetOrder.getRentStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
+            assetOrder.setRentStartAt(rentStartAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+            ZonedDateTime rentEndAt = ZonedDateTime.of(assetOrder.getRentEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
+            assetOrder.setRentEndAt(rentEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+        }
+        if (!assetOrder.getExistingAgreement()) {
+            ZonedDateTime agreementEndAt = ZonedDateTime.of(assetOrder.getAgreementEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
+            assetOrder.setAgreementEndAt(agreementEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
         }
         assetOrder = assetOrderRepository.save(assetOrder);
         miscService.sendOutBoundAssetUpdateEmail(assetOrder);

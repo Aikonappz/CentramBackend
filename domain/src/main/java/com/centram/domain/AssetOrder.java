@@ -2,6 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.domain.enumarator.AssetType;
+import com.centram.domain.enumarator.ProductCategory;
 import com.centram.domain.enumarator.PurchaseType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 /**
  * Asset order
@@ -33,6 +35,7 @@ import java.math.BigInteger;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @Table(name = "asset_order",
+        uniqueConstraints = @UniqueConstraint(name = "ast_ord_no_org_constraint", columnNames = {"order_no", "organisation_id"}),
         indexes = {
                 @Index(name = "ast_ord_org_indx", columnList = "organisation_id", unique = false)
         }
@@ -50,7 +53,7 @@ public class AssetOrder extends BaseEntity implements Serializable {
     private BigInteger id;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "order_no", updatable = false, insertable = true, nullable = false, columnDefinition = "varchar(255) default null")
+    @Column(name = "order_no", updatable = false, insertable = true, nullable = false, columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String orderNo;
 
@@ -63,7 +66,7 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @Valid
     @NotNull
     @OneToOne
-    @JoinColumn(name = "location_id", nullable = true, updatable = false, insertable = false, referencedColumnName = "id")
+    @JoinColumn(name = "location_id", nullable = true, referencedColumnName = "id")
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Location location;
 
@@ -78,10 +81,23 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @ApiModelProperty(required = true, value = "")
     @NotNull
     @Valid
+    @Column(name = "product_category")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private ProductCategory productCategory;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
     @Column(name = "asset_type")
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private AssetType assetType;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "model", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private String model;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "quantity", nullable = true)
@@ -89,14 +105,19 @@ public class AssetOrder extends BaseEntity implements Serializable {
     private Integer quantity;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "cost", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private Double cost;
-
-    @ApiModelProperty(required = true, value = "")
     @Column(name = "within_budget", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean withinBudget = false;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "limit_amount", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Double limitAmount;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "extra_amount", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Double extraAmount;
 
     @ApiModelProperty(required = true, value = "")
     @Valid
@@ -135,19 +156,6 @@ public class AssetOrder extends BaseEntity implements Serializable {
     private String approverUser2Comment;
 
     @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Valid
-    @Column(name = "purchase_type")
-    @Enumerated(EnumType.ORDINAL)
-    @JsonView(Views.BasicView.class)
-    private PurchaseType purchaseType;
-
-    @ApiModelProperty(required = true, value = "")
-    @Column(name = "existing_agreement", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private Boolean existingAgreement = false;
-
-    @ApiModelProperty(required = true, value = "")
     @Valid
     @NotNull
     @OneToOne
@@ -156,9 +164,29 @@ public class AssetOrder extends BaseEntity implements Serializable {
     private Vendor vendor;
 
     @ApiModelProperty(required = true, value = "")
-    @Column(name = "comment", nullable = true, columnDefinition = "varchar(2000) not null")
+    @Column(name = "existing_agreement", nullable = true)
     @JsonView(Views.BasicView.class)
-    private String comment;
+    private Boolean existingAgreement = false;
+
+    @Column(name = "agreement_end_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime agreementEndAt;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "purchase_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private PurchaseType purchaseType;
+
+    @Column(name = "rent_start_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime rentStartAt;
+
+    @Column(name = "rent_end_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime rentEndAt;
 
     @ApiModelProperty(required = true, value = "")
     @Valid

@@ -68,4 +68,14 @@ public class Module implements Serializable {
     @ApiModelProperty(required = false, value = "")
     @Column(name = "customer_module_name")
     private String customerModuleName;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "generate_asset_no")
+    private Boolean generateAssetNo;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "require_approval")
+    private Boolean requireApproval;
 }

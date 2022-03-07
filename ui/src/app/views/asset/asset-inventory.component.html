@@ -50,48 +50,36 @@
                                 <div class="row">
                                     <div class="col">
                                         <label class="form-col-form-label" for="productCategory">Product
-                                            Type</label>
-                                        <select class="form-control" #productCategory
-                                            (change)="populateChildValues($event.target.value)"
-                                            formControlName="productCategory" ngModel id="productCategory"
-                                            name="productCategory">
-                                            <option value="">-- Select Product Type --</option>
-                                            <option *ngFor="let e of productTypes" value="{{e}}">{{e}}</option>
-                                        </select>
+                                            Category</label>
+                                        <ng-select [items]="productTypes" #productCategory
+                                            (change)="populateChildValues($event)"
+                                            placeholder="-- Select Product Category --" formControlName="productCategory"
+                                            id="productCategory" name="productCategory" bindLabel="label"
+                                            bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="assetType">Asset
-                                            Type
+                                            Category
                                         </label>
-                                        <select class="form-control" #assetType
-                                            (change)="populateAssetModels($event.target.value)"
-                                            formControlName="assetType" ngModel id="assetType" name="assetType">
-                                            <option value="">-- Select Asset Type --</option>
-                                            <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
-                                        </select>
+                                        <ng-select [items]="assetList" placeholder="-- Select Asset Category --"
+                                            formControlName="assetType" id="assetType" name="assetType"
+                                            bindLabel="label" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label" for="modelNo">Model
-                                            No</label>
-                                        <select class="form-control" formControlName="modelNo" ngModel id="modelNo"
-                                            name="modelNo">
-                                            <option value="">-- Select Model No --</option>
-                                            <option *ngFor="let e of modelList" value="{{e}}">{{e}}</option>
-                                        </select>
+                                        <label class="form-col-form-label" for="modelNo">Model</label>
+                                        <input type="text" formControlName="modelNo" placeholder="Model No."
+                                            id="modelNo" name="modelNo" class="form-control">
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="serialNumber">Serial No</label>
                                         <input type="text" formControlName="serialNumber" placeholder="Serial No."
-                                            ngModel id="serialNumber" name="serialNumber" class="form-control">
+                                            id="serialNumber" name="serialNumber" class="form-control">
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="available">Available?</label>
-                                        <select class="form-control" formControlName="available" ngModel id="available"
-                                            name="available">
-                                            <option value="">-- Select --</option>
-                                            <option value="1">Yes</option>
-                                            <option value="0">No</option>
-                                        </select>
+                                        <ng-select [items]="booleanList" placeholder="-- Select --"
+                                            formControlName="available" id="available" name="available"
+                                            bindLabel="label" bindValue="id"></ng-select>
                                     </div>
                                 </div>
                             </div>
@@ -107,39 +95,28 @@
                     </div>
                     <hr *ngIf="hasPermission('SEARCH')" />
                     <table mat-table [dataSource]="datasource">
-                        <ng-container matColumnDef="assetDtl">
-                            <th mat-header-cell *matHeaderCellDef>Asset Details</th>
+                        <ng-container matColumnDef="productType">
+                            <th mat-header-cell *matHeaderCellDef>Product Category</th>
                             <td mat-cell *matCellDef="let element">
-                                <span [ngClass]="{'badge':true}">{{element.serialNo}}</span><br />
-                                Product Type : {{element.productCategory}}<br />
-                                Asset Type : {{element.assetType}}<br />
-                                Model No : {{element.modelNo}}<br />
-                                Under Warranty: {{element.isUnderWarranty==true? 'YES' : 'NO'}}<br />
-                                Warranty Expired Date: {{formatDateTime(element.warrantyExpiredAt)}}<br />
-                                Available : {{element.isAvailable==true? 'YES' : 'NO'}}
+                                {{element.productCategory}}
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="locdept">
-                            <th mat-header-cell *matHeaderCellDef>Asset Details</th>
+                        <ng-container matColumnDef="serialNo">
+                            <th mat-header-cell *matHeaderCellDef>Serial No.</th>
                             <td mat-cell *matCellDef="let element">
-                                <div *ngIf="element.isDepartment==true">
-                                    Department: {{element.department?.name}}<br />
-                                </div>
-                                <div *ngIf="element.isDepartment==false">
-                                    Organization: {{element.location?.officeName}}<br />
-                                </div>
-                                Raised For Location: {{element.raisedForLocation?.name}}<br />
+                                <span [ngClass]="{'badge':true}">{{element.serialNo}}</span>
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="vendorDtl">
-                            <th mat-header-cell *matHeaderCellDef>Vendor Details</th>
+                        <ng-container matColumnDef="assetType">
+                            <th mat-header-cell *matHeaderCellDef>Asset Category</th>
                             <td mat-cell *matCellDef="let element">
-                                Name: {{element.vendor.name}}<br />
-                                Purchase Type: {{element.purchaseType}}<br />
-                                <div *ngIf="element.purchaseType=='RENTED'">
-                                    Rental Start Date: {{formatDateTime(element.rentalStartAt)}}<br />
-                                    Rental End Date: {{formatDateTime(element.rentalEndAt)}}<br />
-                                </div>
+                                Asset Category : {{element.assetType}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="available">
+                            <th mat-header-cell *matHeaderCellDef>Availability Status</th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.isAvailable==true? 'YES' : 'NO'}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">
@@ -150,18 +127,12 @@
                                         class="btn btn-primary dropdown-toggle">Actions<span
                                             class="caret"></span></button>
                                     <ul *dropdownMenu class="dropdown-menu" role="menu">
-                                        <!-- <li role="menuitem">
+                                        <li role="menuitem">
                                             <a class="dropdown-item" (click)="view(element)"
                                                 *ngIf="hasPermission('READ')" href="javascript:void(0);">
                                                 <i class="icon-eye"></i> View
                                             </a>
-                                        </li> -->
-                                        <!-- <li role="menuitem">
-                                            <a class="dropdown-item" (click)="updateStatus(element)"
-                                                *ngIf="hasPermission('WRITE')" href="javascript:void(0);">
-                                                <i class="icon-ban"></i> Change Status
-                                            </a>
-                                        </li> -->
+                                        </li>
                                         <li role="menuitem">
                                             <a class="dropdown-item" (click)="edit(element)"
                                                 *ngIf="hasPermission('WRITE')" href="javascript:void(0);">

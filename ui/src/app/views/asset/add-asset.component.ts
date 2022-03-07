@@ -31,10 +31,10 @@ export class AddAssetComponent implements OnInit {
   vendorList: any[] = [];
   purchaseTypeList: any[] = [];
   asset: Asset;
-  assetList: Set<string> = new Set<string>();
-  modelList: Set<string> = new Set<string>();
+  assetList: any[] = [];
   assetModelList: any[] = [];
-  productTypes: Set<string> = new Set<string>();
+  productTypes: any[] = [];
+  booleanList: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -59,19 +59,31 @@ export class AddAssetComponent implements OnInit {
       .assetModelsService()
       .subscribe((data: any) => {
         this.assetModelList = data;
-        for (let k in data) {
-          if (data[k].status == "ACTIVE")
-            this.productTypes.add(data[k].productCategory);
+        this.productTypes = [];
+        let productCategories = new Set<string>();
+        if (this.assetModelList.length > 0) {
+          for (let k in data) {
+            if (data[k].status == "ACTIVE")
+              productCategories.add(data[k].productCategory);
+          }
+          for (var i = productCategories.values(), val = null; val = i.next().value;) {
+            this.productTypes.push({ id: val, label: val });
+          }
         }
       });
-    this.purchaseTypeList = Object.values(PurchaseType)
+    this.booleanList.push({ id: 0, label: 'No' });
+    this.booleanList.push({ id: 1, label: 'Yes' });
+    let purchaseTypeList = Object.values(PurchaseType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
+    for (let k in purchaseTypeList) {
+      this.purchaseTypeList.push({ id: purchaseTypeList[k], label: purchaseTypeList[k] });
+    }
     this.angForm = this.fb.group({
-      productCategory: new FormControl('', [
+      productCategory: new FormControl(null, [
         Validators.required,
       ]),
-      assetType: new FormControl('', [
+      assetType: new FormControl(null, [
         Validators.required,
       ]),
       modelNo: new FormControl('', [
@@ -81,35 +93,39 @@ export class AddAssetComponent implements OnInit {
         //Validators.required,
         Validators.maxLength(255),
       ]),
-      isDepartment: new FormControl('', [
+      isDepartment: new FormControl(null, [
         Validators.required,
       ]),
-      department: new FormControl('', [
+      department: new FormControl(null, [
       ]),
-      location: new FormControl('', [
+      location: new FormControl(null, [
       ]),
-      raisedForLocation: new FormControl('', [
+      forLocation: new FormControl(null, [
         Validators.required,
       ]),
-      isUnderWarranty: new FormControl('', [
+      raisedForLocation: new FormControl(null, [
+      ]),
+      isUnderWarranty: new FormControl(null, [
         Validators.required,
       ]),
       warrantyExpiredAt: new FormControl('', [
         Validators.required,
       ]),
-      purchaseType: new FormControl('', [
+      purchaseType: new FormControl(null, [
         Validators.required,
       ]),
       rentalStartAt: new FormControl('', [
       ]),
       rentalEndAt: new FormControl('', [
       ]),
-      vendor: new FormControl('', [
+      vendor: new FormControl(null, [
         Validators.required,
       ]),
-      comment: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(255),
+      vendorName: new FormControl('', [
+      ]),
+      vendorEmail: new FormControl('', [
+      ]),
+      vendorContactNo: new FormControl('', [
       ]),
     }, {
       validators: this.customValidations(),
@@ -119,74 +135,11 @@ export class AddAssetComponent implements OnInit {
 
   customValidations() {
     return (formGroup: FormGroup) => {
-      if (formGroup.controls['isDepartment'].value == "1") {
-        if (formGroup.controls['department'].value == "") {
-          formGroup.controls['department'].setErrors({ required: true });
-        } else {
-          formGroup.controls['department'].setErrors(null);
-        }
-      } else {
-        formGroup.controls['department'].setErrors(null);
-      }
-      if (formGroup.controls['isDepartment'].value == "0") {
-        if (formGroup.controls['location'].value == "") {
-          formGroup.controls['location'].setErrors({ required: true })
-        } else {
-          formGroup.controls['location'].setErrors(null);
-        }
-      } else {
-        formGroup.controls['location'].setErrors(null);
-      }
-      if (formGroup.controls['purchaseType'].value == "RENTED") {
-        if (formGroup.controls['rentalStartAt'].value == "") {
-          formGroup.controls['rentalStartAt'].setErrors({ required: true })
-        } else {
-          if (formGroup.controls['rentalEndAt'].value != "") {
-            let startD = moment((formGroup.controls['rentalStartAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
-            let endD = moment((formGroup.controls['rentalEndAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
-            if (endD <= startD) {
-              formGroup.controls['rentalEndAt'].setErrors({ mustGreaterThanStartDate: true });
-            } else {
-              formGroup.controls['rentalEndAt'].setErrors(null);
-            }
-          } else {
-            formGroup.controls['rentalStartAt'].setErrors(null);
-          }
-        }
-        if (formGroup.controls['rentalEndAt'].value == "") {
-          formGroup.controls['rentalEndAt'].setErrors({ required: true });
-        } else {
-          if (formGroup.controls['rentalStartAt'].value != "") {
-            let startD = moment((formGroup.controls['rentalStartAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
-            let endD = moment((formGroup.controls['rentalEndAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
-            if (endD <= startD) {
-              formGroup.controls['rentalEndAt'].setErrors({ mustGreaterThanStartDate: true });
-            } else {
-              formGroup.controls['rentalEndAt'].setErrors(null);
-            }
-          } else {
-            formGroup.controls['rentalEndAt'].setErrors(null);
-          }
-        }
-      } else {
-        formGroup.controls['rentalStartAt'].setErrors(null);
-        formGroup.controls['rentalEndAt'].setErrors(null);
-      }
-      if (formGroup.controls['isUnderWarranty'].value == 1) {
-        let warrantyD = moment((formGroup.controls['warrantyExpiredAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
-        if (warrantyD <= new Date()) {
-          formGroup.controls['warrantyExpiredAt'].setErrors({ mustGreaterThanStartDate: true });
-        } else {
-          formGroup.controls['warrantyExpiredAt'].setErrors(null);
-        }
-      } else {
-        formGroup.controls['rentalStartAt'].setErrors(null);
-      }
+      //serial no validator
       for (let k in this.assetModelList) {
         if (
           this.assetModelList[k].productCategory == formGroup.controls['productCategory'].value &&
-          this.assetModelList[k].assetType == formGroup.controls['assetType'].value &&
-          this.assetModelList[k].modelNo == formGroup.controls['modelNo'].value
+          this.assetModelList[k].assetType == formGroup.controls['assetType'].value
         ) {
           if (this.assetModelList[k].generateAssetNo == false && formGroup.controls['serialNumber'].value == "") {
             formGroup.controls['serialNumber'].setErrors({ required: true });
@@ -199,6 +152,103 @@ export class AddAssetComponent implements OnInit {
         } else {
           continue;
         }
+      }
+      //department/office location validator
+      if (formGroup.controls['isDepartment'].value == "1") {
+        $('#dept-inp').removeClass("d-none");
+        $('#ofc-inp').addClass("d-none");
+        formGroup.controls['location'].setErrors(null);
+        if (formGroup.controls['department'].value == null) {
+          formGroup.controls['department'].setErrors({ required: true });
+        } else {
+          formGroup.controls['department'].setErrors(null);
+        }
+      } else {
+        $('#dept-inp').addClass("d-none");
+        $('#ofc-inp').removeClass("d-none");
+        formGroup.controls['department'].setErrors(null);
+        if (formGroup.controls['location'].value == null) {
+          formGroup.controls['location'].setErrors({ required: true })
+        } else {
+          formGroup.controls['location'].setErrors(null);
+        }
+      }
+      //raisedForLocation location validator
+      if (formGroup.controls['forLocation'].value == "1") {
+        $('#loc-inp').removeClass("d-none");
+        $('#proxy-lic-inp').addClass("d-none");
+        if (formGroup.controls['raisedForLocation'].value == null) {
+          formGroup.controls['raisedForLocation'].setErrors({ required: true });
+        } else {
+          formGroup.controls['raisedForLocation'].setErrors(null);
+        }
+      } else {
+        $('#loc-inp').addClass("d-none");
+        $('#proxy-lic-inp').removeClass("d-none");
+        formGroup.controls['raisedForLocation'].setErrors(null);
+      }
+      //warranty validator
+      if (formGroup.controls['isUnderWarranty'].value == "1") {
+        if (formGroup.controls['warrantyExpiredAt'].value == null || formGroup.controls['warrantyExpiredAt'].value == "") {
+          formGroup.controls['warrantyExpiredAt'].setErrors({ required: true, mustGreaterThanStartDate: false });
+        } else {
+          let warrantyD = moment((formGroup.controls['warrantyExpiredAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+          if (warrantyD <= new Date()) {
+            formGroup.controls['warrantyExpiredAt'].setErrors({ required: false, mustGreaterThanStartDate: true });
+          } else {
+            formGroup.controls['warrantyExpiredAt'].setErrors(null);
+          }
+        }
+      } else {
+        if (formGroup.controls['warrantyExpiredAt'].value == null || formGroup.controls['warrantyExpiredAt'].value == "") {
+          formGroup.controls['warrantyExpiredAt'].setErrors({ required: true, mustGreaterThanStartDate: false });
+        } else {
+          formGroup.controls['warrantyExpiredAt'].setErrors(null);
+        }
+      }
+      //purchaseType validation
+      if (formGroup.controls['purchaseType'].value == "RENTED") {
+        $('.rentalStartAt').removeClass("d-none");
+        $('.rentalEndAt').removeClass("d-none");
+        $('.rentalStartAt-proxy').addClass("d-none");
+        $('.rentalEndAt-proxy').addClass("d-none");
+        if (formGroup.controls['rentalStartAt'].value == "" || formGroup.controls['rentalStartAt'].value == null) {
+          formGroup.controls['rentalStartAt'].setErrors({ required: true })
+        } else {
+          if (formGroup.controls['rentalEndAt'].value != "") {
+            let startD = moment((formGroup.controls['rentalStartAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+            let endD = moment((formGroup.controls['rentalEndAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+            if (endD <= startD) {
+              formGroup.controls['rentalEndAt'].setErrors({ required: false, mustGreaterThanStartDate: true });
+            } else {
+              formGroup.controls['rentalEndAt'].setErrors(null);
+            }
+          } else {
+            formGroup.controls['rentalStartAt'].setErrors(null);
+          }
+        }
+        if (formGroup.controls['rentalEndAt'].value == "" || formGroup.controls['rentalEndAt'].value == null) {
+          formGroup.controls['rentalEndAt'].setErrors({ required: true });
+        } else {
+          if (formGroup.controls['rentalStartAt'].value != "") {
+            let startD = moment((formGroup.controls['rentalStartAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+            let endD = moment((formGroup.controls['rentalEndAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+            if (endD <= startD) {
+              formGroup.controls['rentalEndAt'].setErrors({ required: false, mustGreaterThanStartDate: true });
+            } else {
+              formGroup.controls['rentalEndAt'].setErrors(null);
+            }
+          } else {
+            formGroup.controls['rentalEndAt'].setErrors(null);
+          }
+        }
+      } else {
+        $('.rentalStartAt').addClass("d-none");
+        $('.rentalEndAt').addClass("d-none");
+        $('.rentalStartAt-proxy').removeClass("d-none");
+        $('.rentalEndAt-proxy').removeClass("d-none");
+        formGroup.controls['rentalStartAt'].setErrors(null);
+        formGroup.controls['rentalEndAt'].setErrors(null);
       }
     };
   }
@@ -259,7 +309,7 @@ export class AddAssetComponent implements OnInit {
           }
         });
       this.miscService
-        .vendorsService()
+        .vendorsService({ vendorType: "ASSET" })
         .subscribe((data: any) => {
           let vendors = data.content;
           this.vendorList = [];
@@ -297,7 +347,7 @@ export class AddAssetComponent implements OnInit {
                   }
                 }
                 this.miscService
-                  .vendorsService()
+                  .vendorsService({ vendorType: "ASSET" })
                   .subscribe((data: any) => {
                     let vendors = data.content;
                     this.vendorList = [];
@@ -326,57 +376,42 @@ export class AddAssetComponent implements OnInit {
 
   ngAfterContentInit() {
     $(function () {
-      $('#isDepartment').on('change', function () {
-        if ($(this).val() == 0) {
-          $('#dept-inp').addClass("d-none");
-          $('#loc-inp').removeClass("d-none");
-        } else {
-          $('#dept-inp').removeClass("d-none");
-          $('#loc-inp').addClass("d-none");
-        }
-      });
-      $('#purchaseType').on('change', function () {
-        if ($(this).val() == 'RENTED') {
-          $('.rentalStartAt').removeClass("d-none");
-          $('.rentalEndAt').removeClass("d-none");
-          $('.rentalStartAt-proxy').addClass("d-none");
-          $('.rentalEndAt-proxy').addClass("d-none");
-        } else {
-          $('.rentalStartAt').addClass("d-none");
-          $('.rentalEndAt').addClass("d-none");
-          $('.rentalStartAt-proxy').removeClass("d-none");
-          $('.rentalEndAt-proxy').removeClass("d-none");
-        }
-      });
     });
   }
 
   @ViewChild("productCategory") productCategory;
-  populateChildValues(productCategory: string) {
-    if (productCategory != "") {
-      this.assetList = new Set<string>();
-      this.modelList = new Set<string>();
+  populateChildValues(productCategory) {
+    if (typeof productCategory !== 'undefined') {
+      this.assetList = [];
+      let assetTypes = new Set<string>();
       for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory && this.assetModelList[k].status == "ACTIVE") {
-          this.assetList.add(this.assetModelList[k].assetType);
-          this.modelList.add(this.assetModelList[k].modelNo);
+        if (this.assetModelList[k].productCategory == productCategory.id && this.assetModelList[k].status == "ACTIVE") {
+          assetTypes.add(this.assetModelList[k].assetType);
         }
       }
-      this.angForm.controls['assetType'].setValue("");
-      this.angForm.controls['modelNo'].setValue("");
+      for (var i = assetTypes.values(), val = null; val = i.next().value;) {
+        this.assetList.push({ id: val, label: val });
+      }
+    } else {
+      this.assetList = [];
     }
   }
 
-  @ViewChild("assetType") assetType;
-  populateAssetModels(assetType: string) {
-    if (assetType != "") {
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].assetType == assetType && this.assetModelList[k].status == "ACTIVE") {
-          this.modelList.add(this.assetModelList[k].modelNo);
+  @ViewChild("vendor") vendor;
+  populateVendorDetails(vendor) {
+    if (typeof vendor !== 'undefined') {
+      for (let k in this.vendorList) {
+        if (this.vendorList[k].id == vendor.id) {
+          this.angForm.get('vendorName').setValue(this.vendorList[k].contactName);
+          this.angForm.get('vendorEmail').setValue(this.vendorList[k].contactEmail);
+          this.angForm.get('vendorContactNo').setValue(this.vendorList[k].contactNumber);
+          break;
         }
       }
-      this.angForm.controls['modelNo'].setValue("");
+    } else {
+      this.angForm.get('vendorName').setValue("");
+      this.angForm.get('vendorEmail').setValue("");
+      this.angForm.get('vendorContactNo').setValue("");
     }
   }
 
@@ -450,7 +485,7 @@ export class AddAssetComponent implements OnInit {
         this.angForm.get('productCategory').setValue(this.asset.productCategory);
         this.populateChildValues(this.asset.productCategory);
         this.angForm.get('assetType').setValue(this.asset.assetType);
-        this.populateAssetModels(this.asset.assetType);
+        //this.populateAssetModels(this.asset.assetType);
         this.angForm.get('modelNo').setValue(this.asset.modelNo);
         this.angForm.get('serialNumber').setValue(this.asset.serialNo);
         this.angForm.get('isDepartment').setValue(this.asset.isDepartment ? "1" : "0");

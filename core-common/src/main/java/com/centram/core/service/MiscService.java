@@ -31,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -965,18 +967,37 @@ public class MiscService {
 
     @Async("asyncExecutor")
     public void sendOutBoundAssetUpdateEmail(AssetOrder assetOrder) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ZonedDateTime date = null;
         Map<String, Object> mailValues = new HashMap<String, Object>();
         mailValues.put("ord_no", assetOrder.getOrderNo());
         mailValues.put("dept_name", (assetOrder.getDepartment() != null) ? assetOrder.getDepartment().getName() : "");
         mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getOfficeName() : "");
         mailValues.put("asset_type", assetOrder.getAssetType().name());
+        mailValues.put("product_type", assetOrder.getProductCategory().name());
         mailValues.put("qty", assetOrder.getQuantity());
-        mailValues.put("cost", assetOrder.getCost());
+        mailValues.put("model", assetOrder.getModel());
         mailValues.put("in_budget", assetOrder.getWithinBudget() ? "Yes" : "No");
+        mailValues.put("limit", assetOrder.getLimitAmount());
+        mailValues.put("extra", assetOrder.getExtraAmount());
         mailValues.put("purchase_type", assetOrder.getPurchaseType().name());
         mailValues.put("existing_agreement", assetOrder.getExistingAgreement() ? "Yes" : "No");
+        if (assetOrder.getAgreementEndAt() != null) {
+            date = ZonedDateTime.of(assetOrder.getAgreementEndAt(), ZoneId.of(loggedInUser.getTimeZone()));
+            mailValues.put("agreement_end_date", date.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern(dateFormat)));
+        } else {
+            mailValues.put("agreement_end_date", "");
+        }
+        if (assetOrder.getRentStartAt() != null && assetOrder.getRentEndAt() != null) {
+            date = ZonedDateTime.of(assetOrder.getRentStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
+            mailValues.put("rent_start_date", date.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern(dateFormat)));
+            date = ZonedDateTime.of(assetOrder.getRentEndAt(), ZoneId.of(loggedInUser.getTimeZone()));
+            mailValues.put("rent_end_date", date.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern(dateFormat)));
+        } else {
+            mailValues.put("rent_start_date", "");
+            mailValues.put("rent_end_date", "");
+        }
         mailValues.put("vendor_name", assetOrder.getVendor().getName());
-        mailValues.put("comment", assetOrder.getComment());
         mailValues.put("approver_index", 0);
         mailValues.put("order_id", assetOrder.getId());
         mailValues.put("approver_1", assetOrder.getApproverUser1().getEmail());

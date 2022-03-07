@@ -4,8 +4,10 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
+import { Asset } from '../../model/Asset';
 import { AssetType } from '../../model/enumerator/AssetType';
 import { ProductCategory } from '../../model/enumerator/ProductCategory';
 import { Incident } from '../../model/Incident';
@@ -13,6 +15,7 @@ import { AssetService } from '../../service/AssetService';
 import { AssetDataSource } from '../../service/datasource/AssetDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
+import { ViewAssetDetail } from './model/ViewAssetDetail';
 declare var $: any;
 
 @Component({
@@ -23,22 +26,26 @@ declare var $: any;
 export class AssetInventoryComponent implements OnInit {
   moduleName: string = "MANAGE ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['assetDtl', 'locdept', 'vendorDtl', 'action'];
+  displayedColumns = ['serialNo', 'productType', 'assetType', 'available', 'action'];
   private datasource: AssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   angForm: FormGroup;
   searchedData: Object = {};
-  assetList: Set<string> = new Set<string>();
-  modelList: Set<string> = new Set<string>();
+  assetList: any[] = [];
+  //modelList: Set<string> = new Set<string>();
   assetModelList: any[] = [];
-  productTypes: Set<string> = new Set<string>();
+  productTypes: any[] = [];
+  booleanList: any[] = [];
+  modalRef: BsModalRef;
+
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
     private service: AssetService,
     private miscService: MiscService,
-    private loggedInUserService: LoggedInUserService
+    private loggedInUserService: LoggedInUserService,
+    private modalService: BsModalService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -50,19 +57,28 @@ export class AssetInventoryComponent implements OnInit {
       .assetModelsService()
       .subscribe((data: any) => {
         this.assetModelList = data;
-        for (let k in data) {
-          if (data[k].status == "ACTIVE")
-            this.productTypes.add(data[k].productCategory);
+        this.productTypes = [];
+        let productCategories = new Set<string>();
+        if (this.assetModelList.length > 0) {
+          for (let k in data) {
+            if (data[k].status == "ACTIVE")
+              productCategories.add(data[k].productCategory);
+          }
+          for (var i = productCategories.values(), val = null; val = i.next().value;) {
+            this.productTypes.push({ id: val, label: val });
+          }
         }
       });
+    this.booleanList.push({ id: 0, label: 'No' });
+    this.booleanList.push({ id: 1, label: 'Yes' });
     this.angForm = this.fb.group({
-      productCategory: new FormControl('', [
+      productCategory: new FormControl(null, [
       ]),
-      assetType: new FormControl('', [
+      assetType: new FormControl(null, [
       ]),
-      modelNo: new FormControl(null, [
+      modelNo: new FormControl('', [
       ]),
-      serialNumber: new FormControl(null, [
+      serialNumber: new FormControl('', [
       ]),
       available: new FormControl(null, [
       ]),
@@ -97,7 +113,6 @@ export class AssetInventoryComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
@@ -138,7 +153,7 @@ export class AssetInventoryComponent implements OnInit {
       let modelNo = this.angForm.controls['modelNo'].value;
       let serialNumber = this.angForm.controls['serialNumber'].value;
       let available = this.angForm.controls['available'].value;
-      console.log(productCategory);
+      //console.log(productCategory);
       this.searchedData = {
         "productCategory": productCategory == "" || productCategory == null ? -1 : ProductCategory[productCategory],
         "assetType": assetType == "" || assetType == null ? -1 : AssetType[assetType],
@@ -155,31 +170,18 @@ export class AssetInventoryComponent implements OnInit {
   get f() { return this.angForm.controls; }
 
   @ViewChild("productCategory") productCategory;
-  populateChildValues(productCategory: string) {
-    if (productCategory != "") {
-      this.assetList = new Set<string>();
-      this.modelList = new Set<string>();
+  populateChildValues(productCategory) {
+    if (typeof productCategory !== 'undefined') {
+      this.assetList = [];
+      let assetTypes = new Set<string>();
       for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory && this.assetModelList[k].status == "ACTIVE") {
-          this.assetList.add(this.assetModelList[k].assetType);
-          this.modelList.add(this.assetModelList[k].modelNo);
+        if (this.assetModelList[k].productCategory == productCategory.id && this.assetModelList[k].status == "ACTIVE") {
+          assetTypes.add(this.assetModelList[k].assetType);
         }
       }
-      this.angForm.controls['assetType'].setValue("");
-      this.angForm.controls['modelNo'].setValue("");
-    }
-  }
-
-  @ViewChild("assetType") assetType;
-  populateAssetModels(assetType: string) {
-    if (assetType != "") {
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].assetType == assetType && this.assetModelList[k].status == "ACTIVE") {
-          this.modelList.add(this.assetModelList[k].modelNo);
-        }
+      for (var i = assetTypes.values(), val = null; val = i.next().value;) {
+        this.assetList.push({ id: val, label: val });
       }
-      this.angForm.controls['modelNo'].setValue("");
     }
   }
 
@@ -195,6 +197,20 @@ export class AssetInventoryComponent implements OnInit {
           alert('Please disable your Pop-up blocker and try again.');
         }
       });
+  }
+
+  view(asset: Asset) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-xl',
+    };
+    const initialState = {
+      element: asset
+    };
+    this.modalRef = this.modalService.show(ViewAssetDetail, Object.assign({}, config, { initialState }));
   }
 
 }

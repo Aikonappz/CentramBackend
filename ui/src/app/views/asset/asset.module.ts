@@ -20,6 +20,8 @@ import { AssetRequestActionComponent, } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 import { AllocateAsset } from './model/AllocateAsset';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ViewAssetOrderDetail } from './model/ViewAssetOrderDetail';
+import { ViewAssetDetail } from './model/ViewAssetDetail';
 
 
 @NgModule({
@@ -34,6 +36,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AssetRequestActionComponent,
     IncommingRequestedAssetComponent,
     AllocateAsset,
+    ViewAssetOrderDetail,
+    ViewAssetDetail,
   ],
   imports: [
     CommonModule,

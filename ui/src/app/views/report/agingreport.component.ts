@@ -82,7 +82,7 @@ export class AgingReportComponent implements OnInit {
         this.priorities = result.content;
       });
 
-    this.miscService.modulesService({ "sort": "name,asc" })
+    this.miscService.modulesService({ licenseType: 'ASSET', "sort": "name,asc" })
       .subscribe((result: any) => {
         this.allModuleList = result.content;
         this.moduleList = [];

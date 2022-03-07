@@ -14,6 +14,7 @@ import { AssetType } from '../../model/enumerator/AssetType';
 import { PurchaseType } from '../../model/enumerator/PurchaseType';
 import { AssetOrder } from '../../model/AssetOrder';
 import { AssetOrderService } from '../../service/AssetOrderService';
+import { ProductCategory } from '../../model/enumerator/ProductCategory';
 declare var $: any;
 
 @Component({
@@ -31,13 +32,18 @@ export class AssetOrderComponent implements OnInit {
   angForm: FormGroup;
   hasAgentPermission: boolean;
   approver1List: any[] = [];
-  approver2List: any[] = [];
   departmentList: any[] = [];
   locationList: any[] = [];
   vendorList: any[] = [];
-  assetList: any[] = [];
+
   purchaseTypeList: any[] = [];
   assetOrder: AssetOrder;
+
+  booleanList: any[] = [];
+  assetList: any[] = [];
+  modelList: Set<any> = new Set<any>();
+  assetModelList: any[] = [];
+  productTypes: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -58,15 +64,38 @@ export class AssetOrderComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.booleanList.push({ id: 0, label: 'No' });
+    this.booleanList.push({ id: 1, label: 'Yes' });
+    this.miscService
+      .assetModelsService()
+      .subscribe((data: any) => {
+        this.assetModelList = data;
+        this.productTypes = [];
+        let productCategories = new Set<string>();
+        if (this.assetModelList.length > 0) {
+          for (let k in data) {
+            if (data[k].status == "ACTIVE")
+              productCategories.add(data[k].productCategory);
+          }
+          for (var i = productCategories.values(), val = null; val = i.next().value;) {
+            this.productTypes.push({ id: val, label: val });
+          }
+        }
+      });
+    this.purchaseTypeList.push({ id: 'RENTED', label: 'RENTED' });
+    this.purchaseTypeList.push({ id: 'OWNED', label: 'OWNED' });
     this.angForm = this.fb.group({
-      isDepartment: new FormControl('', [
+      isDepartment: new FormControl(null, [
         Validators.required,
       ]),
-      department: new FormControl('', [
+      department: new FormControl(null, [
       ]),
-      location: new FormControl('', [
+      location: new FormControl(null, [
       ]),
-      assetType: new FormControl('', [
+      productCategory: new FormControl(null, [
+        Validators.required,
+      ]),
+      assetType: new FormControl(null, [
         Validators.required,
       ]),
       quantity: new FormControl('', [
@@ -74,32 +103,49 @@ export class AssetOrderComponent implements OnInit {
         Validators.pattern("^[0-9]*$"),
         Validators.maxLength(4),
       ]),
-      cost: new FormControl('', [
-        Validators.required,
-        Validators.pattern(/^\d+(\.\d{1,2})?$/),
-        Validators.maxLength(10),
-      ]),
-      withinBudget: new FormControl('', [
-        Validators.required,
-      ]),
-      approverUser1: new FormControl('', [
-        Validators.required,
-      ]),
-      approverUser2: new FormControl('', [
-        Validators.required,
-      ]),
-      purchaseType: new FormControl('', [
-        Validators.required,
-      ]),
-      existingAgreement: new FormControl('', [
-        Validators.required,
-      ]),
-      vendor: new FormControl('', [
-        Validators.required,
-      ]),
-      comment: new FormControl('', [
+      modelNo: new FormControl('', [
         Validators.required,
         Validators.maxLength(255),
+      ]),
+      limitAmount: new FormControl('', [
+      ]),
+      extraAmount: new FormControl('', [
+      ]),
+      withinBudget: new FormControl(null, [
+        Validators.required,
+      ]),
+      vendor: new FormControl(null, [
+        Validators.required,
+      ]),
+      existingAgreement: new FormControl(null, [
+      ]),
+      agreementEndAt: new FormControl('', [
+        Validators.required,
+      ]),
+      purchaseType: new FormControl(null, [
+        Validators.required,
+      ]),
+      rentStartAt: new FormControl('', [
+      ]),
+      rentEndAt: new FormControl('', [
+      ]),
+      approverUser1: new FormControl(null, [
+        Validators.required,
+      ]),
+      approver1Name: new FormControl('', [
+      ]),
+      approver1Email: new FormControl('', [
+      ]),
+      approver1contact: new FormControl('', [
+      ]),
+      approverUser2: new FormControl(null, [
+        Validators.required,
+      ]),
+      approver2Name: new FormControl('', [
+      ]),
+      approver2Email: new FormControl('', [
+      ]),
+      approver2contact: new FormControl('', [
       ]),
     }, {
       validators: this.customValidations(),
@@ -107,24 +153,103 @@ export class AssetOrderComponent implements OnInit {
     this.assetOrder = new AssetOrder();
   }
 
+  getToday(): string {
+    return new Date().toISOString().split('T')[0]
+  }
+
   customValidations() {
     return (formGroup: FormGroup) => {
-      if (formGroup.controls['isDepartment'].value == "1") {
-        if (formGroup.controls['department'].value == "") {
-          formGroup.controls['department'].setErrors({ required: true });
+      if (formGroup.controls['existingAgreement'].value == null) {
+        formGroup.controls['existingAgreement'].setErrors({ required: true, notValidAgreement: false });
+      } else {
+        if (formGroup.controls['existingAgreement'].value == '0') {
+          formGroup.controls['existingAgreement'].setErrors({ required: false, notValidAgreement: true });
         } else {
-          formGroup.controls['department'].setErrors(null);
+          formGroup.controls['existingAgreement'].setErrors(null);
+        }
+      }
+      if (formGroup.controls['purchaseType'].value == "RENTED") {
+        $('.proxy-rent').addClass("d-none");
+        $('.rent').removeClass("d-none");
+        if (formGroup.controls['rentStartAt'].value == "" || formGroup.controls['rentStartAt'].value == null) {
+          formGroup.controls['rentStartAt'].setErrors({ required: true, mustGreaterThanStartDate: false });
+        } else {
+          formGroup.controls['rentStartAt'].setErrors(null);
+        }
+        if (formGroup.controls['rentEndAt'].value == "" || formGroup.controls['rentEndAt'].value == null) {
+          formGroup.controls['rentEndAt'].setErrors({ required: true, mustGreaterThanStartDate: false });
+        } else {
+          if (formGroup.controls['rentStartAt'].value != "" && formGroup.controls['rentStartAt'].value != null) {
+            let startD = moment((formGroup.controls['rentStartAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+            let endD = moment((formGroup.controls['rentEndAt'].value), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate();
+            if (endD <= startD) {
+              formGroup.controls['rentEndAt'].setErrors({ required: false, mustGreaterThanStartDate: true });
+            } else {
+              formGroup.controls['rentEndAt'].setErrors(null);
+            }
+          } else {
+            formGroup.controls['rentEndAt'].setErrors(null);
+          }
         }
       } else {
-        formGroup.controls['department'].setErrors(null);
+        $('.proxy-rent').removeClass("d-none");
+        $('.rent').addClass("d-none");
+        formGroup.controls['rentStartAt'].setErrors(null);
+        formGroup.controls['rentEndAt'].setErrors(null);
       }
-      if (formGroup.controls['isDepartment'].value == "0") {
-        if (formGroup.controls['location'].value == "") {
+      if (formGroup.controls['withinBudget'].value == "0") {
+        if (formGroup.controls['limitAmount'].value == "" || formGroup.controls['limitAmount'].value == null) {
+          formGroup.controls['limitAmount'].setErrors({ required: true, maxlength: false, pattern: false });
+        } else {
+          if (formGroup.controls['limitAmount'].value.length > 10) {
+            formGroup.controls['limitAmount'].setErrors({ required: false, maxlength: true, pattern: false });
+          } else {
+            if (/^\d+(\.\d{1,2})?$/.test(formGroup.controls['limitAmount'].value)) {
+              formGroup.controls['limitAmount'].setErrors(null);
+            } else {
+              formGroup.controls['limitAmount'].setErrors({ required: false, maxlength: false, pattern: true });
+            }
+          }
+        }
+        if (formGroup.controls['extraAmount'].value == "" || formGroup.controls['extraAmount'].value == null) {
+          formGroup.controls['extraAmount'].setErrors({ required: true, maxlength: false });
+        } else {
+          if (formGroup.controls['extraAmount'].value.length > 10) {
+            formGroup.controls['extraAmount'].setErrors({ required: false, maxlength: true });
+          } else {
+            if (/^\d+(\.\d{1,2})?$/.test(formGroup.controls['extraAmount'].value)) {
+              formGroup.controls['extraAmount'].setErrors(null);
+            } else {
+              formGroup.controls['extraAmount'].setErrors({ required: false, maxlength: false, pattern: true });
+            }
+          }
+        }
+        $('.proxy-col').addClass("d-none");
+        $('.extraAmount').removeClass("d-none");
+        $('.limitAmount').removeClass("d-none");
+      } else {
+        $('.extraAmount').addClass("d-none");
+        $('.limitAmount').addClass("d-none");
+        $('.proxy-col').removeClass("d-none");
+        formGroup.controls['extraAmount'].setErrors(null);
+        formGroup.controls['limitAmount'].setErrors(null);
+      }
+      if (formGroup.controls['isDepartment'].value == "1") {
+        if (formGroup.controls['department'].value == "" || formGroup.controls['department'].value == null) {
+          formGroup.controls['department'].setErrors({ required: true });
+        } else {
+          formGroup.controls['location'].setErrors(null);
+          formGroup.controls['department'].setErrors(null);
+        }
+      } else if (formGroup.controls['isDepartment'].value == "0") {
+        if (formGroup.controls['location'].value == "" || formGroup.controls['location'].value == null) {
           formGroup.controls['location'].setErrors({ required: true })
         } else {
+          formGroup.controls['department'].setErrors(null);
           formGroup.controls['location'].setErrors(null);
         }
       } else {
+        formGroup.controls['department'].setErrors(null);
         formGroup.controls['location'].setErrors(null);
       }
     };
@@ -156,12 +281,6 @@ export class AssetOrderComponent implements OnInit {
     this.route.params.subscribe(params => {
       //console.log(this.route.snapshot.paramMap.get('referer'));
     });
-    this.assetList = Object.values(AssetType)
-      .filter((value) => typeof value === "string")
-      .map((value) => (value as string));
-    this.purchaseTypeList = Object.values(PurchaseType)
-      .filter((value) => typeof value === "string")
-      .map((value) => (value as string));
     if (!this.route.snapshot.paramMap.has('id')) {
       this.miscService
         .departmentsService()
@@ -192,7 +311,7 @@ export class AssetOrderComponent implements OnInit {
           }
         });
       this.miscService
-        .vendorsService()
+        .vendorsService({ vendorType: "ASSET" })
         .subscribe((data: any) => {
           let vendors = data.content;
           this.vendorList = [];
@@ -207,10 +326,10 @@ export class AssetOrderComponent implements OnInit {
         .getUsersService({ size: AppUtility.MAX_PAGE_SIZE })
         .subscribe((data: any) => {
           let users = data.content;
+          this.approver1List = [];
           for (let k in users) {
             if (users[k].roleNames.includes('ORG_OUTBOUND_ASSET_APPROVER')) {
               this.approver1List.push(users[k]);
-              this.approver2List.push(users[k]);
             }
           }
         });
@@ -222,22 +341,10 @@ export class AssetOrderComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    // this.angForm.get('isDepartment').setValue('1', { onlySelf: true });
-    // this.angForm.get('existingAgreement').setValue('1', { onlySelf: true });
-    // this.angForm.get('withinBudget').setValue('1', { onlySelf: true });
   }
 
   ngAfterContentInit() {
     $(function () {
-      $('#isDepartment').on('change', function () {
-        if ($(this).val() == 1) {
-          $('#dept-inp').removeClass("d-none");
-          $('#loc-inp').addClass("d-none");
-        } else {
-          $('#dept-inp').addClass("d-none");
-          $('#loc-inp').removeClass("d-none");
-        }
-      });
     });
   }
 
@@ -261,30 +368,47 @@ export class AssetOrderComponent implements OnInit {
           }
         }
       }
+      this.assetOrder.productCategory = ProductCategory[this.angForm.controls['productCategory'].value];
       this.assetOrder.assetType = AssetType[this.angForm.controls['assetType'].value];
       this.assetOrder.quantity = this.angForm.controls['quantity'].value;
-      this.assetOrder.cost = this.angForm.controls['cost'].value;
+      this.assetOrder.model = this.angForm.controls['modelNo'].value;
       this.assetOrder.withinBudget = this.angForm.controls['withinBudget'].value == 1 ? true : false;
+      if (!this.assetOrder.withinBudget) {
+        this.assetOrder.limitAmount = this.angForm.controls['limitAmount'].value;
+        this.assetOrder.extraAmount = this.angForm.controls['extraAmount'].value;
+      } else {
+        this.assetOrder.limitAmount = null;
+        this.assetOrder.extraAmount = null;
+      }
       for (let k in this.approver1List) {
         if (this.angForm.controls['approverUser1'].value == this.approver1List[k].id) {
           this.assetOrder.approverUser1 = { id: this.approver1List[k].id, firstName: this.approver1List[k].firstName, lastName: this.approver1List[k].lastName, email: this.approver1List[k].email, version: this.approver1List[k].version };
         }
       }
-      for (let k in this.approver2List) {
-        if (this.angForm.controls['approverUser2'].value == this.approver2List[k].id) {
-          this.assetOrder.approverUser2 = { id: this.approver2List[k].id, firstName: this.approver2List[k].firstName, lastName: this.approver2List[k].lastName, email: this.approver1List[k].email, version: this.approver2List[k].version };
+      for (let k in this.approver1List) {
+        if (this.angForm.controls['approverUser2'].value == this.approver1List[k].id) {
+          this.assetOrder.approverUser2 = { id: this.approver1List[k].id, firstName: this.approver1List[k].firstName, lastName: this.approver1List[k].lastName, email: this.approver1List[k].email, version: this.approver1List[k].version };
         }
       }
       this.assetOrder.purchaseType = PurchaseType[this.angForm.controls['purchaseType'].value];
       this.assetOrder.existingAgreement = this.angForm.controls['existingAgreement'].value == 1 ? true : false;
+      if (!this.assetOrder.existingAgreement) {
+        return;
+      } else {
+        this.assetOrder.agreementEndAt = AppUtility.prepareDateToString(moment(this.angForm.controls['agreementEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      }
       for (let k in this.vendorList) {
         if (this.angForm.controls['vendor'].value == this.vendorList[k].id) {
           this.assetOrder.vendor = { id: this.vendorList[k].id, name: this.vendorList[k].name, version: this.vendorList[k].version };
         }
       }
-      this.assetOrder.comment = this.angForm.controls['comment'].value;
-      console.log(JSON.stringify(this.assetOrder));
-      this.callSaveAssetOrderService();
+      if (this.angForm.controls['purchaseType'].value == 'RENTED') {
+        this.assetOrder.rentStartAt = AppUtility.prepareDateToString(moment(this.angForm.controls['rentStartAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+        this.assetOrder.rentEndAt = AppUtility.prepareDateToString(moment(this.angForm.controls['rentEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      }
+      //console.log(AssetType[this.angForm.controls['assetType'].value]);
+      //console.log(JSON.stringify(this.assetOrder));
+      this.callSaveAssetOrderService(this.assetOrder);
     } else {
       console.log("Invalid Form!");
     }
@@ -294,11 +418,78 @@ export class AssetOrderComponent implements OnInit {
     this._location.back();
   }
 
-  callSaveAssetOrderService() {
+  callSaveAssetOrderService(assetOrder: AssetOrder) {
     this.assetOrderService
-      .saveAssetOrder(this.assetOrder)
+      .saveAssetOrder(assetOrder)
       .subscribe((data: any) => {
         this.router.navigate(['/asset/ordered']);
       });
   }
+
+  @ViewChild("isDepartment") isDepartment;
+  isDepartmentChange(isDepartment) {
+    if (typeof isDepartment !== 'undefined') {
+      $(function () {
+        if (isDepartment.id == '0') {
+          $('#dept-inp').addClass("d-none");
+          $('#loc-inp').removeClass("d-none");
+        } else if (isDepartment.id == '1') {
+          $('#dept-inp').removeClass("d-none");
+          $('#loc-inp').addClass("d-none");
+        }
+      });
+    }
+  }
+
+  @ViewChild("productCategory") productCategory;
+  populateChildValues(productCategory) {
+    if (typeof productCategory !== 'undefined') {
+      this.assetList = [];
+      let assetTypes = new Set<string>();
+      for (let k in this.assetModelList) {
+        if (this.assetModelList[k].productCategory == productCategory.id && this.assetModelList[k].status == "ACTIVE") {
+          assetTypes.add(this.assetModelList[k].assetType);
+        }
+      }
+      for (var i = assetTypes.values(), val = null; val = i.next().value;) {
+        this.assetList.push({ id: val, label: val });
+      }
+    }
+  }
+
+  @ViewChild("approverUser1") approverUser1;
+  approverUser1Populate(approverUser1) {
+    if (typeof approverUser1 !== 'undefined') {
+      for (let i in this.approver1List) {
+        if (approverUser1.id == this.approver1List[i].id) {
+          this.angForm.controls['approver1Name'].setValue(this.approver1List[i].fullName);
+          this.angForm.controls['approver1Email'].setValue(this.approver1List[i].email);
+          this.angForm.controls['approver1contact'].setValue(this.approver1List[i].contactNo);
+        }
+      }
+    } else {
+      this.angForm.controls['approver1Name'].setValue("");
+      this.angForm.controls['approver1Email'].setValue("");
+      this.angForm.controls['approver1contact'].setValue("");
+    }
+  }
+
+  @ViewChild("approverUser2") approverUser2;
+  approverUser2Populate(approverUser2) {
+    if (typeof approverUser2 !== 'undefined') {
+      for (let i in this.approver1List) {
+        if (approverUser2.id == this.approver1List[i].id) {
+          this.angForm.controls['approver2Name'].setValue(this.approver1List[i].fullName);
+          this.angForm.controls['approver2Email'].setValue(this.approver1List[i].email);
+          this.angForm.controls['approver2contact'].setValue(this.approver1List[i].contactNo);
+        }
+
+      }
+    } else {
+      this.angForm.controls['approver2Name'].setValue("");
+      this.angForm.controls['approver2Email'].setValue("");
+      this.angForm.controls['approver2contact'].setValue("");
+    }
+  }
+
 }

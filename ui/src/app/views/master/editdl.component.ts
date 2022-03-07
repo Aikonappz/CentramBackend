@@ -8,6 +8,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { DistributionList } from '../../model/DistributionList';
 import { DistributionListModule } from '../../model/DistributionListModule';
+import { LoggedInUser } from '../../model/LoggedInUser';
 declare var $: any;
 
 @Component({
@@ -27,9 +28,9 @@ export class EditDlComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   dl: DistributionList;
-  dlms: DistributionListModule[]=[];
+  dlms: DistributionListModule[] = [];
   angForm: FormGroup;
-
+  loggedInUser: LoggedInUser;
   nameList: any[] = [];
 
   constructor(
@@ -52,6 +53,7 @@ export class EditDlComponent implements OnInit {
     for (let k = 1; k <= 10; k++) {
       this.nameList.push({ id: "P" + k, label: "P" + k });
     }
+    this.loggedInUser = loggedInUserService.getLoggedInUser();
   }
 
   hasPermission(action: string): boolean {
@@ -89,27 +91,41 @@ export class EditDlComponent implements OnInit {
     });
     if (!this.route.snapshot.paramMap.has('id')) {
       this.miscService
-        .modulesService()
+        .modulesService({ licenseType: "" })
         .subscribe((data: any) => {
           this.modules = data.content;
           this.moduleList = [];
           for (let i in this.modules) {
-            if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
-              this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-              this.moduleList.push(this.modules[i]);
+            if (this.loggedInUser.licenseType == 'ALL') {
+              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
+                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+                this.moduleList.push(this.modules[i]);
+              }
+            } else {
+              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null && this.modules[i].licenseType == this.loggedInUser.licenseType) {
+                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+                this.moduleList.push(this.modules[i]);
+              }
             }
           }
         });
     } else {
       this.miscService
-        .modulesService()
+        .modulesService({ licenseType: "" })
         .subscribe((data: any) => {
           this.modules = data.content;
           this.moduleList = [];
           for (let i in this.modules) {
-            if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
-              this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-              this.moduleList.push(this.modules[i]);
+            if (this.loggedInUser.licenseType == 'ALL') {
+              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
+                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+                this.moduleList.push(this.modules[i]);
+              }
+            } else {
+              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null && this.modules[i].licenseType == this.loggedInUser.licenseType) {
+                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+                this.moduleList.push(this.modules[i]);
+              }
             }
           }
           this.newEntity = false;

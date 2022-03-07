@@ -11,51 +11,44 @@
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
             <fieldset class="border p-2">
-              <legend class="w-auto">Product Details</legend>
+              <legend class="w-auto">Primary Details</legend>
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="productCategory">Product
-                    Type</label>
-                  <select class="form-control" #productCategory (change)="populateChildValues($event.target.value)"
-                    formControlName="productCategory" ngModel id="productCategory" name="productCategory">
-                    <option value="">-- Select Product Type --</option>
-                    <option *ngFor="let e of productTypes" value="{{e}}">{{e}}</option>
-                  </select>
+                    Category</label>
+                  <ng-select [items]="productTypes" #productCategory (change)="populateChildValues($event)"
+                    placeholder="-- Select Product Category --" formControlName="productCategory" id="productCategory"
+                    name="productCategory" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.productCategory.touched && f.productCategory.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.productCategory.errors?.required">
-                      Product Type is required!
+                      Product Category is required!
                     </div>
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="assetType">Asset Type
+                  <label class="form-col-form-label required-control-label" for="assetType">Asset Category
                   </label>
-                  <select class="form-control" #assetType (change)="populateAssetModels($event.target.value)"
-                    formControlName="assetType" ngModel id="assetType" name="assetType">
-                    <option value="">-- Select Asset Type --</option>
-                    <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
-                  </select>
+                  <ng-select [items]="assetList" placeholder="-- Select Asset Category --" formControlName="assetType"
+                    id="assetType" name="assetType" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.assetType.errors?.required">
-                      Asset Type is required!
+                      Asset Category is required!
                     </div>
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="modelNo">Model No</label>
-                  <select class="form-control" formControlName="modelNo" ngModel id="modelNo" name="modelNo">
-                    <option value="">-- Select Model No --</option>
-                    <option *ngFor="let e of modelList" value="{{e}}">{{e}}</option>
-                  </select>
+                  <label class="form-col-form-label required-control-label" for="modelNo">Model</label>
+                  <input type="text" formControlName="modelNo" placeholder="Model" id="modelNo" name="modelNo"
+                    class="form-control">
                   <div *ngIf="f.modelNo.touched && f.modelNo.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.modelNo.errors?.required">
-                      Model No is required!
+                      Model is required!
                     </div>
                   </div>
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="serialNumber">Serial No</label>
-                  <input type="text" formControlName="serialNumber" placeholder="Serial No." ngModel id="serialNumber"
+                  <input type="text" formControlName="serialNumber" placeholder="Serial No." id="serialNumber"
                     name="serialNumber" class="form-control">
                   <div *ngIf="f.serialNumber.touched && f.serialNumber.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.serialNumber.errors?.required">
@@ -69,16 +62,13 @@
               </div>
             </fieldset>
             <fieldset class="border p-2">
+              <legend class="w-auto">Reservation Details</legend>
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="isDepartment">For
                     Department?</label>
-                  <select class="form-control" formControlName="isDepartment" ngModel id="isDepartment"
-                    name="isDepartment">
-                    <option value="">-- Select --</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
+                  <ng-select [items]="booleanList" placeholder="-- Select --" formControlName="isDepartment"
+                    id="isDepartment" name="isDepartment" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.isDepartment.touched && f.isDepartment.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.isDepartment.errors?.required">
                       Selection is required!
@@ -87,22 +77,18 @@
                 </div>
                 <div id="dept-inp" class="col">
                   <label class="form-col-form-label" for="department">Department</label>
-                  <select class="form-control" formControlName="department" ngModel id="department" name="department">
-                    <option value="">-- Select Department --</option>
-                    <option *ngFor="let e of departmentList" value="{{e.id}}">{{e.name}}</option>
-                  </select>
+                  <ng-select [items]="departmentList" placeholder="-- Select Department --" formControlName="department"
+                    id="department" name="department" bindLabel="name" bindValue="id"></ng-select>
                   <div *ngIf="f.department.touched && f.department.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.department.errors?.required">
                       Department is required!
                     </div>
                   </div>
                 </div>
-                <div id="loc-inp" class="col d-none">
+                <div id="ofc-inp" class="col d-none">
                   <label class="form-col-form-label" for="location">Organization</label>
-                  <select class="form-control" formControlName="location" ngModel id="location" name="location">
-                    <option value="">-- Select Organization --</option>
-                    <option *ngFor="let e of locationList" value="{{e.id}}">{{e.officeName}}</option>
-                  </select>
+                  <ng-select [items]="locationList" placeholder="-- Select Organization --" formControlName="location"
+                    id="location" name="location" bindLabel="officeName" bindValue="id"></ng-select>
                   <div *ngIf="f.location.touched && f.location.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.location.errors?.required">
                       Organization is required!
@@ -110,34 +96,39 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="raisedForLocation">Require For Location</label>
-                  <select class="form-control" formControlName="raisedForLocation" ngModel id="raisedForLocation"
-                    name="raisedForLocation">
-                    <option value="">-- Select Location --</option>
-                    <option *ngFor="let e of locationList" value="{{e.id}}">{{e.name}}</option>
-                  </select>
-                  <div *ngIf="f.raisedForLocation.touched && f.raisedForLocation.invalid"
-                    class="alert alert-danger-custom">
-                    <div *ngIf="f.raisedForLocation.errors?.required">
+                  <label class="form-col-form-label required-control-label" for="forLocation">For
+                    Location?</label>
+                  <ng-select [items]="booleanList" placeholder="-- Select --" formControlName="forLocation"
+                    id="forLocation" name="forLocation" bindLabel="label" bindValue="id"></ng-select>
+                  <div *ngIf="f.forLocation.touched && f.forLocation.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.forLocation.errors?.required">
                       Selection is required!
                     </div>
                   </div>
                 </div>
-                <div class="col"></div>
+                <div class="col" id="loc-inp">
+                  <label class="form-col-form-label" for="raisedForLocation">Location</label>
+                  <ng-select [items]="locationList" placeholder="-- Select Location --"
+                    formControlName="raisedForLocation" id="raisedForLocation" name="raisedForLocation" bindLabel="name"
+                    bindValue="id"></ng-select>
+                  <div *ngIf="f.raisedForLocation.touched && f.raisedForLocation.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.raisedForLocation.errors?.required">
+                      Location is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col" id="proxy-lic-inp"></div>
               </div>
             </fieldset>
             <fieldset class=" border p-2">
-              <legend class="w-auto">Asset</legend>
+              <legend class="w-auto">Purchase Details</legend>
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="isUnderWarranty">Under
                     Warranty?</label>
-                  <select class="form-control" formControlName="isUnderWarranty" ngModel id="isUnderWarranty"
-                    name="isUnderWarranty">
-                    <option value="">-- Select --</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
+                  <ng-select [items]="booleanList" placeholder="-- Select --" formControlName="isUnderWarranty"
+                    id="isUnderWarranty" name="isUnderWarranty" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.isUnderWarranty.touched && f.isUnderWarranty.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.isUnderWarranty.errors?.required">
                       Selection is required!
@@ -147,9 +138,9 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="warrantyExpiredAt">Warranty Expiry
                     Date</label>
-                  <input type="date" format="DD-MM-YYYY" formControlName="warrantyExpiredAt" ngModel
-                    id="warrantyExpiredAt" name="warrantyExpiredAt" class="form-control"
-                    placeholder="Warranty Expiry Date" aria-label="Warranty Expiry Date">
+                  <input type="date" format="DD-MM-YYYY" formControlName="warrantyExpiredAt" id="warrantyExpiredAt"
+                    name="warrantyExpiredAt" class="form-control" placeholder="Warranty Expiry Date"
+                    aria-label="Warranty Expiry Date">
                   <div *ngIf="f.warrantyExpiredAt.touched && f.warrantyExpiredAt.invalid"
                     class="alert alert-danger-custom">
                     <div *ngIf="f.warrantyExpiredAt.errors?.required">
@@ -162,11 +153,9 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="purchaseType">Purchase Type</label>
-                  <select class="form-control" formControlName="purchaseType" ngModel id="purchaseType"
-                    name="purchaseType">
-                    <option value="">-- Select Purchase Type --</option>
-                    <option *ngFor="let e of purchaseTypeList" value="{{e}}">{{e}}</option>
-                  </select>
+                  <ng-select [items]="purchaseTypeList" placeholder="-- Select Purchase Type --"
+                    formControlName="purchaseType" id="purchaseType" name="purchaseType" bindLabel="label"
+                    bindValue="id"></ng-select>
                   <div *ngIf="f.purchaseType.touched && f.purchaseType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.purchaseType.errors?.required">
                       Purchase Type is required!
@@ -176,7 +165,7 @@
                 <div class="col rentalStartAt d-none">
                   <label class="form-col-form-label required-control-label" for="rentalStartAt">Rental Start
                     Date</label>
-                  <input type="date" format="DD-MM-YYYY" formControlName="rentalStartAt" ngModel id="rentalStartAt"
+                  <input type="date" format="DD-MM-YYYY" formControlName="rentalStartAt" id="rentalStartAt"
                     name="rentalStartAt" class="form-control " placeholder="Rental Start Date"
                     aria-label="Rental Start Date">
                   <div *ngIf="f.rentalStartAt.touched && f.rentalStartAt.invalid" class="alert alert-danger-custom">
@@ -188,7 +177,7 @@
                 <div class="col rentalEndAt d-none">
                   <label class="form-col-form-label required-control-label" for="rentalEndAt">Rental End
                     Date</label>
-                  <input type="date" format="DD-MM-YYYY" formControlName="rentalEndAt" ngModel id="rentalEndAt"
+                  <input type="date" format="DD-MM-YYYY" formControlName="rentalEndAt" id="rentalEndAt"
                     name="rentalEndAt" class="form-control" placeholder="Rental End Date" aria-label="Rental End Date">
                   <div *ngIf="f.rentalEndAt.touched && f.rentalEndAt.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.rentalEndAt.errors?.required">
@@ -202,16 +191,11 @@
                 <div class="col rentalStartAt-proxy"></div>
                 <div class="col rentalEndAt-proxy"></div>
               </div>
-            </fieldset>
-            <fieldset class="border p-2">
-              <legend class="w-auto">Vendor/Approver</legend>
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="vendor">Vendor</label>
-                  <select class="form-control" formControlName="vendor" ngModel id="vendor" name="vendor">
-                    <option value="">-- Select Vendor --</option>
-                    <option *ngFor="let e of vendorList" value="{{e.id}}">{{e.name}}</option>
-                  </select>
+                  <ng-select [items]="vendorList" #vendor (change)="populateVendorDetails($event)" placeholder="-- Select Vendor --" formControlName="vendor" id="vendor"
+                    name="vendor" bindLabel="name" bindValue="id"></ng-select>
                   <div *ngIf="f.vendor.touched && f.vendor.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.vendor.errors?.required">
                       Vendor is required!
@@ -219,28 +203,26 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="comment">Comment</label>
-                  <textarea formControlName="comment" ngModel id="comment" name="comment" rows="4"
-                    class="form-control textarea-non-resizable" placeholder="Comment"></textarea>
-                  <div *ngIf="f.comment.touched && f.comment.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.comment.errors?.required">
-                      Comment is required.
-                    </div>
-                    <div *ngIf="f.comment.errors?.maxlength">
-                      Allowed maxlength exceeds.
-                    </div>
-                  </div>
+                  <label class="form-col-form-label" for="vendorName">Vendor Contact Name</label>
+                  <input type="text" [readonly]="true" formControlName="vendorName" id="vendorName" name="vendorName"
+                    class="form-control">
                 </div>
-                <div class="col"></div>
-                <div class="col"></div>
+                <div class="col">
+                  <label class="form-col-form-label" for="vendorEmail">Vendor Email</label>
+                  <input type="text" [readonly]="true" formControlName="vendorEmail" id="vendorEmail" name="vendorEmail"
+                    class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="vendorContactNo">Vendor Contact No.</label>
+                  <input type="text" [readonly]="true" formControlName="vendorContactNo" id="vendorContactNo"
+                    name="vendorContactNo" class="form-control">
+                </div>
               </div>
             </fieldset>
           </div>
           <div class="card-footer">
             <button *ngIf="hasPermission('WRITE,APPROVE')" [disabled]="!angForm.valid" type="button"
               (click)="formSubmit()" class="btn btn-primary">Submit</button>
-            <!-- <button *ngIf="hasPermission('WRITE,APPROVE')" type="button" (click)="formSubmit()"
-              class="btn btn-primary">Submit</button> -->
             <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
           </div>
         </form>

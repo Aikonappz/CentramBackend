@@ -56,7 +56,7 @@ export class EditVendorComponent implements OnInit {
     this.vendor.status = this.defaultStatus;
     let ticketAllocationTypes = Object.values(TicketAllocationType)
       .filter((value) => typeof value === "string")
-      .map((value) => (value as string));      
+      .map((value) => (value as string));
     for (let k in ticketAllocationTypes) {
       this.ticketAllocationTypes.push({ id: ticketAllocationTypes[k], label: ticketAllocationTypes[k] });
     }
@@ -82,7 +82,7 @@ export class EditVendorComponent implements OnInit {
       this.type = this.route.snapshot.paramMap.get('licenceType');
       if (!this.route.snapshot.paramMap.has('id')) {
         this.miscService
-          .modulesService()
+          .modulesService({ licenseType: this.type.toUpperCase() })
           .subscribe((data: any) => {
             //console.log(JSON.stringify(data.content));
             this.moduleList = [];
@@ -96,7 +96,7 @@ export class EditVendorComponent implements OnInit {
           });
       } else {
         this.miscService
-          .modulesService()
+          .modulesService({ licenseType: this.type.toUpperCase() })
           .subscribe((data: any) => {
             this.modules = data.content;
             this.moduleList = [];
