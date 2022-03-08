@@ -1,4 +1,4 @@
-<header class="top-header">
+<header class="top-header" id="home-container">
   <div class="container">
     <div class="row justify-content-between align-items-center">
       <a href="/" class="logo"><img src="assets/img/logo.png"></a>
@@ -176,7 +176,8 @@
 <footer class="footer">
   <div class="container">
     <div class="row justify-content-center text-center">
-      <a href="/" class="logo-footer"><img src="assets/img/logo.png"></a>
+      <a href="javascript:void(0);" (click)="onClickScroll('home-container')" class="logo-footer"><img
+          src="assets/img/logo.png"></a>
       <ul class="footer-social">
         <li><a target="_blank" href="#"><i class="fa fa-facebook"></i></a></li>
         <li><a target="_blank" href="#"><i class="fa fa-instagram"></i> </a></li>

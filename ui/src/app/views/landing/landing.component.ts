@@ -57,7 +57,8 @@ export class LandingComponent implements OnInit {
   }
 
   onClickScroll(elementId: string): void {
-    this.viewportScroller.scrollToAnchor(elementId);
+    //this.viewportScroller.scrollToAnchor(elementId);
+    document.getElementById(elementId).scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
   }
 
   get f() {
@@ -83,10 +84,7 @@ export class LandingComponent implements OnInit {
         this.requestDemoDTO
       )
       .subscribe((data: CommonResponse) => {
-        //this.router.navigate(['/']);
-        //console.log(data);
         this.angForm.reset();
-        //this.toggleStockAddMode();
       });
   }
 
