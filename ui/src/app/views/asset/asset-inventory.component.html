@@ -12,9 +12,9 @@
                                 <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
                                         class="caret"></span></button>
                                 <ul *dropdownMenu class="dropdown-menu" role="menu">
-                                    <!-- <li role="menuitem">
+                                    <li role="menuitem">
                                         <a *ngIf="hasPermission('WRITE')" class="dropdown-item"
-                                            href="assets/downloads/assets.csv"><i class="icon-arrow-up-circle"></i>
+                                            href="assets/downloads/asset.csv"><i class="icon-arrow-up-circle"></i>
                                             Upload(Template)</a>
                                     </li>
                                     <li role="menuitem">
@@ -22,7 +22,7 @@
                                             href="javascript:void(0);">
                                             <i class="icon-cloud-upload"></i> Upload
                                         </a>
-                                    </li> -->
+                                    </li>
                                     <li role="menuitem">
                                         <a class="dropdown-item" (click)="download()" *ngIf="hasPermission('READ')"
                                             href="javascript:void(0);">
@@ -53,9 +53,9 @@
                                             Category</label>
                                         <ng-select [items]="productTypes" #productCategory
                                             (change)="populateChildValues($event)"
-                                            placeholder="-- Select Product Category --" formControlName="productCategory"
-                                            id="productCategory" name="productCategory" bindLabel="label"
-                                            bindValue="id"></ng-select>
+                                            placeholder="-- Select Product Category --"
+                                            formControlName="productCategory" id="productCategory"
+                                            name="productCategory" bindLabel="label" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="assetType">Asset
@@ -98,7 +98,7 @@
                         <ng-container matColumnDef="productType">
                             <th mat-header-cell *matHeaderCellDef>Product Category</th>
                             <td mat-cell *matCellDef="let element">
-                                {{element.productCategory}}
+                                {{element.moduleName}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="serialNo">
@@ -110,7 +110,7 @@
                         <ng-container matColumnDef="assetType">
                             <th mat-header-cell *matHeaderCellDef>Asset Category</th>
                             <td mat-cell *matCellDef="let element">
-                                Asset Category : {{element.assetType}}
+                                {{element.subModuleName}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="available">

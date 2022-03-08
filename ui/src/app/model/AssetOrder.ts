@@ -6,8 +6,14 @@ export class AssetOrder extends Base {
     isDepartment: boolean;
     location: any;
     department: any;
-    productCategory: any;
-    assetType: any;
+
+    moduleId: number;
+    moduleName:string;
+    actualModuleName:string;
+    subModuleId:number;
+    subModuleName:string;
+    actualSubModuleName: string;
+
     model: string;
     quantity: number;
     withinBudget: boolean;

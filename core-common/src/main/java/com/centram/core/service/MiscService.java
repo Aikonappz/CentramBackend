@@ -972,9 +972,9 @@ public class MiscService {
         Map<String, Object> mailValues = new HashMap<String, Object>();
         mailValues.put("ord_no", assetOrder.getOrderNo());
         mailValues.put("dept_name", (assetOrder.getDepartment() != null) ? assetOrder.getDepartment().getName() : "");
-        mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getOfficeName() : "");
-        mailValues.put("asset_type", assetOrder.getAssetType().name());
-        mailValues.put("product_type", assetOrder.getProductCategory().name());
+        mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getName() : "");
+        mailValues.put("asset_type", assetOrder.getSubModuleName());
+        mailValues.put("product_type", assetOrder.getModuleName());
         mailValues.put("qty", assetOrder.getQuantity());
         mailValues.put("model", assetOrder.getModel());
         mailValues.put("in_budget", assetOrder.getWithinBudget() ? "Yes" : "No");
@@ -982,6 +982,8 @@ public class MiscService {
         mailValues.put("extra", assetOrder.getExtraAmount());
         mailValues.put("purchase_type", assetOrder.getPurchaseType().name());
         mailValues.put("existing_agreement", assetOrder.getExistingAgreement() ? "Yes" : "No");
+        date = ZonedDateTime.of(assetOrder.getCreatedDate(), ZoneId.of(loggedInUser.getTimeZone()));
+        mailValues.put("req_date", date.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern(dateFormat)));
         if (assetOrder.getAgreementEndAt() != null) {
             date = ZonedDateTime.of(assetOrder.getAgreementEndAt(), ZoneId.of(loggedInUser.getTimeZone()));
             mailValues.put("agreement_end_date", date.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().format(DateTimeFormatter.ofPattern(dateFormat)));

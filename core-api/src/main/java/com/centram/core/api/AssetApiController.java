@@ -76,8 +76,8 @@ public class AssetApiController {
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<Asset>> getAssets(
-            @ApiParam(value = "Product Category", defaultValue = "-1", required = false) @RequestParam(value = "productCategory", defaultValue = "-1", required = false) Integer productCategory,
-            @ApiParam(value = "Asset Type", defaultValue = "-1", required = false) @RequestParam(value = "assetType", defaultValue = "-1", required = false) Integer assetType,
+            @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
+            @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
             @ApiParam(value = "model No", defaultValue = "", required = false) @RequestParam(value = "modelNo", defaultValue = "", required = false) String modelNo,
             @ApiParam(value = "serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
             @ApiParam(value = "asset available", defaultValue = "-1", required = false) @RequestParam(value = "available", defaultValue = "-1", required = false) Integer available,
@@ -99,8 +99,8 @@ public class AssetApiController {
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|SEARCH',authentication.principal)")
     public ResponseEntity<Resource> downloadAssets(
-            @ApiParam(value = "Product Category", defaultValue = "-1", required = false) @RequestParam(value = "productCategory", defaultValue = "-1", required = false) Integer productCategory,
-            @ApiParam(value = "Asset Type", defaultValue = "-1", required = false) @RequestParam(value = "assetType", defaultValue = "-1", required = false) Integer assetType,
+            @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
+            @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
             @ApiParam(value = "model No", defaultValue = "", required = false) @RequestParam(value = "modelNo", defaultValue = "", required = false) String modelNo,
             @ApiParam(value = "serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
             @ApiParam(value = "asset available", defaultValue = "-1", required = false) @RequestParam(value = "available", defaultValue = "-1", required = false) Integer available

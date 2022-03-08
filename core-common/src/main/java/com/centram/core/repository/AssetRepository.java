@@ -20,14 +20,14 @@ public interface AssetRepository extends JpaRepository<Asset, BigInteger> {
             "   ((:serialNo) is null) " +
             " ) and " +
             " ( " +
-            "   ((:productCategory) <> -1 and a.productCategory = (:productCategory)) " +
+            "   ((:productCategory) is not null and a.moduleId = (:productCategory)) " +
             "   OR " +
-            "   ((:productCategory) = -1) " +
+            "   ((:productCategory) is null) " +
             " ) and " +
             " ( " +
-            "   ((:assetType) <> -1 and a.assetType = (:assetType)) " +
+            "   ((:assetType) is not null and a.subModuleId = (:assetType)) " +
             "   OR " +
-            "   ((:assetType) = -1) " +
+            "   ((:assetType) is null) " +
             " ) and " +
             " ( " +
             "   ((:modelNo) is not null and a.modelNo = (:modelNo)) " +
@@ -46,8 +46,8 @@ public interface AssetRepository extends JpaRepository<Asset, BigInteger> {
             " ) "
     )
     Page<Asset> findAll(
-            @Param("productCategory") Integer productCategory,
-            @Param("assetType") Integer assetType,
+            @Param("productCategory") BigInteger productCategory,
+            @Param("assetType") BigInteger assetType,
             @Param("modelNo") String modelNo,
             @Param("serialNo") String serialNo,
             @Param("assetAvailable") Integer assetAvailable,

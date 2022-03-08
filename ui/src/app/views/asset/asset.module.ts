@@ -22,6 +22,7 @@ import { AllocateAsset } from './model/AllocateAsset';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ViewAssetOrderDetail } from './model/ViewAssetOrderDetail';
 import { ViewAssetDetail } from './model/ViewAssetDetail';
+import { UploadAssetComponent } from './model/UploadAssetComponent';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { ViewAssetDetail } from './model/ViewAssetDetail';
     AllocateAsset,
     ViewAssetOrderDetail,
     ViewAssetDetail,
+    UploadAssetComponent,
   ],
   imports: [
     CommonModule,

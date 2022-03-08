@@ -1,24 +1,29 @@
 import { Base } from "./Base";
 export class Asset extends Base {
     id: number;
-    productCategory: string;
-    assetType: string;
-    modelNo: string;
-    serialNo: string;
-    raisedUser: any;
     isDepartment: boolean;
     location: any;
     department: any;
+    isLocation: boolean;
     raisedForLocation: any;
+    moduleId: number;
+    moduleName: string;
+    actualModuleName: string;
+    subModuleId: number;
+    subModuleName: string;
+    actualSubModuleName: string;
+    modelNo: string;
+    serialNo: string;
     isUnderWarranty: boolean;
     warrantyExpiredAt: any;
     purchaseType: any;
     rentalStartAt: any;
     rentalEndAt: any;
     isAvailable: boolean;
-    approvedAt: any;
     vendor: any;
-    comment: string;
+    orderRequestedUser: any;
+    approverUser1: any;
+    approverUser2: any;
     organisation: any;
     constructor() {
         super();

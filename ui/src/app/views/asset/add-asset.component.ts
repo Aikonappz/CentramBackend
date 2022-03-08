@@ -35,6 +35,8 @@ export class AddAssetComponent implements OnInit {
   assetModelList: any[] = [];
   productTypes: any[] = [];
   booleanList: any[] = [];
+  approver1List: any[] = [];
+  requesterList: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -55,22 +57,6 @@ export class AddAssetComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    this.miscService
-      .assetModelsService()
-      .subscribe((data: any) => {
-        this.assetModelList = data;
-        this.productTypes = [];
-        let productCategories = new Set<string>();
-        if (this.assetModelList.length > 0) {
-          for (let k in data) {
-            if (data[k].status == "ACTIVE")
-              productCategories.add(data[k].productCategory);
-          }
-          for (var i = productCategories.values(), val = null; val = i.next().value;) {
-            this.productTypes.push({ id: val, label: val });
-          }
-        }
-      });
     this.booleanList.push({ id: 0, label: 'No' });
     this.booleanList.push({ id: 1, label: 'Yes' });
     let purchaseTypeList = Object.values(PurchaseType)
@@ -127,24 +113,47 @@ export class AddAssetComponent implements OnInit {
       ]),
       vendorContactNo: new FormControl('', [
       ]),
+      approverUser1: new FormControl(null, [
+        Validators.required,
+      ]),
+      approver1Name: new FormControl('', [
+      ]),
+      approver1Email: new FormControl('', [
+      ]),
+      approver1contact: new FormControl('', [
+      ]),
+      approverUser2: new FormControl(null, [
+        Validators.required,
+      ]),
+      approver2Name: new FormControl('', [
+      ]),
+      approver2Email: new FormControl('', [
+      ]),
+      approver2contact: new FormControl('', [
+      ]),
+      orderRequestedUser: new FormControl(null, [
+        Validators.required,
+      ]),
+      orderRequestedName: new FormControl('', [
+      ]),
+      orderRequestedEmail: new FormControl('', [
+      ]),
+      orderRequestedcontact: new FormControl('', [
+      ]),
     }, {
       validators: this.customValidations(),
     });
     this.asset = new Asset();
   }
-
   customValidations() {
     return (formGroup: FormGroup) => {
       //serial no validator
       for (let k in this.assetModelList) {
-        if (
-          this.assetModelList[k].productCategory == formGroup.controls['productCategory'].value &&
-          this.assetModelList[k].assetType == formGroup.controls['assetType'].value
-        ) {
-          if (this.assetModelList[k].generateAssetNo == false && formGroup.controls['serialNumber'].value == "") {
+        if (this.assetModelList[k].id == formGroup.controls['assetType'].value) {
+          if (this.assetModelList[k].generateAssetNo == false && (formGroup.controls['serialNumber'].value == "")) {
             formGroup.controls['serialNumber'].setErrors({ required: true });
             break;
-          } else if (this.assetModelList[k].generateAssetNo == false && formGroup.controls['serialNumber'].value != "") {
+          } else if (this.assetModelList[k].generateAssetNo == false && (formGroup.controls['serialNumber'].value != "")) {
             formGroup.controls['serialNumber'].setErrors(null);
           } else {
             formGroup.controls['serialNumber'].setErrors(null);
@@ -280,6 +289,33 @@ export class AddAssetComponent implements OnInit {
       //console.log(this.route.snapshot.paramMap.get('referer'));
     });
     if (!this.route.snapshot.paramMap.has('id')) {
+      this.userService
+        .getUsersService({ size: AppUtility.MAX_PAGE_SIZE })
+        .subscribe((data: any) => {
+          let users = data.content;
+          this.requesterList = [];
+          this.approver1List = [];
+          for (let k in users) {
+            users[k].nameWithId = users[k].employeeId + "/" + users[k].fullName;
+            if (users[k].roleNames.includes('ORG_OUTBOUND_ASSET_APPROVER')) {
+              this.approver1List.push(users[k]);
+            }
+            if (users[k].roleNames.includes('ORG_MANAGE_ASSET')) {
+              this.requesterList.push(users[k]);
+            }
+          }
+        });
+      this.miscService
+        .modulesService({ licenseType: 'ASSET' })
+        .subscribe((data: any) => {
+          this.assetModelList = data.content;
+          this.productTypes = [];
+          for (let k in this.assetModelList) {
+            if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
+              this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
+          }
+          //console.log(this.productTypes);
+        });
       this.miscService
         .departmentsService()
         .subscribe((data: any) => {
@@ -357,13 +393,40 @@ export class AddAssetComponent implements OnInit {
                         this.vendorList[c++] = vendors[indx];
                       }
                     }
+                    this.userService
+                      .getUsersService({ size: AppUtility.MAX_PAGE_SIZE })
+                      .subscribe((data: any) => {
+                        let users = data.content;
+                        this.requesterList = [];
+                        this.approver1List = [];
+                        for (let k in users) {
+                          users[k].nameWithId = users[k].employeeId + "/" + users[k].fullName;
+                          if (users[k].roleNames.includes('ORG_OUTBOUND_ASSET_APPROVER')) {
+                            this.approver1List.push(users[k]);
+                          }
+                          if (users[k].roleNames.includes('ORG_MANAGE_ASSET')) {
+                            this.requesterList.push(users[k]);
+                          }
+                        }
+                        this.miscService
+                          .modulesService({ licenseType: 'ASSET' })
+                          .subscribe((data: any) => {
+                            this.assetModelList = data.content;
+                            this.productTypes = [];
+                            for (let k in this.assetModelList) {
+                              if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
+                                this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
+                            }
+                            //console.log(this.productTypes);
+                            this.newEntity = false;
+                            this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+                            this.callAssetService(this.entityId);
+                          });
+                      });
                   });
               }
             });
         });
-      this.newEntity = false;
-      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-      this.callAssetService(this.entityId);
     }
   }
 
@@ -383,17 +446,14 @@ export class AddAssetComponent implements OnInit {
   populateChildValues(productCategory) {
     if (typeof productCategory !== 'undefined') {
       this.assetList = [];
-      let assetTypes = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory.id && this.assetModelList[k].status == "ACTIVE") {
-          assetTypes.add(this.assetModelList[k].assetType);
+      for (let i = 0; i < this.assetModelList.length; i++) {
+        if (this.assetModelList[i].parentModuleId == productCategory.id) {
+          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
         }
       }
-      for (var i = assetTypes.values(), val = null; val = i.next().value;) {
-        this.assetList.push({ id: val, label: val });
-      }
+      this.angForm.controls['assetType'].setValue("");
     } else {
-      this.assetList = [];
+      this.angForm.controls['assetType'].setValue("");
     }
   }
 
@@ -419,7 +479,6 @@ export class AddAssetComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
-      this.asset.isAvailable = true;
       this.asset.isDepartment = this.angForm.controls['isDepartment'].value == 1 ? true : false;
       if (this.asset.isDepartment) {
         for (let k in this.departmentList) {
@@ -436,13 +495,16 @@ export class AddAssetComponent implements OnInit {
           }
         }
       }
-      for (let k in this.locationList) {
-        if (this.angForm.controls['raisedForLocation'].value == this.locationList[k].id) {
-          this.asset.raisedForLocation = { id: this.locationList[k].id, name: this.locationList[k].name, version: this.locationList[k].version };
+      this.asset.isLocation = this.angForm.controls['forLocation'].value == 1 ? true : false;
+      if (this.asset.isLocation) {
+        for (let k in this.locationList) {
+          if (this.angForm.controls['raisedForLocation'].value == this.locationList[k].id) {
+            this.asset.raisedForLocation = { id: this.locationList[k].id, name: this.locationList[k].name, version: this.locationList[k].version };
+          }
         }
       }
-      this.asset.productCategory = this.angForm.controls['productCategory'].value;
-      this.asset.assetType = this.angForm.controls['assetType'].value;
+      this.asset.moduleId = this.angForm.controls['productCategory'].value;
+      this.asset.subModuleId = this.angForm.controls['assetType'].value;
       this.asset.modelNo = this.angForm.controls['modelNo'].value;
       this.asset.serialNo = this.angForm.controls['serialNumber'].value;
       this.asset.isUnderWarranty = this.angForm.controls['isUnderWarranty'].value == 1 ? true : false;
@@ -455,7 +517,21 @@ export class AddAssetComponent implements OnInit {
           this.asset.vendor = { id: this.vendorList[k].id, name: this.vendorList[k].name, version: this.vendorList[k].version };
         }
       }
-      this.asset.comment = this.angForm.controls['comment'].value;
+      for (let k in this.approver1List) {
+        if (this.angForm.controls['approverUser1'].value == this.approver1List[k].id) {
+          this.asset.approverUser1 = { id: this.approver1List[k].id, firstName: this.approver1List[k].firstName, lastName: this.approver1List[k].lastName, email: this.approver1List[k].email, version: this.approver1List[k].version };
+        }
+      }
+      for (let k in this.approver1List) {
+        if (this.angForm.controls['approverUser2'].value == this.approver1List[k].id) {
+          this.asset.approverUser2 = { id: this.approver1List[k].id, firstName: this.approver1List[k].firstName, lastName: this.approver1List[k].lastName, email: this.approver1List[k].email, version: this.approver1List[k].version };
+        }
+      }
+      for (let k in this.requesterList) {
+        if (this.angForm.controls['orderRequestedUser'].value == this.requesterList[k].id) {
+          this.asset.orderRequestedUser = { id: this.requesterList[k].id, firstName: this.requesterList[k].firstName, lastName: this.requesterList[k].lastName, email: this.requesterList[k].email, version: this.requesterList[k].version };
+        }
+      }
       //console.log(JSON.stringify(this.asset));
       this.callSaveAssetService();
     } else {
@@ -480,28 +556,35 @@ export class AddAssetComponent implements OnInit {
       .assetService(id)
       .subscribe((data: any) => {
         this.asset = data;
-        this.asset.raisedUser = { id: this.asset.raisedUser.id, version: this.asset.raisedUser.version };
+        this.asset.orderRequestedUser = { id: this.asset.orderRequestedUser.id, version: this.asset.orderRequestedUser.version };
         this.asset.organisation = { id: this.asset.organisation.id, version: this.asset.organisation.version };
-        this.angForm.get('productCategory').setValue(this.asset.productCategory);
-        this.populateChildValues(this.asset.productCategory);
-        this.angForm.get('assetType').setValue(this.asset.assetType);
-        //this.populateAssetModels(this.asset.assetType);
+        this.angForm.get('productCategory').setValue(this.asset.moduleId);
+        this.populateChildValues({ id: this.asset.moduleId });
+        this.angForm.get('assetType').setValue(this.asset.subModuleId);
         this.angForm.get('modelNo').setValue(this.asset.modelNo);
         this.angForm.get('serialNumber').setValue(this.asset.serialNo);
-        this.angForm.get('isDepartment').setValue(this.asset.isDepartment ? "1" : "0");
+        this.angForm.get('isDepartment').setValue(this.asset.isDepartment ? 1 : 0);
         if (this.asset.isDepartment == true) {
           $('#dept-inp').removeClass("d-none");
           $('#loc-inp').addClass("d-none");
           this.asset.location = null;
-          this.angForm.get('department').setValue(String(this.asset.department.id));
+          this.angForm.get('department').setValue(this.asset.department.id);
         } else {
           $('#dept-inp').addClass("d-none");
           $('#loc-inp').removeClass("d-none");
           this.asset.department = null;
-          this.angForm.get('location').setValue(String(this.asset.location.id));
+          this.angForm.get('location').setValue(this.asset.location.id);
         }
-        this.angForm.get('raisedForLocation').setValue(String(this.asset.raisedForLocation.id));
-        this.angForm.get('isUnderWarranty').setValue(this.asset.isUnderWarranty ? "1" : "0");
+        this.angForm.get('forLocation').setValue(this.asset.isLocation ? 1 : 0);
+        if (this.asset.isLocation == true) {
+          $('#loc-inp').removeClass("d-none");
+          $('#proxy-lic-inp').addClass("d-none");
+          this.angForm.get('raisedForLocation').setValue(this.asset.raisedForLocation.id);
+        } else {
+          $('#loc-inp').addClass("d-none");
+          $('#proxy-lic-inp').removeClass("d-none");
+        }
+        this.angForm.get('isUnderWarranty').setValue(this.asset.isUnderWarranty ? 1 : 0);
         this.angForm.get('warrantyExpiredAt').setValue(moment(this.asset.warrantyExpiredAt).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
         this.angForm.get('purchaseType').setValue(this.asset.purchaseType);
         if (this.asset.purchaseType != "OWNED") {
@@ -517,8 +600,14 @@ export class AddAssetComponent implements OnInit {
           $('.rentalStartAt-proxy').removeClass("d-none");
           $('.rentalEndAt-proxy').removeClass("d-none");
         }
-        this.angForm.get('vendor').setValue(String(this.asset.vendor.id));
-        this.angForm.get('comment').setValue(String(this.asset.comment));
+        this.angForm.get('vendor').setValue(this.asset.vendor.id);
+        this.populateVendorDetails({ id: this.asset.vendor.id });
+        this.angForm.get('approverUser2').setValue(this.asset.approverUser2.id);
+        this.approverUser2Populate({ id: this.asset.approverUser2.id });
+        this.angForm.get('approverUser1').setValue(this.asset.approverUser1.id);
+        this.approverUser1Populate({ id: this.asset.approverUser1.id });
+        this.angForm.get('orderRequestedUser').setValue(this.asset.orderRequestedUser.id);
+        this.requesterUserPopulate({ id: this.asset.orderRequestedUser.id });
       });
   }
 
@@ -528,4 +617,57 @@ export class AddAssetComponent implements OnInit {
     }
     return null;
   }
+
+  @ViewChild("approverUser1") approverUser1;
+  approverUser1Populate(approverUser1) {
+    if (typeof approverUser1 !== 'undefined') {
+      for (let i in this.approver1List) {
+        if (approverUser1.id == this.approver1List[i].id) {
+          this.angForm.controls['approver1Name'].setValue(this.approver1List[i].fullName);
+          this.angForm.controls['approver1Email'].setValue(this.approver1List[i].email);
+          this.angForm.controls['approver1contact'].setValue(this.approver1List[i].contactNo);
+        }
+      }
+    } else {
+      this.angForm.controls['approver1Name'].setValue("");
+      this.angForm.controls['approver1Email'].setValue("");
+      this.angForm.controls['approver1contact'].setValue("");
+    }
+  }
+
+  @ViewChild("approverUser2") approverUser2;
+  approverUser2Populate(approverUser2) {
+    if (typeof approverUser2 !== 'undefined') {
+      for (let i in this.approver1List) {
+        if (approverUser2.id == this.approver1List[i].id) {
+          this.angForm.controls['approver2Name'].setValue(this.approver1List[i].fullName);
+          this.angForm.controls['approver2Email'].setValue(this.approver1List[i].email);
+          this.angForm.controls['approver2contact'].setValue(this.approver1List[i].contactNo);
+        }
+      }
+    } else {
+      this.angForm.controls['approver2Name'].setValue("");
+      this.angForm.controls['approver2Email'].setValue("");
+      this.angForm.controls['approver2contact'].setValue("");
+    }
+  }
+
+
+  @ViewChild("orderRequestedUser") orderRequestedUser;
+  requesterUserPopulate(orderRequestedUser) {
+    if (typeof orderRequestedUser !== 'undefined') {
+      for (let i in this.approver1List) {
+        if (orderRequestedUser.id == this.requesterList[i].id) {
+          this.angForm.controls['orderRequestedName'].setValue(this.requesterList[i].fullName);
+          this.angForm.controls['orderRequestedEmail'].setValue(this.requesterList[i].email);
+          this.angForm.controls['orderRequestedcontact'].setValue(this.requesterList[i].contactNo);
+        }
+      }
+    } else {
+      this.angForm.controls['orderRequestedName'].setValue("");
+      this.angForm.controls['orderRequestedEmail'].setValue("");
+      this.angForm.controls['orderRequestedcontact'].setValue("");
+    }
+  }
+
 }

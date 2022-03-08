@@ -8,12 +8,14 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AssetOrderRepository;
 import com.centram.domain.AssetOrder;
+import com.centram.domain.Module;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.PurchaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,9 @@ public class AssetOrderService {
     @Autowired
     private AssetOrderRepository assetOrderRepository;
 
+    @Autowired
+    private ModuleService moduleService;
+
     /**
      * get all Ordered Assets
      *
@@ -59,7 +64,17 @@ public class AssetOrderService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         orderNo = (orderNo.equalsIgnoreCase("")) ? null : orderNo;
         status = (status.equalsIgnoreCase("")) ? null : status;
-        return new PaginatedList<AssetOrder>(assetOrderRepository.findAll(orderNo, status, loggedInUser.getOrganisationId(), pageable));
+        Page<AssetOrder> assetOrderPage = assetOrderRepository.findAll(orderNo, status, loggedInUser.getOrganisationId(), pageable);
+        Module module = null;
+        for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
+            module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());
+            assetOrderPage.getContent().get(k).setModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getSubModuleId());
+            assetOrderPage.getContent().get(k).setSubModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setActualSubModuleName(module.getName());
+        }
+        return new PaginatedList<AssetOrder>(assetOrderPage);
     }
 
     /**
@@ -70,7 +85,14 @@ public class AssetOrderService {
      */
     @Transactional(readOnly = true)
     public AssetOrder getAssetOrderById(BigInteger id) {
-        return assetOrderRepository.getById(id);
+        AssetOrder assetOrder = assetOrderRepository.getById(id);
+        Module module = moduleService.getModuleById(assetOrder.getModuleId());
+        assetOrder.setModuleName(module.getCustomerModuleName());
+        assetOrder.setActualModuleName(module.getName());
+        module = moduleService.getModuleById(assetOrder.getSubModuleId());
+        assetOrder.setSubModuleName(module.getCustomerModuleName());
+        assetOrder.setActualSubModuleName(module.getName());
+        return assetOrder;
     }
 
     /**
@@ -98,6 +120,12 @@ public class AssetOrderService {
             assetOrder.setAgreementEndAt(agreementEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
         }
         assetOrder = assetOrderRepository.save(assetOrder);
+        Module module = moduleService.getModuleById(assetOrder.getModuleId());
+        assetOrder.setModuleName(module.getCustomerModuleName());
+        assetOrder.setActualModuleName(module.getName());
+        module = moduleService.getModuleById(assetOrder.getSubModuleId());
+        assetOrder.setSubModuleName(module.getCustomerModuleName());
+        assetOrder.setActualSubModuleName(module.getName());
         miscService.sendOutBoundAssetUpdateEmail(assetOrder);
         return assetOrder;
     }
@@ -125,6 +153,12 @@ public class AssetOrderService {
             } else {
                 throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
             }
+            Module module = moduleService.getModuleById(assetOrder.getModuleId());
+            assetOrder.setModuleName(module.getCustomerModuleName());
+            assetOrder.setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assetOrder.getSubModuleId());
+            assetOrder.setSubModuleName(module.getCustomerModuleName());
+            assetOrder.setActualSubModuleName(module.getName());
             miscService.sendOutBoundAssetUpdateEmail(assetOrder);
             return assetOrder;
         } else {

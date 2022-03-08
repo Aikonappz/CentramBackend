@@ -78,7 +78,7 @@ export class ReopenReportComponent implements OnInit {
         this.priorities = result.content;
       });
 
-    this.miscService.modulesService({ licenseType: 'ASSET', "sort": "name,asc" })
+    this.miscService.modulesService({ licenseType: 'INCIDENT', "sort": "name,asc" })
       .subscribe((result: any) => {
         this.allModuleList = result.content;
         this.moduleList = [];

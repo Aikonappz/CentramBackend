@@ -117,7 +117,7 @@ public class MiscApiController {
     })
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Module>> getModules(
-            @NotNull @ApiParam(value = "License Type", required = false) @Valid @RequestParam(value = "licenseType", required = false) String licenseType,
+            @NotNull @ApiParam(value = "License Type", defaultValue = "ALL", required = false) @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, pageable), HttpStatus.OK);

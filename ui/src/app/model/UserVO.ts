@@ -7,6 +7,7 @@ export class UserVO {
     firstName: string;
     lastName: string;
     fullName: string;
+    nameWithId: string;
     email: string;
     password: string;
     contactNo: string;

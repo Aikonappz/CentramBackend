@@ -194,8 +194,9 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="vendor">Vendor</label>
-                  <ng-select [items]="vendorList" #vendor (change)="populateVendorDetails($event)" placeholder="-- Select Vendor --" formControlName="vendor" id="vendor"
-                    name="vendor" bindLabel="name" bindValue="id"></ng-select>
+                  <ng-select [items]="vendorList" #vendor (change)="populateVendorDetails($event)"
+                    placeholder="-- Select Vendor --" formControlName="vendor" id="vendor" name="vendor"
+                    bindLabel="name" bindValue="id"></ng-select>
                   <div *ngIf="f.vendor.touched && f.vendor.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.vendor.errors?.required">
                       Vendor is required!
@@ -216,6 +217,95 @@
                   <label class="form-col-form-label" for="vendorContactNo">Vendor Contact No.</label>
                   <input type="text" [readonly]="true" formControlName="vendorContactNo" id="vendorContactNo"
                     name="vendorContactNo" class="form-control">
+                </div>
+              </div>
+            </fieldset>
+            <fieldset class="border p-2">
+              <legend class="w-auto">Approval Details</legend>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="orderRequestedUser">Requested
+                    By</label>
+                  <ng-select [items]="requesterList" #orderRequestedUser (change)="requesterUserPopulate($event)"
+                    placeholder="-- Select Requester --" formControlName="orderRequestedUser" id="orderRequestedUser"
+                    name="orderRequestedUser" bindLabel="nameWithId" bindValue="id"></ng-select>
+                  <div *ngIf="f.orderRequestedUser.touched && f.orderRequestedUser.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.orderRequestedUser.errors?.required">
+                      Requester is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="orderRequestedName">Name</label>
+                  <input type="text" [readonly]="true" formControlName="orderRequestedName" id="orderRequestedName"
+                    name="orderRequestedName" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="orderRequestedEmail">Email</label>
+                  <input type="text" [readonly]="true" formControlName="orderRequestedEmail" id="orderRequestedEmail"
+                    name="orderRequestedEmail" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="orderRequestedcontact">Contact</label>
+                  <input type="text" [readonly]="true" formControlName="orderRequestedcontact"
+                    id="orderRequestedcontact" name="orderRequestedcontact" class="form-control">
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approverUser1">Approver 1</label>
+                  <ng-select [items]="approver1List" #approverUser1 (change)="approverUser1Populate($event)"
+                    placeholder="-- Select Approver 1 --" formControlName="approverUser1" id="approverUser1"
+                    name="approverUser1" bindLabel="nameWithId" bindValue="id"></ng-select>
+                  <div *ngIf="f.approverUser1.touched && f.approverUser1.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.approverUser1.errors?.required">
+                      Approver 1 is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approver1Name">Name</label>
+                  <input type="text" [readonly]="true" formControlName="approver1Name" id="approver1Name"
+                    name="approver1Name" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approver1Email">Email</label>
+                  <input type="text" [readonly]="true" formControlName="approver1Email" id="approver1Email"
+                    name="approver1Email" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approver1contact">Contact</label>
+                  <input type="text" [readonly]="true" formControlName="approver1contact" id="approver1contact"
+                    name="approver1contact" class="form-control">
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approverUser2">Approver 2</label>
+                  <ng-select [items]="approver1List" #approverUser2 (change)="approverUser2Populate($event)"
+                    placeholder="-- Select Approver 2 --" formControlName="approverUser2" id="approverUser2"
+                    name="approverUser2" bindLabel="nameWithId" bindValue="id"></ng-select>
+                  <div *ngIf="f.approverUser2.touched && f.approverUser2.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.approverUser2.errors?.required">
+                      Approver 2 is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approver2Name">Name</label>
+                  <input type="text" [readonly]="true" formControlName="approver2Name" id="approver2Name"
+                    name="approver2Name" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approver2Email">Email</label>
+                  <input type="text" [readonly]="true" formControlName="approver2Email" id="approver2Email"
+                    name="approver2Email" class="form-control">
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="approver2contact">Contact</label>
+                  <input type="text" [readonly]="true" formControlName="approver2contact" id="approver2contact"
+                    name="approver2contact" class="form-control">
                 </div>
               </div>
             </fieldset>

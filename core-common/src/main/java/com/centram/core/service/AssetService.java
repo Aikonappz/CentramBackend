@@ -7,9 +7,8 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AssetRepository;
 import com.centram.domain.Asset;
-import com.centram.domain.AssetModel;
+import com.centram.domain.Module;
 import com.centram.domain.Setting;
-import com.centram.domain.User;
 import com.centram.domain.enumarator.PurchaseType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -60,6 +59,9 @@ public class AssetService {
     private MiscService miscService;
 
     @Autowired
+    private ModuleService moduleService;
+
+    @Autowired
     private ProxyService proxyService;
 
     @Autowired
@@ -80,14 +82,24 @@ public class AssetService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Asset> getAssets(Integer productCategory, Integer assetType, String modelNo, String serialNo, Integer assetAvailable, Pageable pageable) {
+    public PaginatedList<Asset> getAssets(String productCategory, String assetType, String modelNo, String serialNo, Integer assetAvailable, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        productCategory = productCategory == null ? -1 : productCategory;
-        assetType = assetType == null ? -1 : assetType;
+        BigInteger mId = (productCategory == null || productCategory.equals("")) ? null : BigInteger.valueOf(Long.valueOf(productCategory));
+        BigInteger smId = (assetType == null || assetType.equals("")) ? null : BigInteger.valueOf(Long.valueOf(assetType));
         modelNo = (modelNo == null || modelNo.equalsIgnoreCase("")) ? null : modelNo;
         serialNo = (serialNo == null || serialNo.equalsIgnoreCase("")) ? null : serialNo;
         assetAvailable = assetAvailable == null ? -1 : assetAvailable;
-        return new PaginatedList<Asset>(assetRepository.findAll(productCategory, assetType, modelNo, serialNo, assetAvailable, loggedInUser.getOrganisationId(), pageable));
+        Page<Asset> assetPage = assetRepository.findAll(mId, smId, modelNo, serialNo, assetAvailable, loggedInUser.getOrganisationId(), pageable);
+        Module module = null;
+        for (int i = 0; i < assetPage.getContent().size(); i++) {
+            module = moduleService.getModuleById(assetPage.getContent().get(i).getModuleId());
+            assetPage.getContent().get(i).setModuleName(module.getCustomerModuleName());
+            assetPage.getContent().get(i).setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assetPage.getContent().get(i).getSubModuleId());
+            assetPage.getContent().get(i).setSubModuleName(module.getCustomerModuleName());
+            assetPage.getContent().get(i).setActualSubModuleName(module.getName());
+        }
+        return new PaginatedList<Asset>(assetPage);
     }
 
     /**
@@ -102,7 +114,14 @@ public class AssetService {
         if (!assetOptional.isPresent()) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
-        return assetOptional.get();
+        Asset asset = assetOptional.get();
+        Module module = moduleService.getModuleById(asset.getModuleId());
+        asset.setModuleName(module.getCustomerModuleName());
+        asset.setActualModuleName(module.getName());
+        module = moduleService.getModuleById(asset.getSubModuleId());
+        asset.setSubModuleName(module.getCustomerModuleName());
+        asset.setActualSubModuleName(module.getName());
+        return asset;
     }
 
     /**
@@ -116,22 +135,22 @@ public class AssetService {
         try {
             LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (asset.getId() == null) {
-                asset.setRaisedUser(new User(userService.getUserById(loggedInUser.getUserId())));
+                asset.setIsAvailable(true);
                 asset.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
                 Setting setting = organisationService.getOrganisationSettings();
                 String prefix = (setting != null && setting.getAssetPrefix() != null) ? setting.getAssetPrefix() : appDefaultAssetPrefix;
-                AssetModel assetModel = assetModelService.getAssetModel(asset.getProductCategory(), asset.getAssetType(), asset.getModelNo());
-                if (assetModel.getGenerateAssetNo()) {
+                Module module = moduleService.getModuleById(asset.getSubModuleId());
+                if (module.getGenerateAssetNo()) {
                     asset.setSerialNo(assetNo(prefix));
                 }
-                ZonedDateTime warrantyDateTime = ZonedDateTime.of(asset.getWarrantyExpiredAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
-                asset.setWarrantyExpiredAt(warrantyDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
-                if (asset.getPurchaseType() == PurchaseType.RENTED) {
-                    ZonedDateTime rentalDateTime = ZonedDateTime.of(asset.getRentalStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
-                    asset.setRentalStartAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
-                    rentalDateTime = ZonedDateTime.of(asset.getRentalEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
-                    asset.setRentalEndAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
-                }
+            }
+            ZonedDateTime warrantyDateTime = ZonedDateTime.of(asset.getWarrantyExpiredAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
+            asset.setWarrantyExpiredAt(warrantyDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+            if (asset.getPurchaseType() == PurchaseType.RENTED) {
+                ZonedDateTime rentalDateTime = ZonedDateTime.of(asset.getRentalStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
+                asset.setRentalStartAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+                rentalDateTime = ZonedDateTime.of(asset.getRentalEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
+                asset.setRentalEndAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
             }
             return proxyService.saveAsset(asset);
         } catch (DataIntegrityViolationException e) {
@@ -140,19 +159,18 @@ public class AssetService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream download(Integer productCategory, Integer assetType, String modelNo, String serialNo, Integer assetAvailable) {
+    public ByteArrayInputStream download(String productCategory, String assetType, String modelNo, String serialNo, Integer assetAvailable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
-        productCategory = productCategory == null ? -1 : productCategory;
-        assetType = assetType == null ? -1 : assetType;
+        BigInteger mId = productCategory.equals("") ? null : BigInteger.valueOf(Long.valueOf(productCategory));
+        BigInteger smId = assetType.equals("") ? null : BigInteger.valueOf(Long.valueOf(assetType));
         modelNo = (modelNo == null || modelNo.equalsIgnoreCase("")) ? null : modelNo;
         serialNo = (serialNo == null || serialNo.equalsIgnoreCase("")) ? null : serialNo;
         assetAvailable = assetAvailable == null ? -1 : assetAvailable;
-
         Page<Asset> page = assetRepository.findAll(
-                productCategory,
-                assetType,
+                mId,
+                smId,
                 modelNo,
                 serialNo,
                 assetAvailable,
@@ -178,10 +196,14 @@ public class AssetService {
                     "Available?"
             );
             csvPrinter.printRecord(data);
+            Module module = null;
+            Module subModule = null;
             for (Asset asset : page.getContent()) {
+                module = moduleService.getModuleById(asset.getModuleId());
+                subModule = moduleService.getModuleById(asset.getSubModuleId());
                 data = Arrays.asList(
-                        asset.getProductCategory().name(),
-                        asset.getAssetType().name(),
+                        module.getCustomerModuleName(),
+                        subModule.getCustomerModuleName(),
                         asset.getModelNo(),
                         asset.getSerialNo(),
                         asset.getRaisedForLocation().getName(),

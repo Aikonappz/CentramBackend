@@ -7,7 +7,6 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CategoryLocationVO;
 import com.centram.core.repository.ModuleRepository;
 import com.centram.domain.Module;
-import com.centram.domain.enumarator.LicenseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,7 @@ public class ModuleService {
 
     @Transactional(readOnly = true)
     public PaginatedList<Module> getModules(String licenseType, Pageable pageable) {
-        Integer lt = licenseType.equals("") || licenseType == null ? -1 : LicenseType.fromValue(licenseType).ordinal();
-        return new PaginatedList<Module>(moduleRepository.findAll(lt, pageable));
+        return new PaginatedList<Module>(moduleRepository.findAll(licenseType, pageable));
     }
 
     @Transactional(readOnly = true)

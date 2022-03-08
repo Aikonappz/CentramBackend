@@ -223,6 +223,7 @@ public class AppEmailService {
         mailSubject = templateEngine.process(mailSubject, context);
         String assetOrderLink = appBaseUrl.concat("/asset/order/".concat(mailValues.get("approver_index").toString()).concat("/action/")).concat(mailValues.get("order_id").toString());
         context = new Context(Locale.ENGLISH);
+        context.setVariable("req_date", mailValues.get("req_date"));
         context.setVariable("ord_no", mailValues.get("ord_no"));
         context.setVariable("dept_name", mailValues.get("dept_name"));
         context.setVariable("rent_start_date", mailValues.get("rent_start_date"));

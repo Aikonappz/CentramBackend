@@ -10,11 +10,9 @@ import { MediaService } from '../../service/MediaService';
 import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { ClientStorageService } from '../../service/ClientStorageService';
-import { AssetType } from '../../model/enumerator/AssetType';
 import { PurchaseType } from '../../model/enumerator/PurchaseType';
 import { AssetOrder } from '../../model/AssetOrder';
 import { AssetOrderService } from '../../service/AssetOrderService';
-import { ProductCategory } from '../../model/enumerator/ProductCategory';
 declare var $: any;
 
 @Component({
@@ -66,22 +64,6 @@ export class AssetOrderComponent implements OnInit {
     });
     this.booleanList.push({ id: 0, label: 'No' });
     this.booleanList.push({ id: 1, label: 'Yes' });
-    this.miscService
-      .assetModelsService()
-      .subscribe((data: any) => {
-        this.assetModelList = data;
-        this.productTypes = [];
-        let productCategories = new Set<string>();
-        if (this.assetModelList.length > 0) {
-          for (let k in data) {
-            if (data[k].status == "ACTIVE")
-              productCategories.add(data[k].productCategory);
-          }
-          for (var i = productCategories.values(), val = null; val = i.next().value;) {
-            this.productTypes.push({ id: val, label: val });
-          }
-        }
-      });
     this.purchaseTypeList.push({ id: 'RENTED', label: 'RENTED' });
     this.purchaseTypeList.push({ id: 'OWNED', label: 'OWNED' });
     this.angForm = this.fb.group({
@@ -333,6 +315,17 @@ export class AssetOrderComponent implements OnInit {
             }
           }
         });
+      this.miscService
+        .modulesService({ licenseType: 'ASSET' })
+        .subscribe((data: any) => {
+          this.assetModelList = data.content;
+          this.productTypes = [];
+          for (let k in this.assetModelList) {
+            if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
+              this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
+          }
+          //console.log(this.productTypes);
+        });
     } else {
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
@@ -368,8 +361,8 @@ export class AssetOrderComponent implements OnInit {
           }
         }
       }
-      this.assetOrder.productCategory = ProductCategory[this.angForm.controls['productCategory'].value];
-      this.assetOrder.assetType = AssetType[this.angForm.controls['assetType'].value];
+      this.assetOrder.moduleId = this.angForm.controls['productCategory'].value;
+      this.assetOrder.subModuleId = this.angForm.controls['assetType'].value;
       this.assetOrder.quantity = this.angForm.controls['quantity'].value;
       this.assetOrder.model = this.angForm.controls['modelNo'].value;
       this.assetOrder.withinBudget = this.angForm.controls['withinBudget'].value == 1 ? true : false;
@@ -445,14 +438,10 @@ export class AssetOrderComponent implements OnInit {
   populateChildValues(productCategory) {
     if (typeof productCategory !== 'undefined') {
       this.assetList = [];
-      let assetTypes = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory.id && this.assetModelList[k].status == "ACTIVE") {
-          assetTypes.add(this.assetModelList[k].assetType);
+      for (let i = 0; i < this.assetModelList.length; i++) {
+        if (this.assetModelList[i].parentModuleId == productCategory.id) {
+          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
         }
-      }
-      for (var i = assetTypes.values(), val = null; val = i.next().value;) {
-        this.assetList.push({ id: val, label: val });
       }
     }
   }
@@ -483,7 +472,6 @@ export class AssetOrderComponent implements OnInit {
           this.angForm.controls['approver2Email'].setValue(this.approver1List[i].email);
           this.angForm.controls['approver2contact'].setValue(this.approver1List[i].contactNo);
         }
-
       }
     } else {
       this.angForm.controls['approver2Name'].setValue("");

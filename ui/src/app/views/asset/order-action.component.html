@@ -22,11 +22,11 @@
               </tr>
               <tr>
                 <td><strong>Product Category</strong></td>
-                <td>{{assetOrder.productCategory}}</td>
+                <td>{{assetOrder.moduleName}}</td>
               </tr>
               <tr>
                 <td><strong>Asset Category</strong></td>
-                <td>{{assetOrder.assetType}}</td>
+                <td>{{assetOrder.subModuleName}}</td>
               </tr>
               <tr>
                 <td><strong>Model</strong></td>
@@ -88,7 +88,7 @@
                     <div *ngIf="f.approverUser1Comment.touched && f.approverUser1Comment.invalid"
                       class="alert alert-danger-custom">
                       <div *ngIf="f.approverUser1Comment.errors?.required">
-                        Feedback is required!
+                        Comment is required!
                       </div>
                     </div>
                   </div>
@@ -102,7 +102,7 @@
                 <td>
                   <div *ngIf="assetOrder.approverUser2Comment!=null">
                     {{assetOrder.approverUser2?.firstName}} {{assetOrder.approverUser2?.lastName}}<br />
-                    Status : {{assetOrder.approverUser2Comment==null? 'No Action Yet' : assetOrder.approvedUser2==true?
+                    {{assetOrder.approverUser2Comment==null? 'No Action Yet' : assetOrder.approvedUser2==true?
                     'Approved' : 'Rejected'}}
                   </div>
                   <div *ngIf="assetOrder.approverUser2Comment==null">
@@ -113,7 +113,7 @@
                     <div *ngIf="f.approverUser2Comment.touched && f.approverUser2Comment.invalid"
                       class="alert alert-danger-custom">
                       <div *ngIf="f.approverUser2Comment.errors?.required">
-                        Feedback is required!
+                        Comment is required!
                       </div>
                     </div>
                   </div>

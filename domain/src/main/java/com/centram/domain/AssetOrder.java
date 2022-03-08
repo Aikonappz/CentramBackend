@@ -80,19 +80,31 @@ public class AssetOrder extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Valid
-    @Column(name = "product_category")
-    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "module_id", nullable = false)
     @JsonView(Views.BasicView.class)
-    private ProductCategory productCategory;
+    private BigInteger moduleId;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String moduleName;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String actualModuleName;
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Valid
-    @Column(name = "asset_type")
-    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "sub_module_id", nullable = false)
     @JsonView(Views.BasicView.class)
-    private AssetType assetType;
+    private BigInteger subModuleId;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String subModuleName;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String actualSubModuleName;
 
     @ApiModelProperty(required = true, value = "")
     @Column(name = "model", nullable = true)

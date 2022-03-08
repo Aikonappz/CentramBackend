@@ -8,13 +8,12 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
 import { Asset } from '../../model/Asset';
-import { AssetType } from '../../model/enumerator/AssetType';
-import { ProductCategory } from '../../model/enumerator/ProductCategory';
 import { Incident } from '../../model/Incident';
 import { AssetService } from '../../service/AssetService';
 import { AssetDataSource } from '../../service/datasource/AssetDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
+import { UploadAssetComponent } from './model/UploadAssetComponent';
 import { ViewAssetDetail } from './model/ViewAssetDetail';
 declare var $: any;
 
@@ -54,20 +53,15 @@ export class AssetInventoryComponent implements OnInit {
       }
     });
     this.miscService
-      .assetModelsService()
+      .modulesService({ licenseType: 'ASSET' })
       .subscribe((data: any) => {
-        this.assetModelList = data;
+        this.assetModelList = data.content;
         this.productTypes = [];
-        let productCategories = new Set<string>();
-        if (this.assetModelList.length > 0) {
-          for (let k in data) {
-            if (data[k].status == "ACTIVE")
-              productCategories.add(data[k].productCategory);
-          }
-          for (var i = productCategories.values(), val = null; val = i.next().value;) {
-            this.productTypes.push({ id: val, label: val });
-          }
+        for (let k in this.assetModelList) {
+          if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
+            this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
         }
+        //console.log(this.productTypes);
       });
     this.booleanList.push({ id: 0, label: 'No' });
     this.booleanList.push({ id: 1, label: 'Yes' });
@@ -153,13 +147,13 @@ export class AssetInventoryComponent implements OnInit {
       let modelNo = this.angForm.controls['modelNo'].value;
       let serialNumber = this.angForm.controls['serialNumber'].value;
       let available = this.angForm.controls['available'].value;
-      //console.log(productCategory);
+      //console.log(this.angForm.controls['available'].value);
       this.searchedData = {
-        "productCategory": productCategory == "" || productCategory == null ? -1 : ProductCategory[productCategory],
-        "assetType": assetType == "" || assetType == null ? -1 : AssetType[assetType],
+        "productCategory": productCategory == "" || productCategory == null ? "" : productCategory,
+        "assetType": assetType == "" || assetType == null ? "" : assetType,
         "modelNo": modelNo == "" || modelNo == null ? '' : modelNo,
         "serialNo": serialNumber == "" || serialNumber == null ? '' : serialNumber,
-        "available": available == "" || available == null ? -1 : available,
+        "available": available == null ? -1 : available,
       };
       this.loadData(this.searchedData);
     } else {
@@ -173,14 +167,10 @@ export class AssetInventoryComponent implements OnInit {
   populateChildValues(productCategory) {
     if (typeof productCategory !== 'undefined') {
       this.assetList = [];
-      let assetTypes = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory.id && this.assetModelList[k].status == "ACTIVE") {
-          assetTypes.add(this.assetModelList[k].assetType);
+      for (let i = 0; i < this.assetModelList.length; i++) {
+        if (this.assetModelList[i].parentModuleId == productCategory.id) {
+          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
         }
-      }
-      for (var i = assetTypes.values(), val = null; val = i.next().value;) {
-        this.assetList.push({ id: val, label: val });
       }
     }
   }
@@ -211,6 +201,19 @@ export class AssetInventoryComponent implements OnInit {
       element: asset
     };
     this.modalRef = this.modalService.show(ViewAssetDetail, Object.assign({}, config, { initialState }));
+  }
+
+  upload() {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      initialState: {
+      }
+    };
+    this.modalRef = this.modalService.show(UploadAssetComponent, config);
+    this.modalRef.content.closeBtnName = 'Close';
   }
 
 }

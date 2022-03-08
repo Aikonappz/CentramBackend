@@ -91,41 +91,27 @@ export class EditDlComponent implements OnInit {
     });
     if (!this.route.snapshot.paramMap.has('id')) {
       this.miscService
-        .modulesService({ licenseType: "" })
+        .modulesService({ licenseType: this.loggedInUser.licenseType })
         .subscribe((data: any) => {
           this.modules = data.content;
           this.moduleList = [];
           for (let i in this.modules) {
-            if (this.loggedInUser.licenseType == 'ALL') {
-              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
-                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-                this.moduleList.push(this.modules[i]);
-              }
-            } else {
-              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null && this.modules[i].licenseType == this.loggedInUser.licenseType) {
-                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-                this.moduleList.push(this.modules[i]);
-              }
+            if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
+              this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+              this.moduleList.push(this.modules[i]);
             }
           }
         });
     } else {
       this.miscService
-        .modulesService({ licenseType: "" })
+        .modulesService({ licenseType: this.loggedInUser.licenseType })
         .subscribe((data: any) => {
           this.modules = data.content;
           this.moduleList = [];
           for (let i in this.modules) {
-            if (this.loggedInUser.licenseType == 'ALL') {
-              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
-                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-                this.moduleList.push(this.modules[i]);
-              }
-            } else {
-              if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null && this.modules[i].licenseType == this.loggedInUser.licenseType) {
-                this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
-                this.moduleList.push(this.modules[i]);
-              }
+            if (this.modules[i].appModule == false && this.modules[i].parentModuleId == null) {
+              this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
+              this.moduleList.push(this.modules[i]);
             }
           }
           this.newEntity = false;

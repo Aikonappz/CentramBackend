@@ -37,8 +37,8 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                     <tr>
                         <td><strong>Asset Details</strong></td>
                         <td>
-                            Product Category: {{assetOrder.productCategory}}<br />
-                            Asset Category: {{assetOrder.assetType}}<br />
+                            Product Category: {{assetOrder.moduleName}}<br />
+                            Asset Category: {{assetOrder.subModuleName}}<br />
                             Model: {{assetOrder.model}}<br />
                             Quantity: {{assetOrder.quantity}}<br />
                             <div *ngIf="assetOrder.withinBudget==true">
