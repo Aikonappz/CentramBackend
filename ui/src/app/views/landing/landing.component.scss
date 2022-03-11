@@ -657,6 +657,20 @@ font-size: 60px;
         height: 58px;
         color: #000;
 }
+.form-control-custom:active{
+    background: none;
+    border-bottom:1px solid #000 ;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px rgb(248 137 43) inset !important;
+   
+    background-image: none !important;
+    background-color: -internal-light-dark(rgb(248 137 43), rgba(70, 90, 126, 0.4)) !important;
+}
+
 .form-control-custom2{
         background: none;
     width: 100%;

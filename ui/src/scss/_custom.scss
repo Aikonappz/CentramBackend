@@ -365,3 +365,36 @@
   border-color: black !important;
   
 }
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  color: #fff;
+  background: #263c76;
+}
+.sidebar .nav-link.active {
+  color: #fff;
+  background: #20a8d8;
+}
+.sidebar .nav-link.active .nav-icon {
+  color: #ffffff;
+}
+.sidebar .nav-link .nav-icon {
+  color: #fecc00;
+}
+.app-header {
+  border-bottom: 1px solid #eff8fb;
+  background: #eff8fb;
+}
+.app-header .navbar-toggler {
+
+  border: none;
+  outline: none;
+}
+.breadcrumb {
+  position: relative;
+  border-radius: 0;
+  /* background: #e6f4f9; */
+  border-bottom: 1px solid #e6f4f9;
+}
