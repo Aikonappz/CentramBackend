@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BsModalRef } from "ngx-bootstrap/modal";
+import { AssetService } from "../../../service/AssetService";
 import { UserService } from "../../../service/UserService";
 
 @Component({
@@ -54,7 +55,7 @@ export class UploadAssetComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
-    private userService: UserService
+    private assetService: AssetService,
   ) {
     this.angFormUpload = this.fb.group({
       fileInput: new FormControl(null, [
@@ -106,8 +107,8 @@ export class UploadAssetComponent implements OnInit {
       headers.append('Content-Type', 'multipart/form-data');
       headers.set('Accept', 'application/json');
       //console.log(formData);
-      this.userService
-        .uploadUsersService(formData, { 'headers': headers })
+      this.assetService
+        .uploadAssetsService(formData, { 'headers': headers })
         .subscribe((data: any) => {
           this.bsModalRef.hide();
         });

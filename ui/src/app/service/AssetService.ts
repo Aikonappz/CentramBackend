@@ -24,4 +24,7 @@ export class AssetService {
     downloadAssetsService(request?: any): Observable<any> {
         return this.http.get('/v1/asset/download', { "params": request, responseType: 'blob' });
     }
+    uploadAssetsService(formData: FormData, request?: any): Observable<any> {
+        return this.http.post('/v1/asset/upload', formData, request);
+    }
 }

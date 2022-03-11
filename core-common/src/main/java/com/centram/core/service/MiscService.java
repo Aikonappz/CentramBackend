@@ -469,6 +469,7 @@ public class MiscService {
         mailValues.put("has_issue", false);
         mailValues.put("mailSubject", "successSubject");
         mailValues.put("mailBody", "successBody");
+
         if (rowWiseIssues.size() > 0) {
             String filePath = appTmpPath.concat("/asset-bulk-upload-issues-" + System.currentTimeMillis() + ".csv");
             mailValues.put("file", filePath);
