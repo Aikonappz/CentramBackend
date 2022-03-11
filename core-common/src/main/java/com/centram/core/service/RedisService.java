@@ -41,6 +41,15 @@ public class RedisService {
     public Module getModuleById(BigInteger moduleId) {
         return null;
     }
+    @CachePut(value = "module", key = "#customerModuleName")
+    public Module saveModuleByCustomerModuleName(String customerModuleName, Module module) {
+        return module;
+    }
+
+    @Cacheable(value = "module", key = "#customerModuleName")
+    public Module getModuleByCustomerModuleName(String customerModuleName) {
+        return null;
+    }
     /*MODULE*/
 
     /*AppConfiguration*/

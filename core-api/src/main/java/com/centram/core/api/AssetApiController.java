@@ -23,8 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.math.BigInteger;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
@@ -84,6 +86,26 @@ public class AssetApiController {
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Asset>>(assetService.getAssets(productCategory, assetType, modelNo, serialNo, available, pageable), HttpStatus.OK);
+    }
+
+    /**
+     * upload assets in csv
+     *
+     * @param multipartFile
+     * @return
+     * @throws IOException
+     */
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload assets data csv", nickname = "uploadAssetsData", notes = "Upload assets data", tags = {"Asset",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Validation exception"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','WRITE',authentication.principal)")
+    public ResponseEntity uploadAssetsData(@ApiParam(value = "Assets CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
+        assetService.uploadAssetsData(multipartFile);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**

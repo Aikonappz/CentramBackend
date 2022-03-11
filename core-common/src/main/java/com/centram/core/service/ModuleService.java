@@ -51,6 +51,20 @@ public class ModuleService {
     }
 
     @Transactional(readOnly = true)
+    public Module getModuleByCustomerModuleName(String customerModuleName) {
+        Module module = redisService.getModuleByCustomerModuleName(customerModuleName);
+        if (module == null) {
+            module = moduleRepository.findByCustomerModuleNameIgnoreCase(customerModuleName);
+            if (module != null) {
+                redisService.saveModuleByCustomerModuleName(customerModuleName, module);
+            } else {
+                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            }
+        }
+        return module;
+    }
+
+    @Transactional(readOnly = true)
     public List<Module> getModuleByIds(List<BigInteger> moduleIds) {
         List<Module> modules = new ArrayList<Module>();
         for (BigInteger moduleId : moduleIds) {

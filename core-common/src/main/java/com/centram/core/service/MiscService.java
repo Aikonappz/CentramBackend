@@ -12,6 +12,7 @@ import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.NotificationType;
+import com.centram.domain.enumarator.PurchaseType;
 import com.centram.domain.enumarator.Status;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,67 +33,57 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.centram.common.utility.Utility.assetNo;
+
 
 @Service
 public class MiscService {
 
     private static final Logger log = LoggerFactory.getLogger(MiscService.class);
-
+    @Value("${app.default.asset.prefix}")
+    public String appDefaultAssetPrefix;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private AppEmailService appEmailService;
-
     @Autowired
     private OrganisationService organisationService;
-
     @Autowired
     private LocationService locationService;
-
     @Autowired
     private DistributionListService distributionListService;
-
     @Autowired
     private DepartmentService departmentService;
-
     @Autowired
     private VendorService vendorService;
-
     @Autowired
     private RoleService roleService;
-
+    @Autowired
+    private ProxyService proxyService;
     @Lazy
     @Autowired
     private UserService userService;
-
     @Autowired
     private ModuleService moduleService;
-
     @Autowired
     private AppConfigRepository appConfigRepository;
-
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
-
     @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
-
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
     private String appLocalDateTimeFormat;
-
     @Value("${app.mail.reply.email}")
     private String appReplyToEmail;
-
     @Value("${app.temp.path}")
     private String appTmpPath;
-
     @Autowired
     private NotificationService notificationService;
 
@@ -127,47 +119,43 @@ public class MiscService {
         for (Map<String, String> data : dataList) {
             user = new User();
             if (data.get("FIRST_NAME") == null || data.get("FIRST_NAME").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "First Name Required!");
+                rowWiseIssues.put(rowNo++, "First Name Required!");
                 continue;
             } else {
                 user.setFirstName(data.get("FIRST_NAME").trim());
             }
             if (data.get("LAST_NAME") == null || data.get("LAST_NAME").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "Last Name Required!");
+                rowWiseIssues.put(rowNo++, "Last Name Required!");
                 continue;
             } else {
                 user.setLastName(data.get("LAST_NAME").trim());
             }
             if (data.get("EMAIL") == null || data.get("EMAIL").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "User Email Required!");
+                rowWiseIssues.put(rowNo++, "User Email Required!");
                 continue;
             } else {
                 User u = userService.getUserByEmail(data.get("EMAIL").trim());
                 if (u != null) {
-                    rowWiseIssues.put(rowNo, "User With Same Email already Exist!");
+                    rowWiseIssues.put(rowNo++, "User With Same Email already Exist!");
                     continue;
                 }
                 user.setEmail(data.get("EMAIL").trim());
             }
             if (data.get("CONTACT_NO") == null || data.get("CONTACT_NO").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "Contact No Required!");
+                rowWiseIssues.put(rowNo++, "Contact No Required!");
                 continue;
             } else {
                 user.setContactNo(data.get("CONTACT_NO").trim());
             }
             if (data.get("ROLES") == null || data.get("ROLES").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "Roles Required!");
+                rowWiseIssues.put(rowNo++, "Roles Required!");
                 continue;
             } else {
                 List<Role> roles = roleService.getByDisplayNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
                 if (roles != null && roles.size() > 0) {
-                    user.setRoles(roles
-                            .stream()
-                            .map(Role::getId)
-                            .collect(Collectors.toList())
-                    );
+                    user.setRoles(roles.stream().map(Role::getId).collect(Collectors.toList()));
                 } else {
-                    rowWiseIssues.put(rowNo, "Provided Roles are not valid!");
+                    rowWiseIssues.put(rowNo++, "Provided Roles are not valid!");
                     continue;
                 }
             }
@@ -177,12 +165,12 @@ public class MiscService {
                 user.setSecContactNo(data.get("SEC_CONTACT_NO").trim());
             }
             if (data.get("EMP_ID") == null || data.get("EMP_ID").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "Employee Id Required!");
+                rowWiseIssues.put(rowNo++, "Employee Id Required!");
                 continue;
             } else {
                 User u = userService.getUserByEmployeeId(data.get("EMP_ID").trim());
                 if (u != null) {
-                    rowWiseIssues.put(rowNo, "User With Same Employee ID already Exist!");
+                    rowWiseIssues.put(rowNo++, "User With Same Employee ID already Exist!");
                     continue;
                 }
                 user.setEmployeeId(data.get("EMP_ID").trim());
@@ -193,27 +181,27 @@ public class MiscService {
                 user.setProjectCode(data.get("PROJECT_CODE").trim());
             }
             if (data.get("MANAGER_ID") == null || data.get("MANAGER_ID").trim().equals("")) {
-                rowWiseIssues.put(rowNo, "Manager Id Required!");
+                rowWiseIssues.put(rowNo++, "Manager Id Required!");
                 continue;
             } else {
                 User u = userService.getUserByEmployeeId(data.get("MANAGER_ID").trim());
                 if (u != null) {
                     user.setManagerId(u.getId());
                 } else {
-                    rowWiseIssues.put(rowNo, "Manager Id is not valid!");
+                    rowWiseIssues.put(rowNo++, "Manager Id is not valid!");
                     continue;
                 }
             }
             if (!loggedInUserDTO.getAppManager()) {
                 if (data.get("LOCATION") == null || data.get("LOCATION").trim().equals("")) {
-                    rowWiseIssues.put(rowNo, "Location Required!");
+                    rowWiseIssues.put(rowNo++, "Location Required!");
                     continue;
                 } else {
                     Location location = locationService.getByLocationName(data.get("LOCATION").trim().toUpperCase(Locale.ROOT));
                     if (location != null) {
                         user.setLocation(location);
                     } else {
-                        rowWiseIssues.put(rowNo, "Location is not valid!");
+                        rowWiseIssues.put(rowNo++, "Location is not valid!");
                         continue;
                     }
                 }
@@ -222,7 +210,7 @@ public class MiscService {
                     if (department != null) {
                         user.setDepartment(department);
                     } else {
-                        rowWiseIssues.put(rowNo, "Department is not valid!");
+                        rowWiseIssues.put(rowNo++, "Department is not valid!");
                         continue;
                     }
                 }
@@ -231,7 +219,7 @@ public class MiscService {
                     if (vendor != null) {
                         user.setVendor(vendor);
                     } else {
-                        rowWiseIssues.put(rowNo, "Vendor is not valid!");
+                        rowWiseIssues.put(rowNo++, "Vendor is not valid!");
                         continue;
                     }
                 }
@@ -289,23 +277,217 @@ public class MiscService {
         }
     }
 
+    /**
+     * save bulk uploaded user
+     *
+     * @param dataList
+     */
+    @Async("asyncExecutor")
+    public void saveBulkAssetData(List<Map<String, String>> dataList) {
+        LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Asset asset = null;
+        int rowNo = 2;
+        Module module = null;
+        Setting setting = null;
+        String prefix = null;
+        Department department = null;
+        Vendor vendor = null;
+        User u = null;
+        Location location = null;
+        Map<Integer, String> rowWiseIssues = new LinkedHashMap<Integer, String>();
+        for (Map<String, String> data : dataList) {
+            asset = new Asset();
+            try {
+                if (data.get("PRODUCT_CATEGORY") == null || data.get("PRODUCT_CATEGORY").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Product Category Required!");
+                    continue;
+                } else {
+                    module = moduleService.getModuleByCustomerModuleName(data.get("PRODUCT_CATEGORY").trim());
+                    if (module == null) {
+                        rowWiseIssues.put(rowNo++, "Product Category not exist!");
+                        continue;
+                    } else if (module.getAppModule() || module.getParentModuleId() != null) {
+                        rowWiseIssues.put(rowNo++, "Not a valid Product Category!");
+                        continue;
+                    } else {
+                        asset.setModuleId(module.getId());
+                    }
+                }
+                if (data.get("ASSET_CATEGORY") == null || data.get("ASSET_CATEGORY").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Asset Category Required!");
+                    continue;
+                } else {
+                    module = moduleService.getModuleByCustomerModuleName(data.get("ASSET_CATEGORY").trim());
+                    if (module == null) {
+                        rowWiseIssues.put(rowNo++, "Not a valid Asset Category!");
+                        continue;
+                    } else if (module.getParentModuleId().compareTo(asset.getModuleId()) != 0) {
+                        rowWiseIssues.put(rowNo++, "Asset Category not mapped with Product Category!");
+                        continue;
+                    } else {
+                        asset.setSubModuleId(module.getId());
+                    }
+                }
+                if (data.get("MODEL") == null || data.get("MODEL").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Asset Model Required!");
+                    continue;
+                } else {
+                    asset.setModelNo(data.get("MODEL").trim());
+                }
+                if (module.getGenerateAssetNo()) {
+                    setting = organisationService.getOrganisationSettings();
+                    prefix = (setting != null && setting.getAssetPrefix() != null) ? setting.getAssetPrefix() : appDefaultAssetPrefix;
+                    asset.setSerialNo(assetNo(prefix));
+                } else {
+                    asset.setSerialNo(data.get("SERIAL_NO").trim());
+                }
+                if (data.get("DEPARTMENT_NAME") != null && !data.get("DEPARTMENT_NAME").trim().equals("")) {
+                    department = departmentService.getByDepartmentName(data.get("DEPARTMENT_NAME").trim().toUpperCase(Locale.ROOT));
+                    if (department != null) {
+                        asset.setIsDepartment(true);
+                        asset.setDepartment(department);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Department is not valid!");
+                        continue;
+                    }
+                }
+                if (data.get("OFFICE_NAME") != null && !data.get("OFFICE_NAME").trim().equals("")) {
+                    location = locationService.getByOfficeName(data.get("OFFICE_NAME").trim().toUpperCase(Locale.ROOT));
+                    if (location != null) {
+                        asset.setIsDepartment(false);
+                        asset.setLocation(location);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Office name is not valid!");
+                        continue;
+                    }
+                }
+                if (asset.getDepartment() == null && asset.getLocation() == null) {
+                    rowWiseIssues.put(rowNo++, "Department/Office name both can't be blank!");
+                    continue;
+                }
+                if (data.get("LOCATION_NAME") != null && !data.get("LOCATION_NAME").trim().equals("")) {
+                    location = locationService.getByLocationName(data.get("LOCATION_NAME").trim().toUpperCase(Locale.ROOT));
+                    if (location != null) {
+                        asset.setIsLocation(true);
+                        asset.setRaisedForLocation(location);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Location is not valid!");
+                        continue;
+                    }
+                } else {
+                    asset.setIsLocation(false);
+                }
+                asset.setIsUnderWarranty(data.get("UNDER_WARRANT") != null && data.get("UNDER_WARRANT").trim().equalsIgnoreCase("YES"));
+                asset.setWarrantyExpiredAt(LocalDate.parse(data.get("WARRANTY_EXPIRED_ON"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
+                if (data.get("PURCHASE_TYPE") == null || data.get("PURCHASE_TYPE").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Purchase Type Required!");
+                    continue;
+                } else {
+                    asset.setPurchaseType(data.get("PURCHASE_TYPE").trim().equalsIgnoreCase("RENTED") ? PurchaseType.RENTED : PurchaseType.OWNED);
+                }
+                if (asset.getPurchaseType() == PurchaseType.RENTED) {
+                    if (data.get("RENTAL_START_ON") == null || data.get("RENTAL_START_ON").trim().equals("")) {
+                        rowWiseIssues.put(rowNo++, "Rental Start Required!");
+                        continue;
+                    } else {
+                        asset.setRentalStartAt(LocalDate.parse(data.get("RENTAL_START_ON"), DateTimeFormatter.ofPattern(dateFormat)).atStartOfDay());
+                    }
+                    if (data.get("RENTAL_END_ON") == null || data.get("RENTAL_END_ON").trim().equals("")) {
+                        rowWiseIssues.put(rowNo++, "Rental End Required!");
+                        continue;
+                    } else {
+                        asset.setRentalEndAt(LocalDate.parse(data.get("RENTAL_END_ON"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
+                    }
+                }
+                if (data.get("VENDOR") != null && !data.get("VENDOR").trim().equals("")) {
+                    vendor = vendorService.getByName(data.get("VENDOR").trim().toUpperCase(Locale.ROOT));
+                    if (vendor != null) {
+                        asset.setVendor(vendor);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Vendor is not valid!");
+                        continue;
+                    }
+                } else {
+                    rowWiseIssues.put(rowNo++, "Vendor Required!");
+                    continue;
+                }
+                if (data.get("REQUESTED_BY") == null || data.get("REQUESTED_BY").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Requested By Emp Id. Required!");
+                    continue;
+                } else {
+                    u = userService.getUserByEmployeeId(data.get("REQUESTED_BY").trim());
+                    if (u != null) {
+                        asset.setOrderRequestedUser(u);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Requested By Emp Id. is not valid!");
+                        continue;
+                    }
+                }
+                if (data.get("APPROVER_1") == null || data.get("APPROVER_1").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Approver 1 Emp Id. Required!");
+                    continue;
+                } else {
+                    u = userService.getUserByEmployeeId(data.get("APPROVER_1").trim());
+                    if (u != null) {
+                        asset.setApproverUser1(u);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Approver 1 Emp Id. is not valid!");
+                        continue;
+                    }
+                }
+                if (data.get("APPROVER_2") == null || data.get("APPROVER_2").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Approver 2 Emp Id. Required!");
+                    continue;
+                } else {
+                    u = userService.getUserByEmployeeId(data.get("APPROVER_2").trim());
+                    if (u != null) {
+                        asset.setApproverUser2(u);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Approver 2 Emp Id. is not valid!");
+                        continue;
+                    }
+                }
+                if (loggedInUserDTO.getOrganisationId() != null) {
+                    asset.setOrganisation(organisationService.getOrganisationById(loggedInUserDTO.getOrganisationId()));
+                }
+                asset.setIsAvailable(true);
+                asset = proxyService.saveAsset(asset);
+                log.info("{}", asset);
+            } catch (DataIntegrityViolationException e) {
+                rowWiseIssues.put(rowNo++, GenericErrorCode.ASSET_DATA_EXIST.getTemplate());
+                continue;
+            } catch (Exception e) {
+                rowWiseIssues.put(rowNo++, e.getMessage());
+                continue;
+            }
+        }
+        Map<String, Object> mailValues = new HashMap<>();
+        mailValues.put("upload_tp", "Asset");
+        mailValues.put("to", loggedInUserDTO.getEmail());
+        mailValues.put("recipient_name", loggedInUserDTO.getName());
+        mailValues.put("user", userService.getUserById(loggedInUserDTO.getUserId()));
+        mailValues.put("has_issue", false);
+        mailValues.put("mailSubject", "successSubject");
+        mailValues.put("mailBody", "successBody");
+        if (rowWiseIssues.size() > 0) {
+            String filePath = appTmpPath.concat("/asset-bulk-upload-issues-" + System.currentTimeMillis() + ".csv");
+            mailValues.put("file", filePath);
+            mailValues.put("has_issue", true);
+            mailValues.put("mailSubject", "failureSubject");
+            mailValues.put("mailBody", "failureBody");
+            this.saveUploadIssueFile(filePath, rowWiseIssues);
+        }
+        appEmailService.sendUploadResult(mailValues);
+    }
+
+
     private void saveUploadIssueFile(String absoluteFilePath, Map<Integer, String> rowWiseIssues) {
         List<String> data = new ArrayList<String>();
-        try (
-                CSVPrinter csvPrinter = CSVFormat.DEFAULT
-                        .withQuoteMode(QuoteMode.MINIMAL)
-                        .print(new File(absoluteFilePath), StandardCharsets.UTF_8)
-        ) {
-            data = Arrays.asList(
-                    "Line Number",
-                    "Issue Details"
-            );
+        try (CSVPrinter csvPrinter = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).print(new File(absoluteFilePath), StandardCharsets.UTF_8)) {
+            data = Arrays.asList("Line Number", "Issue Details");
             csvPrinter.printRecord(data);
             for (Map.Entry<Integer, String> entry : rowWiseIssues.entrySet()) {
-                data = Arrays.asList(
-                        String.valueOf(entry.getKey()),
-                        entry.getValue()
-                );
+                data = Arrays.asList(String.valueOf(entry.getKey()), entry.getValue());
                 csvPrinter.printRecord(data);
             }
         } catch (IOException e) {
@@ -334,22 +516,14 @@ public class MiscService {
         List<String> dlEmails = new ArrayList<String>();
         if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
             distributionLists = distributionListService.getByModuleIdAndSubModuleId(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId());
-            dlEmails = distributionLists.stream()
-                    .map(DistributionList::getDlEmail)
-                    .collect(Collectors.toList());
+            dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
-        List<UserVO> userVOS = userService.getUsersByRoles(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER")
-        );
+        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"));
         //String categoryAdminRole = "ORG_" + category + "_CATEGORY_ADMIN";
         //userService.getUsersByRoles(Collections.singletonList(categoryAdminRole));
         if (incidentEmailVO.getUserEmail().equalsIgnoreCase(loggedInUser.getEmail())) {
             if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
-                incidentEmailVO.setMailSubjectKey(getMailSubjectKeyByStatus(
-                        incidentEmailVO.getStatus(),
-                        incidentEmailVO.getReopened()
-                        )
-                );
+                incidentEmailVO.setMailSubjectKey(getMailSubjectKeyByStatus(incidentEmailVO.getStatus(), incidentEmailVO.getReopened()));
                 incidentEmailVO.setMailBodyKey("oldMailBody");
                 incidentEmailVO.setMailToType("AGENT");
                 incidentEmailVO.setTo(new String[]{incidentEmailVO.getAgentEmail()});
@@ -410,11 +584,7 @@ public class MiscService {
             userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
             List<UserVO> users = userService.getUsersByEmails(userEmails);
             for (UserVO userVO : users) {
-                incidentEmailVO.setMailSubjectKey(getMailSubjectKeyByStatus(
-                        incidentEmailVO.getStatus(),
-                        incidentEmailVO.getReopened()
-                        )
-                );
+                incidentEmailVO.setMailSubjectKey(getMailSubjectKeyByStatus(incidentEmailVO.getStatus(), incidentEmailVO.getReopened()));
                 incidentEmailVO.setMailBodyKey("newEmpMailBody");
                 incidentEmailVO.setMailToType("EMP");
                 incidentEmailVO.setTo(new String[]{userVO.getEmail()});
@@ -468,9 +638,7 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        List<UserVO> userVOS = userService.getUsersByRoles(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER")
-        );
+        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"));
         incidentEmailVO.setMailToType("AGENT");
         //prepare agent email
         incidentEmailVO.setMailSubjectKey("mailAssignSubject");
@@ -527,10 +695,7 @@ public class MiscService {
         String subCategory = modules.stream().filter(i -> {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
-        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
-                incidentEmailVO.getOrganisationId()
-        );
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         //prepare agent email
         incidentEmailVO.setMailToType("AGENT");
         incidentEmailVO.setMailSubjectKey("mailAssignSubject");
@@ -586,19 +751,10 @@ public class MiscService {
         List<DistributionList> distributionLists = new ArrayList<DistributionList>();
         List<String> dlEmails = new ArrayList<String>();
         if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
-            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
-                    incidentEmailVO.getModuleId(),
-                    incidentEmailVO.getSubModuleId(),
-                    incidentEmailVO.getOrganisationId()
-            );
-            dlEmails = distributionLists.stream()
-                    .map(DistributionList::getDlEmail)
-                    .collect(Collectors.toList());
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
+            dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
-        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
-                incidentEmailVO.getOrganisationId()
-        );
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         List<Notification> userNotifications = new ArrayList<Notification>();
         //String categoryAdminRole = "ORG_" + category + "_CATEGORY_ADMIN";
         //userService.getUsersByRoles(Collections.singletonList(categoryAdminRole));
@@ -648,19 +804,10 @@ public class MiscService {
         List<DistributionList> distributionLists = new ArrayList<DistributionList>();
         List<String> dlEmails = new ArrayList<String>();
         if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
-            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
-                    incidentEmailVO.getModuleId(),
-                    incidentEmailVO.getSubModuleId(),
-                    incidentEmailVO.getOrganisationId()
-            );
-            dlEmails = distributionLists.stream()
-                    .map(DistributionList::getDlEmail)
-                    .collect(Collectors.toList());
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
+            dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
-        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
-                incidentEmailVO.getOrganisationId()
-        );
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         incidentEmailVO.setMailSubjectKey("incident75MailSubject");
         incidentEmailVO.setMailBodyKey("oldMailBody");
         List<Notification> userNotifications = new ArrayList<Notification>();
@@ -710,23 +857,14 @@ public class MiscService {
         List<DistributionList> distributionLists = new ArrayList<DistributionList>();
         List<String> dlEmails = new ArrayList<String>();
         if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
-            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
-                    incidentEmailVO.getModuleId(),
-                    incidentEmailVO.getSubModuleId(),
-                    incidentEmailVO.getOrganisationId()
-            );
-            dlEmails = distributionLists.stream()
-                    .map(DistributionList::getDlEmail)
-                    .collect(Collectors.toList());
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
+            dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
         UserVO agentManagerUserVO = null;
         if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA") && incidentEmailVO.getAgentManagerId() != null) {
             agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
         }
-        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
-                incidentEmailVO.getOrganisationId()
-        );
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         if (agentManagerUserVO != null) {
             userVOS.add(agentManagerUserVO);
         }
@@ -735,11 +873,7 @@ public class MiscService {
         for (UserVO userVO : userVOS) {
             List<String> roles = userVO.getRoleNames();
             for (String s : roles) {
-                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail())
-                        || s.equals("ORG_INCIDENT_AGENT_LEAD")
-                        || (incidentEmailVO.getAgentManagerId() != null
-                        && userVO.getId().equals(incidentEmailVO.getAgentManagerId()))
-                ) {
+                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail()) || s.equals("ORG_INCIDENT_AGENT_LEAD") || (incidentEmailVO.getAgentManagerId() != null && userVO.getId().equals(incidentEmailVO.getAgentManagerId()))) {
                     userEmails.add(userVO.getEmail());
                     userVOSet.add(userVO);
                 }
@@ -804,23 +938,14 @@ public class MiscService {
         List<DistributionList> distributionLists = new ArrayList<DistributionList>();
         List<String> dlEmails = new ArrayList<String>();
         if (incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
-            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(
-                    incidentEmailVO.getModuleId(),
-                    incidentEmailVO.getSubModuleId(),
-                    incidentEmailVO.getOrganisationId()
-            );
-            dlEmails = distributionLists.stream()
-                    .map(DistributionList::getDlEmail)
-                    .collect(Collectors.toList());
+            distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisation(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
+            dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
         UserVO agentManagerUserVO = null;
         if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA") && incidentEmailVO.getAgentManagerId() != null) {
             agentManagerUserVO = userService.getUserById(incidentEmailVO.getAgentManagerId());
         }
-        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(
-                Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),
-                incidentEmailVO.getOrganisationId()
-        );
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         if (agentManagerUserVO != null) {
             userVOS.add(agentManagerUserVO);
         }
@@ -829,12 +954,7 @@ public class MiscService {
         for (UserVO userVO : userVOS) {
             List<String> roles = userVO.getRoleNames();
             for (String s : roles) {
-                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail())
-                        || s.equals("ORG_INCIDENT_AGENT_MANAGER")
-                        || s.equals("ORG_INCIDENT_AGENT_LEAD")
-                        || (incidentEmailVO.getAgentManagerId() != null
-                        && userVO.getId().equals(incidentEmailVO.getAgentManagerId()))
-                ) {
+                if (userVO.getEmail().equals(incidentEmailVO.getAgentEmail()) || s.equals("ORG_INCIDENT_AGENT_MANAGER") || s.equals("ORG_INCIDENT_AGENT_LEAD") || (incidentEmailVO.getAgentManagerId() != null && userVO.getId().equals(incidentEmailVO.getAgentManagerId()))) {
                     userEmails.add(userVO.getEmail());
                     userVOSet.add(userVO);
                 }
@@ -917,12 +1037,9 @@ public class MiscService {
         mailValues.put("adminTeamEmail", appReplyToEmail);
         mailValues.put("expired_date", organisation.getLicenseEnd().format(DateTimeFormatter.ofPattern(dateFormat)));
         mailValues.put("recipientType", organisation.getName().concat(" Team"));
-        List<String> orgEmails = organisation.getContactPersons().stream()
-                .filter(i -> {
-                    return i.getEmail() != null;
-                })
-                .map(ContactPerson::getEmail)
-                .collect(Collectors.toList());
+        List<String> orgEmails = organisation.getContactPersons().stream().filter(i -> {
+            return i.getEmail() != null;
+        }).map(ContactPerson::getEmail).collect(Collectors.toList());
         mailValues.put("recipients", orgEmails);
         mailValues.put("userToNotify", new ArrayList<UserVO>());
         appEmailService.organisationNotification(mailValues, expired);
@@ -932,12 +1049,9 @@ public class MiscService {
         mailValues.put("expired_date", organisation.getLicenseEnd().format(DateTimeFormatter.ofPattern(dateFormat)));
         mailValues.put("recipientType", "Site Admin");
         List<UserVO> users = userService.getAdminUsers();
-        orgEmails = users.stream()
-                .filter(i -> {
-                    return i.getEmail() != null;
-                })
-                .map(UserVO::getEmail)
-                .collect(Collectors.toList());
+        orgEmails = users.stream().filter(i -> {
+            return i.getEmail() != null;
+        }).map(UserVO::getEmail).collect(Collectors.toList());
         mailValues.put("recipients", orgEmails);
         mailValues.put("userToNotify", users);
         appEmailService.organisationNotification(mailValues, expired);

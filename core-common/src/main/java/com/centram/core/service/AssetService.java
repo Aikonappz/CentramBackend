@@ -10,9 +10,7 @@ import com.centram.domain.Asset;
 import com.centram.domain.Module;
 import com.centram.domain.Setting;
 import com.centram.domain.enumarator.PurchaseType;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.csv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +21,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.centram.common.utility.Utility.assetNo;
 
@@ -225,4 +220,38 @@ public class AssetService {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
+
+    /**
+     * upload assets data
+     *
+     * @param multipartFile
+     * @throws IOException
+     */
+    public void uploadAssetsData(MultipartFile multipartFile) throws IOException {
+        LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (multipartFile.getBytes().length == 0) {
+            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+        }
+        List<Map<String, String>> values = new ArrayList<Map<String, String>>();
+        List<String> commonHeaders = Arrays.asList("PRODUCT_CATEGORY","ASSET_CATEGORY","MODEL","SERIAL_NO","DEPARTMENT_NAME","OFFICE_NAME","LOCATION_NAME","UNDER_WARRANT?","WARRANTY_EXPIRED_ON","PURCHASE_TYPE","RENTAL_START_ON","RENTAL_END_ON","VENDOR","REQUESTED_BY","APPROVER_1","APPROVER_2");
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
+             CSVParser csvParser = new CSVParser(fileReader,
+                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())
+        ) {
+            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+            for (CSVRecord csvRecord : csvRecords) {
+                values.add(
+                        csvRecord.toMap()
+                                .entrySet().stream()
+                                .filter(i -> commonHeaders.contains(i.getKey()))
+                                .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()))
+                );
+            }
+            //log.info("Uploaded Users data => {}", values);
+            miscService.saveBulkAssetData(values);
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
+        }
+    }
+
 }

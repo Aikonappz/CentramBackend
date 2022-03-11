@@ -6,9 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.LocationRepository;
-
 import com.centram.domain.Location;
-import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +54,16 @@ public class LocationService {
      * @return
      */
     @Transactional(readOnly = true)
-    //@Cacheable(value = "locations", key = "#locationId")
     public Location getByLocationName(String locationName) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return locationRepository.getByLocationName(locationName, loggedInUser.getOrganisationId());
+    }
+
+
+    @Transactional(readOnly = true)
+    public Location getByOfficeName(String officeName) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return locationRepository.getByOfficeName(officeName, loggedInUser.getOrganisationId());
     }
 
     /**
