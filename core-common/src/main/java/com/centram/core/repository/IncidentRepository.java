@@ -4,6 +4,7 @@ package com.centram.core.repository;
 import com.centram.common.vo.*;
 import com.centram.domain.Incident;
 import com.centram.domain.enumarator.IncidentStatus;
+import com.centram.domain.enumarator.LicenseType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,7 +37,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("ids") List<BigInteger> ids
     );
 
-    @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and " +
+    @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and i.incidentType = (:incidentType) and " +
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
@@ -53,15 +54,17 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:title) is null) " +
             " ) "
     )
-    Page<Incident> getIncidents(
-            @Param("raisedUserId") BigInteger raisedUserId,
+    Page<Incident> getUserIncidents(
+            @Param("incidentType") LicenseType incidentType,
             @Param("incidentNo") String incidentNo,
             @Param("title") String title,
             @Param("status") Integer status,
+            @Param("raisedUserId") BigInteger raisedUserId,
+
             Pageable pageable
     );
 
-    @Query("select i from Incident i where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and " +
+    @Query("select i from Incident i where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and i.incidentType = (:incidentType) and " +
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
@@ -99,6 +102,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " ) "
     )
     Page<Incident> getIncomingIncidents(
+            @Param("incidentType") LicenseType incidentType,
             @Param("incidentNo") String incidentNo,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
@@ -290,7 +294,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     List<Incident> getIncidentsByOrganisationAndStatus(@Param("organisationId") BigInteger organisationId, @Param("statuses") List<IncidentStatus> statuses);
 
     @Query("select i from Incident i where i.raisedUser.location.id = (:locationId) and i.moduleId = (:categoryId) and i.subModuleId = (:subCategoryId) and i.status in (:statuses) and i.organisation.id = (:organisationId) order by i.id asc")
-    List<Incident> getIncidents(
+    List<Incident> getUserIncidents(
             @Param("categoryId") BigInteger categoryId,
             @Param("subCategoryId") BigInteger subCategoryId,
             @Param("locationId") BigInteger locationId,

@@ -4,16 +4,23 @@ import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { Location } from '@angular/common';
+import { Role } from '../../model/Role';
 import { MiscService } from '../../service/MiscService';
+import { Priority, PriorityList } from '../../model/Priority';
+import { Incident } from '../../model/Incident';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { Permission } from '../../model/Permssion';
+import { UserVO, UserVOListResponse } from '../../model/UserVO';
+import { IncidentCommunication } from '../../model/IncidentCommunication';
+import { IncidentService } from '../../service/IncidentService';
 import { MediaService } from '../../service/MediaService';
-import * as moment from 'moment';
-import { AppUtility } from '../../config/AppUtility';
-import { ClientStorageService } from '../../service/ClientStorageService';
-import { AssetRequestService } from '../../service/AssetRequestService';
-import { AssetRequest } from '../../model/AssetRequest';
 import { EntityType } from '../../model/enumerator/EntityType';
 import { MediaType } from '../../model/enumerator/MediaType';
+import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
+import * as moment from 'moment';
+import { AppUtility } from '../../config/AppUtility';
+import { Status } from '../../model/enumerator/Status';
+import { ClientStorageService } from '../../service/ClientStorageService';
 declare var $: any;
 
 @Component({
@@ -22,18 +29,32 @@ declare var $: any;
   styleUrls: ['./request-asset.component.scss']
 })
 export class RequestAssetComponent implements OnInit {
-  moduleName: string = "REQUEST ASSET";
+  moduleName: string = "MY ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
+  defaultStatus: any = 'OPEN';
+  statusFlag: boolean = true;
   entityId: number;
-  angForm: FormGroup;
-  assetRequest: AssetRequest;
-  assetList: Set<string> = new Set<string>();
-  modelList: Set<string> = new Set<string>();
-  assetModelList: any[] = [];
-  productTypes: Set<string> = new Set<string>();
+  permissions: Permission[] = [];
+  moduleList: Permission[] = [];
+  subModuleList: Permission[];
+  priorities: any[] = [];
+  roles: Role[] = [];
+  users: UserVO[] = [];
+  incident: Incident;
+  incidentCommunication: IncidentCommunication;
+  incidentCommunications: IncidentCommunication[] = [];
+  statusList: any = [];
   selectedFiles?: FileList;
-
+  angForm: FormGroup;
+  ckeditorToolbarConfig: any;
+  readOnlyckeditorToolbarConfig: any;
+  hasAgentPermission: boolean;
+  mngrDtl: UserVO;
+  draftData: any = { "new": null, "existing": [] };
+  referer: string;
+  mode: string;
+  canEdit: boolean = true;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -41,9 +62,9 @@ export class RequestAssetComponent implements OnInit {
     private titleService: Title,
     private router: Router,
     private loggedInUserService: LoggedInUserService,
-    private assetRequestService: AssetRequestService,
     private miscService: MiscService,
     private userService: UserService,
+    private incidentService: IncidentService,
     private mediaService: MediaService,
     private clientStorageService: ClientStorageService,
   ) {
@@ -53,37 +74,115 @@ export class RequestAssetComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    this.miscService
-      .assetModelsService()
-      .subscribe((data: any) => {
-        this.assetModelList = data;
-        for (let k in data) {
-          if (data[k].status == "ACTIVE")
-            this.productTypes.add(data[k].productCategory);
-        }
-      });
-    this.angForm = this.fb.group({
-      productCategory: new FormControl('', [
-        Validators.required,
-      ]),
-      assetType: new FormControl('', [
-        Validators.required,
-      ]),
-      modelNo: new FormControl('', [
-        //Validators.required,
-      ]),
-      longTerm: new FormControl('', [
-        Validators.required,
-      ]),
-      comment: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(255),
-      ]),
-      fileInput: new FormControl(null, [
-      ]),
-    }, {
+    this.incident = new Incident();
+    this.incident.status = this.defaultStatus;
+    this.hasAgentPermission = false;
+    this.mngrDtl = new UserVO();
+    this.route.params.subscribe(params => {
+      this.referer = this.route.snapshot.paramMap.get('referer');
+      this.mode = this.route.snapshot.paramMap.get('mode');
     });
-    this.assetRequest = new AssetRequest();
+    for (let item in IncidentStatus) {
+      if (item != "ALL" && item != "OPEN"
+        && item != "ASSIGNED" && item != "SLA_ABOUT_TO_BREACH"
+        && item != "SLA_BREACHED" && item != "CLARIFICATION_PROVIDED") {
+        this.statusList.push({ "key": item, "value": IncidentStatus[item] });
+      }
+    }
+    this.statusList.sort(function (a, b) {
+      if (b.key > a.key) return -1;
+      if (a.key > b.key) return 1;
+      return 0;
+    });
+    this.permissions = this.loggedInUserService.getModulePermissions();
+    let p;
+    this.moduleList = [];
+    for (let i in this.permissions) {
+      if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == 'ASSET') {
+        p = new Permission(this.permissions[i]);
+        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        this.moduleList.push(p);
+      }
+    }
+    if (!this.route.snapshot.paramMap.has('id')) {
+      this.angForm = this.fb.group({
+        moduleId: new FormControl(null, [
+          Validators.required,
+        ]),
+        subModuleId: new FormControl(null, [
+          Validators.required,
+        ]),
+        priorityId: new FormControl(null, [
+          Validators.required,
+        ]),
+        title: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(255),
+        ]),
+        watchList: new FormControl(null, [
+        ]),
+        fileInput: new FormControl('', [
+        ]),
+        message: new FormControl('', [
+          Validators.required,
+        ]),
+      });
+      this.miscService.prioritiesService({ "sort": "name,asc" })
+        .subscribe((result: PriorityList) => {
+          this.priorities = result.content;
+          for (let k in this.priorities) {
+            this.priorities[k].label = this.priorities[k].name + " (" + this.priorities[k].description + ") ";
+          }
+          this.userService.getUsersService()
+            .subscribe((result: UserVOListResponse) => {
+              let logedinUser = this.loggedInUserService.getLoggedInUser();
+              this.users = [];
+              for (let i = 0; i < result.content.length; i++) {
+                if (logedinUser.userId != result.content[i].id)
+                  this.users.push(result.content[i]);
+              }
+              if (this.mode === 'draft' && this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY)) {
+                this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY));
+                if (this.draftData.new != null) {
+                  this.populateSubmodule({ moduleId: this.draftData.new.moduleId });
+                  this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
+                  this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
+                  this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
+                  this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                  this.angForm.get('title').setValue(this.draftData.new.title);
+                  this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
+                }
+              }
+            });
+        });
+    } else {
+      this.angForm = this.fb.group({
+        priorityId: new FormControl(null, [
+          Validators.required,
+        ]),
+        newStatus: new FormControl(null, [
+        ]),
+        fileInput: new FormControl('', [
+        ]),
+        message: new FormControl('', [
+          Validators.required,
+        ]),
+      });
+      this.miscService.prioritiesService({ "sort": "name,asc" })
+        .subscribe((result: PriorityList) => {
+          this.priorities = result.content;
+          for (let k in this.priorities) {
+            this.priorities[k].label = this.priorities[k].name + " (" + this.priorities[k].description + ") ";
+          }
+          this.userService.getUsersService()
+            .subscribe((result: UserVOListResponse) => {
+              this.users = result.content;
+            });
+        });
+      this.newEntity = false;
+      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+      this.callIncidentService(this.entityId);
+    }
   }
 
   hasPermission(actions: string): boolean {
@@ -108,107 +207,153 @@ export class RequestAssetComponent implements OnInit {
     return data;
   }
 
-  ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      //console.log(this.route.snapshot.paramMap.get('referer'));
-    });
-    if (!this.route.snapshot.paramMap.has('id')) {
-    } else {
-      this.newEntity = false;
-      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-    }
-  }
+  ngOnInit(): void { }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() { }
 
   ngAfterContentInit() {
     $(function () {
+      $("#comments").accordion({
+        //icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
+        heightStyle: "content",
+        active: false,
+        collapsible: true,
+        activate: function (event, ui) {
+          var index = $(this).accordion("option", "active");
+          console.log(index);
+          if (index === false) {
+            $('#comments-action').addClass('fa-plus-circle');
+            $('#comments-action').removeClass('fa-minus-circle');
+            $('#highlight').text('Expand');
+          }
+          else {
+            $('#comments-action').removeClass('fa-plus-circle');
+            $('#comments-action').addClass('fa-minus-circle');
+            $('#highlight').text('Collapse');
+          }
+        }
+      });
     });
-  }
-
-  @ViewChild("productCategory") productCategory;
-  populateChildValues(productCategory: string) {
-    if (productCategory != "") {
-      this.assetList = new Set<string>();
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory && this.assetModelList[k].status == "ACTIVE") {
-          this.assetList.add(this.assetModelList[k].assetType);
-          this.modelList.add(this.assetModelList[k].modelNo);
-        }
-      }
-      this.angForm.controls['assetType'].setValue("");
-      this.angForm.controls['modelNo'].setValue("");
-    }
-  }
-
-  @ViewChild("assetType") assetType;
-  populateAssetModels(assetType: string) {
-    if (assetType != "") {
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].assetType == assetType && this.assetModelList[k].status == "ACTIVE") {
-          this.modelList.add(this.assetModelList[k].modelNo);
-        }
-      }
-      this.angForm.controls['modelNo'].setValue("");
-    }
   }
 
   get f() { return this.angForm.controls; }
 
-  formSubmit() {
+  formSubmit(sts: any) {
     if (this.angForm.valid) {
-      this.assetRequest.productCategory = this.angForm.controls['productCategory'].value;
-      this.assetRequest.assetType = this.angForm.controls['assetType'].value;
-      this.assetRequest.modelNo = this.angForm.controls['modelNo'].value == "" ? null : this.angForm.controls['modelNo'].value;
-      this.assetRequest.longTerm = this.angForm.controls['longTerm'].value == 1 ? true : false;
-      this.assetRequest.comment = this.angForm.controls['comment'].value;
-      //console.log(JSON.stringify(this.assetRequest));
-      this.callSaveAssetService();
+      //console.log(this.angForm);
+      // prepare incident  object
+      // let selected = null;
+      // let index = null;
+      // let val = null;
+      // let watchers = $('#watchList').val();
+      // for (let k in watchers) {
+      //   selected = watchers[k].split(":");
+      //   index = selected[0];
+      //   val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
+      //   console.log(index + '==' + val);
+      //   watchers[k] = val;
+      // }
+      if (sts === "DRAFT") {
+        let returnPath = '/asset/requested';
+        if (this.referer === 'agent-all') {
+          returnPath = '/incident/agent/all';
+        } else if (this.referer === 'agent-mine') {
+          returnPath = '/incident/agent/mine';
+        }
+        let inc = new Incident();
+        let ic = new IncidentCommunication();
+        let priorityId = this.angForm.controls['priorityId'].value;
+        let priority = new Priority();
+        for (let i in this.priorities) {
+          if (this.priorities[i].id == priorityId) {
+            priority.id = priorityId;
+            priority.name = this.priorities[i].name;
+            priority.version = this.priorities[i].version;
+          }
+        }
+        if (this.newEntity) {
+          inc.moduleId = this.angForm.controls['moduleId'].value;
+          inc.subModuleId = this.angForm.controls['subModuleId'].value;
+          inc.title = this.angForm.controls['title'].value;
+          inc.watchList = this.angForm.controls['watchList'].value;
+          inc.priority = priority;
+          inc.status = sts;
+          ic = new IncidentCommunication();
+          ic.message = this.angForm.controls['message'].value;
+          inc.communications.push(ic);
+          this.draftData.new = inc;
+          this.clientStorageService.set(AppUtility.APP_ASSET_DRAFT_KEY, JSON.stringify(this.draftData));
+          this.router.navigate([returnPath]);
+        } else {
+          ic = new IncidentCommunication();
+          ic.message = this.angForm.controls['message'].value;
+          if (this.hasAgentPermission) {
+            inc.priority = priority;
+            inc.status = this.angForm.controls['newStatus'].value;
+          }
+          inc.communications.push(ic);
+          inc.id = this.incident.id;
+          if (this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY)) {
+            this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY));
+            let hasDraftData = false;
+            for (let k in this.draftData.existing) {
+              if (this.draftData.existing[k].id == this.incident.id) {
+                this.draftData.existing[k] = inc;
+                hasDraftData = true;
+                break;
+              } else {
+                continue;
+              }
+            }
+            if (!hasDraftData) {
+              this.draftData.existing.push(inc);
+            }
+          } else {
+            this.draftData.existing.push(inc);
+          }
+          this.clientStorageService.set(AppUtility.APP_ASSET_DRAFT_KEY, JSON.stringify(this.draftData));
+          this.router.navigate([returnPath]);
+        }
+      } else {
+        let priorityId = this.angForm.controls['priorityId'].value;
+        let priority = new Priority();
+        for (let i in this.priorities) {
+          if (this.priorities[i].id == priorityId) {
+            priority.id = priorityId;
+            priority.name = this.priorities[i].name;
+            priority.version = this.priorities[i].version;
+            priority.organisation = null;
+          }
+        }
+        if (this.newEntity) {
+          this.incident.moduleId = this.angForm.controls['moduleId'].value;
+          this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
+          this.incident.title = this.angForm.controls['title'].value;
+          this.incident.watchList = this.angForm.controls['watchList'].value;
+          this.incident.assignedUser = null;
+          this.incident.raisedUser = null;
+          this.incident.priority = priority;
+          this.incident.status = this.defaultStatus;
+        } else {
+          this.incident.priority = priority;
+          if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
+            this.incident.status = this.angForm.controls['newStatus'].value;
+          }
+        }
+        // prepare incidentCommunication object
+        this.incidentCommunication = new IncidentCommunication();
+        this.incidentCommunication.message = this.angForm.controls['message'].value;
+        this.incidentCommunication.communicatedBy = null;
+        this.incidentCommunication.incident = null;
+        this.incident.communications.push(this.incidentCommunication);
+        this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };
+        //console.log(this.incident);
+        this.incident.incidentType = 2;
+        this.callSaveIncidentService();
+      }
     } else {
       console.log("Invalid Form!");
     }
-  }
-
-  goBack() {
-    this._location.back();
-  }
-
-  callSaveAssetService() {
-    this.assetRequestService
-      .saveAssetRequest(this.assetRequest)
-      .subscribe((data: any) => {
-        if (typeof this.selectedFiles != "undefined") {
-          if (this.selectedFiles.length > 0) {
-            const formData: FormData = new FormData();
-            for (var i = 0; i < this.selectedFiles.length; i++) {
-              formData.append("file", this.selectedFiles[i]);
-            }
-            let headers = new Headers();
-            headers.append('Content-Type', 'multipart/form-data');
-            headers.set('Accept', 'application/json');
-            let commId = data.id;
-            this.mediaService
-              .saveMediaService(commId, EntityType.ASSET_REQUEST, MediaType.ASSET_REQUEST, formData, { 'headers': headers })
-              .subscribe((data: any) => {
-                this.router.navigate(['/asset/requested']);
-              });
-          } else {
-            this.router.navigate(['/asset/requested']);
-          }
-        } else {
-          this.router.navigate(['/asset/requested']);
-        }
-      });
-  }
-
-  formatDateTime(d: string) {
-    if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
-    }
-    return null;
   }
 
   getFileDetails(event) {
@@ -236,5 +381,218 @@ export class RequestAssetComponent implements OnInit {
         'Last-Modified-Date: ' + modifiedDate + "\n" +
         'Size: ' + Math.round(size / 1024) + " KB");
     }
+  }
+
+  handleDraftData() {
+    this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY));
+    if (this.draftData != null) {
+      if (this.newEntity && this.mode == "draft") {
+        this.draftData.new = null;
+      } else {
+        let existingData = [];
+        for (let k in this.draftData.existing) {
+          if (this.draftData.existing[k].id != this.entityId) {
+            existingData.push(this.draftData.existing[k]);
+          }
+        }
+        this.draftData.existing = existingData;
+      }
+      this.clientStorageService.set(AppUtility.APP_ASSET_DRAFT_KEY, JSON.stringify(this.draftData));
+    }
+  }
+
+  goBack() {
+    this.handleDraftData();
+    this._location.back();
+  }
+
+  callSaveIncidentService() {
+    let returnPath = '/asset/requested';
+    if (this.referer === 'agent-all') {
+      returnPath = '/incident/agent/all';
+    } else if (this.referer === 'agent-mine') {
+      returnPath = '/incident/agent/mine';
+    }
+    this.incidentService
+      .saveIncidentService(this.incident)
+      .subscribe((data: Incident) => {
+        //console.log(data);
+        this.handleDraftData();
+        if (typeof this.selectedFiles != "undefined") {
+          if (this.selectedFiles.length > 0) {
+            const formData: FormData = new FormData();
+            for (var i = 0; i < this.selectedFiles.length; i++) {
+              formData.append("file", this.selectedFiles[i]);
+            }
+            let headers = new Headers();
+            headers.append('Content-Type', 'multipart/form-data');
+            headers.set('Accept', 'application/json');
+            let commId = data.communications[0].id;
+            this.mediaService
+              .saveMediaService(commId, EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION, formData, { 'headers': headers })
+              .subscribe((data: any) => {
+                this.router.navigate([returnPath]);
+              });
+          } else {
+            this.router.navigate([returnPath]);
+          }
+        } else {
+          this.router.navigate([returnPath]);
+        }
+      });
+  }
+
+  callIncidentService(id: number) {
+    this.incidentService
+      .incidentService(id)
+      .subscribe((data: any) => {
+        //console.log(JSON.stringify(data));
+        this.incident.version = data.version;
+        this.incident.id = data.id;
+        this.incident.moduleId = data.moduleId;
+        this.incident.subModuleId = data.subModuleId;
+        this.incident.priority = data.priority;
+        this.incident.title = data.title;
+        this.incident.watchList = data.watchList;
+        this.incident.assignedUser = data.assignedUser;
+        this.incident.raisedUser = data.raisedUser;
+        this.incident.slaAt = data.slaAt;
+        this.incident.incidentNo = data.incidentNo;
+        this.incident.raisedAt = data.raisedAt;
+        this.incident.status = data.status;
+        this.incident.holdAt = data.holdAt;
+        this.incident.moduleName = data.moduleName;
+        this.incident.subModuleName = data.subModuleName;
+        this.incident.communications = data.communications;
+        this.incidentCommunications = data.communications;
+        this.populateSubmodule({ moduleId: this.incident.moduleId });
+        let org = data.organisation;
+        this.incident.organisation = { id: org.id, version: org.version };
+        for (let k in this.incident.communications) {
+          this.incident.communications[k].communicatedBy.status = Status[this.incident.communications[k].communicatedBy.status];
+        }
+        if (this.incident.assignedUser != null) {
+          this.incident.assignedUser.status = Status[this.incident.assignedUser.status];
+        }
+        if (this.incident.raisedUser != null) {
+          this.incident.raisedUser.status = Status[this.incident.raisedUser.status];
+        }
+        let actualModuleName = data.actualModuleName;
+        let actualSubModuleName = data.actualSubModuleName;
+        let categoryAdminRoleName = "ORG_" + actualModuleName + "_CATEGORY_ADMIN";
+        let logedinUser = this.loggedInUserService.getLoggedInUser();
+        this.hasAgentPermission = false;
+        if (this.incident.raisedUser.id == logedinUser.userId) {
+          console.log("raised user who raised the incident");
+          // for user who raised the incident
+          this.canEdit = true;
+        } else if (this.incident.assignedUser != null && this.incident.assignedUser.id == logedinUser.userId) {
+          // for assigned agent who can edit, after assignment
+          console.log("assigned agent who can edit, after assignment");
+          this.canEdit = true;
+          this.hasAgentPermission = true;
+        } else if (this.incident.assignedUser != null && this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
+          // for agent lead/manager who can edit, after assignment
+          console.log("agent lead/manager who can edit, after assignment");
+          this.canEdit = true;
+          this.hasAgentPermission = true;
+        } else if (this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
+          // for agent, agent lead/manager who can only view because incident not assigned yet to any one.
+          console.log("agent, agent lead/manager who can only view because incident not assigned yet to any one.");
+          this.canEdit = false;
+          this.hasAgentPermission = true;
+        } else if (this.loggedInUserService.hasRole("ORG_ADMIN")) {
+          // for org admin user only can view incident details
+          console.log("org admin user only can view incident details");
+          this.canEdit = false;
+        } else if (this.loggedInUserService.hasRole(categoryAdminRoleName)) {
+          // for category admin user only can view incident details
+          console.log("category admin user only can view incident details");
+          this.canEdit = false;
+        } else {
+          console.log("user don't have any access to this incident");
+          // for user don't have any access to this incident
+          this.router.navigate(['/no-access']);
+        }
+        this.angForm.get('priorityId').setValue(this.incident.priority.id);
+        /*this.angForm.get('status').setValue(this.incident.status);
+        console.log(JSON.stringify(this.incident));
+        this.angForm.markAllAsTouched();*/
+        //getagent manager details
+        this.userService
+          .getUserService(this.incident.raisedUser.managerId)
+          .subscribe((data: any) => {
+            this.mngrDtl = data;
+          });
+        //check if has draft data. if so the populate fields
+        if (this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY)) {
+          this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY));
+          if (this.draftData.existing.length > 0) {
+            for (let k in this.draftData.existing) {
+              if (this.draftData.existing[k].id == this.entityId) {
+                if (this.hasAgentPermission) {
+                  this.angForm.get('priorityId').setValue(this.draftData.existing[k].priority.id);
+                  this.angForm.get('newStatus').setValue(this.draftData.existing[k].status);
+                }
+                this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
+                break;
+              } else {
+                continue;
+              }
+            }
+          }
+        }
+      });
+  }
+
+  @ViewChild("moduleId") moduleId;
+  populateSubmodule(moduleId) {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
+      this.subModuleList = [];
+      let p;
+      for (let i = 0; i < this.permissions.length; i++) {
+        if (this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == 'ASSET') {
+          p = new Permission(this.permissions[i]);
+          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          this.subModuleList[c] = p;
+          c++;
+        }
+      }
+      this.angForm.controls['subModuleId'].setValue(null);
+    } else {
+      this.angForm.controls['subModuleId'].setValue(null);
+    }
+  }
+
+  downloadFile(idFile: number) {
+    this.mediaService
+      .downloadMediaService(idFile, {})
+      .subscribe((data: any) => {
+        //console.log(data);
+        let blob = new Blob([data], { type: data.type });
+        let url = window.URL.createObjectURL(blob);
+        let pwa = window.open(url);
+        if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+          //alert('Please disable your Pop-up blocker and try again.');
+        }
+      });
+    return false;
+  }
+
+  formatDateTime(d: string) {
+    if (d != null && d != "") {
+      //console.log(moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT));
+      //console.log(moment(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT));
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+    }
+    return null;
+  }
+
+  makeTitleCase(str: string): string {
+    if (str != '' && typeof str != "undefined") {
+      return AppUtility.toTitleCase(str);
+    }
+    return '';
   }
 }

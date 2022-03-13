@@ -8,118 +8,173 @@
                             <i class="fa fa-align-justify"></i> Requested Assets
                         </div>
                         <div class="col-md-2 float-right">
-                            <!-- <div class="btn-group d-flex justify-content-between" dropdown>
-                                <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
-                                        class="caret"></span></button>
-                                <ul *dropdownMenu class="dropdown-menu" role="menu">
-                                    <li role="menuitem">
-                                        <a class="dropdown-item" (click)="add()" *ngIf="hasPermission('WRITE')"
-                                            href="javascript:void(0);">
-                                            <i class="icon-plus"></i> Request an Asset
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div> -->
+                            <!-- <button type="button" class="btn btn-sm btn-minimize"><i
+                                    class="icon-cloud-upload"></i></button> -->
+                            <!-- <button type="button" class="btn btn-sm btn-minimize"><i
+                                    class="icon-cloud-download"></i></button> -->
+                            <!-- <button type="button" class="btn btn-sm btn-primary" (click)="add()"><i
+                                    class="icon-plus"></i> Raise an Incident
+                            </button> -->
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div *ngIf="hasPermission('SEARCH')" class="card ">
                         <div class="card-header">
-                            <i class="fa fa-search"></i>Search Requested Asset
+                            <i class="fa fa-search"></i> Search Requested Assets
                         </div>
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="productCategory">Product
+                                        <label class="form-col-form-label" for="incidentNo">Asset Request Number</label>
+                                        <input type="text" formControlName="incidentNo" id="incidentNo"
+                                            name="incidentNo" class="form-control" placeholder="Incident Number"
+                                            aria-label="Asset Request Number">
+                                    </div>
+                                    <div class="col"></div>
+                                    <div class="col"></div>
+                                </div>
+                                <div class="row row-margin-05">
+                                    <div class="col">
+                                        <label class="form-col-form-label required-control-label" for="moduleId">Product
                                             Category</label>
-                                        <select class="form-control" #productCategory
-                                            (change)="populateChildValues($event.target.value)"
-                                            formControlName="productCategory" ngModel id="productCategory"
-                                            name="productCategory">
-                                            <option value="">-- Select Product Category --</option>
-                                            <option *ngFor="let e of productTypes" value="{{e}}">{{e}}</option>
-                                        </select>
+                                        <ng-select [items]="moduleList" placeholder="-- Select Product Category --"
+                                            #moduleId (change)="populateSubmodule($event)" formControlName="moduleId"
+                                            id="moduleId" name="moduleId" bindLabel="customerModuleName"
+                                            bindValue="moduleId">
+                                        </ng-select>
+                                        <div *ngIf="f.moduleId.touched && f.moduleId.invalid"
+                                            class="alert alert-danger-custom">
+                                            <div *ngIf="f.moduleId.errors?.required">
+                                                Category is required.
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label" for="assetType">Asset
-                                            Type
-                                        </label>
-                                        <select class="form-control" #assetType
-                                            (change)="populateAssetModels($event.target.value)"
-                                            formControlName="assetType" ngModel id="assetType" name="assetType">
-                                            <option value="">-- Select Asset Category --</option>
-                                            <option *ngFor="let e of assetList" value="{{e}}">{{e}}</option>
-                                        </select>
+                                        <label class="form-col-form-label required-control-label"
+                                            for="subModuleId">Asset
+                                            Category</label>
+                                        <ng-select [items]="subModuleList" #subModuleId (change)="populateUser($event)"
+                                            placeholder="-- Select Asset Category --" formControlName="subModuleId"
+                                            id="subModuleId" name="subModuleId" bindLabel="customerModuleName"
+                                            bindValue="moduleId">
+                                        </ng-select>
+                                        <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid"
+                                            class="alert alert-danger-custom">
+                                            <div *ngIf="f.subModuleId.errors?.required">
+                                                Sub Category is required.
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label" for="modelNo">Model
-                                            No</label>
-                                        <select class="form-control" formControlName="modelNo" ngModel id="modelNo"
-                                            name="modelNo">
-                                            <option value="">-- Select Model No --</option>
-                                            <option *ngFor="let e of modelList" value="{{e}}">{{e}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <label class="form-col-form-label" for="serialNumber">Serial No</label>
-                                        <input type="text" formControlName="serialNumber" ngModel id="serialNumber"
-                                            name="serialNumber" class="form-control">
+                                        <label class="form-col-form-label" for="priorityId">Priority</label>
+                                        <ng-select [items]="priorities" placeholder="-- Select Priority --"
+                                            formControlName="priorityId" id="priorityId" name="priorityId"
+                                            bindLabel="name" bindValue="id"></ng-select>
                                     </div>
                                 </div>
-                                <div class="row ">
+                                <div class="row row-margin-05">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="allocated">Allocated?</label>
-                                        <select class="form-control" formControlName="allocated" ngModel id="allocated"
-                                            name="allocated">
-                                            <option value="">-- Select --</option>
-                                            <option value="1">Yes</option>
-                                            <option value="0">No</option>
-                                        </select>
+                                        <label class="form-col-form-label" for="title">Request Title</label>
+                                        <textarea formControlName="title" id="title" name="title" rows="4"
+                                            class="form-control textarea-non-resizable"
+                                            placeholder="Incident Title"></textarea>
                                     </div>
-                                    <div class="col"></div>
-                                    <div class="col"></div>
-                                    <div class="col"></div>
+                                    <!-- <div class="col">
+                                        <label class="form-col-form-label" for="raisedUser">Raised User</label>
+                                        <select class="form-control" formControlName="raisedUser"
+                                            id="raisedUser" name="raisedUser">
+                                            <option value="">-- Select Raised User--</option>
+                                            <option *ngFor="let e of userList" value="{{e.id}}">{{e.email}}</option>
+                                        </select>
+                                    </div> -->
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="assignedUser">Assigned Agent</label>
+                                        <ng-select [items]="agentList" placeholder="-- Select Assigned Agent --"
+                                            formControlName="assignedUser" id="assignedUser" name="assignedUser"
+                                            bindLabel="email" bindValue="id"></ng-select>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="status">Request Status</label>
+                                        <ng-select [items]="statusList" placeholder="-- Select Incident Status --"
+                                            formControlName="status" id="status" name="status" bindLabel="value"
+                                            bindValue="key"></ng-select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary btn-sm">
+                                <button type="submit" [disabled]="!angForm.valid" class="btn btn-primary btn-sm">
                                     <i class="fa fa-search"></i> Search
                                 </button>
                                 <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
                                     <i class="fa fa-close"></i> Cancel
+                                </button>
+                                <button *ngIf="hasPermission('ASSIGN')" type="button"
+                                    [disabled]="(canAssignNow && selection.selected.length>=1)? false : true"
+                                    (click)="openAssignModal()" class="btn btn-warning btn-sm">
+                                    <i class="fa fa-male"></i> Assign
                                 </button>
                             </div>
                         </form>
                     </div>
                     <hr *ngIf="hasPermission('SEARCH')" />
                     <table mat-table [dataSource]="datasource">
-                        <ng-container matColumnDef="reqDtl">
-                            <th mat-header-cell *matHeaderCellDef>Request Details</th>
-                            <td mat-cell *matCellDef="let element">
-                                <span *ngIf="element.asset!=null"
-                                    [ngClass]="{'badge':true}">{{element.asset?.serialNo}}</span><br />
-                                Product Category : {{element.productCategory}}<br />
-                                Asset Category : {{element.assetType}}<br />
-                                Model No : {{element?.modelNo}}<br />
-                                Term: {{element.longTerm==true? 'LONG' : 'SHORT'}}<br />
-                                Comment : {{element.comment}}<br />
+                        <ng-container matColumnDef="select">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <input id="select-all" type="checkbox" (change)="$event ? masterToggle() : null"
+                                    [checked]="selection.hasValue() && isAllSelected()"
+                                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                                <input id="select-{{row.id}}" type="checkbox" (click)="$event.stopPropagation()"
+                                    (change)="$event ? selection.toggle(row) : null"
+                                    [checked]="selection.isSelected(row)">
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="mngRes">
-                            <th mat-header-cell *matHeaderCellDef>Manager Feedback</th>
+                        <ng-container matColumnDef="incDtl">
+                            <th mat-header-cell *matHeaderCellDef> Asset Request Details </th>
                             <td mat-cell *matCellDef="let element">
-                                Status : Approved!<br />
-                                Comment : {{element.approverComment}}
+                                <span [ngClass]="{
+                                    'badge-sla-about-to-breach':element.status=='SLA_ABOUT_TO_BREACH' ,
+                                    'badge-sla-breached':element.status=='SLA_BREACHED' ,
+                                    'badge-sla-breached':element.slaBreached==true ,
+                                    'badge-re-opened':element.reOpened==true ,
+                                    'badge-closed':element.status=='CLOSED' ,
+                                    'badge':true
+                                    }">{{element.incidentNo}}</span><br />
+                                {{element.title}}<br />
+                                {{element.priority.name}}<br />
+                                <!-- {{element.raisedUser.email}}<br /> -->
+                                {{formatDateTime(element.raisedAt)}}<br />
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="usrDtl">
-                            <th mat-header-cell *matHeaderCellDef>User Details</th>
+                        <ng-container matColumnDef="slaAt">
+                            <th mat-header-cell *matHeaderCellDef> SLA. Details </th>
                             <td mat-cell *matCellDef="let element">
-                                Name : {{element.user?.firstName}} {{element.user?.lastName}}<br />
-                                Email : {{element.user?.email}}<br />
-                                Emp. Id. : {{element.user?.empId}}<br />
+                                <div
+                                    *ngIf="element.status=='NEED_CLARIFICATION'||element.status=='PENDING_FROM_VENDOR'||element.status=='ON_HOLD'">
+                                    Paused
+                                </div>
+                                <div
+                                    *ngIf="element.status!='NEED_CLARIFICATION'&&element.status!='PENDING_FROM_VENDOR'&&element.status!='ON_HOLD'">
+                                    {{formatDateTime(element.slaAt)}}
+                                </div>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="assignedUser">
+                            <th mat-header-cell *matHeaderCellDef> Assigned Agent </th>
+                            <td [attr.data-label]="element.status" id="id-assigned-{{element.id}}" mat-cell
+                                *matCellDef="let element">
+                                {{element.assignedUser?.firstName}}&nbsp;{{element.assignedUser?.lastName}}<br />
+                                {{element.assignedUser?.email}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef> Status </th>
+                            <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
+                                *matCellDef="let element">
+                                {{element.status}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">
@@ -130,20 +185,18 @@
                                         class="btn btn-primary dropdown-toggle">Actions<span
                                             class="caret"></span></button>
                                     <ul *dropdownMenu class="dropdown-menu" role="menu">
-                                        <li *ngIf="element.asset!=null" role="menuitem">
+                                        <!-- <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
-                                                *ngIf="hasPermission('DEALLOCATE')" id="id-deallocate-{{element.id}}"
-                                                [ngClass]="{'btn btn-sm btn-warning':true}"
-                                                (click)="allocate(element,false)"><i class="fa fa-male
-                                               "></i> Deallocate
+                                                *ngIf="hasPermission('ASSIGN')" id="id-assign-{{element.id}}" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
+                                        'btn btn-sm btn-warning':true}" (click)="assign(element)"><i class="fa fa-male
+                                               "></i> Assign
                                             </a>
-                                        </li>
-                                        <li *ngIf="element.asset==null" role="menuitem">
+                                        </li> -->
+                                        <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
-                                                *ngIf="hasPermission('ALLOCATE')" id="id-allocate-{{element.id}}"
-                                                [ngClass]="{'btn btn-sm btn-primary':true}"
-                                                (click)="allocate(element,true)"><i class="fa fa-comments-o"></i>
-                                                Allocate
+                                                *ngIf="hasPermission('SOLVE')" id="id-note-{{element.id}}"
+                                                [ngClass]="{'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
+                                                    class="fa fa-comments-o"></i> View/Update
                                             </a>
                                         </li>
                                     </ul>

@@ -13,8 +13,8 @@ import { AssetService } from '../../service/AssetService';
 import { AssetDataSource } from '../../service/datasource/AssetDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
-import { UploadAssetComponent } from './model/UploadAssetComponent';
-import { ViewAssetDetail } from './model/ViewAssetDetail';
+import { UploadAssetComponent } from './modal/UploadAssetComponent';
+import { ViewAssetDetail } from './modal/ViewAssetDetail';
 declare var $: any;
 
 @Component({

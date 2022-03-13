@@ -4,6 +4,7 @@ import com.centram.common.view.Views;
 import com.centram.common.vo.CategoryAdminDashboardVO;
 import com.centram.domain.converter.WatchListConverter;
 import com.centram.domain.enumarator.IncidentStatus;
+import com.centram.domain.enumarator.LicenseType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,7 +30,8 @@ import java.util.Set;
 @ApiModel(description = "Incident")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@NamedNativeQuery(name = "Incident.agingWiseIncidentDashboardData",
+@NamedNativeQuery(
+        name = "Incident.agingWiseIncidentDashboardData",
         query = " SELECT " +
                 " sum(case when date_differnce >= 5 && date_differnce < 10 then 1 else 0 end) as aging5, " +
                 " sum(case when date_differnce >= 10 && date_differnce < 20 then 1 else 0 end) as aging10, " +
@@ -48,8 +50,10 @@ import java.util.Set;
                 "  ) " +
                 " and i.created_date BETWEEN (:start) and (:end) " +
                 " ) tab ",
-        resultSetMapping = "Mapping.CategoryAdminDashboardVO")
-@SqlResultSetMapping(name = "Mapping.CategoryAdminDashboardVO",
+        resultSetMapping = "Mapping.CategoryAdminDashboardVO"
+)
+@SqlResultSetMapping(
+        name = "Mapping.CategoryAdminDashboardVO",
         classes = @ConstructorResult(
                 targetClass = CategoryAdminDashboardVO.class,
                 columns = {
@@ -58,20 +62,22 @@ import java.util.Set;
                         @ColumnResult(name = "aging20", type = Integer.class),
                         @ColumnResult(name = "aging30", type = Integer.class),
                         @ColumnResult(name = "aging60", type = Integer.class)
-                }))
+                }
+        )
+)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @Table(name = "incident",
         uniqueConstraints = {
-                @UniqueConstraint(name = "inc_no_usr_constraint", columnNames = {"incident_no", "organisation_id"})
+                @UniqueConstraint(name = "inc_no_org_id_unq_key", columnNames = {"incident_no", "organisation_id"})
         },
         indexes = {
-                @Index(name = "incident_no_indx", columnList = "incident_no", unique = false)
+                @Index(name = "inc_no_indx", columnList = "incident_no", unique = false),
+                @Index(name = "org_id_indx", columnList = "organisation_id", unique = false)
         }
 )
 @Audited
@@ -92,6 +98,12 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger moduleId;
 
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "sub_module_id", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private BigInteger subModuleId;
+
     @Transient
     @JsonView(Views.BasicView.class)
     private String moduleName;
@@ -99,12 +111,6 @@ public class Incident extends BaseEntity implements Serializable {
     @Transient
     @JsonView(Views.BasicView.class)
     private String actualModuleName;
-
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
-    @Column(name = "sub_module_id", nullable = false)
-    @JsonView(Views.BasicView.class)
-    private BigInteger subModuleId;
 
     @Transient
     @JsonView(Views.BasicView.class)
@@ -116,7 +122,7 @@ public class Incident extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "title", nullable = false, columnDefinition = "varchar(255) not null" )
+    @Column(name = "title", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String title;
 
@@ -235,6 +241,22 @@ public class Incident extends BaseEntity implements Serializable {
     @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "incident_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private LicenseType incidentType;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "asset_id", nullable = true, referencedColumnName = "id")
+    @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
+    private Asset asset;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

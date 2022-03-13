@@ -43,6 +43,7 @@ public class CoreApp {
         this.makeDirectory(appDataFilePath);
         this.makeDirectory(appTmpPath);
         this.makeDirectory(appReportPath);
+        //set system timestamp
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 

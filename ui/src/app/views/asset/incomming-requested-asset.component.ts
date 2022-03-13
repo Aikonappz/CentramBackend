@@ -1,23 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { SelectionModel } from '@angular/cdk/collections';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { take, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
-import { Asset } from '../../model/Asset';
-import { AssetRequest } from '../../model/AssetRequest';
-import { AssetType } from '../../model/enumerator/AssetType';
-import { ProductCategory } from '../../model/enumerator/ProductCategory';
-import { IAllocateAsset } from '../../model/IAllocateAsset';
-import { AssetRequestService } from '../../service/AssetRequestService';
-import { AssetService } from '../../service/AssetService';
-import { RequestedAssetDataSource } from '../../service/datasource/RequestedAssetDataSource';
-import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
+import { Incident } from '../../model/Incident';
+import { LoggedInUser } from '../../model/LoggedInUser';
+import { Permission } from '../../model/Permssion';
+import { Priority, PriorityList } from '../../model/Priority';
+import { UserVO, UserVOListResponse } from '../../model/UserVO';
+import { IncomingIncidentDataSource } from '../../service/datasource/IncomingIncidentDataSource';
+import { IncidentService } from '../../service/IncidentService';
 import { MiscService } from '../../service/MiscService';
-import { AllocateAsset } from './model/AllocateAsset';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { UserService } from '../../service/UserService';
+import { IAssignUser } from '../../model/IAssignUser';
+import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 declare var $: any;
 
 @Component({
@@ -28,27 +31,34 @@ declare var $: any;
 export class IncommingRequestedAssetComponent implements OnInit {
   moduleName: string = "REQUESTED ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['reqDtl', 'mngRes', 'usrDtl', 'action'];
-  private datasource: RequestedAssetDataSource;
+  displayedColumns = ['select', 'incDtl', 'slaAt', 'assignedUser', 'status', 'action'];
+  datasource: IncomingIncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  selection = new SelectionModel<Incident>(true, []);
+  statusList: any = [];
+  permissions: Permission[] = [];
+  moduleList: Permission[] = [];
+  subModuleList: Permission[];
   angForm: FormGroup;
-  searchedData: Object = {};
-  assetList: Set<string> = new Set<string>();
-  modelList: Set<string> = new Set<string>();
-  productTypes: Set<string> = new Set<string>();
-  assetModelList: any[] = [];
-  asset: Asset[] = [];
+  agentList: UserVO[] = [];
+  userList: UserVO[] = [];
+  priorities: Priority[] = [];
+  loggedInUser: LoggedInUser;
+  moduleIds: number[] = [];
+  canAssignNow: boolean = false;
+  selectedValues: Map<number, string> = new Map<number, string>();
   modalRef: BsModalRef;
-
+  searchedData: Object = {};
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
-    private service: AssetRequestService,
-    private assetService: AssetService,
+    private service: IncidentService,
+    private userService: UserService,
+    private loggedInUserService: LoggedInUserService,
     private miscService: MiscService,
     private modalService: BsModalService,
-    private loggedInUserService: LoggedInUserService
+    private route: ActivatedRoute,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -56,31 +66,105 @@ export class IncommingRequestedAssetComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    this.miscService
-      .assetModelsService()
-      .subscribe((data: any) => {
-        this.assetModelList = data;
-        for (let k in data) {
-          if (data[k].status == "ACTIVE")
-            this.productTypes.add(data[k].productCategory);
-        }
-      });
+    for (let item in IncidentStatus) {
+      if (item != "ALL") {
+        this.statusList.push({ "key": item, "value": IncidentStatus[item] });
+      }
+    }
+    this.statusList.sort(function (a, b) {
+      if (b.key > a.key) return -1;
+      if (a.key > b.key) return 1;
+      return 0;
+    });
     this.angForm = this.fb.group({
-      productCategory: new FormControl('', [
+      incidentNo: new FormControl('', [
       ]),
-      assetType: new FormControl('', [
+      moduleId: new FormControl(null, [
+        Validators.required,
       ]),
-      modelNo: new FormControl(null, [
+      subModuleId: new FormControl(null, [
+        Validators.required,
       ]),
-      serialNumber: new FormControl(null, [
+      priorityId: new FormControl(null, [
       ]),
-      allocated: new FormControl(null, [
+      raisedUser: new FormControl('', [
       ]),
+      assignedUser: new FormControl(null, [
+      ]),
+      status: new FormControl(null, [
+      ]),
+      title: new FormControl('', [
+      ]),
+    });
+    this.userService.getUsersService({})
+      .subscribe((data: UserVOListResponse) => {
+        for (let i in data.content) {
+          if (
+            this.loggedInUserService.hasRole('ORG_ASSET_AGENT_LEAD')
+            ||
+            this.loggedInUserService.hasRole('ORG_ASSET_AGENT_MANAGER')
+          ) {
+            if (this.confirmAgentRole(data.content[i].roleNames))
+              this.agentList.push(data.content[i]);
+          } else {
+            this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+            if (this.loggedInUser.userId == data.content[i].id)
+              this.agentList.push(data.content[i]);
+          }
+          if (this.confirmUserRole(data.content[i].roleNames)) {
+            this.userList.push(data.content[i]);
+          }
+        }
+        //console.log(this.tmpuserList);
+        //console.log(this.tmpagentList);
+      });
+    this.miscService.prioritiesService({ "sort": "name,asc" })
+      .subscribe((result: PriorityList) => {
+        this.priorities = result.content;
+      });
+    this.permissions = this.loggedInUserService.getModulePermissions();
+    let p;
+    this.moduleList = [];
+    for (let i in this.permissions) {
+      if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == "ASSET") {
+        p = new Permission(this.permissions[i]);
+        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        this.moduleList.push(p);
+      }
+    }
+    this.selection.changed.subscribe(i => {
+      for (let k = 0; k < i.added.length; k++) {
+        let obj = i.added[k];
+        this.selectedValues.set(obj.id, obj.incidentNo);
+      }
+      for (let k = 0; k < i.removed.length; k++) {
+        let obj = i.removed[k];
+        this.selectedValues.delete(obj.id);
+      }
+      //console.log(this.selectedValues);
     });
   }
 
   hasPermission(action: string): boolean {
     return this.loggedInUserService.hasPermissionByName(this.moduleName, action);
+  }
+
+  private confirmAgentRole(roles: string[]): boolean {
+    for (let k in roles) {
+      if (roles[k].match(/.*_AGENT_.*/)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private confirmUserRole(roles: string[]): boolean {
+    for (let k in roles) {
+      if (roles[k].match(/.*_USER_.*/)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getTitle(state, parent) {
@@ -95,8 +179,12 @@ export class IncommingRequestedAssetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.datasource = new RequestedAssetDataSource(this.service);
-    this.datasource.loadData();
+    // this.route.params.subscribe(params => {
+    //   let type = this.route.snapshot.paramMap.get('dp');
+    //   //console.log(type);
+    // });
+    this.datasource = new IncomingIncidentDataSource(this.service);
+    this.datasource.loadData(0, 10, { incidentType: "ASSET" });
   }
 
   ngAfterViewInit() {
@@ -107,41 +195,36 @@ export class IncommingRequestedAssetComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
       )
       .subscribe();
+    this.canAssignNow = false;
   }
 
-  allocate(assetRequest: AssetRequest, allocate: boolean) {
-    const config: ModalOptions = {
-      backdrop: 'static',
-      keyboard: false,
-      animated: true,
-      ignoreBackdropClick: true,
-      class: 'modal-bg',
-    };
-    const initialState: Partial<IAllocateAsset> = {
-      assetRequest: assetRequest,
-      allocate: allocate
-    };
-    this.modalRef = this.modalService.show(AllocateAsset, Object.assign({}, config, { initialState }));
-    this.modalService.onHide
-      .pipe(take(1))
-      .subscribe(() => {
-        this.loadData(this.searchedData);
-      });
+  ngAfterContentInit() {
+    $(function () {
+    });
   }
 
-  loadData(req?: Object) {
-    //console.log(req);
-    if (this.searchedData.hasOwnProperty('productCategory')) {
+  get f() { return this.angForm.controls; }
+
+  edit(inc: Incident) {
+    this.router.navigate(['/asset/agent-all/edit/' + inc.id]);
+  }
+  add() {
+    this.router.navigate(['/asset/agent-all/add']);
+  }
+
+  loadData(req?: any) {
+    if (this.searchedData.hasOwnProperty('incidentNo')) {
       req = this.searchedData;
     }
+    req.incidentType = "ASSET";
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
+
   formatDateTime(d: string) {
     if (d != null && d != "") {
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
@@ -157,52 +240,214 @@ export class IncommingRequestedAssetComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
-      let productCategory = this.angForm.controls['productCategory'].value;
-      let assetType = this.angForm.controls['assetType'].value;
-      let modelNo = this.angForm.controls['modelNo'].value;
-      let serialNumber = this.angForm.controls['serialNumber'].value;
-      let allocated = this.angForm.controls['allocated'].value;
+      //console.log(this.angForm);
+      let title = this.angForm.controls['title'].value;
+      let status = this.angForm.controls['status'].value;
+      let assignedUserId = this.angForm.controls['assignedUser'].value;
+      let priorityId = this.angForm.controls['priorityId'].value;
+      let subModuleId = this.angForm.controls['subModuleId'].value;
+      let moduleId = this.angForm.controls['moduleId'].value;
+      let incidentNo = this.angForm.controls['incidentNo'].value;
       this.searchedData = {
-        "productCategory": productCategory == "" || productCategory == null ? -1 : ProductCategory[productCategory],
-        "assetType": assetType == "" || assetType == null ? -1 : AssetType[assetType],
-        "modelNo": modelNo == "" || modelNo == null ? '' : modelNo,
-        "serialNo": serialNumber == "" || serialNumber == null ? '' : serialNumber,
-        "allocated": allocated == "" || allocated == null ? -1 : allocated,
+        "incidentNo": incidentNo == null ? '' : incidentNo,
+        "title": title == null ? '' : title,
+        "status": status == null ? '' : status,
+        "assignedUserId": assignedUserId == null ? '' : assignedUserId,
+        "priorityId": priorityId == null ? '' : priorityId,
+        "subModuleId": subModuleId == null ? '' : subModuleId,
+        "moduleId": moduleId == null ? '' : moduleId,
       };
       this.loadData(this.searchedData);
+      // console.log({
+      //   "title": title == null ? '' : title,
+      //   "status": status == null ? '' : status,
+      //   "assignedUserId": status == null ? '' : assignedUserId,
+      //   "priorityId": status == null ? '' : priorityId,
+      //   "subModuleId": subModuleId == null ? '' : subModuleId,
+      //   "moduleId": moduleId == null ? '' : moduleId,
+      // });
+      this.selection.clear();
+      // console.log(moduleId);
+      // console.log(subModuleId);
+      // if (
+      //   subModuleId != null && subModuleId.replace(/\s/g, "") != ""
+      //   &&
+      //   moduleId != null && moduleId.replace(/\s/g, "") != ""
+      // ) {
+      //   this.canAssignNow = true;
+      // } else {
+      //   this.canAssignNow = false;
+      // }
+      if (subModuleId != null && moduleId != null) {
+        this.canAssignNow = true;
+      } else {
+        this.canAssignNow = false;
+      }
     } else {
       console.log("Invalid Form!");
     }
   }
 
-  get f() { return this.angForm.controls; }
-
-  @ViewChild("productCategory") productCategory;
-  populateChildValues(productCategory: string) {
-    if (productCategory != "") {
-      this.assetList = new Set<string>();
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory && this.assetModelList[k].status == "ACTIVE") {
-          this.assetList.add(this.assetModelList[k].assetType);
-          this.modelList.add(this.assetModelList[k].modelNo);
+  @ViewChild("moduleId") moduleId;
+  populateSubmodule(moduleId) {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
+      this.subModuleList = [];
+      this.moduleIds = [];
+      let p;
+      for (let i = 0; i < this.permissions.length; i++) {
+        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == "ASSET") {
+          p = new Permission(this.permissions[i]);
+          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          this.subModuleList[c] = p;
+          c++;
         }
       }
-      this.angForm.controls['assetType'].setValue("");
-      this.angForm.controls['modelNo'].setValue("");
+      this.moduleIds.push(moduleId.moduleId);
+      let params = {
+        "moduleIds": this.moduleIds.join(','),
+        "actionName": 'SOLVE',
+      };
+      this.agentList = [];
+      this.userService
+        .getUsersByModuleAndAction(params)
+        .subscribe((data: UserVO[]) => {
+          this.agentList = [];
+          for (let i = 0; i < data.length; i++) {
+            if (
+              this.loggedInUserService.hasRole('ORG_ASSET_AGENT_LEAD')
+              ||
+              this.loggedInUserService.hasRole('ORG_ASSET_AGENT_MANAGER')
+            ) {
+              if (this.confirmAgentRole(data[i].roleNames))
+                this.agentList.push(data[i]);
+            } else {
+              this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+              if (this.loggedInUser.userId == data[i].id)
+                this.agentList.push(data[i]);
+            }
+            //this.agentList.push(data[i]);
+          }
+          //console.log(data);
+        });
+      this.angForm.controls['subModuleId'].setValue(null);
+      this.angForm.controls['assignedUser'].setValue(null);
+    } else {
+      this.angForm.controls['subModuleId'].setValue(null);
+      this.angForm.controls['assignedUser'].setValue(null);
     }
   }
 
-  @ViewChild("assetType") assetType;
-  populateAssetModels(assetType: string) {
-    if (assetType != "") {
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].assetType == assetType && this.assetModelList[k].status == "ACTIVE") {
-          this.modelList.add(this.assetModelList[k].modelNo);
-        }
-      }
-      this.angForm.controls['modelNo'].setValue("");
+  @ViewChild("subModuleId") subModuleId;
+  populateUser(subModuleId) {
+    let c = 0;
+    if (typeof subModuleId !== 'undefined') {
+      let moduleId = this.moduleIds[0];
+      this.moduleIds = [];
+      this.moduleIds.push(moduleId);
+      this.moduleIds.push(subModuleId.moduleId);
+      let params = {
+        "moduleIds": this.moduleIds.join(','),
+        "actionName": 'SOLVE',
+      };
+      this.agentList = [];
+      this.userService
+        .getUsersByModuleAndAction(params)
+        .subscribe((data: UserVO[]) => {
+          this.agentList = [];
+          for (let i = 0; i < data.length; i++) {
+            if (
+              this.loggedInUserService.hasRole('ORG_ASSET_AGENT_LEAD')
+              ||
+              this.loggedInUserService.hasRole('ORG_ASSET_AGENT_MANAGER')
+            ) {
+              if (this.confirmAgentRole(data[i].roleNames))
+                this.agentList.push(data[i]);
+            } else {
+              this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+              if (this.loggedInUser.userId == data[i].id)
+                this.agentList.push(data[i]);
+            }
+            //this.agentList.push(data[i]);
+          }
+          //console.log(data);
+        });
+      this.angForm.controls['assignedUser'].setValue(null);
+    } else {
+      this.angForm.controls['assignedUser'].setValue(null);
     }
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.datasource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.datasource.data.forEach(row => {
+        //console.log(row);
+        this.selection.select(row);
+      });
+  }
+
+  logSelection() {
+    this.selection.selected.forEach(s => console.log(s.id));
+  }
+
+  assign(inc: Incident) {
+    let moduleIds = [];
+    moduleIds.push(inc.moduleId);
+    moduleIds.push(inc.subModuleId);
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    let params = {
+      "moduleIds": moduleIds.join(','),
+      "actionName": 'SOLVE',
+    };
+    this.agentList = [];
+    this.userService
+      .getUsersByModuleAndAction(params)
+      .subscribe((data: UserVO[]) => {
+        for (let i = 0; i < data.length; i++) {
+          if (
+            this.loggedInUserService.hasRole('ORG_ASSET_AGENT_LEAD')
+            ||
+            this.loggedInUserService.hasRole('ORG_ASSET_AGENT_MANAGER')
+          ) {
+            if (this.confirmAgentRole(data[i].roleNames))
+              this.agentList.push(data[i]);
+          } else {
+            if (this.loggedInUser.userId == data[i].id)
+              this.agentList.push(data[i]);
+          }
+        }
+        this.selection.clear();
+        this.selection.select(inc);
+        this.canAssignNow = true;
+        this.openAssignModal();
+        //console.log(data);
+      });
+  }
+
+  openAssignModal() {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-bg',
+    };
+    const initialState: Partial<IAssignUser> = {
+      agentList: this.agentList,
+      canAssign: (this.canAssignNow && this.selectedValues.size > 0) ? true : false,
+      selectedValues: this.selectedValues
+    };
+    this.modalRef = this.modalService.show(AssignIncidentComponent,
+      Object.assign({}, config, { initialState })
+    );
   }
 }

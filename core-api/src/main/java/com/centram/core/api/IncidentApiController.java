@@ -6,6 +6,7 @@ import com.centram.common.view.Views;
 import com.centram.core.service.IncidentService;
 import com.centram.domain.Incident;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.LicenseType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -69,14 +70,15 @@ public class IncidentApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS','READ,SEARCH',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY ASSET,MY INCIDENTS','READ|SEARCH,READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> getUserIncidents(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserIncidents(incidentNo, title, status, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserIncidents(incidentType, incidentNo, title, status, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all agent incidents", nickname = "getAgentIncidents", notes = "Get all agent incidents", response = PaginatedList.class, tags = {"Incident",})
@@ -87,8 +89,9 @@ public class IncidentApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/agent", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY GROUP INCIDENTS','SEARCH|READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUESTED ASSET,MY GROUP INCIDENTS','SEARCH|READ,SEARCH|READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> getAgentIncidents(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -99,7 +102,7 @@ public class IncidentApiController {
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Incident>>(incidentService.getAgentIncidents(
-                incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
+                incidentType, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
         ), HttpStatus.OK);
     }
 

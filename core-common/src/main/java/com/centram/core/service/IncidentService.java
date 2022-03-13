@@ -13,6 +13,7 @@ import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.IncidentStatus;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.centram.common.utility.Utility.incidentNo;
+import static com.centram.common.utility.Utility.*;
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
@@ -39,6 +40,8 @@ public class IncidentService {
     private static final Logger log = LoggerFactory.getLogger(IncidentService.class);
     @Value("${app.default.incident.prefix}")
     public String appDefaultIncidentPrefix;
+    @Value("${app.default.inbound.asset.req.prefix}")
+    public String inboundAssetReqPrefix;
     @Autowired
     private IncidentRepository incidentRepository;
     @Autowired
@@ -89,7 +92,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getAgentIncidents(String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> getAgentIncidents(String incidentType,String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
@@ -106,7 +109,7 @@ public class IncidentService {
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType),incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
@@ -238,7 +241,7 @@ public class IncidentService {
      * @return
      */
     public List<Incident> getOpenIncidents(BigInteger category, BigInteger subCategory, BigInteger locationId, BigInteger organisationId) {
-        return incidentRepository.getIncidents(
+        return incidentRepository.getUserIncidents(
                 category,
                 subCategory,
                 locationId,
@@ -277,8 +280,9 @@ public class IncidentService {
     }
 
     /**
-     * get user incidents
+     * get user incidents/asset incidents
      *
+     * @param incidentType
      * @param incidentNo
      * @param title
      * @param status
@@ -286,17 +290,12 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getUserIncidents(
-            String incidentNo,
-            String title,
-            String status,
-            Pageable pageable
-    ) {
+    public PaginatedList<Incident> getUserIncidents(String incidentType, String incidentNo, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncidents(loggedInUser.getUserId(), incidentNo, title, intStatus, pageable));
+        return new PaginatedList<Incident>(incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, title, intStatus, loggedInUser.getUserId(), pageable));
     }
 
     /**
@@ -461,9 +460,17 @@ public class IncidentService {
         if (incident.getId() == null) {
             incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
-            Setting setting = organisationService.getOrganisationSettings();
-            String prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
-            incident.setIncidentNo(incidentNo(prefix));
+            Setting setting = null;
+            String prefix = null;
+            if (incident.getIncidentType() == LicenseType.INCIDENT) {
+                setting = organisationService.getOrganisationSettings();
+                prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
+                incident.setIncidentNo(incidentNo(prefix));
+            } else {
+                setting = organisationService.getOrganisationSettings();
+                prefix = (setting != null && setting.getInboundAssetRequestPrefix() != null) ? setting.getInboundAssetRequestPrefix() : inboundAssetReqPrefix;
+                incident.setIncidentNo(orderNo(prefix));
+            }
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());
             /*fetch priority*/

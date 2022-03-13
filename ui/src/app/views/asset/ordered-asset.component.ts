@@ -11,7 +11,7 @@ import { AssetOrder } from '../../model/AssetOrder';
 import { AssetOrderService } from '../../service/AssetOrderService';
 import { AssetOrderDataSource } from '../../service/datasource/AssetOrderDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
-import { ViewAssetOrderDetail } from './model/ViewAssetOrderDetail';
+import { ViewAssetOrderDetail } from './modal/ViewAssetOrderDetail';
 declare var $: any;
 
 @Component({

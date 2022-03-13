@@ -6,13 +6,13 @@ import { NavigationEnd, Router } from '@angular/router';
 import * as moment from 'moment';
 import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
-import { AssetType } from '../../model/enumerator/AssetType';
-import { ProductCategory } from '../../model/enumerator/ProductCategory';
+import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
+import { LicenseType } from '../../model/enumerator/LicenseType';
 import { Incident } from '../../model/Incident';
-import { AssetRequestService } from '../../service/AssetRequestService';
-import { AssetRequestDataSource } from '../../service/datasource/AssetRequestDataSource';
+import { Permission } from '../../model/Permssion';
+import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
+import { IncidentService } from '../../service/IncidentService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
-import { MiscService } from '../../service/MiscService';
 declare var $: any;
 
 @Component({
@@ -21,23 +21,23 @@ declare var $: any;
   styleUrls: ['./requested-asset.component.scss']
 })
 export class RequestedAssetComponent implements OnInit {
-  moduleName: string = "REQUEST ASSET";
+  moduleName: string = "MY ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['reqDtl', 'mngRes', 'asstDtl',];
-  private datasource: AssetRequestDataSource;
+  displayedColumns = ['inc', 'slaAt', 'assignedUser', 'status', 'action'];
+  private datasource: IncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  statusList: any = [];
+  permissions: Permission[] = [];
+  moduleList: Permission[] = [];
+  subModuleList: Permission[];
   angForm: FormGroup;
   searchedData: Object = {};
-  assetList: Set<string> = new Set<string>();
-  modelList: Set<string> = new Set<string>();
-  assetModelList: any[] = [];
-  productTypes: Set<string> = new Set<string>();
+  incidentStatus: IncidentStatus;
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
     private router: Router,
-    private service: AssetRequestService,
-    private miscService: MiscService,
+    private service: IncidentService,
     private loggedInUserService: LoggedInUserService
   ) {
     router.events.subscribe(event => {
@@ -46,29 +46,30 @@ export class RequestedAssetComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    this.miscService
-      .assetModelsService()
-      .subscribe((data: any) => {
-        this.assetModelList = data;
-        for (let k in data) {
-          if (data[k].status == "ACTIVE")
-            this.productTypes.add(data[k].productCategory);
-        }
-      });
+    for (let item in IncidentStatus) {
+      if (item != "ALL") {
+        this.statusList.push({ "key": item, "value": IncidentStatus[item] });
+      }
+    }
+    this.statusList.sort(function (a, b) {
+      if (b.key > a.key) return -1;
+      if (a.key > b.key) return 1;
+      return 0;
+    });
     this.angForm = this.fb.group({
-      productCategory: new FormControl('', [
+      incidentNo: new FormControl(null, [
       ]),
-      assetType: new FormControl('', [
+      title: new FormControl(null, [
       ]),
-      modelNo: new FormControl(null, [
-      ]),
-      serialNumber: new FormControl(null, [
-      ]),
-      approved: new FormControl(null, [
-      ]),
-      allocated: new FormControl(null, [
+      status: new FormControl(null, [
       ]),
     });
+    this.permissions = this.loggedInUserService.getModulePermissions();
+    for (let i in this.permissions) {
+      if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null) {
+        this.moduleList.push(this.permissions[i]);
+      }
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -87,8 +88,12 @@ export class RequestedAssetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.datasource = new AssetRequestDataSource(this.service);
-    this.datasource.loadData();
+    if (this.checkRole() === "AGENT") {
+      this.router.navigate(['/incident/agent/all']);
+    } else {
+      this.datasource = new IncidentDataSource(this.service);
+      this.datasource.loadData(0, 10, { incidentType: "ASSET" });
+    }
   }
 
   ngAfterViewInit() {
@@ -99,7 +104,6 @@ export class RequestedAssetComponent implements OnInit {
         })
       )
       .subscribe();
-
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
@@ -108,20 +112,36 @@ export class RequestedAssetComponent implements OnInit {
   }
 
   edit(inc: Incident) {
-    this.router.navigate(['/asset/edit/' + inc.id]);
+    this.router.navigate(['/asset/user/edit/' + inc.id]);
+  }
+
+  reopen(inc: Incident) {
+    let res = window.confirm("Do you really want to Reopen this incident?")
+    if (res) {
+      let ids = [];
+      ids.push(inc.id);
+      this.service.reOpenIncidentService([inc.id], 'OPEN')
+        .subscribe((data: any) => {
+          $("#id-reopen-" + inc.id).addClass('d-none');
+          $("#id-note-" + inc.id).removeClass('d-none');
+          $("#id-status-" + inc.id).text('OPEN');
+        });
+    }
   }
 
   add(mode: string) {
-    this.router.navigate(['/asset/request/']);
+    this.router.navigate(['/asset/user/add/' + mode]);
   }
 
-  loadData(req?: Object) {
+  loadData(req?: any) {
     //console.log(req);
-    if (this.searchedData.hasOwnProperty('productCategory')) {
+    if (this.searchedData.hasOwnProperty('incidentNo')) {
       req = this.searchedData;
     }
+    req.incidentType = "ASSET";
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
+
   formatDateTime(d: string) {
     if (d != null && d != "") {
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
@@ -137,54 +157,46 @@ export class RequestedAssetComponent implements OnInit {
 
   formSubmit() {
     if (this.angForm.valid) {
-      let productCategory = this.angForm.controls['productCategory'].value;
-      let assetType = this.angForm.controls['assetType'].value;
-      let modelNo = this.angForm.controls['modelNo'].value;
-      let serialNumber = this.angForm.controls['serialNumber'].value;
-      let approved = this.angForm.controls['approved'].value;
-      let allocated = this.angForm.controls['allocated'].value;
+      //console.log(this.angForm);
+      let title = this.angForm.controls['title'].value;
+      let status = this.angForm.controls['status'].value;
+      let incidentNo = this.angForm.controls['incidentNo'].value;
       this.searchedData = {
-        "productCategory": productCategory == "" || productCategory == null ? -1 : ProductCategory[productCategory],
-        "assetType": assetType == "" || assetType == null ? -1 : AssetType[assetType],
-        "modelNo": modelNo == "" || modelNo == null ? '' : modelNo,
-        "serialNo": serialNumber == "" || serialNumber == null ? '' : serialNumber,
-        "approved": approved == "" || approved == null ? -1 : approved,
-        "allocated": allocated == "" || allocated == null ? -1 : allocated,
+        "title": title == null ? '' : title,
+        "status": status == null ? '' : status,
+        "incidentNo": incidentNo == null ? '' : incidentNo,
       };
       this.loadData(this.searchedData);
+      //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");
     }
   }
 
-  get f() { return this.angForm.controls; }
-
-  @ViewChild("productCategory") productCategory;
-  populateChildValues(productCategory: string) {
-    if (productCategory != "") {
-      this.assetList = new Set<string>();
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].productCategory == productCategory && this.assetModelList[k].status == "ACTIVE") {
-          this.assetList.add(this.assetModelList[k].assetType);
-          this.modelList.add(this.assetModelList[k].modelNo);
+  @ViewChild("moduleId") moduleId;
+  populateSubmodule(moduleId) {
+    let c = 0;
+    if (moduleId != "") {
+      this.subModuleList = [];
+      for (let i = 0; i < this.permissions.length; i++) {
+        if (this.permissions[i].moduleParentId == moduleId) {
+          this.subModuleList[c] = this.permissions[i];
+          c++;
         }
       }
-      this.angForm.controls['assetType'].setValue("");
-      this.angForm.controls['modelNo'].setValue("");
     }
   }
 
-  @ViewChild("assetType") assetType;
-  populateAssetModels(assetType: string) {
-    if (assetType != "") {
-      this.modelList = new Set<string>();
-      for (let k in this.assetModelList) {
-        if (this.assetModelList[k].assetType == assetType && this.assetModelList[k].status == "ACTIVE") {
-          this.modelList.add(this.assetModelList[k].modelNo);
-        }
-      }
-      this.angForm.controls['modelNo'].setValue("");
-    }
+  canReopen(modifiedDate: Date) {
+    let logedinUser = this.loggedInUserService.getLoggedInUser();
+    let dateLastModified = moment(modifiedDate).tz(logedinUser.timeZone);
+    let today = moment().tz(logedinUser.timeZone);
+    //console.log(dateLastModified + " -- " + today + " -- " + today.diff(dateLastModified, 'days'));
+    return (today.diff(dateLastModified, 'days') > 15) ? false : true;
+  }
+
+  checkRole(): string {
+    let role = this.hasPermission("READ") ? "USER" : "AGENT";
+    return role;
   }
 }

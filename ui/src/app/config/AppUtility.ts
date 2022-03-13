@@ -11,6 +11,7 @@ export class AppUtility {
     public static APP_TIME_FORMAT = 'HH:mm:ss';
     public static APP_CLIENT_STORAGE_TYPE = 'SESSION';
     public static APP_INCIDENT_DRAFT_KEY = 'incidentDraft';
+    public static APP_ASSET_DRAFT_KEY = 'assetDraft';
     public static APP_SESSION_TIMEOUT_KEY = 'appSessionTimeout';
     public static APP_LOGGEDIN_USR_ROLES = 'userRoles';
     public static APP_LAST_ACTION_KEY = 'lastAction';

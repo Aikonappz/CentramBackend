@@ -78,14 +78,32 @@ const routes: Routes = [
           title: 'Requested Assets'
         },
       },
+      // {
+      //   path: 'request',
+      //   component: RequestAssetComponent,
+      //   pathMatch: 'full',
+      //   data: {
+      //     title: 'Request Asset'
+      //   },
+      // },
+
       {
-        path: 'request',
+        path: ':referer/add/:mode',
         component: RequestAssetComponent,
         pathMatch: 'full',
         data: {
-          title: 'Request Asset'
-        },
+          title: 'Create Incident'
+        }
       },
+      {
+        path: ':referer/edit/:id',
+        component: RequestAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Incident'
+        }
+      },
+
       {
         path: 'request/action/:requestId',
         component: AssetRequestActionComponent,

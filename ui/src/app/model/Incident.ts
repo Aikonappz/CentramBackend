@@ -24,6 +24,7 @@ export class Incident extends Base {
     slaAt: any;
     holdAt: any;
     organisation: any;
+    incidentType: any;
     constructor() {
         super();
         this.id = null;
@@ -39,6 +40,7 @@ export class Incident extends Base {
         this.communications = [];
         this.raisedAt = null;
         this.slaAt = null;
+        this.incidentType = 1;
     }
 }
 export interface IncidentList {
