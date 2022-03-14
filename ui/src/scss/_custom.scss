@@ -631,3 +631,22 @@ form.ng-pristine.ng-invalid.ng-touched {
   background-color: #1e305e;
   border-top: 1px solid #1e305e;
 }
+/* width */
+.app-header .navbar-nav .dropdown-menu-right::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.app-header .navbar-nav .dropdown-menu-right::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+/* Handle */
+.app-header .navbar-nav .dropdown-menu-right::-webkit-scrollbar-thumb {
+  background: rgb(211, 211, 211); 
+}
+
+/* Handle on hover */
+.app-header .navbar-nav .dropdown-menu-right::-webkit-scrollbar-thumb:hover {
+  background: #e5097f; 
+}
