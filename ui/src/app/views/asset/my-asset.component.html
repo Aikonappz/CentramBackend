@@ -5,9 +5,10 @@
                 <div class="card-header ">
                     <div class="row">
                         <div class="col-md-10">
-                            <i class="fa fa-align-justify"></i> My Incidents
+                            <i class="fa fa-align-justify"></i>
+                            My Assets
                         </div>
-                        <div class="col-md-2 float-right">
+                        <!-- <div *ngIf="mode=='requested'" class="col-md-2 float-right">
                             <div class="btn-group d-flex justify-content-between" dropdown>
                                 <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
                                         class="caret"></span></button>
@@ -15,47 +16,43 @@
                                     <li role="menuitem">
                                         <a class="dropdown-item" (click)="add('draft')" *ngIf="hasPermission('WRITE')"
                                             href="javascript:void(0);">
-                                            <i class="icon-pencil"></i> Drafted Incident
+                                            <i class="icon-pencil"></i> Drafted Asset Request
                                         </a>
                                     </li>
                                     <li role="menuitem">
                                         <a class="dropdown-item" (click)="add('new')" *ngIf="hasPermission('WRITE')"
                                             href="javascript:void(0);">
-                                            <i class="icon-plus"></i> Create an Incident
+                                            <i class="icon-plus"></i> Create an Asset Request
                                         </a>
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="card-body">
                     <div *ngIf="hasPermission('SEARCH')" class="card ">
                         <div class="card-header">
-                            <i class="fa fa-search"></i>Search Incident
+                            <i class="fa fa-search"></i>
+                            Search Assets
                         </div>
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="incidentNo">Incident Number</label>
-                                        <input type="text" formControlName="incidentNo" id="incidentNo"
-                                            name="incidentNo" class="form-control" placeholder="Incident Number"
-                                            aria-label="Incident Number">
+                                        <label class="form-col-form-label" for="serialNo">Asset Number</label>
+                                        <input type="text" formControlName="serialNo" id="serialNo" name="serialNo"
+                                            class="form-control" placeholder="Asset Request Number"
+                                            aria-label="Asset  Number">
                                     </div>
-                                    <div class="col">
-                                        <label class="form-col-form-label" for="title">Incident Title</label>
-                                        <input type="text" formControlName="title" id="title" name="title"
-                                            class="form-control" placeholder="Incident Title"
-                                            aria-label="Incident Title">
+                                    <div class="col d-none">
+                                        <label class="form-col-form-label" for="deallocated">Deallocated</label>
+                                        <ng-select [items]="booleanList" placeholder="-- Select --"
+                                            formControlName="deallocated" id="deallocated" name="deallocated"
+                                            bindLabel="label" bindValue="id"></ng-select>
                                     </div>
-                                    <div class="col">
-                                        <label class="form-col-form-label" for="status">Status</label>
-                                        <ng-select [items]="statusList" placeholder="-- Select Incident Status --"
-                                            formControlName="status" id="status" status name="status" bindLabel="value"
-                                            bindValue="key">
-                                        </ng-select>
-                                    </div>
+                                    <div class="col"></div>
+                                    <div class="col"></div>
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -71,39 +68,24 @@
                     <hr *ngIf="hasPermission('SEARCH')" />
                     <table mat-table [dataSource]="datasource">
                         <ng-container matColumnDef="inc">
-                            <th mat-header-cell *matHeaderCellDef>Incident Details</th>
+                            <th mat-header-cell *matHeaderCellDef>Asset Request Details</th>
                             <td mat-cell *matCellDef="let element">
                                 <span [ngClass]="{
-                                    'badge-sla-about-to-breach':element.status=='SLA_ABOUT_TO_BREACH' ,
-                                    'badge-sla-breached':element.status=='SLA_BREACHED' ,
-                                    'badge-sla-breached':element.slaBreached==true ,
-                                    'badge-re-opened':element.reOpened==true ,
-                                    'badge-closed':element.status=='CLOSED' ,
                                     'badge':true
-                                    }">{{element.incidentNo}}</span><br />
-                                {{element.title}}<br />
-                                {{element.priority.name}}<br />
-                                {{formatDateTime(element.raisedAt)}}<br />
+                                    }">{{element.incidentNo}}</span>
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="slaAt">
-                            <th mat-header-cell *matHeaderCellDef> SLA. Details </th>
+                        <ng-container matColumnDef="assetDtl">
+                            <th mat-header-cell *matHeaderCellDef> Asset Details </th>
                             <td mat-cell *matCellDef="let element">
-                                {{formatDateTime(element.slaAt)}}
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="assignedUser">
-                            <th mat-header-cell *matHeaderCellDef> Assigned User </th>
-                            <td [attr.data-label]="element.status" mat-cell *matCellDef="let element">
-                                {{element.assignedUser?.firstName}}&nbsp;{{element.assignedUser?.lastName}}<br />
-                                {{element.assignedUser?.email}}
+                                <div>{{element.asset.serialNo}}/{{element.asset.modelNo}}</div>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="status">
                             <th mat-header-cell *matHeaderCellDef> Status </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
-                                {{element.status}}
+                                {{element.allocated&&!element.deallocated? 'Allocated' : 'Deallocated'}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">

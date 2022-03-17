@@ -8,6 +8,7 @@ import com.centram.common.vo.UserVO;
 import com.centram.domain.AppConfiguration;
 import com.centram.domain.Notification;
 import com.centram.domain.User;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
 import org.apache.commons.text.StringEscapeUtils;
@@ -329,21 +330,26 @@ public class AppEmailService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")
     public void sendIncidentUpdateEmail(IncidentEmailVO incidentEmailVO) {
-        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
-                Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE")
-        );
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("INCIDENT_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("INCIDENT_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailSubjectKey()).toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(incidentEmailVO.getMailBodyKey()).toString();
-        String referer = "agent-all";
-        String recipientName = incidentEmailVO.getRecipientName();
-        if (incidentEmailVO.getMailToType().equalsIgnoreCase("EMP")) {
-            referer = "user";
+        String incLink = null;
+        if (incidentEmailVO.getIncidentType() == LicenseType.INCIDENT) {
+            if (incidentEmailVO.getMailToType().equalsIgnoreCase("EMP")) {
+                incLink = appBaseUrl.concat("/incident/user/edit/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
+            } else {
+                incLink = appBaseUrl.concat("/incident/agent-all/edit/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
+            }
+        } else {
+            if (incidentEmailVO.getMailToType().equalsIgnoreCase("EMP")) {
+                incLink = appBaseUrl.concat("/asset/user/edit/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
+            } else if (incidentEmailVO.getMailToType().equalsIgnoreCase("EMP_MNGR")) {
+                incLink = appBaseUrl.concat("/asset/request/action/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
+            } else {
+                incLink = appBaseUrl.concat("/asset/agent-all/edit/").concat(String.valueOf(incidentEmailVO.getIncidentId()));
+            }
         }
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -351,10 +357,13 @@ public class AppEmailService {
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
         context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
-        //context.setVariable("incident_title", incidentEmailVO.getTitle());
+        context.setVariable("ord_status", incidentEmailVO.getAssetApproved() ? "Approved" : "Rejected");
         mailSubject = templateEngine.process(mailSubject, context);
-        String incLink = appBaseUrl.concat("/incident/".concat(referer).concat("/edit/")).concat(String.valueOf(incidentEmailVO.getIncidentId()));
+        String recipientName = incidentEmailVO.getRecipientName();
         context = new Context(Locale.ENGLISH);
+        context.setVariable("ord_status", incidentEmailVO.getAssetApproved() ? "Approved" : "Rejected");
+        context.setVariable("sl_no", (incidentEmailVO.getSerialNo()));
+        context.setVariable("model", (incidentEmailVO.getModelNo()));
         context.setVariable("incident_title", (incidentEmailVO.getTitle()));
         context.setVariable("incident_communication", (incidentEmailVO.getDescription()));
         context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
@@ -388,8 +397,8 @@ public class AppEmailService {
         mailMap.put("bcc", incidentEmailVO.getBcc());
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("INCIDENT EMAIL TITLE: {}", mailSubject);
-        log.info("INCIDENT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("INCIDENT/ASSET EMAIL TITLE: {}", mailSubject);
+        log.info("INCIDENT/ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         if (incidentEmailVO.getNotifications() != null && incidentEmailVO.getNotifications().size() > 0) {
             List<Notification> notifications = new ArrayList<Notification>();
             for (Notification notification : incidentEmailVO.getNotifications()) {

@@ -109,12 +109,12 @@ public class AssetOrderService {
             assetOrder.setRaisedUser(new User(userService.getUserById(loggedInUser.getUserId())));
             assetOrder.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         }
-        if (assetOrder.getPurchaseType() == PurchaseType.RENTED) {
+        /*if (assetOrder.getPurchaseType() == PurchaseType.RENTED) {
             ZonedDateTime rentStartAt = ZonedDateTime.of(assetOrder.getRentStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
             assetOrder.setRentStartAt(rentStartAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
             ZonedDateTime rentEndAt = ZonedDateTime.of(assetOrder.getRentEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
             assetOrder.setRentEndAt(rentEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
-        }
+        }*/
         if (!assetOrder.getExistingAgreement()) {
             ZonedDateTime agreementEndAt = ZonedDateTime.of(assetOrder.getAgreementEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
             assetOrder.setAgreementEndAt(agreementEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());

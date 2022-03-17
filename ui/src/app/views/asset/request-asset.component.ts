@@ -21,6 +21,8 @@ import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { ClientStorageService } from '../../service/ClientStorageService';
+import { AssetService } from '../../service/AssetService';
+import { AssetList } from '../../model/Asset';
 declare var $: any;
 
 @Component({
@@ -29,7 +31,7 @@ declare var $: any;
   styleUrls: ['./request-asset.component.scss']
 })
 export class RequestAssetComponent implements OnInit {
-  moduleName: string = "MY ASSET";
+  moduleName: string = "MY ASSET,REQUESTED ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   defaultStatus: any = 'OPEN';
@@ -55,6 +57,7 @@ export class RequestAssetComponent implements OnInit {
   referer: string;
   mode: string;
   canEdit: boolean = true;
+  asstes: any[] = [];
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -67,6 +70,7 @@ export class RequestAssetComponent implements OnInit {
     private incidentService: IncidentService,
     private mediaService: MediaService,
     private clientStorageService: ClientStorageService,
+    private assetService: AssetService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -148,7 +152,9 @@ export class RequestAssetComponent implements OnInit {
                   this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
                   this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
                   this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
-                  this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                  if (this.draftData.new.watchList != null) {
+                    this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                  }
                   this.angForm.get('title').setValue(this.draftData.new.title);
                   this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
                 }
@@ -164,9 +170,13 @@ export class RequestAssetComponent implements OnInit {
         ]),
         fileInput: new FormControl('', [
         ]),
+        asset: new FormControl(null, [
+        ]),
         message: new FormControl('', [
           Validators.required,
         ]),
+      }, {
+        validators: this.customValidations(),
       });
       this.miscService.prioritiesService({ "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
@@ -183,6 +193,20 @@ export class RequestAssetComponent implements OnInit {
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callIncidentService(this.entityId);
     }
+  }
+
+  customValidations() {
+    return (formGroup: FormGroup) => {
+      // if (formGroup.controls['newStatus'].value == null) {
+      //   formGroup.controls['existingAgreement'].setErrors({ required: true, notValidAgreement: false });
+      // } else {
+      //   if (formGroup.controls['existingAgreement'].value == '0') {
+      //     formGroup.controls['existingAgreement'].setErrors({ required: false, notValidAgreement: true });
+      //   } else {
+      //     formGroup.controls['existingAgreement'].setErrors(null);
+      //   }
+      // }
+    };
   }
 
   hasPermission(actions: string): boolean {
@@ -240,23 +264,10 @@ export class RequestAssetComponent implements OnInit {
 
   formSubmit(sts: any) {
     if (this.angForm.valid) {
-      //console.log(this.angForm);
-      // prepare incident  object
-      // let selected = null;
-      // let index = null;
-      // let val = null;
-      // let watchers = $('#watchList').val();
-      // for (let k in watchers) {
-      //   selected = watchers[k].split(":");
-      //   index = selected[0];
-      //   val = selected[1].replace(/^\s+/, "").replace(/['"]+/g, '');
-      //   console.log(index + '==' + val);
-      //   watchers[k] = val;
-      // }
       if (sts === "DRAFT") {
-        let returnPath = '/asset/requested';
+        let returnPath = '/asset/mine/requested';
         if (this.referer === 'agent-all') {
-          returnPath = '/incident/agent/all';
+          returnPath = '/asset/requested/incomming';
         } else if (this.referer === 'agent-mine') {
           returnPath = '/incident/agent/mine';
         }
@@ -269,6 +280,12 @@ export class RequestAssetComponent implements OnInit {
             priority.id = priorityId;
             priority.name = this.priorities[i].name;
             priority.version = this.priorities[i].version;
+          }
+        }
+        let asset = null;
+        for (let i in this.asstes) {
+          if (this.asstes[i].id == this.angForm.controls['asset'].value) {
+            asset = { id: this.asstes[i].id };
           }
         }
         if (this.newEntity) {
@@ -287,8 +304,9 @@ export class RequestAssetComponent implements OnInit {
         } else {
           ic = new IncidentCommunication();
           ic.message = this.angForm.controls['message'].value;
-          if (this.hasAgentPermission) {
+          if (this.hasAgentPermission && this.canEdit) {
             inc.priority = priority;
+            inc.asset = asset;
             inc.status = this.angForm.controls['newStatus'].value;
           }
           inc.communications.push(ic);
@@ -325,6 +343,12 @@ export class RequestAssetComponent implements OnInit {
             priority.organisation = null;
           }
         }
+        let asset = null;
+        for (let i in this.asstes) {
+          if (this.asstes[i].id == this.angForm.controls['asset'].value) {
+            asset = { id: this.asstes[i].id };
+          }
+        }
         if (this.newEntity) {
           this.incident.moduleId = this.angForm.controls['moduleId'].value;
           this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
@@ -334,10 +358,19 @@ export class RequestAssetComponent implements OnInit {
           this.incident.raisedUser = null;
           this.incident.priority = priority;
           this.incident.status = this.defaultStatus;
+          for (let i = 0; i < this.permissions.length; i++) {
+            if (this.permissions[i].moduleId == this.angForm.controls['subModuleId'].value && this.permissions[i].licenseType == 'ASSET') {
+              this.incident.assetApproved = !this.permissions[i].requireApproval;
+              this.incident.feedbackProvided = !this.permissions[i].requireApproval;
+            }
+          }
         } else {
-          this.incident.priority = priority;
-          if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
-            this.incident.status = this.angForm.controls['newStatus'].value;
+          if (this.hasAgentPermission && this.canEdit) {
+            this.incident.priority = priority;
+            this.incident.asset = asset;
+            if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
+              this.incident.status = this.angForm.controls['newStatus'].value;
+            }
           }
         }
         // prepare incidentCommunication object
@@ -407,9 +440,9 @@ export class RequestAssetComponent implements OnInit {
   }
 
   callSaveIncidentService() {
-    let returnPath = '/asset/requested';
+    let returnPath = '/asset/mine/requested';
     if (this.referer === 'agent-all') {
-      returnPath = '/incident/agent/all';
+      returnPath = '/asset/requested/incomming';
     } else if (this.referer === 'agent-mine') {
       returnPath = '/incident/agent/mine';
     }
@@ -465,7 +498,12 @@ export class RequestAssetComponent implements OnInit {
         this.incident.subModuleName = data.subModuleName;
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
-        this.populateSubmodule({ moduleId: this.incident.moduleId });
+        this.incident.asset = data.asset != null ? { modelNo: data.asset.modelNo, serialNo: data.asset.serialNo, id: data.asset.id, version: data.asset.version } : null;
+        this.incident.assetApproved = data.assetApproved;
+        this.incident.feedbackProvided = data.feedbackProvided;
+        this.incident.allocated = data.allocated;
+        this.incident.oldAssetId = data.oldAssetId;
+        this.incident.deAllocated = data.deAllocated;
         let org = data.organisation;
         this.incident.organisation = { id: org.id, version: org.version };
         for (let k in this.incident.communications) {
@@ -483,34 +521,37 @@ export class RequestAssetComponent implements OnInit {
         let logedinUser = this.loggedInUserService.getLoggedInUser();
         this.hasAgentPermission = false;
         if (this.incident.raisedUser.id == logedinUser.userId) {
-          console.log("raised user who raised the incident");
+          //console.log("raised user who raised the incident");
           // for user who raised the incident
           this.canEdit = true;
         } else if (this.incident.assignedUser != null && this.incident.assignedUser.id == logedinUser.userId) {
           // for assigned agent who can edit, after assignment
-          console.log("assigned agent who can edit, after assignment");
+          this.getAssets();
           this.canEdit = true;
           this.hasAgentPermission = true;
+          //this.populateSubmodule({ moduleId: this.incident.moduleId });
         } else if (this.incident.assignedUser != null && this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
           // for agent lead/manager who can edit, after assignment
-          console.log("agent lead/manager who can edit, after assignment");
+          //console.log("agent lead/manager who can edit, after assignment");
           this.canEdit = true;
           this.hasAgentPermission = true;
+          this.getAssets();
         } else if (this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
           // for agent, agent lead/manager who can only view because incident not assigned yet to any one.
-          console.log("agent, agent lead/manager who can only view because incident not assigned yet to any one.");
+          //console.log("agent, agent lead/manager who can only view because incident not assigned yet to any one.");
           this.canEdit = false;
           this.hasAgentPermission = true;
+          //this.populateSubmodule({ moduleId: this.incident.moduleId });
         } else if (this.loggedInUserService.hasRole("ORG_ADMIN")) {
           // for org admin user only can view incident details
-          console.log("org admin user only can view incident details");
+          //console.log("org admin user only can view incident details");
           this.canEdit = false;
         } else if (this.loggedInUserService.hasRole(categoryAdminRoleName)) {
           // for category admin user only can view incident details
-          console.log("category admin user only can view incident details");
+          //console.log("category admin user only can view incident details");
           this.canEdit = false;
         } else {
-          console.log("user don't have any access to this incident");
+          //console.log("user don't have any access to this incident");
           // for user don't have any access to this incident
           this.router.navigate(['/no-access']);
         }
@@ -533,6 +574,7 @@ export class RequestAssetComponent implements OnInit {
                 if (this.hasAgentPermission) {
                   this.angForm.get('priorityId').setValue(this.draftData.existing[k].priority.id);
                   this.angForm.get('newStatus').setValue(this.draftData.existing[k].status);
+                  this.angForm.get('asset').setValue(this.draftData.existing[k].asset.id);
                 }
                 this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
                 break;
@@ -541,6 +583,18 @@ export class RequestAssetComponent implements OnInit {
               }
             }
           }
+        }
+      });
+  }
+
+  getAssets() {
+    this.assetService
+      .assetsService({ available: 1, productCategory: this.incident.moduleId, assetType: this.incident.subModuleId })
+      .subscribe((data: AssetList) => {
+        this.asstes = [];
+        this.asstes = data.content;
+        for (let i in this.asstes) {
+          this.asstes[i].label = this.asstes[i].modelNo + "/" + this.asstes[i].serialNo;
         }
       });
   }
@@ -582,8 +636,6 @@ export class RequestAssetComponent implements OnInit {
 
   formatDateTime(d: string) {
     if (d != null && d != "") {
-      //console.log(moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT));
-      //console.log(moment(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT));
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
@@ -595,4 +647,5 @@ export class RequestAssetComponent implements OnInit {
     }
     return '';
   }
+
 }

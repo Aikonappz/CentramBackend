@@ -129,11 +129,26 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "MANAGE ASSET" }
       },
       {
-        name: "My Assets",
-        url: '/asset/requested',
-        icon: 'fa fa-paper-plane',
+        name: "Request Asset",
+        url: '/asset/user/add/new',
+        icon: 'fa fa-plus-square',
         attributes: { "moduleName": "MY ASSET" }
       },
+      {
+        name: "My Assets",
+        url: '/asset/assigned',
+        icon: 'fa fa-suitcase',
+        attributes: { "moduleName": "MY ASSET" }
+      },
+      {
+        name: "My Asset Requests",
+        url: '/asset/requested',
+        icon: 'fa fa-paper-plane',
+        attributes: { "moduleName": "MY ASSET REQUEST" }
+      },
+
+
+
       {
         name: 'Requested Asset',
         url: '/asset/requested/incomming',

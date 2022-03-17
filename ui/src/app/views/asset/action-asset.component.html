@@ -3,46 +3,63 @@
     <div class="col-sm-12">
       <div class="card">
         <div class="card-header">
-          <strong>Asset Request - {{assetRequest.assetRequestNo}}</strong>
+          <strong>Asset Request - {{incident.incidentNo}}</strong>
         </div>
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
             <table class="table table-bordered table-striped table-sm">
               <tr>
                 <td width="50%"><strong>Product Category</strong></td>
-                <td>{{assetRequest.productCategory}}</td>
+                <td>{{incident?.moduleName}}</td>
               </tr>
               <tr>
                 <td><strong>Asset Category</strong></td>
-                <td>{{assetRequest.assetType}}</td>
+                <td>{{incident?.subModuleName}}</td>
               </tr>
               <tr>
-                <td><strong>Model No</strong></td>
-                <td>{{assetRequest?.modelNo}}</td>
+                <td><strong>Request Title</strong></td>
+                <td>{{incident?.title}}</td>
               </tr>
               <tr>
-                <td><strong>Project Code</strong></td>
-                <td>{{assetRequest.user?.projectCode}}</td>
-              </tr>
-              <tr>
-                <td><strong>Long Term?</strong></td>
-                <td>{{assetRequest.longTerm==true? 'Yes' : 'No'}}</td>
-              </tr>
-              <tr>
-                <td><strong>Comment</strong></td>
-                <td>{{assetRequest.comment}}</td>
-              </tr>
-              <tr *ngIf="assetRequest.attachment!=null">
-                <td><strong>Attachment</strong></td>
+                <td><strong>Request Message</strong></td>
                 <td>
-                  <span class="actionable-span"
-                    (click)="downloadFile(assetRequest.attachment.id)">{{assetRequest.attachment.fileName}}&nbsp;&nbsp;</span>
+                  <div [innerHTML]="incident.communications[incident.communications.length-1]?.message"></div>
                 </td>
               </tr>
               <tr>
+                <td><strong>Attachments</strong></td>
+                <td>
+                  <div *ngIf="incident.communications[incident.communications.length-1]?.attachments.length > 0"
+                    class="btn-group" role="group">
+                    <ng-container
+                      *ngFor="let e of incident.communications[incident.communications.length-1]?.attachments">
+                      <span class="actionable-span" (click)="downloadFile(e.id)">{{e.fileName}}&nbsp;&nbsp;</span>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Request User Details</strong></td>
+                <td>
+                  {{incident.raisedUser?.firstName}} {{incident.raisedUser?.lastName}}<br />
+                  {{incident.raisedUser?.employeeId}}<br />
+                  {{incident.raisedUser?.projectCode}}
+                </td>
+              </tr>
+              <!-- <tr>
+                <td><strong>Long Term?</strong></td>
+                <td>{{incident.longTerm==true? 'Yes' : 'No'}}</td>
+              </tr> -->
+
+              <!-- <tr>
+                <td><strong>Comment</strong></td>
+                <td>{{incident.communications[0]}}</td>
+              </tr> -->
+              <!--  -->
+              <tr>
                 <td><strong>Approver Feedback</strong></td>
                 <td>
-                  <div *ngIf="assetRequest.approverComment==null">
+                  <div *ngIf="!incident.feedbackProvided">
                     <textarea id="approverComment" rows="4" class="form-control textarea-non-resizable"
                       formControlName="approverComment" id="approverComment" name="approverComment"
                       placeholder="Approver Feedback"></textarea>
@@ -53,9 +70,9 @@
                       </div>
                     </div>
                   </div>
-                  <div *ngIf="assetRequest.approverComment!=null">
-                    {{assetRequest.approved == true ? 'Approved' : 'Rejected'}}<br />
-                    {{assetRequest.approverComment}}
+                  <div *ngIf="incident.feedbackProvided">
+                    {{incident.assetApproved == true ? 'Approved' : 'Rejected'}}<br />
+                    {{incident.communications[0]?.message}}
                   </div>
                 </td>
               </tr>

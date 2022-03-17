@@ -463,7 +463,9 @@ export class EditIncidentComponent implements OnInit {
         this.incident.subModuleName = data.subModuleName;
         this.incident.communications = data.communications;
         this.incidentCommunications = data.communications;
-        this.populateSubmodule({ moduleId: this.incident.moduleId });
+        this.incident.asset = data.asset;
+        this.incident.assetApproved = data.assetApproved;
+        this.incident.feedbackProvided = data.feedbackProvided;
         let org = data.organisation;
         this.incident.organisation = { id: org.id, version: org.version };
         for (let k in this.incident.communications) {
@@ -481,34 +483,37 @@ export class EditIncidentComponent implements OnInit {
         let logedinUser = this.loggedInUserService.getLoggedInUser();
         this.hasAgentPermission = false;
         if (this.incident.raisedUser.id == logedinUser.userId) {
-          console.log("raised user who raised the incident");
+          //console.log("raised user who raised the incident");
           // for user who raised the incident
           this.canEdit = true;
         } else if (this.incident.assignedUser != null && this.incident.assignedUser.id == logedinUser.userId) {
           // for assigned agent who can edit, after assignment
-          console.log("assigned agent who can edit, after assignment");
+          //console.log("assigned agent who can edit, after assignment");
           this.canEdit = true;
           this.hasAgentPermission = true;
+          //this.populateSubmodule({ moduleId: this.incident.moduleId });
         } else if (this.incident.assignedUser != null && this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
           // for agent lead/manager who can edit, after assignment
-          console.log("agent lead/manager who can edit, after assignment");
+          //console.log("agent lead/manager who can edit, after assignment");
           this.canEdit = true;
           this.hasAgentPermission = true;
+          //this.populateSubmodule({ moduleId: this.incident.moduleId });
         } else if (this.loggedInUserService.hasPermissionById(this.incident.moduleId, 'SOLVE') && this.loggedInUserService.hasPermissionById(this.incident.subModuleId, 'SOLVE')) {
           // for agent, agent lead/manager who can only view because incident not assigned yet to any one.
-          console.log("agent, agent lead/manager who can only view because incident not assigned yet to any one.");
+          //console.log("agent, agent lead/manager who can only view because incident not assigned yet to any one.");
           this.canEdit = false;
           this.hasAgentPermission = true;
+          //this.populateSubmodule({ moduleId: this.incident.moduleId });
         } else if (this.loggedInUserService.hasRole("ORG_ADMIN")) {
           // for org admin user only can view incident details
-          console.log("org admin user only can view incident details");
+          //console.log("org admin user only can view incident details");
           this.canEdit = false;
         } else if (this.loggedInUserService.hasRole(categoryAdminRoleName)) {
           // for category admin user only can view incident details
-          console.log("category admin user only can view incident details");
+          //console.log("category admin user only can view incident details");
           this.canEdit = false;
         } else {
-          console.log("user don't have any access to this incident");
+          //console.log("user don't have any access to this incident");
           // for user don't have any access to this incident
           this.router.navigate(['/no-access']);
         }

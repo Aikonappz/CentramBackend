@@ -250,13 +250,37 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private LicenseType incidentType;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Valid
     @NotNull
     @OneToOne
     @JoinColumn(name = "asset_id", nullable = true, referencedColumnName = "id")
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Asset asset;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private BigInteger oldAssetId;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "asset_approved", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean assetApproved = false;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "feedback_provided", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean feedbackProvided = false;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "allocated", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean allocated = false;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "deallocated", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean deallocated = false;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

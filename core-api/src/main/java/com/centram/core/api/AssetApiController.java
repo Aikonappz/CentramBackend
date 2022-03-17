@@ -76,7 +76,7 @@ public class AssetApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|SEARCH',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET,REQUESTED ASSET','READ|SEARCH,WRITE|SOLVE|ASSIGN',authentication.principal)")
     public ResponseEntity<PaginatedList<Asset>> getAssets(
             @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
             @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,

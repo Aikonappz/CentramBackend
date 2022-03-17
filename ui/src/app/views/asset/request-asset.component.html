@@ -3,10 +3,10 @@
     <div class="col-sm-12">
       <div class="card">
         <div class="card-header" *ngIf="newEntity">
-          <strong>Raise Incident</strong>
+          <strong>Raise New Asset Request</strong>
         </div>
         <div class="card-header" *ngIf="!newEntity">
-          <strong>Incident Details</strong>
+          <strong>Asset Request Details</strong>
         </div>
         <form [formGroup]="angForm" novalidate>
           <div class="card-body">
@@ -15,7 +15,7 @@
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="moduleId">Product Category</label>
-                  <ng-select [items]="moduleList" placeholder="-- Select Category --" #moduleId
+                  <ng-select [items]="moduleList" placeholder="-- Select Product Category --" #moduleId
                     (change)="populateSubmodule($event)" formControlName="moduleId" id="moduleId" name="moduleId"
                     bindLabel="customerModuleName" bindValue="moduleId">
                   </ng-select>
@@ -29,8 +29,8 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="subModuleId">Sub Category</label>
-                  <ng-select [items]="subModuleList" placeholder="-- Select Sub Category --"
+                  <label class="form-col-form-label required-control-label" for="subModuleId">Asset Category</label>
+                  <ng-select [items]="subModuleList" placeholder="-- Select Asset Category --"
                     formControlName="subModuleId" id="subModuleId" name="subModuleId" bindLabel="customerModuleName"
                     bindValue="moduleId">
                   </ng-select>
@@ -90,7 +90,7 @@
                     class="form-control textarea-non-resizable"
                     placeholder="Incident Title">{{incident.title}}</textarea>
                 </div>
-                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                <div class="col" *ngIf="(hasAgentPermission&&canEdit)">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <ng-select [items]="priorities" placeholder="-- Select Priority --" formControlName="priorityId"
                     id="priorityId" name="priorityId" bindLabel="label" bindValue="id"></ng-select>
@@ -100,6 +100,8 @@
                     </div>
                   </div>
                 </div>
+                <input *ngIf="!(hasAgentPermission&&canEdit)" type="hidden" value="{{incident.priority.id}}"
+                  formControlName="priorityId" id="priorityId" name="priorityId">
                 <div class="col" *ngIf="hasAgentPermission&&!canEdit">
                   <label class="form-col-form-label" for="priorityReadOnly">Priority</label>
                   <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"
@@ -130,6 +132,35 @@
                 </div>
               </div>
               <div class="row row-margin-05">
+                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                  <label class="form-col-form-label" for="asset">Assigned Asset</label>
+                  <div *ngIf="incident.asset != null">
+                    <input type="text" readonly value="{{incident.asset.modelNo}}/{{incident.asset.serialNo}}"
+                      id="asset" name="asset" class="form-control">
+                  </div>
+                  <div *ngIf="incident.asset == null">
+                    <input type="text" readonly id="asset" name="asset" class="form-control">
+                  </div>
+                </div>
+                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                  <label class="form-col-form-label" for="asset">Asset</label>
+                  <ng-select [items]="asstes" placeholder="-- Select Asset --" formControlName="asset" id="asset"
+                    name="asset" bindLabel="label" bindValue="id"></ng-select>
+                </div>
+                <div class="col" *ngIf="!(hasAgentPermission&&canEdit)">
+                  <label class="form-col-form-label" for="asset">Asset</label>
+                  <div *ngIf="incident.asset != null">
+                    <input type="text" readonly value="{{incident.asset.modelNo}}/{{incident.asset.serialNo}}"
+                      id="asset" name="asset" class="form-control">
+                  </div>
+                  <div *ngIf="incident.asset == null">
+                    <input type="text" readonly id="asset" name="asset" class="form-control">
+                  </div>
+                </div>
+                <div *ngIf="!(hasAgentPermission&&canEdit)" class="col"></div>
+                <div class="col"></div>
+              </div>
+              <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label" for="moduleName">Product Category</label>
                   <input type="text" id="moduleName" readonly value="{{makeTitleCase(incident.moduleName)}}"
@@ -140,7 +171,11 @@
                   <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
                     class="form-control">
                 </div>
-                <div class="col"></div>
+                <div class="col">
+                  <label class="form-col-form-label" for="approved">Approved By Manager</label>
+                  <input type="text" id="approved" readonly
+                    value="{{incident.feedbackProvided&&incident.assetApproved? 'YES' : 'NO'}}" class="form-control">
+                </div>
               </div>
               <div class="row row-margin-05">
                 <div class="col">
@@ -226,8 +261,8 @@
               </div>
             </div>
             <fieldset *ngIf="canEdit" class="border p-2">
-              <legend *ngIf="newEntity" class="w-auto required-control-label">Incident Description</legend>
-              <legend *ngIf="!newEntity" class="w-auto required-control-label">Update Incident</legend>
+              <legend *ngIf="newEntity" class="w-auto required-control-label">Asset Request Description</legend>
+              <legend *ngIf="!newEntity" class="w-auto required-control-label">Update Asset Request</legend>
               <div class="row row-margin-05">
                 <div class="col">
                   <!-- <label class="form-col-form-label required-control-label" for="message">Issue Details</label> -->

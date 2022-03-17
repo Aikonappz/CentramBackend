@@ -11,6 +11,7 @@ export class Permission {
     public roleName: string;
     public actionId: number;
     public actionName: string;
+    public requireApproval: boolean;
 
     public constructor(d: any) {
         this.moduleId = d.moduleId;
@@ -24,5 +25,6 @@ export class Permission {
         this.actionId = d.actionId;
         this.roleId = d.roleId;
         this.roleName = d.roleName;
+        this.requireApproval = d.requireApproval;
     }
 }

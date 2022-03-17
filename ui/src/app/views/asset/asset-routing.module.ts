@@ -9,6 +9,7 @@ import { OrderedAssetComponent } from './ordered-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
 import { AssetRequestActionComponent } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
+import { MyAssetComponent } from './my-asset.component';
 
 const routes: Routes = [
   {
@@ -45,7 +46,6 @@ const routes: Routes = [
           title: 'Action Assets Order'
         },
       },
-
       {
         path: 'inventory',
         component: AssetInventoryComponent,
@@ -78,6 +78,14 @@ const routes: Routes = [
           title: 'Requested Assets'
         },
       },
+      {
+        path: 'assigned',
+        component: MyAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'My Assets'
+        },
+      },
       // {
       //   path: 'request',
       //   component: RequestAssetComponent,
@@ -103,13 +111,12 @@ const routes: Routes = [
           title: 'Edit Incident'
         }
       },
-
       {
         path: 'request/action/:requestId',
         component: AssetRequestActionComponent,
         pathMatch: 'full',
         data: {
-          title: 'Request Action'
+          title: 'Take Action On Asset Request'
         },
       },
       {

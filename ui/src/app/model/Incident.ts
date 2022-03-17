@@ -25,6 +25,12 @@ export class Incident extends Base {
     holdAt: any;
     organisation: any;
     incidentType: any;
+    feedbackProvided: boolean;
+    assetApproved: boolean;
+    allocated: boolean;
+    deAllocated: boolean;
+    oldAssetId: number;
+    asset: any;
     constructor() {
         super();
         this.id = null;
@@ -41,6 +47,9 @@ export class Incident extends Base {
         this.raisedAt = null;
         this.slaAt = null;
         this.incidentType = 1;
+        this.feedbackProvided = false;
+        this.asset = null;
+        this.assetApproved = false;
     }
 }
 export interface IncidentList {

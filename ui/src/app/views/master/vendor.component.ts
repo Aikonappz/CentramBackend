@@ -64,8 +64,6 @@ export class VendorComponent implements OnInit {
         this.displayedColumns = ['name', 'conDtl', 'allocationType', 'status', 'action'];
         this.hasAllocationType = true;
       }
-
-
       this.datasource = new VendorDataSource(this.service);
       this.datasource.loadData(0, 10, { vendorType: this.type.toUpperCase() });
     });

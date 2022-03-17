@@ -63,8 +63,6 @@
                             <th mat-header-cell *matHeaderCellDef>Order Details</th>
                             <td mat-cell *matCellDef="let element">
                                 <span [ngClass]="{
-                                    'badge-sla-about-to-breach':element.approvedUser1==false ,
-                                    'badge-closed':element.approvedUser1==true ,
                                     'badge':true
                                     }">{{element.orderNo}}</span><br />
                                 <div *ngIf="element.isDepartment==true">
@@ -84,20 +82,30 @@
                         <ng-container matColumnDef="approverDtl">
                             <th mat-header-cell *matHeaderCellDef>Approver Details</th>
                             <td mat-cell *matCellDef="let element">
-                                <span [ngClass]="{
-                                    'badge-sla-about-to-breach':element.approvedUser1==false ,
-                                    'badge-closed':element.approvedUser1==true ,
-                                    'badge':true
+                                <div>
+
+                                    Approver 1 :
+                                    <span [ngClass]="{
+                                        'badge-sla-breached':element.approvedUser1==false&&element.approverUser1Comment!=null,
+                                        'badge-sla-about-to-breach':element.approvedUser1==false&&element.approverUser1Comment==null,
+                                        'badge-closed':element.approvedUser1==true&&element.approverUser1Comment!=null,
+                                        'badge':true
+                                        }">
+                                        {{element.approverUser1.firstName}} {{element.approverUser1.lastName}}
+                                    </span>
+                                </div>
+                                <div>
+                                    Approver 2 :
+                                    <span [ngClass]="{
+                                        'badge-sla-breached':element.approvedUser2==false&&element.approverUser2Comment!=null,
+                                        'badge-sla-about-to-breach':element.approvedUser2==false&&element.approverUser2Comment==null,
+                                        'badge-closed':element.approvedUser2==true&&element.approverUser2Comment!=null,
+                                        'badge':true
                                     }">
-                                    {{element.approverUser1.firstName}} {{element.approverUser1.lastName}}
-                                </span><br />
-                                <span [ngClass]="{
-                                    'badge-sla-about-to-breach':element.approvedUser2==false ,
-                                    'badge-closed':element.approvedUser2==true ,
-                                    'badge':true
-                                    }">
-                                    {{element.approverUser2.firstName}} {{element.approverUser2.lastName}}
-                                </span>
+                                        {{element.approverUser2.firstName}} {{element.approverUser2.lastName}}
+                                    </span>
+                                </div>
+
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">

@@ -6,9 +6,9 @@ import { Location } from '@angular/common';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { LoggedInUser } from '../../model/LoggedInUser';
 import { AssetApprovalDTO } from '../../model/AssetApprovalDTO';
-import { AssetRequest } from '../../model/AssetRequest';
-import { AssetRequestService } from '../../service/AssetRequestService';
 import { MediaService } from '../../service/MediaService';
+import { Incident } from '../../model/Incident';
+import { IncidentService } from '../../service/IncidentService';
 declare var $: any;
 
 @Component({
@@ -21,11 +21,10 @@ export class AssetRequestActionComponent implements OnInit {
   newEntity: boolean = true;
   entityId: number;
   angForm: FormGroup;
-  assetRequest: AssetRequest;
   requestId: number;
   canApprove: boolean = false;
   loggedInUser: LoggedInUser;
-
+  incident: Incident;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -34,7 +33,7 @@ export class AssetRequestActionComponent implements OnInit {
     private router: Router,
     private mediaService: MediaService,
     private loggedInUserService: LoggedInUserService,
-    private assetRequestService: AssetRequestService,
+    private incidentService: IncidentService,
   ) {
     this.angForm = this.fb.group({
       approverComment: new FormControl('', [
@@ -42,7 +41,7 @@ export class AssetRequestActionComponent implements OnInit {
         Validators.maxLength(255),
       ]),
     });
-    this.assetRequest = new AssetRequest();
+    this.incident = new Incident();
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.route.params.subscribe(params => {
       this.requestId = Number(this.route.snapshot.paramMap.get('requestId'));
@@ -99,7 +98,7 @@ export class AssetRequestActionComponent implements OnInit {
 
   formSubmit(mode: string) {
     let assetOrderApprovalDTO = new AssetApprovalDTO();
-    assetOrderApprovalDTO.id = this.assetRequest.id;
+    assetOrderApprovalDTO.id = this.incident.id;
     let approved = mode == 'APPROVE' ? true : false;
     if (this.angForm.valid) {
       assetOrderApprovalDTO.approval = approved;
@@ -110,31 +109,33 @@ export class AssetRequestActionComponent implements OnInit {
       console.log("Invalid Form!");
     }
   }
+
   goBack() {
     this._location.back();
   }
+
   callApproveAssetRequest(assetOrderApprovalDTO: AssetApprovalDTO) {
-    this.assetRequestService
+    this.incidentService
       .approveAssetRequest(assetOrderApprovalDTO)
       .subscribe((data: any) => {
         this.router.navigate(['/dashboard']);
       });
   }
+
   callAssetRequestService(id: number) {
-    this.assetRequestService
-      .assetRequestService(id)
+    this.incidentService
+      .incidentService(id)
       .subscribe((data: any) => {
-        this.assetRequest = data;
-        //console.log(this.loggedInUser);
-        //console.log(this.assetRequest);
-        if (this.loggedInUser.userId != this.assetRequest.user.managerId) {
+        //console.log(JSON.stringify(data));
+        this.incident = data;
+        if (this.loggedInUser.userId != this.incident.raisedUser.managerId) {
           //console.log("no right to visit!");
           this.router.navigate(['/dashboard']);
-        } else if (this.loggedInUser.userId == this.assetRequest.user.managerId && this.assetRequest.approverComment != null) {
+        } else if (this.loggedInUser.userId == this.incident.raisedUser.managerId && this.incident.feedbackProvided) {
           //console.log("already feedback provided!");
           this.canApprove = false;
-          this.angForm = this.fb.group({});
-        } else if (this.loggedInUser.userId == this.assetRequest.user.managerId && this.assetRequest.approverComment == null) {
+          //this.angForm = this.fb.group({});
+        } else if (this.loggedInUser.userId == this.incident.raisedUser.managerId && !this.incident.feedbackProvided) {
           //console.log("can provide feedback!");
           this.canApprove = true;
         } else {

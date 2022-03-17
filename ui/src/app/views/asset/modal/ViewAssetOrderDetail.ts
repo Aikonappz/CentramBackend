@@ -22,8 +22,6 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                         <td><strong>Order Details</strong></td>
                         <td>
                             <span [ngClass]="{
-                            'badge-sla-about-to-breach':assetOrder.approvedUser1==false ,
-                            'badge-closed':assetOrder.approvedUser1==true ,
                             'badge':true
                             }">{{assetOrder.orderNo}}</span><br />
                             <div *ngIf="assetOrder.isDepartment==true">
@@ -56,10 +54,10 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                         <td>
                             Name: {{assetOrder.vendor.name}}<br />
                             Purchase Type: {{assetOrder.purchaseType}}<br />
-                            <div *ngIf="assetOrder.purchaseType=='RENTED'">
+                            <!--<div *ngIf="assetOrder.purchaseType=='RENTED'">
                                 Rent Start Date: {{formatDateTime(assetOrder.rentStartAt)}}<br />
                                 Rent End Date: {{formatDateTime(assetOrder.rentEndAt)}}<br />
-                            </div>
+                            </div>-->
                             <div *ngIf="assetOrder.existingAgreement==true">
                                 Existing Agreement: Yes
                                 Agreement End Date: {{formatDateTime(assetOrder.agreementEndAt)}}<br />
@@ -72,20 +70,28 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                     <tr>
                         <td><strong>Approver Details</strong></td>
                         <td>
-                            <span [ngClass]="{
-                                'badge-sla-about-to-breach':assetOrder.approvedUser1==false ,
-                                'badge-closed':assetOrder.approvedUser1==true ,
-                                'badge':true
+                            <div>
+                                Approver 1 :
+                                <span [ngClass]="{
+                                    'badge-sla-breached':assetOrder.approvedUser1==false&&assetOrder.approverUser1Comment!=null,
+                                    'badge-sla-about-to-breach':assetOrder.approvedUser1==false&&assetOrder.approverUser1Comment==null,
+                                    'badge-closed':assetOrder.approvedUser1==true&&assetOrder.approverUser1Comment!=null,
+                                    'badge':true
                                 }">
-                                {{assetOrder.approverUser1.firstName}} {{assetOrder.approverUser1.lastName}}
-                            </span><br />
-                            <span [ngClass]="{
-                                'badge-sla-about-to-breach':assetOrder.approvedUser2==false ,
-                                'badge-closed':assetOrder.approvedUser2==true ,
-                                'badge':true
+                                    {{assetOrder.approverUser1.firstName}} {{assetOrder.approverUser1.lastName}}
+                                </span>
+                            </div>
+                            <div>
+                                Approver 2 :
+                                <span [ngClass]="{
+                                    'badge-sla-breached':assetOrder.approvedUser2==false&&assetOrder.approverUser2Comment!=null,
+                                    'badge-sla-about-to-breach':assetOrder.approvedUser2==false&&assetOrder.approverUser2Comment==null,
+                                    'badge-closed':assetOrder.approvedUser2==true&&assetOrder.approverUser2Comment!=null,
+                                    'badge':true
                                 }">
-                                {{assetOrder.approverUser2.firstName}} {{assetOrder.approverUser2.lastName}}
-                            </span>
+                                    {{assetOrder.approverUser2.firstName}} {{assetOrder.approverUser2.lastName}}
+                                </span>
+                            </div>
                         </td>
                     </tr>
                 </table>

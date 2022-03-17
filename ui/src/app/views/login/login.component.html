@@ -2,13 +2,13 @@
   <main class="main d-flex align-items-center">
     <div class="container">
       <div class="row">
-       
+
         <div class="col-lg-6 col-md-8 col-12 mx-auto mt-5">
           <div class="col-12 text-center"><a href="/" class="logo"><img src="assets/img/logo.png"></a></div>
           <div class="card-group custom-form-css mt-3">
             <div class="card p-4">
               <div class="card-body">
-               
+
                 <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                   <div class="alert alert-warning" role="alert" data-dismiss="alert" *ngIf="sessionTimeOut">
                     Your session got expired!
@@ -19,7 +19,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="icon-user"></i></span>
                     </div>
-                    <input type="text" formControlName="email" class="form-control" id="email" ngModel name="email"
+                    <input type="text" formControlName="email" class="form-control" id="email" name="email"
                       placeholder="Email" autocomplete="email" required>
                   </div>
                   <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger">
@@ -35,7 +35,7 @@
                       <span class="input-group-text"><i class="icon-lock"></i></span>
                     </div>
                     <input type="password" formControlName="password" class="form-control" placeholder="Password"
-                      autocomplete="current-password" id="password" ngModel name="password" required>
+                      autocomplete="current-password" id="password" name="password" required>
                   </div>
                   <div *ngIf="f.password.touched && f.password.invalid" class="alert alert-danger">
                     <div *ngIf="f.password.errors?.required">

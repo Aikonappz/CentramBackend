@@ -45,14 +45,14 @@ public class AppConfiguration implements Serializable {
     @Valid
     @NotNull
     @Lob
-    @Column(name = "configuration_value", nullable = false, columnDefinition = "TEXT not null")
+    @Column(name = "configuration_value", nullable = false, columnDefinition = "longtext not null")
     private String configurationValue;
 
     @ApiModelProperty(value = "")
     @Valid
     @NotNull
     @Lob
-    @Column(name = "configuration_properties", nullable = false, columnDefinition = "TEXT not null")
+    @Column(name = "configuration_properties", nullable = false, columnDefinition = "longtext not null")
     @Convert(converter = ConfigurationPropertiesConverter.class)
     private Map<String, Object> configurationProperties;
 

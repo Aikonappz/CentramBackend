@@ -150,7 +150,7 @@ export class AssetOrderComponent implements OnInit {
           formGroup.controls['existingAgreement'].setErrors(null);
         }
       }
-      if (formGroup.controls['purchaseType'].value == "RENTED") {
+      /*if (formGroup.controls['purchaseType'].value == "RENTED") {
         $('.proxy-rent').addClass("d-none");
         $('.rent').removeClass("d-none");
         if (formGroup.controls['rentStartAt'].value == "" || formGroup.controls['rentStartAt'].value == null) {
@@ -178,7 +178,7 @@ export class AssetOrderComponent implements OnInit {
         $('.rent').addClass("d-none");
         formGroup.controls['rentStartAt'].setErrors(null);
         formGroup.controls['rentEndAt'].setErrors(null);
-      }
+      }*/
       if (formGroup.controls['withinBudget'].value == "0") {
         if (formGroup.controls['limitAmount'].value == "" || formGroup.controls['limitAmount'].value == null) {
           formGroup.controls['limitAmount'].setErrors({ required: true, maxlength: false, pattern: false });
@@ -395,10 +395,10 @@ export class AssetOrderComponent implements OnInit {
           this.assetOrder.vendor = { id: this.vendorList[k].id, name: this.vendorList[k].name, version: this.vendorList[k].version };
         }
       }
-      if (this.angForm.controls['purchaseType'].value == 'RENTED') {
+      /*if (this.angForm.controls['purchaseType'].value == 'RENTED') {
         this.assetOrder.rentStartAt = AppUtility.prepareDateToString(moment(this.angForm.controls['rentStartAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
         this.assetOrder.rentEndAt = AppUtility.prepareDateToString(moment(this.angForm.controls['rentEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      }
+      }*/
       //console.log(AssetType[this.angForm.controls['assetType'].value]);
       //console.log(JSON.stringify(this.assetOrder));
       this.callSaveAssetOrderService(this.assetOrder);

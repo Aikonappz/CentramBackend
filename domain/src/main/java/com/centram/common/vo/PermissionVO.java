@@ -23,6 +23,7 @@ public class PermissionVO implements Serializable {
     private BigInteger moduleParentId;
     private LicenseType licenseType;
     private Boolean appModule;
+    private Boolean requireApproval;
     private String customerModuleName;
 
     public PermissionVO(Permission permission) {
@@ -36,5 +37,6 @@ public class PermissionVO implements Serializable {
         this.actionName = permission.getAction().getName();
         this.roleId = permission.getRole().getId();
         this.roleName = permission.getRole().getName();
+        this.requireApproval = permission.getModule().getRequireApproval();
     }
 }

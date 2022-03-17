@@ -1,12 +1,12 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.IncidentService;
 import com.centram.domain.Incident;
 import com.centram.domain.User;
-import com.centram.domain.enumarator.LicenseType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -70,15 +70,28 @@ public class IncidentApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY ASSET,MY INCIDENTS','READ|SEARCH,READ|SEARCH',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY ASSET,MY INCIDENTS,MY ASSET REQUEST','READ|SEARCH,READ|SEARCH,READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> getUserIncidents(
             @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
-            @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
-            @ApiParam(value = "title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
+            @ApiParam(value = "Asset Assigned", defaultValue = "-1", required = false) @RequestParam(value = "assigned", defaultValue = "-1", required = false) Integer assigned,
+            @ApiParam(value = "Asset Deallocated", defaultValue = "-1", required = false) @RequestParam(value = "deallocated", defaultValue = "-1", required = false) Integer deallocated,
+            @ApiParam(value = "Serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
+            @ApiParam(value = "Incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
+            @ApiParam(value = "Title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserIncidents(incidentType, incidentNo, title, status, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(
+                incidentService.getUserIncidents(
+                        incidentType,
+                        assigned,
+                        deallocated,
+                        serialNo,
+                        incidentNo,
+                        title,
+                        status,
+                        pageable
+                ), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all agent incidents", nickname = "getAgentIncidents", notes = "Get all agent incidents", response = PaginatedList.class, tags = {"Incident",})
@@ -92,6 +105,7 @@ public class IncidentApiController {
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REQUESTED ASSET,MY GROUP INCIDENTS','SEARCH|READ,SEARCH|READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> getAgentIncidents(
             @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
+            @ApiParam(value = "Approved Asset", defaultValue = "-1", required = false) @RequestParam(value = "approved", defaultValue = "-1", required = false) Integer approved,
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
             @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -101,9 +115,7 @@ public class IncidentApiController {
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getAgentIncidents(
-                incidentType, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
-        ), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getAgentIncidents(incidentType, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Assign agent to Incidents", nickname = "assignIncidents", notes = "Assign agent to Incidents", tags = {"Incident",})
@@ -136,6 +148,19 @@ public class IncidentApiController {
             @ApiParam(value = "status", required = true) @PathVariable("status") String status
     ) {
         incidentService.reopenIncident(status, ids);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"Incident",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.DetailView.class)
+    @RequestMapping(value = "/asset/approval-action", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    @PreAuthorize("@incidentService.hasApprovalPermission(authentication.principal,#body.id)")
+    public ResponseEntity<Void> approveAssetRequest(@ApiParam(value = "AssetApprovalDTO object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
+        incidentService.assetApprovalAction(body);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

@@ -13,7 +13,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="icon-user"></i></span>
                     </div>
-                    <input type="text" formControlName="name" class="form-control" id="name" ngModel name="name"
+                    <input type="text" formControlName="name" class="form-control" id="name" name="name"
                       placeholder="Name" autocomplete="name">
                   </div>
                   <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger">
@@ -25,7 +25,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="icon-envelope"></i></span>
                     </div>
-                    <input type="text" formControlName="email" class="form-control" id="email" ngModel name="email"
+                    <input type="text" formControlName="email" class="form-control" id="email" name="email"
                       placeholder="Email" autocomplete="email" required>
                   </div>
                   <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger">
@@ -40,7 +40,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="icon-phone"></i></span>
                     </div>
-                    <input type="text" formControlName="phone" class="form-control" id="phone" ngModel name="phone"
+                    <input type="text" formControlName="phone" class="form-control" id="phone" name="phone"
                       placeholder="Phone Number" autocomplete="phone" required>
                   </div>
                   <div *ngIf="f.phone.touched && f.phone.invalid" class="alert alert-danger">

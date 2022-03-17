@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -31,7 +32,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.centram.common.utility.Utility.*;
+import static com.centram.common.utility.Utility.incidentNo;
+import static com.centram.common.utility.Utility.orderNo;
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
@@ -50,6 +52,8 @@ public class IncidentService {
     private MediaService mediaService;
     @Autowired
     private MiscService miscService;
+    @Autowired
+    private AssetService assetService;
     @Autowired
     private PermissionService permissionService;
     @Autowired
@@ -92,7 +96,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getAgentIncidents(String incidentType,String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> getAgentIncidents(String incidentType, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
@@ -109,7 +113,7 @@ public class IncidentService {
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType),incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
@@ -290,12 +294,13 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getUserIncidents(String incidentType, String incidentNo, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> getUserIncidents(String incidentType, Integer assigned, Integer deallocated, String serialNo, String incidentNo, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
+        serialNo = (!serialNo.equals("")) ? "%" + serialNo.toUpperCase() + "%" : null;
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, title, intStatus, loggedInUser.getUserId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, serialNo, title, intStatus, assigned, deallocated, loggedInUser.getUserId(), pageable));
     }
 
     /**
@@ -328,6 +333,7 @@ public class IncidentService {
         module = moduleService.getModuleById(incident.get().getSubModuleId());
         incident.get().setSubModuleName(module.getCustomerModuleName());
         incident.get().setActualSubModuleName(module.getName());
+        incident.get().setOldAssetId(incident.get().getAsset() != null ? incident.get().getAsset().getId() : null);
         return incident.get();
     }
 
@@ -444,6 +450,66 @@ public class IncidentService {
     }
 
     /**
+     * asset request action
+     *
+     * @param assetApprovalDTO
+     */
+    @Transactional(readOnly = false)
+    public void assetApprovalAction(AssetApprovalDTO assetApprovalDTO) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Incident> optionalIncident = incidentRepository.findById(assetApprovalDTO.getId());
+        if (optionalIncident.isPresent()) {
+            Incident incident = optionalIncident.get();
+            Set<IncidentCommunication> incidentCommunications = new HashSet<IncidentCommunication>();
+            incidentCommunications = incident.getCommunications();
+            User manager = new User(userService.getUserById(incident.getRaisedUser().getManagerId()));
+            incidentCommunications.add(new IncidentCommunication(assetApprovalDTO.getFeedback(), incident, manager, Collections.emptyList()));
+            incident.setCommunications(incidentCommunications);
+            incident.setFeedbackProvided(true);
+            incident.setAssetApproved(assetApprovalDTO.getApproval());
+
+            /*fetch location*/
+            Location location = locationService.getById(loggedInUser.getLocationId());
+            /*fetch priority*/
+            Priority priority = priorityService.getById(incident.getPriority().getId());
+            /*prepare holiday List*/
+            ZonedDateTime raiseDateTime = ZonedDateTime.now();
+            List<Holiday> holidays = new ArrayList<Holiday>();
+            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
+            if (raiseDateTime.getMonth() == Month.DECEMBER) {
+                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+            }
+            holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
+            /*prepare holiday List*/
+            raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
+            incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+
+            incident = incidentRepository.save(incident);
+            miscService.sendInboundAssetRequestActionEmail(new IncidentEmailVO(incident, appDateTimeViewFormat, assetApprovalDTO.getFeedback()));
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
+    /**
+     * check user has approval permission or not
+     *
+     * @param loggedInUser
+     * @param requestId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Boolean hasApprovalPermission(LoggedInUser loggedInUser, BigInteger requestId) {
+        Optional<Incident> optionalIncident = incidentRepository.findById(requestId);
+        if (optionalIncident.isPresent()) {
+            Incident incident = optionalIncident.get();
+            return loggedInUser.getUserId().compareTo(incident.getRaisedUser().getManagerId()) == 0;
+        }
+        return false;
+    }
+
+    /**
      * save incident data
      *
      * @param incident
@@ -453,10 +519,12 @@ public class IncidentService {
     public Incident save(Incident incident) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Incident raisedIncident = null;
+        Asset asset = null;
         UserVO userVO = userService.getUserById(loggedInUser.getUserId());
         ZonedDateTime currentDateTime = ZonedDateTime.now();
         currentDateTime = currentDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
         incident.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+        incident.setWatchList(incident.getWatchList() == null ? Collections.emptyList() : incident.getWatchList());
         if (incident.getId() == null) {
             incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
@@ -521,6 +589,19 @@ public class IncidentService {
             holdDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
             incident.setSlaAt(this.getHoldSLADateTime(currentDateTime, holdDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
             incident.setHoldAt(null);
+        }
+        if (incident.getOldAssetId() != null && incident.getAsset() != null && incident.getOldAssetId().compareTo(incident.getAsset().getId()) != 0) {
+            asset = assetService.getAssetById(incident.getOldAssetId());
+            asset.setIsAvailable(true);
+            assetService.save(asset);
+        }
+        if (incident.getAsset() != null) {
+            incident.setAllocated(true);
+            incident.setDeallocated(false);
+            asset = assetService.getAssetById(incident.getAsset().getId());
+            asset.setIsAvailable(false);
+            assetService.save(asset);
+            incident.setAsset(asset);
         }
         raisedIncident = incidentRepository.save(incident);
         // sorting incident communication via auto increment id

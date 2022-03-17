@@ -90,7 +90,7 @@
                     class="form-control textarea-non-resizable"
                     placeholder="Incident Title">{{incident.title}}</textarea>
                 </div>
-                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                <div class="col" *ngIf="(hasAgentPermission&&canEdit)">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <ng-select [items]="priorities" placeholder="-- Select Priority --" formControlName="priorityId"
                     id="priorityId" name="priorityId" bindLabel="label" bindValue="id"></ng-select>
@@ -100,6 +100,8 @@
                     </div>
                   </div>
                 </div>
+                <input *ngIf="!(hasAgentPermission&&canEdit)" type="hidden" value="{{incident.priority.id}}"
+                  formControlName="priorityId" id="priorityId" name="priorityId">
                 <div class="col" *ngIf="hasAgentPermission&&!canEdit">
                   <label class="form-col-form-label" for="priorityReadOnly">Priority</label>
                   <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"

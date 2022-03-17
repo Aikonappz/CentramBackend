@@ -9,31 +9,32 @@ import { AppUtility } from '../../config/AppUtility';
 import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 import { Incident } from '../../model/Incident';
 import { Permission } from '../../model/Permssion';
-import { UserRequestedAssetDataSource } from '../../service/datasource/UserRequestedAssetDataSource';
+import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
+import { UserAllocatedAssetDataSource } from '../../service/datasource/UserAllocatedAssetDataSource';
 import { IncidentService } from '../../service/IncidentService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 declare var $: any;
 
 @Component({
-  selector: 'app-requested-asset',
-  templateUrl: './requested-asset.component.html',
-  styleUrls: ['./requested-asset.component.scss']
+  selector: 'app-my-asset',
+  templateUrl: './my-asset.component.html',
+  styleUrls: ['./my-asset.component.scss']
 })
-export class RequestedAssetComponent implements OnInit {
-  moduleName: string = "MY ASSET REQUEST";
+export class MyAssetComponent implements OnInit {
+  moduleName: string = "MY ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['inc', 'assetDtl', 'slaAt', 'assignedUser', 'status', 'action'];
-  private datasource: UserRequestedAssetDataSource;
+  displayedColumns = ['inc', 'assetDtl', 'status',];
+  private datasource: UserAllocatedAssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: any = [];
   permissions: Permission[] = [];
   moduleList: Permission[] = [];
   subModuleList: Permission[];
   angForm: FormGroup;
-  searchedData: any = { incidentType: "ASSET", };
+  searchedData: any = { incidentType: "ASSET", assigned: 1 };
   incidentStatus: IncidentStatus;
-  mode: string = '';
   booleanList: any[] = [];
+  mode: string = '';
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -59,13 +60,9 @@ export class RequestedAssetComponent implements OnInit {
       return 0;
     });
     this.angForm = this.fb.group({
-      incidentNo: new FormControl(null, [
+      serialNo: new FormControl(null, [
       ]),
-      title: new FormControl(null, [
-      ]),
-      status: new FormControl(null, [
-      ]),
-      alocationStatus: new FormControl(null, [
+      deallocated: new FormControl(null, [
       ]),
     });
     this.permissions = this.loggedInUserService.getModulePermissions();
@@ -74,8 +71,8 @@ export class RequestedAssetComponent implements OnInit {
         this.moduleList.push(this.permissions[i]);
       }
     }
-    this.booleanList.push({ id: 0, label: 'Deallocated' });
-    this.booleanList.push({ id: 1, label: 'Allocated' });
+    this.booleanList.push({ id: 0, label: 'No' });
+    this.booleanList.push({ id: 1, label: 'Yes' });
   }
 
   hasPermission(actions: string): boolean {
@@ -101,7 +98,7 @@ export class RequestedAssetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.datasource = new UserRequestedAssetDataSource(this.service);
+    this.datasource = new UserAllocatedAssetDataSource(this.service);
     this.datasource.loadData(0, 10, this.searchedData);
   }
 
@@ -155,25 +152,17 @@ export class RequestedAssetComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
-    this.searchedData = { incidentType: "ASSET", };
+    this.searchedData = { incidentType: "ASSET", assigned: 1 };
     this.loadData({});
   }
 
   formSubmit() {
     if (this.angForm.valid) {
       //console.log(this.angForm);
-      let title = this.angForm.controls['title'].value;
-      let status = this.angForm.controls['status'].value;
-      let incidentNo = this.angForm.controls['incidentNo'].value;
-      let alocationStatus = this.angForm.controls['alocationStatus'].value;
-      this.searchedData.title = title == null ? '' : title;
-      this.searchedData.status = status == null ? '' : status;
-      this.searchedData.incidentNo = incidentNo == null ? '' : incidentNo;
-      if (alocationStatus == 0) {
-        this.searchedData.deallocated = 1;
-      } else {
-        this.searchedData.assigned = 1;
-      }
+      let serialNo = this.angForm.controls['serialNo'].value;
+      let deallocated = this.angForm.controls['deallocated'].value;
+      this.searchedData.serialNo = serialNo == null ? '' : serialNo;
+      this.searchedData.deallocated = deallocated == null ? -1 : deallocated;
       this.loadData(this.searchedData);
       //console.log(JSON.stringify(this.org));
     } else {

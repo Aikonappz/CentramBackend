@@ -192,13 +192,13 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private PurchaseType purchaseType;
 
-    @Column(name = "rent_start_at", nullable = true)
+    /*@Column(name = "rent_start_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime rentStartAt;
 
     @Column(name = "rent_end_at", nullable = true)
     @JsonView(Views.BasicView.class)
-    private LocalDateTime rentEndAt;
+    private LocalDateTime rentEndAt;*/
 
     @ApiModelProperty(required = true, value = "")
     @Valid

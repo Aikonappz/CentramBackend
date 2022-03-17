@@ -37,16 +37,35 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("ids") List<BigInteger> ids
     );
 
-    @Query("select i from Incident i where i.raisedUser.id = (:raisedUserId) and i.incidentType = (:incidentType) and " +
+    @Query("select i from Incident i left outer join i.asset a where i.raisedUser.id = (:raisedUserId) and i.incidentType = (:incidentType) and " +
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
             "   ((:status) = 9) " +
             " ) and " +
             " ( " +
+            "   ((:assigned) = 1 and i.assetApproved = true and i.feedbackProvided = true and i.allocated = true and a.id is not null) " +
+            "   OR " +
+            "   ((:assigned) = 0 and i.allocated = false and a.id is null) " +
+            "   OR " +
+            "   ((:assigned) = -1) " +
+            " ) and " +
+            " ( " +
+            "   ((:deallocated) = 1 and i.deallocated = true and a.id is null) " +
+            "   OR " +
+            "   ((:deallocated) = 0 and i.deallocated = false) " +
+            "   OR " +
+            "   ((:deallocated) = -1) " +
+            " ) and " +
+            " ( " +
             "   ((:incidentNo) is not null and UPPER(i.incidentNo) like (:incidentNo)) " +
             "   OR " +
             "   ((:incidentNo) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:serialNo) is not null and UPPER(i.asset.serialNo) like (:serialNo)) " +
+            "   OR " +
+            "   ((:serialNo) is null) " +
             " ) and " +
             " ( " +
             "   ((:title) is not null and UPPER(i.title) like (:title)) " +
@@ -57,8 +76,11 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     Page<Incident> getUserIncidents(
             @Param("incidentType") LicenseType incidentType,
             @Param("incidentNo") String incidentNo,
+            @Param("serialNo") String serialNo,
             @Param("title") String title,
             @Param("status") Integer status,
+            @Param("assigned") Integer assigned,
+            @Param("deallocated") Integer deallocated,
             @Param("raisedUserId") BigInteger raisedUserId,
 
             Pageable pageable
@@ -69,6 +91,11 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
             "   ((:status) = 9) " +
+            " ) and " +
+            " ( " +
+            "   ((:approved) = 1 and i.feedbackProvided = true and i.assetApproved = true) " +
+            "   OR " +
+            "   ((:approved) <= 0) " +
             " ) and " +
             " ( " +
             "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +
@@ -103,6 +130,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     )
     Page<Incident> getIncomingIncidents(
             @Param("incidentType") LicenseType incidentType,
+            @Param("approved") Integer approved,
             @Param("incidentNo") String incidentNo,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
