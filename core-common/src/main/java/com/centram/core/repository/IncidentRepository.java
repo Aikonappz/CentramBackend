@@ -63,7 +63,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:incidentNo) is null) " +
             " ) and " +
             " ( " +
-            "   ((:serialNo) is not null and UPPER(i.asset.serialNo) like (:serialNo)) " +
+            "   ((:serialNo) is not null and UPPER(a.serialNo) like (:serialNo)) " +
             "   OR " +
             "   ((:serialNo) is null) " +
             " ) and " +
@@ -86,16 +86,35 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and i.incidentType = (:incidentType) and " +
+    @Query("select i from Incident i left outer join i.asset a where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and i.incidentType = (:incidentType) and " +
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
             "   ((:status) = 9) " +
             " ) and " +
             " ( " +
+            "   ((:serialNo) is not null and UPPER(a.serialNo) like (:serialNo)) " +
+            "   OR " +
+            "   ((:serialNo) is null) " +
+            " ) and " +
+            " ( " +
             "   ((:approved) = 1 and i.feedbackProvided = true and i.assetApproved = true) " +
             "   OR " +
             "   ((:approved) <= 0) " +
+            " ) and " +
+            " ( " +
+            "   ((:assigned) = 1 and i.assetApproved = true and i.feedbackProvided = true and i.allocated = true and a.id is not null) " +
+            "   OR " +
+            "   ((:assigned) = 0 and i.allocated = false and a.id is null) " +
+            "   OR " +
+            "   ((:assigned) = -1) " +
+            " ) and " +
+            " ( " +
+            "   ((:deallocated) = 1 and i.deallocated = true and a.id is null) " +
+            "   OR " +
+            "   ((:deallocated) = 0 and i.deallocated = false) " +
+            "   OR " +
+            "   ((:deallocated) = -1) " +
             " ) and " +
             " ( " +
             "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +
@@ -131,6 +150,9 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     Page<Incident> getIncomingIncidents(
             @Param("incidentType") LicenseType incidentType,
             @Param("approved") Integer approved,
+            @Param("serialNo") String serialNo,
+            @Param("assigned") Integer assigned,
+            @Param("deallocated") Integer deallocated,
             @Param("incidentNo") String incidentNo,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,

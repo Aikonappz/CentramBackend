@@ -70,6 +70,49 @@ public class IncidentEmailVO implements Serializable {
     private Boolean feedbackProvided;
     private String serialNo;
     private String modelNo;
+    private Boolean deallocated;
+
+    public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment, Boolean reopened, Boolean deallocated) {
+        ZonedDateTime sla = incident.getSlaAt().atZone(ZoneId.systemDefault());
+        sla = sla.withZoneSameInstant(ZoneId.of(incident.getRaisedUser().getLocation().getTimezone()));
+        this.reopened = reopened;
+        this.deallocated = deallocated;
+        this.watchList = incident.getWatchList() != null ? incident.getWatchList().stream().map(String::toString).collect(Collectors.joining(",")) : "";
+        this.moduleId = incident.getModuleId();
+        this.subModuleId = incident.getSubModuleId();
+        this.mailToType = "USER";
+        this.incidentId = incident.getId();
+        this.incidentNo = incident.getIncidentNo();
+        this.title = incident.getTitle();
+        this.incidentType = incident.getIncidentType();
+        this.assetApproved = incident.getAssetApproved();
+        this.feedbackProvided = incident.getFeedbackProvided();
+        this.serialNo = incident.getAsset() == null ? "" : incident.getAsset().getSerialNo();
+        this.modelNo = incident.getAsset() == null ? "" : incident.getAsset().getModelNo();
+        this.newIncident = incident.getCommunications().size() == 1;
+        this.description = (customComment == null) ? incident.getCommunications().iterator().next().getMessage() : customComment;
+        this.priority = incident.getPriority().getName();
+        this.sla = sla.toLocalDateTime().format(DateTimeFormatter.ofPattern(dateTimeFormat));
+        this.status = incident.getStatus().name();
+        this.department = incident.getRaisedUser().getDepartment().getName();
+        this.userManagerId = incident.getRaisedUser().getManagerId();
+        this.userId = incident.getRaisedUser().getId();
+        this.userVersion = incident.getRaisedUser().getVersion();
+        this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
+        this.userEmail = incident.getRaisedUser().getEmail();
+        this.userContactNo = incident.getRaisedUser().getContactNo();
+        this.userLocation = incident.getRaisedUser().getLocation().getName();
+        this.organisationId = incident.getRaisedUser().getOrganisation().getId();
+        if (incident.getAssignedUser() != null) {
+            this.agentId = incident.getAssignedUser().getId();
+            this.agentVersion = incident.getAssignedUser().getVersion();
+            this.agentManagerId = incident.getAssignedUser().getManagerId();
+            this.agentName = incident.getAssignedUser().getFirstName().concat(" ").concat(incident.getAssignedUser().getLastName());
+            this.agentEmail = incident.getAssignedUser().getEmail();
+            this.agentContactNo = incident.getAssignedUser().getContactNo();
+        }
+        this.reopened = false;
+    }
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment) {
         ZonedDateTime sla = incident.getSlaAt().atZone(ZoneId.systemDefault());

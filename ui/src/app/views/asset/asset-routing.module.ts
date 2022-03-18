@@ -86,15 +86,6 @@ const routes: Routes = [
           title: 'My Assets'
         },
       },
-      // {
-      //   path: 'request',
-      //   component: RequestAssetComponent,
-      //   pathMatch: 'full',
-      //   data: {
-      //     title: 'Request Asset'
-      //   },
-      // },
-
       {
         path: ':referer/add/:mode',
         component: RequestAssetComponent,

@@ -48,7 +48,7 @@ export class AgentIncidentComponent implements OnInit {
   canAssignNow: boolean = false;
   selectedValues: Map<number, string> = new Map<number, string>();
   modalRef: BsModalRef;
-  searchedData: Object = {};
+  searchedData: any = { incidentType: "INCIDENT", };
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -180,12 +180,8 @@ export class AgentIncidentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.route.params.subscribe(params => {
-    //   let type = this.route.snapshot.paramMap.get('dp');
-    //   //console.log(type);
-    // });
     this.datasource = new IncomingIncidentDataSource(this.service);
-    this.datasource.loadData();
+    this.datasource.loadData(0, 10, this.searchedData);
   }
 
   ngAfterViewInit() {
@@ -219,10 +215,7 @@ export class AgentIncidentComponent implements OnInit {
   }
 
   loadData(req = {}) {
-    if (this.searchedData.hasOwnProperty('incidentNo')) {
-      req = this.searchedData;
-    }
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, this.searchedData);
   }
 
   formatDateTime(d: string) {
@@ -234,7 +227,7 @@ export class AgentIncidentComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
-    this.searchedData = {};
+    this.searchedData = { incidentType: "INCIDENT", };
     this.loadData({});
   }
 
@@ -248,15 +241,13 @@ export class AgentIncidentComponent implements OnInit {
       let subModuleId = this.angForm.controls['subModuleId'].value;
       let moduleId = this.angForm.controls['moduleId'].value;
       let incidentNo = this.angForm.controls['incidentNo'].value;
-      this.searchedData = {
-        "incidentNo": incidentNo == null ? '' : incidentNo,
-        "title": title == null ? '' : title,
-        "status": status == null ? '' : status,
-        "assignedUserId": assignedUserId == null ? '' : assignedUserId,
-        "priorityId": priorityId == null ? '' : priorityId,
-        "subModuleId": subModuleId == null ? '' : subModuleId,
-        "moduleId": moduleId == null ? '' : moduleId,
-      };
+      this.searchedData.incidentNo = incidentNo == null ? '' : incidentNo;
+      this.searchedData.title = title == null ? '' : title;
+      this.searchedData.status = status == null ? '' : status;
+      this.searchedData.assignedUserId = assignedUserId == null ? '' : assignedUserId;
+      this.searchedData.priorityId = priorityId == null ? '' : priorityId;
+      this.searchedData.subModuleId = subModuleId == null ? '' : subModuleId;
+      this.searchedData.moduleId = moduleId == null ? '' : moduleId;
       this.loadData(this.searchedData);
       // console.log({
       //   "title": title == null ? '' : title,
@@ -442,5 +433,5 @@ export class AgentIncidentComponent implements OnInit {
       Object.assign({}, config, { initialState })
     );
   }
-  
+
 }

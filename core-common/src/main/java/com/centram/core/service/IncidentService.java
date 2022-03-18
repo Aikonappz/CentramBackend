@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.AllocateAssetDTO;
 import com.centram.common.dto.AssetApprovalDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
@@ -96,24 +97,20 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getAgentIncidents(String incidentType, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> getAgentIncidents(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<String> roles = loggedInUser.getAuthorities().stream()
-                .map(i -> i.getAuthority())
-                .collect(Collectors.toList());
+        List<String> roles = loggedInUser.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toList());
         List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
-        List<BigInteger> modSubModIds = permissions.stream()
-                .filter(i -> !i.getModule().getAppModule())
-                .map(i -> i.getModule().getId())
-                .collect(Collectors.toList());
+        List<BigInteger> modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
         BigInteger uId = (!assignedUserId.equals("")) ? BigInteger.valueOf(Long.valueOf(assignedUserId)) : null;
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
+        serialNo = (!serialNo.equals("")) ? "%" + serialNo.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
@@ -142,10 +139,7 @@ public class IncidentService {
             modFilter = false;
         } else {
             List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
-            modSubModIds = permissions.stream()
-                    .filter(i -> !i.getModule().getAppModule())
-                    .map(i -> i.getModule().getId())
-                    .collect(Collectors.toList());
+            modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
             modFilter = true;
         }
         agingFilter = (agingFilter == null || agingFilter.equalsIgnoreCase("")) ? null : agingFilter;
@@ -178,10 +172,7 @@ public class IncidentService {
             modFilter = false;
         } else {
             List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
-            modSubModIds = permissions.stream()
-                    .filter(i -> !i.getModule().getAppModule())
-                    .map(i -> i.getModule().getId())
-                    .collect(Collectors.toList());
+            modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
             modFilter = true;
         }
         return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
@@ -213,10 +204,7 @@ public class IncidentService {
             modFilter = false;
         } else {
             List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
-            modSubModIds = permissions.stream()
-                    .filter(i -> !i.getModule().getAppModule())
-                    .map(i -> i.getModule().getId())
-                    .collect(Collectors.toList());
+            modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
             modFilter = true;
         }
         return new PaginatedList<Incident>(incidentRepository.incidentReopenReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
@@ -245,15 +233,9 @@ public class IncidentService {
      * @return
      */
     public List<Incident> getOpenIncidents(BigInteger category, BigInteger subCategory, BigInteger locationId, BigInteger organisationId) {
-        return incidentRepository.getUserIncidents(
-                category,
-                subCategory,
-                locationId,
-                organisationId,
-                new ArrayList<IncidentStatus>() {{
-                    add(IncidentStatus.OPEN);
-                }}
-        );
+        return incidentRepository.getUserIncidents(category, subCategory, locationId, organisationId, new ArrayList<IncidentStatus>() {{
+            add(IncidentStatus.OPEN);
+        }});
     }
 
     /**
@@ -509,6 +491,29 @@ public class IncidentService {
         return false;
     }
 
+    @Transactional
+    public Incident deallocateAsset(AllocateAssetDTO allocateAssetDTO) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserVO userVO = userService.getUserById(loggedInUser.getUserId());
+        Optional<Incident> incidentOptional = incidentRepository.findById(allocateAssetDTO.getRequestId());
+        if (incidentOptional.isPresent()) {
+            Incident incident = incidentOptional.get();
+            if (incident.getAsset() != null) {
+                Asset asset = incident.getAsset();
+                asset.setIsAvailable(true);
+                assetService.save(asset);
+                incident.setDeallocated(true);
+                incident.setAsset(null);
+                incident.getCommunications().add(new IncidentCommunication(allocateAssetDTO.getFeedback(), incident, new User(userVO), null));
+            }
+            incident = incidentRepository.save(incident);
+            miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appDateTimeViewFormat, null, false, true));
+            return incident;
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
     /**
      * save incident data
      *
@@ -568,10 +573,7 @@ public class IncidentService {
             incident.setHoldAt(LocalDateTime.now());
         }
         // calculate SLA after it's free
-        if (incident.getHoldAt() != null
-                && incident.getRaisedUser() != null
-                && incident.getStatus() == IncidentStatus.NEED_CLARIFICATION
-                && loggedInUser.getUserId().compareTo(incident.getRaisedUser().getId()) == 0) {
+        if (incident.getHoldAt() != null && incident.getRaisedUser() != null && incident.getStatus() == IncidentStatus.NEED_CLARIFICATION && loggedInUser.getUserId().compareTo(incident.getRaisedUser().getId()) == 0) {
             incident.setStatus(IncidentStatus.CLARIFICATION_PROVIDED);
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());
@@ -628,9 +630,7 @@ public class IncidentService {
      * @return
      */
     private Boolean checkStatusOnHold(IncidentStatus status) {
-        return status == IncidentStatus.CLOSED || status == IncidentStatus.ON_HOLD ||
-                status == IncidentStatus.NEED_CLARIFICATION ||
-                status == IncidentStatus.PENDING_FROM_VENDOR;
+        return status == IncidentStatus.CLOSED || status == IncidentStatus.ON_HOLD || status == IncidentStatus.NEED_CLARIFICATION || status == IncidentStatus.PENDING_FROM_VENDOR;
     }
 
     /**
@@ -662,8 +662,7 @@ public class IncidentService {
         if (this.isHoliday(raisedDateTime.toLocalDate(), holidays)) {
             Optional<WorkingDay> nextWorkingDayOptional = this.nextWorkingDay(raisedDateTime.toLocalDate(), workingDays);
             if (nextWorkingDayOptional.isPresent()) {
-                slaDayDateTime = nextWorkingDayOptional.get()
-                        .getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                slaDayDateTime = nextWorkingDayOptional.get().getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
             } else {
                 throw new AppException(GenericErrorCode.HOLIDAY_CALENDER_MASTER_DATA_MISSING);
             }
@@ -709,8 +708,7 @@ public class IncidentService {
         if (this.isHoliday(raisedDateTime.toLocalDate(), holidays)) {
             Optional<WorkingDay> nextWorkingDayOptional = this.nextWorkingDay(raisedDateTime.toLocalDate(), workingDays);
             if (nextWorkingDayOptional.isPresent()) {
-                slaDayDateTime = nextWorkingDayOptional.get()
-                        .getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                slaDayDateTime = nextWorkingDayOptional.get().getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
             } else {
                 throw new AppException(GenericErrorCode.HOLIDAY_CALENDER_MASTER_DATA_MISSING);
             }
@@ -742,9 +740,7 @@ public class IncidentService {
         LocalDate date = dateTime.toLocalDate();
         for (WorkingDay workingDay : workingDays) {
             if (workingDay.getDate().compareTo(date) == 0) {
-                return (dateTime.toLocalDateTime().compareTo(workingDay.getStartTime()) == 0 || dateTime.toLocalDateTime().isAfter(workingDay.getStartTime()))
-                        &&
-                        (dateTime.toLocalDateTime().compareTo(workingDay.getEndTime()) == 0 || dateTime.toLocalDateTime().isBefore(workingDay.getEndTime()));
+                return (dateTime.toLocalDateTime().compareTo(workingDay.getStartTime()) == 0 || dateTime.toLocalDateTime().isAfter(workingDay.getStartTime())) && (dateTime.toLocalDateTime().compareTo(workingDay.getEndTime()) == 0 || dateTime.toLocalDateTime().isBefore(workingDay.getEndTime()));
             }
         }
         return false;
@@ -759,11 +755,9 @@ public class IncidentService {
      * @return
      */
     private Boolean isHoliday(LocalDate date, List<Holiday> holidays) {
-        return holidays.stream()
-                .filter(i -> {
-                    return (i.getDate().compareTo(date) == 0);
-                })
-                .findAny().isPresent();
+        return holidays.stream().filter(i -> {
+            return (i.getDate().compareTo(date) == 0);
+        }).findAny().isPresent();
     }
 
     /**
@@ -796,12 +790,9 @@ public class IncidentService {
      * @return
      */
     private Optional<WorkingDay> nextWorkingDay(LocalDate date, List<WorkingDay> workingDays) {
-        return workingDays
-                .stream().filter(
-                        i -> {
-                            return i.getDate().isAfter(date);
-                        }
-                ).findFirst();
+        return workingDays.stream().filter(i -> {
+            return i.getDate().isAfter(date);
+        }).findFirst();
     }
 
     /**

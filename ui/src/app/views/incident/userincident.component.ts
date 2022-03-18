@@ -30,7 +30,7 @@ export class UserIncidentComponent implements OnInit {
   moduleList: Permission[] = [];
   subModuleList: Permission[];
   angForm: FormGroup;
-  searchedData: Object = {};
+  searchedData: any = { incidentType: "INCIDENT", };
   incidentStatus: IncidentStatus;
   constructor(
     private fb: FormBuilder,
@@ -91,7 +91,7 @@ export class UserIncidentComponent implements OnInit {
       this.router.navigate(['/incident/agent/all']);
     } else {
       this.datasource = new IncidentDataSource(this.service);
-      this.datasource.loadData();
+      this.datasource.loadData(0, 10, this.searchedData);
     }
   }
 
@@ -133,11 +133,7 @@ export class UserIncidentComponent implements OnInit {
   }
 
   loadData(req?: Object) {
-    //console.log(req);
-    if (this.searchedData.hasOwnProperty('incidentNo')) {
-      req = this.searchedData;
-    }
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, this.searchedData);
   }
 
   formatDateTime(d: string) {
@@ -149,7 +145,7 @@ export class UserIncidentComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
-    this.searchedData = {};
+    this.searchedData = { incidentType: "INCIDENT", };
     this.loadData({});
   }
 
@@ -159,12 +155,10 @@ export class UserIncidentComponent implements OnInit {
       let title = this.angForm.controls['title'].value;
       let status = this.angForm.controls['status'].value;
       let incidentNo = this.angForm.controls['incidentNo'].value;
-      this.searchedData = {
-        "title": title == null ? '' : title,
-        "status": status == null ? '' : status,
-        "incidentNo": incidentNo == null ? '' : incidentNo,
-      };
-      this.loadData(this.searchedData);
+      this.searchedData.title = title == null ? '' : title;
+      this.searchedData.status = status == null ? '' : status;
+      this.searchedData.incidentNo = incidentNo == null ? '' : incidentNo,
+        this.loadData(this.searchedData);
       //console.log(JSON.stringify(this.org));
     } else {
       console.log("Invalid Form!");

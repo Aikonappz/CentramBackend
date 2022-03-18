@@ -32,10 +32,6 @@
                                             name="incidentNo" class="form-control" placeholder="Incident Number"
                                             aria-label="Asset Request Number">
                                     </div>
-                                    <div class="col"></div>
-                                    <div class="col"></div>
-                                </div>
-                                <div class="row row-margin-05">
                                     <div class="col">
                                         <label class="form-col-form-label required-control-label" for="moduleId">Product
                                             Category</label>
@@ -47,7 +43,7 @@
                                         <div *ngIf="f.moduleId.touched && f.moduleId.invalid"
                                             class="alert alert-danger-custom">
                                             <div *ngIf="f.moduleId.errors?.required">
-                                                Category is required.
+                                                Product Category is required.
                                             </div>
                                         </div>
                                     </div>
@@ -63,7 +59,7 @@
                                         <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid"
                                             class="alert alert-danger-custom">
                                             <div *ngIf="f.subModuleId.errors?.required">
-                                                Sub Category is required.
+                                                Asset Category is required.
                                             </div>
                                         </div>
                                     </div>
@@ -74,21 +70,20 @@
                                             bindLabel="name" bindValue="id"></ng-select>
                                     </div>
                                 </div>
+
                                 <div class="row row-margin-05">
                                     <div class="col">
-                                        <label class="form-col-form-label" for="title">Request Title</label>
+                                        <label class="form-col-form-label" for="title">Asset Request Title</label>
                                         <textarea formControlName="title" id="title" name="title" rows="4"
                                             class="form-control textarea-non-resizable"
                                             placeholder="Incident Title"></textarea>
                                     </div>
-                                    <!-- <div class="col">
-                                        <label class="form-col-form-label" for="raisedUser">Raised User</label>
-                                        <select class="form-control" formControlName="raisedUser"
-                                            id="raisedUser" name="raisedUser">
-                                            <option value="">-- Select Raised User--</option>
-                                            <option *ngFor="let e of userList" value="{{e.id}}">{{e.email}}</option>
-                                        </select>
-                                    </div> -->
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="status">Asset Request Status</label>
+                                        <ng-select [items]="statusList" placeholder="-- Select Incident Status --"
+                                            formControlName="status" id="status" name="status" bindLabel="value"
+                                            bindValue="key"></ng-select>
+                                    </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="assignedUser">Assigned Agent</label>
                                         <ng-select [items]="agentList" placeholder="-- Select Assigned Agent --"
@@ -96,11 +91,22 @@
                                             bindLabel="email" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label" for="status">Request Status</label>
-                                        <ng-select [items]="statusList" placeholder="-- Select Incident Status --"
-                                            formControlName="status" id="status" name="status" bindLabel="value"
-                                            bindValue="key"></ng-select>
+                                        <label class="form-col-form-label" for="serialNo">Asset Number</label>
+                                        <input type="text" formControlName="serialNo" id="serialNo" name="serialNo"
+                                            class="form-control" placeholder="Asset Request Number"
+                                            aria-label="Asset  Number">
                                     </div>
+                                </div>
+                                <div class="row row-margin-05">
+                                    <div class="col">
+                                        <label class="form-col-form-label" for="alocationStatus">Asset Status</label>
+                                        <ng-select [items]="booleanList" placeholder="-- Select --"
+                                            formControlName="alocationStatus" id="alocationStatus"
+                                            name="alocationStatus" bindLabel="label" bindValue="id"></ng-select>
+                                    </div>
+                                    <div class="col"></div>
+                                    <div class="col"></div>
+                                    <div class="col"></div>
                                 </div>
                             </div>
                             <div class="card-footer">
@@ -149,6 +155,15 @@
                                 {{formatDateTime(element.raisedAt)}}<br />
                             </td>
                         </ng-container>
+                        <ng-container matColumnDef="assetDtl">
+                            <th mat-header-cell *matHeaderCellDef> Asset Details </th>
+                            <td mat-cell *matCellDef="let element">
+                                <div *ngIf="element.asset!=null">{{element.asset?.serialNo}}/{{element.asset?.modelNo}}
+                                </div>
+                                <div *ngIf="element.asset!=null">{{element.allocated&&!element.deallocated? 'Allocated'
+                                    : 'Deallocated'}}</div>
+                            </td>
+                        </ng-container>
                         <ng-container matColumnDef="slaAt">
                             <th mat-header-cell *matHeaderCellDef> SLA. Details </th>
                             <td mat-cell *matCellDef="let element">
@@ -185,13 +200,15 @@
                                         class="btn btn-primary dropdown-toggle">Actions<span
                                             class="caret"></span></button>
                                     <ul *dropdownMenu class="dropdown-menu" role="menu">
-                                        <!-- <li role="menuitem">
+                                        <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
-                                                *ngIf="hasPermission('ASSIGN')" id="id-assign-{{element.id}}" [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
-                                        'btn btn-sm btn-warning':true}" (click)="assign(element)"><i class="fa fa-male
-                                               "></i> Assign
+                                                *ngIf="hasPermission('ASSIGN')&&element.asset!=null"
+                                                id="id-assign-{{element.id}}"
+                                                [ngClass]="{'d-none': element.asset==null,'btn btn-sm btn-warning':true}"
+                                                (click)="deallocate(element)"><i class="fa fa-minus-circle
+                                               "></i> Deallocate
                                             </a>
-                                        </li> -->
+                                        </li>
                                         <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
                                                 *ngIf="hasPermission('SOLVE')" id="id-note-{{element.id}}"

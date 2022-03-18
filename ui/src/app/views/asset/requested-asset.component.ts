@@ -171,8 +171,13 @@ export class RequestedAssetComponent implements OnInit {
       this.searchedData.incidentNo = incidentNo == null ? '' : incidentNo;
       if (alocationStatus == 0) {
         this.searchedData.deallocated = 1;
-      } else {
+        this.searchedData.assigned = -1;
+      } else if (alocationStatus == 1) {
         this.searchedData.assigned = 1;
+        this.searchedData.deallocated = -1;
+      } else {
+        this.searchedData.assigned = -1;
+        this.searchedData.deallocated = -1;
       }
       this.loadData(this.searchedData);
       //console.log(JSON.stringify(this.org));

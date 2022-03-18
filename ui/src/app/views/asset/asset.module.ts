@@ -18,13 +18,13 @@ import { RequestedAssetComponent } from './requested-asset.component';
 import { RequestAssetComponent } from './request-asset.component';
 import { AssetRequestActionComponent, } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
-import { AllocateAsset } from './modal/AllocateAsset';
+import { DeallocateAsset } from './modal/DeallocateAsset';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ViewAssetOrderDetail } from './modal/ViewAssetOrderDetail';
 import { ViewAssetDetail } from './modal/ViewAssetDetail';
 import { UploadAssetComponent } from './modal/UploadAssetComponent';
-import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 import { MyAssetComponent } from './my-asset.component';
+import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 
 
 @NgModule({
@@ -38,12 +38,12 @@ import { MyAssetComponent } from './my-asset.component';
     RequestAssetComponent,
     AssetRequestActionComponent,
     IncommingRequestedAssetComponent,
-    AllocateAsset,
     ViewAssetOrderDetail,
     ViewAssetDetail,
     UploadAssetComponent,
-    AssignIncidentComponent,
     MyAssetComponent,
+    DeallocateAsset,
+    AssignIncidentComponent,
   ],
   imports: [
     CommonModule,

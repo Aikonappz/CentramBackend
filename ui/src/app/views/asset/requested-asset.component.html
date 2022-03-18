@@ -139,19 +139,18 @@
                                         class="btn btn-primary dropdown-toggle">Actions<span
                                             class="caret"></span></button>
                                     <ul *dropdownMenu class="dropdown-menu" role="menu">
-                                        <li role="menuitem">
+                                        <!-- <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
                                                 *ngIf="canReopen(element.modifiedDate)&&hasPermission('WRITE')"
                                                 id="id-reopen-{{element.id}}" [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
                                  'btn btn-sm btn-warning':true}" (click)="reopen(element)"><i class="fa fa-folder-open-o
                                         "></i> Reopen
                                             </a>
-                                        </li>
+                                        </li> -->
                                         <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
                                                 *ngIf="hasPermission('WRITE')" id="id-note-{{element.id}}" type="button"
-                                                [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
-                                 'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
+                                                [ngClass]="{'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
                                                     class="fa fa-comments-o"></i> View/Update
                                             </a>
                                         </li>

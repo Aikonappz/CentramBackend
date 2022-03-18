@@ -32,4 +32,7 @@ export class IncidentService {
     approveAssetRequest(assetApprovalDTO: AssetApprovalDTO): Observable<any> {
         return this.http.put('/v1/incident/asset/approval-action', assetApprovalDTO);
     }
+    deallocateAssetRequest(allocateAssetDTO: any): Observable<any> {
+        return this.http.put('/v1/incident/deallocate-asset', allocateAssetDTO);
+    }
 }

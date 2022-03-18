@@ -20,6 +20,7 @@ import { MiscService } from '../../service/MiscService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { UserService } from '../../service/UserService';
 import { IAssignUser } from '../../model/IAssignUser';
+import { DeallocateAsset } from './modal/DeallocateAsset';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 declare var $: any;
 
@@ -31,7 +32,7 @@ declare var $: any;
 export class IncommingRequestedAssetComponent implements OnInit {
   moduleName: string = "REQUESTED ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['select', 'incDtl', 'slaAt', 'assignedUser', 'status', 'action'];
+  displayedColumns = ['select', 'incDtl', 'assetDtl', 'slaAt', 'assignedUser', 'status', 'action'];
   datasource: IncomingIncidentDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   selection = new SelectionModel<Incident>(true, []);
@@ -49,6 +50,7 @@ export class IncommingRequestedAssetComponent implements OnInit {
   selectedValues: Map<number, string> = new Map<number, string>();
   modalRef: BsModalRef;
   searchedData: any = { incidentType: "ASSET", approved: 1 };
+  booleanList: any[] = [];
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -76,6 +78,8 @@ export class IncommingRequestedAssetComponent implements OnInit {
       if (a.key > b.key) return 1;
       return 0;
     });
+    this.booleanList.push({ id: 0, label: 'Deallocated' });
+    this.booleanList.push({ id: 1, label: 'Allocated' });
     this.angForm = this.fb.group({
       incidentNo: new FormControl('', [
       ]),
@@ -94,6 +98,10 @@ export class IncommingRequestedAssetComponent implements OnInit {
       status: new FormControl(null, [
       ]),
       title: new FormControl('', [
+      ]),
+      serialNo: new FormControl('', [
+      ]),
+      alocationStatus: new FormControl(null, [
       ]),
     });
     this.userService.getUsersService({})
@@ -244,7 +252,8 @@ export class IncommingRequestedAssetComponent implements OnInit {
       let subModuleId = this.angForm.controls['subModuleId'].value;
       let moduleId = this.angForm.controls['moduleId'].value;
       let incidentNo = this.angForm.controls['incidentNo'].value;
-
+      let alocationStatus = this.angForm.controls['alocationStatus'].value;
+      let serialNo = this.angForm.controls['serialNo'].value;
       this.searchedData.incidentNo = incidentNo == null ? '' : incidentNo;
       this.searchedData.title = title == null ? '' : title;
       this.searchedData.status = status == null ? '' : status;
@@ -252,6 +261,17 @@ export class IncommingRequestedAssetComponent implements OnInit {
       this.searchedData.priorityId = priorityId == null ? '' : priorityId;
       this.searchedData.subModuleId = subModuleId == null ? '' : subModuleId;
       this.searchedData.moduleId = moduleId == null ? '' : moduleId;
+      this.searchedData.serialNo = serialNo == null ? '' : serialNo;
+      if (alocationStatus == 0) {
+        this.searchedData.deallocated = 1;
+        this.searchedData.assigned = -1;
+      } else if (alocationStatus == 1) {
+        this.searchedData.assigned = 1;
+        this.searchedData.deallocated = -1;
+      } else {
+        this.searchedData.assigned = -1;
+        this.searchedData.deallocated = -1;
+      }
       this.loadData(this.searchedData);
       // console.log({
       //   "title": title == null ? '' : title,
@@ -426,6 +446,22 @@ export class IncommingRequestedAssetComponent implements OnInit {
         this.openAssignModal();
         //console.log(data);
       });
+  }
+
+  deallocate(inc: Incident) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-bg',
+    };
+    const initialState = {
+      incident: inc
+    };
+    this.modalRef = this.modalService.show(DeallocateAsset,
+      Object.assign({}, config, { initialState })
+    );
   }
 
   openAssignModal() {

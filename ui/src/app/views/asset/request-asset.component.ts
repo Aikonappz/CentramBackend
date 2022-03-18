@@ -343,7 +343,7 @@ export class RequestAssetComponent implements OnInit {
             priority.organisation = null;
           }
         }
-        let asset = null;
+        let asset = this.incident.asset != null ? this.incident.asset.id : null;
         for (let i in this.asstes) {
           if (this.asstes[i].id == this.angForm.controls['asset'].value) {
             asset = { id: this.asstes[i].id };

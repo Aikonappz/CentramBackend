@@ -147,7 +147,8 @@ export class EditIncidentComponent implements OnInit {
                   this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
                   this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
                   this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
-                  this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                  if (this.draftData.new.watchList != null)
+                    this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
                   this.angForm.get('title').setValue(this.draftData.new.title);
                   this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
                 }
