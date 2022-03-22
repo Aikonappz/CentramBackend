@@ -165,7 +165,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query(value = "select * from incident i where i.organisation_id = (:organisationId) and (i.created_date between (:start) and (:end)) and " +
+    @Query(value = "select * from incident i where i.organisation_id = (:organisationId) and (i.created_date between (:start) and (:end)) and i.incident_type = (:incidentType) and " +
             " ( " +
             "   ((:modFilter) = true and i.module_id in (:modSubModIds) and i.sub_module_id in (:modSubModIds)) " +
             "   OR " +
@@ -232,6 +232,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " )",
             nativeQuery = true)
     Page<Incident> incidentReport(
+            @Param("incidentType") Integer incidentType,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("priorityId") BigInteger priorityId,
@@ -250,8 +251,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where " +
-            " (i.escalation1At is not null or i.escalation2At is not null) and " +
+    @Query("select i from Incident i where (i.escalation1At is not null or i.escalation2At is not null) and i.incidentType = (:incidentType) and " +
             " i.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
             " ( " +
             "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
@@ -280,6 +280,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " ) "
     )
     Page<Incident> incidentEscalationReport(
+            @Param("incidentType") LicenseType incidentType,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("priorityId") BigInteger priorityId,
@@ -292,8 +293,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
-    @Query("select i from Incident i where " +
-            " (i.reopenedAt is not null or i.reOpened = true) and " +
+    @Query("select i from Incident i where (i.reopenedAt is not null or i.reOpened = true) and i.incidentType = (:incidentType) and " +
             " i.organisation.id = (:organisationId) and (i.createdDate between (:start) and (:end)) and " +
             " ( " +
             "   ((:modFilter) = true and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds)) " +
@@ -322,6 +322,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " ) "
     )
     Page<Incident> incidentReopenReport(
+            @Param("incidentType") LicenseType incidentType,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("priorityId") BigInteger priorityId,
@@ -390,7 +391,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
             "  ) " +
-            " where m.app_module = 0 and m.parent_module_id is null and " +
+            " where i.incident_type = (:incidentType) and m.app_module = 0 and m.parent_module_id is null and " +
             "  ( " +
             "    ((:roleFilter) = true and m.id in (:userModules)) " +
             "    OR " +
@@ -399,6 +400,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " group by m.id, m.name, m.customer_module_name " +
             " order by 2 asc ", nativeQuery = true)
     Set<IncidentModuleVO> moduleWiseIncidentsDashboardData(
+            @Param("incidentType") Integer incidentType,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("roleFilter") Boolean roleFilter,
@@ -435,7 +437,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
             "  ) " +
-            "  where i.created_date BETWEEN (:start) and (:end) and i.organisation_id = (:organisationId) and " +
+            "  where i.incident_type = (:incidentType) and i.created_date BETWEEN (:start) and (:end) and i.organisation_id = (:organisationId) and " +
             "  ( " +
             "    ((:roleFilter) = true and m.id in (:userModules)) " +
             "    OR " +
@@ -445,6 +447,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "group by status " +
             "order by 2 asc ", nativeQuery = true)
     Set<IncidentStatusVO> statusWiseIncidentsDashboardData(
+            @Param("incidentType") Integer incidentType,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("roleFilter") Boolean roleFilter,
@@ -482,10 +485,11 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "    OR " +
             "    ((:userType) = 'ORG_ADMIN' and u.id = i.raised_user_id ) " +
             "  ) " +
-            " where 1 = 1 and p.organisation_id =  (:organisationId) " +
+            " where i.incident_type = (:incidentType) and p.organisation_id =  (:organisationId) " +
             " group by p.id, p.name " +
             " order by 1 asc ", nativeQuery = true)
     Set<IncidentPriorityVO> orgPriorityWiseIncidentDashboardData(
+            @Param("incidentType") Integer incidentType,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("roleFilter") Boolean roleFilter,

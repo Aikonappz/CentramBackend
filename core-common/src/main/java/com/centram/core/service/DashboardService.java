@@ -8,6 +8,7 @@ import com.centram.core.repository.OrganisationRepository;
 import com.centram.core.repository.UserRepository;
 import com.centram.core.repository.VendorRepository;
 import com.centram.domain.Permission;
+import com.centram.domain.enumarator.LicenseType;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,24 +61,14 @@ public class DashboardService {
         LocalDateTime startDateTime = endDateTime.minusDays(90).toLocalDate().atStartOfDay();
         OrgAdminDashboardVO orgAdminDashboardVO = vendorRepository.orgAdminVendorDashboardData(loggedInUser.getOrganisationId());
         orgAdminDashboardVO.setActiveEmployees(userRepository.orgAdminUserDashboardData(loggedInUser.getOrganisationId()));
-        orgAdminDashboardVO.setStatusWiseIncidents(incidentRepository.statusWiseIncidentsDashboardData(
-                startDateTime,
-                endDateTime,
-                false,
-                null,
-                loggedInUser.getOrganisationId(),
-                "ORG_ADMIN",
-                null
-        ));
-        orgAdminDashboardVO.setModuleWiseIncidents(incidentRepository.moduleWiseIncidentsDashboardData(
-                startDateTime,
-                endDateTime,
-                false,
-                null,
-                loggedInUser.getOrganisationId(),
-                "ORG_ADMIN",
-                null
-        ));
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.INCIDENT) {
+            orgAdminDashboardVO.setStatusWiseIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, false, null, loggedInUser.getOrganisationId(), "ORG_ADMIN", null));
+            orgAdminDashboardVO.setModuleWiseIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, false, null, loggedInUser.getOrganisationId(), "ORG_ADMIN", null));
+        }
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.ASSET) {
+            orgAdminDashboardVO.setStatusWiseAssetIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, false, null, loggedInUser.getOrganisationId(), "ORG_ADMIN", null));
+            orgAdminDashboardVO.setModuleWiseAssetIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, false, null, loggedInUser.getOrganisationId(), "ORG_ADMIN", null));
+        }
         return orgAdminDashboardVO;
     }
 
@@ -95,25 +86,16 @@ public class DashboardService {
                     return permission.getModule().getParentModuleId();
                 })
                 .collect(Collectors.toList());
-        return new UserDashboardVO(
-                incidentRepository.moduleWiseIncidentsDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        userModules,
-                        loggedInUser.getOrganisationId(),
-                        "USER",
-                        loggedInUser.getUserId()
-                ),
-                incidentRepository.statusWiseIncidentsDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        userModules,
-                        loggedInUser.getOrganisationId(),
-                        "USER",
-                        loggedInUser.getUserId()
-                ));
+        UserDashboardVO userDashboardVO = new UserDashboardVO();
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.INCIDENT) {
+            userDashboardVO.setStatusWiseIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "USER", loggedInUser.getUserId()));
+            userDashboardVO.setModuleWiseIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "USER", loggedInUser.getUserId()));
+        }
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.ASSET) {
+            userDashboardVO.setStatusWiseAssetIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "USER", loggedInUser.getUserId()));
+            userDashboardVO.setModuleWiseAssetIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "USER", loggedInUser.getUserId()));
+        }
+        return userDashboardVO;
     }
 
     @Transactional(readOnly = true)
@@ -161,41 +143,16 @@ public class DashboardService {
             userType = "AGENT_MANAGER";
         }
         AgentDashboardVO agentDashboardVO = new AgentDashboardVO();
-        agentDashboardVO.setModuleWiseIncidents(
-                incidentRepository.moduleWiseIncidentsDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        incidentModules,
-                        loggedInUser.getOrganisationId(),
-                        userType,
-                        loggedInUser.getUserId()
-                )
-        );
-        agentDashboardVO.setStatusWiseIncidents(
-                incidentRepository.statusWiseIncidentsDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        incidentModules,
-                        loggedInUser.getOrganisationId(),
-                        userType,
-                        loggedInUser.getUserId()
-                )
-        );
-        agentDashboardVO.setPriorityWiseIncidents(
-                incidentRepository.orgPriorityWiseIncidentDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        userModules,
-                        userSubModules,
-                        loggedInUser.getOrganisationId(),
-                        userType,
-                        true,
-                        loggedInUser.getUserId()
-                )
-        );
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.INCIDENT) {
+            agentDashboardVO.setModuleWiseIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, incidentModules, loggedInUser.getOrganisationId(), userType, loggedInUser.getUserId()));
+            agentDashboardVO.setStatusWiseIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, incidentModules, loggedInUser.getOrganisationId(), userType, loggedInUser.getUserId()));
+            agentDashboardVO.setPriorityWiseIncidents(incidentRepository.orgPriorityWiseIncidentDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, userModules, userSubModules, loggedInUser.getOrganisationId(), userType, true, loggedInUser.getUserId()));
+        }
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.ASSET) {
+            agentDashboardVO.setModuleWiseAssetIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, incidentModules, loggedInUser.getOrganisationId(), userType, loggedInUser.getUserId()));
+            agentDashboardVO.setStatusWiseAssetIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, incidentModules, loggedInUser.getOrganisationId(), userType, loggedInUser.getUserId()));
+            agentDashboardVO.setPriorityWiseAssetIncidents(incidentRepository.orgPriorityWiseIncidentDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, userModules, userSubModules, loggedInUser.getOrganisationId(), userType, true, loggedInUser.getUserId()));
+        }
         return agentDashboardVO;
     }
 
@@ -231,41 +188,16 @@ public class DashboardService {
                 userSubModules,
                 loggedInUser.getOrganisationId()
         );
-        categoryAdminDashboardVO.setModuleWiseIncidents(
-                incidentRepository.moduleWiseIncidentsDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        userModules,
-                        loggedInUser.getOrganisationId(),
-                        "CATEGORY_ADMIN",
-                        null
-                )
-        );
-        categoryAdminDashboardVO.setStatusWiseIncidents(
-                incidentRepository.statusWiseIncidentsDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        userModules,
-                        loggedInUser.getOrganisationId(),
-                        "CATEGORY_ADMIN",
-                        null
-                )
-        );
-        categoryAdminDashboardVO.setPriorityWiseIncidents(
-                incidentRepository.orgPriorityWiseIncidentDashboardData(
-                        startDateTime,
-                        endDateTime,
-                        true,
-                        userModules,
-                        userSubModules,
-                        loggedInUser.getOrganisationId(),
-                        "CATEGORY_ADMIN",
-                        false,
-                        null
-                )
-        );
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.INCIDENT) {
+            categoryAdminDashboardVO.setModuleWiseIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "CATEGORY_ADMIN", null));
+            categoryAdminDashboardVO.setStatusWiseIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "CATEGORY_ADMIN", null));
+            categoryAdminDashboardVO.setPriorityWiseIncidents(incidentRepository.orgPriorityWiseIncidentDashboardData(LicenseType.INCIDENT.ordinal(), startDateTime, endDateTime, true, userModules, userSubModules, loggedInUser.getOrganisationId(), "CATEGORY_ADMIN", false, null));
+        }
+        if (loggedInUser.getLicenseType() == LicenseType.ALL || loggedInUser.getLicenseType() == LicenseType.ASSET) {
+            categoryAdminDashboardVO.setModuleWiseAssetIncidents(incidentRepository.moduleWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "CATEGORY_ADMIN", null));
+            categoryAdminDashboardVO.setStatusWiseAssetIncidents(incidentRepository.statusWiseIncidentsDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, userModules, loggedInUser.getOrganisationId(), "CATEGORY_ADMIN", null));
+            categoryAdminDashboardVO.setPriorityWiseAssetIncidents(incidentRepository.orgPriorityWiseIncidentDashboardData(LicenseType.ASSET.ordinal(), startDateTime, endDateTime, true, userModules, userSubModules, loggedInUser.getOrganisationId(), "CATEGORY_ADMIN", false, null));
+        }
         return categoryAdminDashboardVO;
     }
 

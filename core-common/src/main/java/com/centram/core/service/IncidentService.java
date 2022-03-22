@@ -124,7 +124,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, String agingFilter, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, Boolean allOpen, Boolean allClosed, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentReport(Integer incidentType, BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, String agingFilter, BigInteger raisedUserId, BigInteger assignedUserId, Integer status, Boolean allOpen, Boolean allClosed, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -143,7 +143,7 @@ public class IncidentService {
             modFilter = true;
         }
         agingFilter = (agingFilter == null || agingFilter.equalsIgnoreCase("")) ? null : agingFilter;
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, allOpen, allClosed, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(incidentType,moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, allOpen, allClosed, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
     }
 
     /**
@@ -157,7 +157,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentEscalationReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentEscalationReport(Integer incidentType , BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -175,7 +175,7 @@ public class IncidentService {
             modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(LicenseType.fromKey(incidentType),moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**
@@ -189,7 +189,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReopenReport(BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentReopenReport(Integer incidentType,  BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -207,7 +207,7 @@ public class IncidentService {
             modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentReopenReport(moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReopenReport(LicenseType.fromKey(incidentType), moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**

@@ -18,6 +18,8 @@ public class OrgAdminDashboardVO {
     private long outSourcedVendors;
     private Set<IncidentModuleVO> moduleWiseIncidents;
     private Set<IncidentStatusVO> statusWiseIncidents;
+    private Set<IncidentModuleVO> moduleWiseAssetIncidents;
+    private Set<IncidentStatusVO> statusWiseAssetIncidents;
 
     public OrgAdminDashboardVO(long activeEmployees) {
         this.activeEmployees = activeEmployees;

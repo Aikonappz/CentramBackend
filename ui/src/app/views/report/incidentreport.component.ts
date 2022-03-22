@@ -34,7 +34,7 @@ export class IncidentReportComponent implements OnInit {
   angForm: FormGroup;
   priorities: Priority[] = [];
   loggedInUser: LoggedInUser;
-  searchedData: Object = {};
+  searchedData: any = { incidentType: "INCIDENT", };
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -116,10 +116,7 @@ export class IncidentReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = new ReportIncidentDataSource(this.service);
-    this.datasource.loadData();
-    //console.log(moment().subtract(90, 'd').format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
-    //this.angForm.get('start').setValue(moment().subtract(90, 'd').format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
-    //this.angForm.get('end').setValue(moment().format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+    this.datasource.loadData(0, 10, this.searchedData);
   }
 
   ngAfterViewInit() {
@@ -157,7 +154,7 @@ export class IncidentReportComponent implements OnInit {
   }
 
   loadData(req = {}) {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, this.searchedData);
   }
   formatDateTime(d: string) {
     if (d != null && d != "") {
@@ -168,7 +165,7 @@ export class IncidentReportComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
-    this.searchedData = {};
+    this.searchedData = { incidentType: "INCIDENT", };
     this.loadData({});
   }
 
@@ -194,14 +191,12 @@ export class IncidentReportComponent implements OnInit {
       } else {
         end = moment().utc().format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT) + "T23:59:59";
       }
-      this.searchedData = {
-        "status": status == null ? '' : status,
-        "priorityId": priorityId == null ? '' : priorityId,
-        "subModuleId": subModuleId == null ? '' : subModuleId,
-        "moduleId": moduleId == null ? '' : moduleId,
-        "start": start,
-        "end": end,
-      };
+      this.searchedData.status = status == null ? '' : status;
+      this.searchedData.priorityId = priorityId == null ? '' : priorityId;
+      this.searchedData.subModuleId = subModuleId == null ? '' : subModuleId;
+      this.searchedData.moduleId = moduleId == null ? '' : moduleId;
+      this.searchedData.start = start;
+      this.searchedData.end = end;
       //console.log(this.searchedData);
       this.loadData(this.searchedData);
     } else {

@@ -8,6 +8,7 @@ import com.centram.core.service.ModuleService;
 import com.centram.domain.Incident;
 import com.centram.domain.IncidentCommunication;
 import com.centram.domain.enumarator.IncidentStatus;
+import com.centram.domain.enumarator.LicenseType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -53,7 +54,7 @@ public class BatchReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, null, null, null, IncidentStatus.ALL.ordinal(), null, null, null, start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        PaginatedList<Incident> page = incidentService.incidentReport(LicenseType.INCIDENT.ordinal(), null, null, null, null, null, null, IncidentStatus.ALL.ordinal(), false, false, false, start, end, Pageable.unpaged(), true, roleNames, organisationId);
         if (page.getNumberOfElements() == 0) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -127,7 +128,7 @@ public class BatchReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentEscalationReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        PaginatedList<Incident> page = incidentService.incidentEscalationReport(LicenseType.INCIDENT.ordinal(), null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
         if (page.getNumberOfElements() == 0) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -207,7 +208,7 @@ public class BatchReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReopenReport(null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        PaginatedList<Incident> page = incidentService.incidentReopenReport(LicenseType.INCIDENT.ordinal(), null, null, null, IncidentStatus.ALL.ordinal(), start, end, Pageable.unpaged(), true, roleNames, organisationId);
         if (page.getNumberOfElements() == 0) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -283,7 +284,7 @@ public class BatchReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(null, null, null, null, null, null, IncidentStatus.ALL.ordinal(), null, null, null, start, end, Pageable.unpaged(), true, roleNames, organisationId);
+        PaginatedList<Incident> page = incidentService.incidentReport(LicenseType.INCIDENT.ordinal(), null, null, null, null, null, null, IncidentStatus.ALL.ordinal(), false, false, false, start, end, Pageable.unpaged(), true, roleNames, organisationId);
         if (page.getNumberOfElements() == 0) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }

@@ -94,6 +94,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD,INCIDENT REPORT','READ,READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> incidentReport(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -108,7 +109,7 @@ public class ReportApiController {
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(moduleId, subModuleId, priorityId, agingFilter, raisedUserId, assignedUserId, status, allOpen, allClosed, isReopened, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReport(incidentType, moduleId, subModuleId, priorityId, agingFilter, raisedUserId, assignedUserId, status, allOpen, allClosed, isReopened, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident report download", nickname = "organisationReportDownload", notes = "incident report download", response = PaginatedList.class, tags = {"Report",})
@@ -120,6 +121,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident/download", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('INCIDENT REPORT','READ',authentication.principal)")
     public ResponseEntity<Resource> incidentReportDownload(
+            @ApiParam(value = "Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -129,7 +131,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.downloadIncidentReport(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.downloadIncidentReport(incidentType, moduleId, subModuleId, priorityId, status, start, end));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -146,6 +148,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident-escalation", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ESCALATION REPORT','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> incidentEscalationReport(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -154,7 +157,7 @@ public class ReportApiController {
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentEscalationReport(moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentEscalationReport(incidentType, moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident escalation report download", nickname = "incidentEscalationReportDownload", notes = "incident escalation report download", response = PaginatedList.class, tags = {"Report",})
@@ -166,6 +169,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident-escalation/download", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ESCALATION REPORT','READ',authentication.principal)")
     public ResponseEntity<Resource> incidentEscalationReportDownload(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -173,7 +177,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentEscalationReportDownload(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentEscalationReportDownload(incidentType, moduleId, subModuleId, priorityId, status, start, end));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-escalation-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -190,6 +194,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident-reopen", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REOPEN REPORT','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> incidentReopenReport(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -198,7 +203,7 @@ public class ReportApiController {
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReopenReport(moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReopenReport(incidentType,moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident reopen report download", nickname = "incidentReopenReportDownload", notes = "incident reopen report download", response = PaginatedList.class, tags = {"Report",})
@@ -210,6 +215,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident-reopen/download", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REOPEN REPORT','READ',authentication.principal)")
     public ResponseEntity<Resource> incidentReopenReportDownload(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -217,7 +223,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentReopenReportDownload(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentReopenReportDownload(incidentType, moduleId, subModuleId, priorityId, status, start, end));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-reopen-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
@@ -234,6 +240,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident-aging", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('AGING REPORT','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> incidentAgingReport(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -242,7 +249,7 @@ public class ReportApiController {
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentAgingReport(moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentAgingReport(incidentType, moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident aging report download", nickname = "incidentAgingReportDownload", notes = "incident aging report download", response = PaginatedList.class, tags = {"Report",})
@@ -254,6 +261,7 @@ public class ReportApiController {
     @RequestMapping(value = "/incident-aging/download", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REOPEN REPORT','READ',authentication.principal)")
     public ResponseEntity<Resource> incidentAgingReportDownload(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Module Id", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "Sub Module Id", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
             @ApiParam(value = "Priority Id", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
@@ -261,7 +269,7 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentAgingReportDownload(moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentAgingReportDownload(incidentType,moduleId, subModuleId, priorityId, status, start, end));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-reopen-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))

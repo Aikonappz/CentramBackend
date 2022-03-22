@@ -4,7 +4,7 @@ import { ChartsModule } from 'ng2-charts';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 
-import { DashboardComponent, ViewUserDashboardDetails } from './dashboard.component';
+import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { CommonModule } from '@angular/common';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -14,6 +14,7 @@ import { ViewIncidentDetails } from './modal/ViewIncidentDetails';
 import { ViewAppAdminDashboardDetails } from './modal/ViewAppAdminDashboardDetails';
 import { ViewOrgAdminDashboardUserDetails } from './modal/ViewOrgAdminDashboardUserDetails';
 import { ViewOrgAdminDashboardVendorDetails } from './modal/ViewOrgAdminDashboardVendorDetails';
+import { ViewUserDashboardDetails } from './modal/ViewUserDashboardDetails';
 
 @NgModule({
   imports: [
@@ -29,10 +30,7 @@ import { ViewOrgAdminDashboardVendorDetails } from './modal/ViewOrgAdminDashboar
   ],
   declarations: [
     DashboardComponent,
-
-
     ViewUserDashboardDetails,
-
     ViewIncidentDetails,
     ViewAppAdminDashboardDetails,
     ViewOrgAdminDashboardUserDetails,

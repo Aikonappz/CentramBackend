@@ -7,6 +7,8 @@ export class OrgAdminDashboardVO {
     outSourcedVendors: number;
     moduleWiseIncidents: IncidentModuleVO[];
     statusWiseIncidents: IncidentStatusVO[];
+    moduleWiseAssetIncidents: IncidentModuleVO[];
+    statusWiseAssetIncidents: IncidentStatusVO[];
 
     constructor(data: any) {
         if (data == null) {
@@ -15,12 +17,16 @@ export class OrgAdminDashboardVO {
             this.outSourcedVendors = -1;
             this.moduleWiseIncidents = [];
             this.statusWiseIncidents = [];
+            this.moduleWiseAssetIncidents = [];
+            this.statusWiseAssetIncidents = [];
         } else {
             this.activeEmployees = data.activeEmployees;
             this.inHouseVendors = data.inHouseVendors;
             this.outSourcedVendors = data.outSourcedVendors;
             this.moduleWiseIncidents = data.moduleWiseIncidents;
             this.statusWiseIncidents = data.statusWiseIncidents;
+            this.moduleWiseAssetIncidents = data.moduleWiseAssetIncidents;
+            this.statusWiseAssetIncidents = data.statusWiseAssetIncidents;
         }
     }
 }

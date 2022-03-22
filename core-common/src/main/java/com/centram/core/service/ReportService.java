@@ -54,7 +54,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReport(String moduleId, String subModuleId, String priorityId, String agingFilter, String raisedUserId, String assignedUserId, String status, Boolean allOpen, Boolean allClosed, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+    public PaginatedList<Incident> incidentReport(String incidentType, String moduleId, String subModuleId, String priorityId, String agingFilter, String raisedUserId, String assignedUserId, String status, Boolean allOpen, Boolean allClosed, Boolean reOpened, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
@@ -65,11 +65,11 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReport(mId, smId, pId, agingFilter, uId, aId, intStatus, allOpen, allClosed, reOpened, start, end, pageable, false, null, null);
+        return incidentService.incidentReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, agingFilter, uId, aId, intStatus, allOpen, allClosed, reOpened, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentEscalationReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+    public PaginatedList<Incident> incidentEscalationReport(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
@@ -78,11 +78,11 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentEscalationReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
+        return incidentService.incidentEscalationReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, intStatus, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReopenReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+    public PaginatedList<Incident> incidentReopenReport(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
@@ -91,11 +91,11 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReopenReport(mId, smId, pId, intStatus, start, end, pageable, false, null, null);
+        return incidentService.incidentReopenReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, intStatus, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentAgingReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+    public PaginatedList<Incident> incidentAgingReport(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
@@ -104,7 +104,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        return incidentService.incidentReport(mId, smId, pId, null, null, null, intStatus, null, null, null, start, end, pageable, false, null, null);
+        return incidentService.incidentReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, null, null, null, intStatus, false, false, false, start, end, pageable, false, null, null);
     }
 
     @Transactional(readOnly = true)
@@ -159,7 +159,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream downloadIncidentReport(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
+    public ByteArrayInputStream downloadIncidentReport(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
@@ -170,7 +170,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, null, null, null, intStatus, null, null, null, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, null, null, null, intStatus, false, false, false, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(
@@ -226,7 +226,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream incidentEscalationReportDownload(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
+    public ByteArrayInputStream incidentEscalationReportDownload(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
@@ -238,7 +238,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentEscalationReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentEscalationReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(
@@ -300,7 +300,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream incidentReopenReportDownload(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
+    public ByteArrayInputStream incidentReopenReportDownload(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
@@ -312,7 +312,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReopenReport(mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReopenReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, intStatus, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(
@@ -370,7 +370,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream incidentAgingReportDownload(String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
+    public ByteArrayInputStream incidentAgingReportDownload(String incidentType, String moduleId, String subModuleId, String priorityId, String status, LocalDateTime start, LocalDateTime end) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
@@ -382,7 +382,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        PaginatedList<Incident> page = incidentService.incidentReport(mId, smId, pId, null, null, null, intStatus, null, null, null, start, end, Pageable.unpaged(), false, null, null);
+        PaginatedList<Incident> page = incidentService.incidentReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, null, null, null, intStatus, false, false, false, start, end, Pageable.unpaged(), false, null, null);
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList(

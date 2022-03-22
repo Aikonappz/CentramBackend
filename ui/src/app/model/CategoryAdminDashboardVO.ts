@@ -3,10 +3,12 @@ import { IncidentPriorityVO } from "./IncidentPriorityVO";
 import { IncidentStatusVO } from "./IncidentStatusVO";
 
 export class CategoryAdminDashboardVO {
-
     priorityWiseIncidents: IncidentPriorityVO[];
     moduleWiseIncidents: IncidentModuleVO[];
     statusWiseIncidents: IncidentStatusVO[];
+    priorityWiseAssetIncidents: IncidentPriorityVO[];
+    moduleWiseAssetIncidents: IncidentModuleVO[];
+    statusWiseAssetIncidents: IncidentStatusVO[];
     aging5: number;
     aging10: number;
     aging20: number;
@@ -17,6 +19,9 @@ export class CategoryAdminDashboardVO {
             this.moduleWiseIncidents = [];
             this.priorityWiseIncidents = [];
             this.statusWiseIncidents = [];
+            this.moduleWiseAssetIncidents = [];
+            this.priorityWiseAssetIncidents = [];
+            this.statusWiseAssetIncidents = [];
             this.aging5 = -1;
             this.aging10 = -1;
             this.aging20 = -1;
@@ -26,6 +31,9 @@ export class CategoryAdminDashboardVO {
             this.moduleWiseIncidents = data.moduleWiseIncidents;
             this.priorityWiseIncidents = data.priorityWiseIncidents;
             this.statusWiseIncidents = data.statusWiseIncidents;
+            this.moduleWiseAssetIncidents = data.moduleWiseAssetIncidents;
+            this.priorityWiseAssetIncidents = data.priorityWiseAssetIncidents;
+            this.statusWiseAssetIncidents = data.statusWiseAssetIncidents;
             this.aging5 = data.aging5;
             this.aging10 = data.aging10;
             this.aging20 = data.aging20;

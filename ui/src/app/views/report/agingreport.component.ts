@@ -8,12 +8,8 @@ import { tap } from 'rxjs/operators';
 import { AppUtility } from '../../config/AppUtility';
 import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 import { LoggedInUser } from '../../model/LoggedInUser';
-import { Module } from '../../model/Module';
-import { Permission } from '../../model/Permssion';
 import { Priority, PriorityList } from '../../model/Priority';
 import { ReportAgingIncidentDataSource } from '../../service/datasource/ReportAgingIncidentDataSource';
-import { ReportEscalationIncidentDataSource } from '../../service/datasource/ReportEscalationIncidentDataSource';
-import { ReportIncidentDataSource } from '../../service/datasource/ReportIncidentDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
 import { ReportService } from '../../service/ReportService';
@@ -38,7 +34,7 @@ export class AgingReportComponent implements OnInit {
   angForm: FormGroup;
   priorities: Priority[] = [];
   loggedInUser: LoggedInUser;
-  searchedData: Object = {};
+  searchedData: any = { incidentType: "INCIDENT", };
   constructor(
     private fb: FormBuilder,
     private titleService: Title,
@@ -81,7 +77,6 @@ export class AgingReportComponent implements OnInit {
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
       });
-
     this.miscService.modulesService({ licenseType: 'INCIDENT', "sort": "name,asc" })
       .subscribe((result: any) => {
         this.allModuleList = result.content;
@@ -120,10 +115,7 @@ export class AgingReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = new ReportAgingIncidentDataSource(this.service);
-    this.datasource.loadData();
-    //console.log(moment().subtract(90, 'd').format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
-    //this.angForm.get('start').setValue(moment().subtract(90, 'd').format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
-    //this.angForm.get('end').setValue(moment().format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+    this.datasource.loadData(0, 10, this.searchedData);
   }
 
   ngAfterViewInit() {
@@ -161,7 +153,7 @@ export class AgingReportComponent implements OnInit {
   }
 
   loadData(req = {}) {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, this.searchedData);
   }
   formatDateTime(d: string) {
     if (d != null && d != "") {
@@ -172,7 +164,7 @@ export class AgingReportComponent implements OnInit {
 
   loadPage() {
     this.angForm.reset();
-    this.searchedData = {};
+    this.searchedData = { incidentType: "INCIDENT", };
     this.loadData({});
   }
 
@@ -198,14 +190,12 @@ export class AgingReportComponent implements OnInit {
       } else {
         end = moment().utc().format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT) + "T23:59:59";
       }
-      this.searchedData = {
-        "status": status == null ? '' : status,
-        "priorityId": priorityId == null ? '' : priorityId,
-        "subModuleId": subModuleId == null ? '' : subModuleId,
-        "moduleId": moduleId == null ? '' : moduleId,
-        "start": start,
-        "end": end,
-      };
+      this.searchedData.status = status == null ? '' : status;
+      this.searchedData.priorityId = priorityId == null ? '' : priorityId;
+      this.searchedData.subModuleId = subModuleId == null ? '' : subModuleId;
+      this.searchedData.moduleId = moduleId == null ? '' : moduleId;
+      this.searchedData.start = start;
+      this.searchedData.end = end;
       //console.log(this.searchedData);
       this.loadData(this.searchedData);
     } else {

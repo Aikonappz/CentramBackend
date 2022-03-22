@@ -13,4 +13,6 @@ import java.util.Set;
 public class UserDashboardVO {
     private Set<IncidentModuleVO> moduleWiseIncidents;
     private Set<IncidentStatusVO> statusWiseIncidents;
+    private Set<IncidentModuleVO> moduleWiseAssetIncidents;
+    private Set<IncidentStatusVO> statusWiseAssetIncidents;
 }
