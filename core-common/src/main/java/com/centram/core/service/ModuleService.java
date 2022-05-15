@@ -65,6 +65,15 @@ public class ModuleService {
     }
 
     @Transactional(readOnly = true)
+    public Module getSubModuleByCustomerModuleNameAndParentModuleId(BigInteger parentModuleId, String customerModuleName) {
+        Module module = moduleRepository.getSubModuleByCustomerModuleNameAndParentModuleId(parentModuleId, customerModuleName);
+        if (module == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        return module;
+    }
+
+    @Transactional(readOnly = true)
     public List<Module> getModuleByIds(List<BigInteger> moduleIds) {
         List<Module> modules = new ArrayList<Module>();
         for (BigInteger moduleId : moduleIds) {

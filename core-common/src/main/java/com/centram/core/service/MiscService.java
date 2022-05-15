@@ -318,7 +318,7 @@ public class MiscService {
                     rowWiseIssues.put(rowNo++, "Asset Category Required!");
                     continue;
                 } else {
-                    module = moduleService.getModuleByCustomerModuleName(data.get("ASSET_CATEGORY").trim());
+                    module = moduleService.getSubModuleByCustomerModuleNameAndParentModuleId(asset.getModuleId(), data.get("ASSET_CATEGORY").trim());
                     if (module == null) {
                         rowWiseIssues.put(rowNo++, "Not a valid Asset Category!");
                         continue;
@@ -1254,6 +1254,7 @@ public class MiscService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ZonedDateTime date = null;
         Map<String, Object> mailValues = new HashMap<String, Object>();
+        mailValues.put("currency", assetOrder.getCurrency());
         mailValues.put("ord_no", assetOrder.getOrderNo());
         mailValues.put("dept_name", (assetOrder.getDepartment() != null) ? assetOrder.getDepartment().getName() : "");
         mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getName() : "");
@@ -1261,9 +1262,14 @@ public class MiscService {
         mailValues.put("product_type", assetOrder.getModuleName());
         mailValues.put("qty", assetOrder.getQuantity());
         mailValues.put("model", assetOrder.getModel());
+        mailValues.put("req_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
+        mailValues.put("req_id", assetOrder.getRaisedUser().getEmployeeId());
+        mailValues.put("req_email", assetOrder.getRaisedUser().getEmail());
+        mailValues.put("req_cnt_no", assetOrder.getRaisedUser().getContactNo());
         mailValues.put("in_budget", assetOrder.getWithinBudget() ? "Yes" : "No");
-        mailValues.put("limit", assetOrder.getLimitAmount());
-        mailValues.put("extra", assetOrder.getExtraAmount());
+        mailValues.put("totalAmount", assetOrder.getTotalAmount());
+        mailValues.put("limit", !assetOrder.getWithinBudget() ? assetOrder.getLimitAmount() : "0");
+        mailValues.put("extra", !assetOrder.getWithinBudget() ? assetOrder.getExtraAmount() : "0");
         mailValues.put("purchase_type", assetOrder.getPurchaseType().name());
         mailValues.put("existing_agreement", assetOrder.getExistingAgreement() ? "Yes" : "No");
         date = ZonedDateTime.of(assetOrder.getCreatedDate(), ZoneId.of(loggedInUser.getTimeZone()));
@@ -1288,7 +1294,11 @@ public class MiscService {
         mailValues.put("vendor_name", assetOrder.getVendor().getName());
         mailValues.put("approver_index", 0);
         mailValues.put("order_id", assetOrder.getId());
+        mailValues.put("app1_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());
+        mailValues.put("app1_cnt_no", assetOrder.getApproverUser1().getContactNo());
         mailValues.put("approver_1", assetOrder.getApproverUser1().getEmail());
+        mailValues.put("app2_name", assetOrder.getApproverUser2().getFirstName() + " " + assetOrder.getApproverUser2().getLastName());
+        mailValues.put("app2_cnt_no", assetOrder.getApproverUser2().getContactNo());
         mailValues.put("approver_2", assetOrder.getApproverUser2().getEmail());
         if (assetOrder.getApproverUser1Comment() == null && assetOrder.getApproverUser2Comment() == null) {
             mailValues.put("notification", new Notification(null, null, assetOrder.getApproverUser1(), Status.PUSHED, NotificationType.ACTIONABLE));

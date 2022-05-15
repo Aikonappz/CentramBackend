@@ -39,9 +39,10 @@ export class AssetOrderComponent implements OnInit {
 
   booleanList: any[] = [];
   assetList: any[] = [];
-  modelList: Set<any> = new Set<any>();
+  modelList: any[] = [];
   assetModelList: any[] = [];
   productTypes: any[] = [];
+  currencyList: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -66,6 +67,8 @@ export class AssetOrderComponent implements OnInit {
     this.booleanList.push({ id: 1, label: 'Yes' });
     this.purchaseTypeList.push({ id: 'RENTED', label: 'RENTED' });
     this.purchaseTypeList.push({ id: 'OWNED', label: 'OWNED' });
+    this.currencyList.push({ id: 'INR', label: 'INR' });
+    this.currencyList.push({ id: 'USD', label: 'USD' });
     this.angForm = this.fb.group({
       isDepartment: new FormControl(null, [
         Validators.required,
@@ -85,13 +88,19 @@ export class AssetOrderComponent implements OnInit {
         Validators.pattern("^[0-9]*$"),
         Validators.maxLength(4),
       ]),
-      modelNo: new FormControl('', [
+      modelNo: new FormControl(null, [
         Validators.required,
-        Validators.maxLength(255),
+      ]),
+      currency: new FormControl(null, [
+        Validators.required,
       ]),
       limitAmount: new FormControl('', [
       ]),
       extraAmount: new FormControl('', [
+      ]),
+      totalAmount: new FormControl(null, [
+        Validators.required,
+        Validators.pattern("^[0-9]*$"),
       ]),
       withinBudget: new FormControl(null, [
         Validators.required,
@@ -362,8 +371,10 @@ export class AssetOrderComponent implements OnInit {
         }
       }
       this.assetOrder.moduleId = this.angForm.controls['productCategory'].value;
+      this.assetOrder.currency = this.angForm.controls['currency'].value;
       this.assetOrder.subModuleId = this.angForm.controls['assetType'].value;
       this.assetOrder.quantity = this.angForm.controls['quantity'].value;
+      this.assetOrder.totalAmount = this.angForm.controls['totalAmount'].value;
       this.assetOrder.model = this.angForm.controls['modelNo'].value;
       this.assetOrder.withinBudget = this.angForm.controls['withinBudget'].value == 1 ? true : false;
       if (!this.assetOrder.withinBudget) {
@@ -441,6 +452,20 @@ export class AssetOrderComponent implements OnInit {
       for (let i = 0; i < this.assetModelList.length; i++) {
         if (this.assetModelList[i].parentModuleId == productCategory.id) {
           this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
+        }
+      }
+    }
+  }
+
+  @ViewChild("assetType") assetType;
+  populateModels(assetType) {
+    if (typeof assetType !== 'undefined') {
+      this.modelList = [];
+      for (let i = 0; i < this.assetModelList.length; i++) {
+        if (this.assetModelList[i].id == assetType.id) {
+          for (let k = 0; k < this.assetModelList[i].models.length; k++) {
+            this.modelList.push({ id: this.assetModelList[i].models[k], label: this.assetModelList[i].models[k] });
+          }
         }
       }
     }

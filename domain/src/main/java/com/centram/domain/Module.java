@@ -1,16 +1,21 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
+import com.centram.domain.converter.ModelConverter;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * App Modules
@@ -78,4 +83,13 @@ public class Module implements Serializable {
     @NotNull
     @Column(name = "require_approval")
     private Boolean requireApproval;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @Lob
+    @Column(name = "models", nullable = false, columnDefinition = "TEXT")
+    @Convert(converter = ModelConverter.class)
+    @JsonView(Views.BasicView.class)
+    private List<BigInteger> models;
 }

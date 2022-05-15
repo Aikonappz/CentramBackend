@@ -124,6 +124,7 @@ export class AgentIncidentComponent implements OnInit {
         this.priorities = result.content;
       });
     this.permissions = this.loggedInUserService.getModulePermissions();
+    console.log(this.permissions);
     let p;
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == "INCIDENT") {

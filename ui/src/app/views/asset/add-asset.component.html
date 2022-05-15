@@ -26,13 +26,14 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="assetType">Asset Category
+                  <label class="form-col-form-label required-control-label" for="assetType">Product Sub Category
                   </label>
-                  <ng-select [items]="assetList" placeholder="-- Select Asset Category --" formControlName="assetType"
-                    id="assetType" name="assetType" bindLabel="label" bindValue="id"></ng-select>
+                  <ng-select [items]="assetList" placeholder="-- Select Product Sub Category --"
+                    formControlName="assetType" id="assetType" name="assetType" bindLabel="label" bindValue="id">
+                  </ng-select>
                   <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.assetType.errors?.required">
-                      Asset Category is required!
+                      Product Sub Category is required!
                     </div>
                   </div>
                 </div>
@@ -65,7 +66,7 @@
               <legend class="w-auto">Reservation Details</legend>
               <div class="row">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="isDepartment">For
+                  <label class="form-col-form-label required-control-label" for="isDepartment">For Any Specific
                     Department?</label>
                   <ng-select [items]="booleanList" placeholder="-- Select --" formControlName="isDepartment"
                     id="isDepartment" name="isDepartment" bindLabel="label" bindValue="id"></ng-select>
@@ -96,7 +97,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="forLocation">For
+                  <label class="form-col-form-label required-control-label" for="forLocation">For Any Specific
                     Location?</label>
                   <ng-select [items]="booleanList" placeholder="-- Select --" formControlName="forLocation"
                     id="forLocation" name="forLocation" bindLabel="label" bindValue="id"></ng-select>

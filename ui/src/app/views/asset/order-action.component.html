@@ -37,15 +37,17 @@
                 <td>{{assetOrder.quantity}}</td>
               </tr>
               <tr>
-                <td><strong>With In Budget</strong></td>
+                <td><strong>Cost Detail</strong></td>
                 <td>
+                  Currency: {{assetOrder.currency}}<br />
                   <div *ngIf="assetOrder.withinBudget==true">
                     With In Budget: Yes
                   </div>
                   <div *ngIf="assetOrder.withinBudget==false">
                     With In Budget: No<br />
-                    Limit Amount: {{assetOrder.limitAmount}}<br />
-                    Extra Amount: {{assetOrder.extraAmount}}
+                    Total Cost: {{assetOrder.totalAmount}}<br />
+                    Available Budget Amount: {{assetOrder.limitAmount}}<br />
+                    Additional Amount: {{assetOrder.extraAmount}}
                   </div>
                 </td>
               </tr>

@@ -31,6 +31,7 @@ export class AssetInventoryComponent implements OnInit {
   angForm: FormGroup;
   searchedData: Object = {};
   assetList: any[] = [];
+  modelList: any[] = [];
   //modelList: Set<string> = new Set<string>();
   assetModelList: any[] = [];
   productTypes: any[] = [];
@@ -63,14 +64,14 @@ export class AssetInventoryComponent implements OnInit {
         }
         //console.log(this.productTypes);
       });
-    this.booleanList.push({ id: 0, label: 'No' });
-    this.booleanList.push({ id: 1, label: 'Yes' });
+    this.booleanList.push({ id: 0, label: 'Unavailable' });
+    this.booleanList.push({ id: 1, label: 'Available' });
     this.angForm = this.fb.group({
       productCategory: new FormControl(null, [
       ]),
       assetType: new FormControl(null, [
       ]),
-      modelNo: new FormControl('', [
+      modelNo: new FormControl(null, [
       ]),
       serialNumber: new FormControl('', [
       ]),

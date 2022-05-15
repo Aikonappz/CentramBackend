@@ -39,13 +39,14 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                             Asset Category: {{assetOrder.subModuleName}}<br />
                             Model: {{assetOrder.model}}<br />
                             Quantity: {{assetOrder.quantity}}<br />
+                            Total Cost: {{assetOrder.totalAmount}}<br />
                             <div *ngIf="assetOrder.withinBudget==true">
                                 With In Budget: Yes
                             </div>
                             <div *ngIf="assetOrder.withinBudget==false">
                                 With In Budget: No<br />
-                                Limit Amount: {{assetOrder.limitAmount}}<br />
-                                Extra Amount: {{assetOrder.extraAmount}}
+                                Available Budget Amount: {{assetOrder.limitAmount}}<br />
+                                Additional Amount: {{assetOrder.extraAmount}}
                             </div>
                         </td>
                     </tr>

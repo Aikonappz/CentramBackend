@@ -117,6 +117,11 @@ public class AssetOrder extends BaseEntity implements Serializable {
     private Integer quantity;
 
     @ApiModelProperty(required = true, value = "")
+    @Column(name = "currency", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private String currency;
+
+    @ApiModelProperty(required = true, value = "")
     @Column(name = "within_budget", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean withinBudget = false;
@@ -130,6 +135,11 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @Column(name = "extra_amount", nullable = true)
     @JsonView(Views.BasicView.class)
     private Double extraAmount;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "total_amount", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Double totalAmount;
 
     @ApiModelProperty(required = true, value = "")
     @Valid

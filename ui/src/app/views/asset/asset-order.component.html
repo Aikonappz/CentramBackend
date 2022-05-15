@@ -65,9 +65,11 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="assetType">Asset Category</label>
-                  <ng-select [items]="assetList" placeholder="-- Select Asset Category --" formControlName="assetType"
-                    id="assetType" assetType name="assetType" bindLabel="label" bindValue="id"></ng-select>
+                  <label class="form-col-form-label required-control-label" for="assetType">Product Sub
+                    Category</label>
+                  <ng-select [items]="assetList" #assetType (change)="populateModels($event)" placeholder="-- Select Product Sub
+                  Category --" formControlName="assetType" id="assetType" assetType name="assetType" bindLabel="label"
+                    bindValue="id"></ng-select>
                   <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.assetType.errors?.required">
                       Asset Category is required!
@@ -76,13 +78,11 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="modelNo">Model</label>
-                  <input type="text" formControlName="modelNo" id="modelNo" name="modelNo" class="form-control">
+                  <ng-select [items]="modelList" placeholder="-- Select Model --" formControlName="modelNo" id="modelNo"
+                    modelNo name="modelNo" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.modelNo.touched && f.modelNo.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.modelNo.errors?.required">
                       Model is required!
-                    </div>
-                    <div *ngIf="f.modelNo.errors?.maxlength">
-                      Allowed maxlength exceeds.
                     </div>
                   </div>
                 </div>
@@ -104,6 +104,29 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
+                  <label class="form-col-form-label required-control-label" for="currency">Currency</label>
+                  <ng-select [items]="currencyList" placeholder="-- Select Currency --" formControlName="currency"
+                    id="currency" currency name="currency" bindLabel="label" bindValue="id"></ng-select>
+                  <div *ngIf="f.currency.touched && f.currency.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.currency.errors?.required">
+                      Currency is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="totalAmount">Total Cost</label>
+                  <input type="text" formControlName="totalAmount" id="totalAmount" name="totalAmount"
+                    class="form-control">
+                  <div *ngIf="f.totalAmount.touched && f.totalAmount.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.totalAmount.errors?.required">
+                      Total Cost is required!
+                    </div>
+                    <div *ngIf="f.totalAmount.errors?.pattern">
+                      Invalid Total Cost value!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
                   <label class="form-col-form-label required-control-label" for="withinBudget">Budget Available?</label>
                   <ng-select [items]="booleanList" placeholder="-- Select --" formControlName="withinBudget"
                     id="withinBudget" withinBudget name="withinBudget" bindLabel="label" bindValue="id"></ng-select>
@@ -114,16 +137,16 @@
                   </div>
                 </div>
                 <div class="col limitAmount">
-                  <label class="form-col-form-label required-control-label" for="limitAmount">Budget
-                    Limit Amount</label>
+                  <label class="form-col-form-label required-control-label" for="limitAmount">Available Budget
+                    Amount</label>
                   <input type="text" formControlName="limitAmount" id="limitAmount" name="limitAmount"
                     class="form-control">
                   <div *ngIf="f.limitAmount.touched && f.limitAmount.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.limitAmount.errors?.required">
-                      Budget Limit Amount is required!
+                      Available Budget Amount is required!
                     </div>
                     <div *ngIf="f.limitAmount.errors?.pattern">
-                      Invalid budget limit amount value!
+                      Invalid Available Budget Amount value!
                     </div>
                     <div *ngIf="f.limitAmount.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -131,15 +154,15 @@
                   </div>
                 </div>
                 <div class="col extraAmount">
-                  <label class="form-col-form-label required-control-label" for="extraAmount">Extra Amount</label>
+                  <label class="form-col-form-label required-control-label" for="extraAmount">Additional Amount</label>
                   <input type="text" formControlName="extraAmount" id="extraAmount" name="extraAmount"
                     class="form-control">
                   <div *ngIf="f.extraAmount.touched && f.extraAmount.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.extraAmount.errors?.required">
-                      Extra Amount is required!
+                      Additional Amount is required!
                     </div>
                     <div *ngIf="f.extraAmount.errors?.pattern">
-                      Invalid extra amount value!
+                      Invalid Additional Amount value!
                     </div>
                     <div *ngIf="f.extraAmount.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -148,7 +171,6 @@
                 </div>
                 <div class="col proxy-col"></div>
                 <div class="col proxy-col"></div>
-                <div class="col"></div>
               </div>
             </fieldset>
             <fieldset *ngIf="newEntity" class="border p-2">
@@ -192,9 +214,6 @@
                     </div>
                   </div>
                 </div>
-                <div class="col"></div>
-              </div>
-              <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="purchaseType">Purchase Type</label>
                   <ng-select [items]="purchaseTypeList" placeholder="-- Select Purchase Type --"
@@ -206,6 +225,8 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              <div class="row row-margin-05">
                 <div class="col rent d-none">
                   <label class="form-col-form-label required-control-label" for="rentStartAt">Rent Start
                     Date</label>

@@ -34,6 +34,8 @@ public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
     List<Module> getSubCategories(@Param("parentModuleId") BigInteger parentModuleId);
 
     Module findByCustomerModuleNameIgnoreCase(@Param("customerModuleName") String customerModuleName);
+    @Query("select m from Module m where m.parentModuleId = (:parentModuleId) and m.customerModuleName = (:customerModuleName)")
+    Module getSubModuleByCustomerModuleNameAndParentModuleId(@Param("parentModuleId") BigInteger parentModuleId, @Param("customerModuleName") String customerModuleName);
 
     @Query(value = "select new com.centram.common.vo.CategoryLocationVO( " +
             " m.id, " +
