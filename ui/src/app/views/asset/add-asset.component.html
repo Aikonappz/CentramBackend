@@ -28,8 +28,9 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="assetType">Product Sub Category
                   </label>
-                  <ng-select [items]="assetList" placeholder="-- Select Product Sub Category --"
-                    formControlName="assetType" id="assetType" name="assetType" bindLabel="label" bindValue="id">
+                  <ng-select [items]="assetList" #assetType (change)="populateModels($event)"
+                    placeholder="-- Select Product Sub Category --" formControlName="assetType" id="assetType"
+                    name="assetType" bindLabel="label" bindValue="id">
                   </ng-select>
                   <div *ngIf="f.assetType.touched && f.assetType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.assetType.errors?.required">
@@ -39,8 +40,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="modelNo">Model</label>
-                  <input type="text" formControlName="modelNo" placeholder="Model" id="modelNo" name="modelNo"
-                    class="form-control">
+                  <ng-select [items]="modelList" placeholder="-- Select Model --" formControlName="modelNo" id="modelNo"
+                    modelNo name="modelNo" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.modelNo.touched && f.modelNo.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.modelNo.errors?.required">
                       Model is required!

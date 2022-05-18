@@ -80,7 +80,10 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                                     'badge':true
                                 }">
                                     {{assetOrder.approverUser1.firstName}} {{assetOrder.approverUser1.lastName}}
-                                </span>
+                                </span><br/>
+                                <div *ngIf="assetOrder.approverUser1Comment!=null">
+                                    {{assetOrder.approverUser1Comment}}
+                                </div>
                             </div>
                             <div>
                                 Approver 2 :
@@ -91,7 +94,10 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                                     'badge':true
                                 }">
                                     {{assetOrder.approverUser2.firstName}} {{assetOrder.approverUser2.lastName}}
-                                </span>
+                                </span><br/>
+                                <div *ngIf="assetOrder.approverUser2Comment!=null">
+                                    {{assetOrder.approverUser2Comment}}
+                                </div>
                             </div>
                         </td>
                     </tr>

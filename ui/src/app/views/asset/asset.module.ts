@@ -25,6 +25,7 @@ import { ViewAssetDetail } from './modal/ViewAssetDetail';
 import { UploadAssetComponent } from './modal/UploadAssetComponent';
 import { MyAssetComponent } from './my-asset.component';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
+import { OrderedAssetActionComponent } from './in-ordered-asset.component';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
     MyAssetComponent,
     DeallocateAsset,
     AssignIncidentComponent,
+    OrderedAssetActionComponent,
   ],
   imports: [
     CommonModule,

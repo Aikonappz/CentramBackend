@@ -18,6 +18,9 @@ export class AssetOrderService {
     assetOrdersService(request?: any): Observable<AssetOrderList> {
         return this.http.get('/v1/asset-order/all', { "params": request });
     }
+    assetOrderForApprovalService(request?: any): Observable<AssetOrderList> {
+        return this.http.get('/v1/asset-order/all-asset-order-for-approval', { "params": request });
+    }
     assetOrderService(id: number, request?: any): Observable<AssetOrder> {
         return this.http.get('/v1/asset-order/' + id, { "params": request });
     }

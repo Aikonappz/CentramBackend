@@ -61,14 +61,16 @@
                                         <label class="form-col-form-label" for="assetType">Product Sub
                                             Category
                                         </label>
-                                        <ng-select [items]="assetList" placeholder="-- Select Asset Category --"
-                                            formControlName="assetType" id="assetType" name="assetType"
-                                            bindLabel="label" bindValue="id"></ng-select>
+                                        <ng-select [items]="assetList" #assetType (change)="populateModels($event)"
+                                            placeholder="-- Select Asset Category --" formControlName="assetType"
+                                            id="assetType" name="assetType" bindLabel="label" bindValue="id">
+                                        </ng-select>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="modelNo">Model</label>
-                                        <input type="text" formControlName="modelNo" placeholder="Model No."
-                                            id="modelNo" name="modelNo" class="form-control">
+                                        <ng-select [items]="modelList" placeholder="-- Select Model --"
+                                            formControlName="modelNo" id="modelNo" modelNo name="modelNo"
+                                            bindLabel="label" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
                                         <label class="form-col-form-label" for="serialNumber">Serial No</label>

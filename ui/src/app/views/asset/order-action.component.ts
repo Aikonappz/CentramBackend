@@ -18,7 +18,7 @@ declare var $: any;
   styleUrls: ['./order-action.component.scss']
 })
 export class OrderActionComponent implements OnInit {
-  moduleName: string = "ORDER ASSET";
+  moduleName: string = "ORDERED ASSET ACTION";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   entityId: number;
@@ -144,7 +144,7 @@ export class OrderActionComponent implements OnInit {
     this.assetOrderService
       .approveAssetOrder(assetOrderApprovalDTO)
       .subscribe((data: any) => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/asset/order/incommig']);
       });
   }
 

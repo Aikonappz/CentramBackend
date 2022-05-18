@@ -10,6 +10,7 @@ import { RequestAssetComponent } from './request-asset.component';
 import { AssetRequestActionComponent } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 import { MyAssetComponent } from './my-asset.component';
+import { OrderedAssetActionComponent } from './in-ordered-asset.component';
 
 const routes: Routes = [
   {
@@ -33,6 +34,14 @@ const routes: Routes = [
       {
         path: 'order',
         component: AssetOrderComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Order Assets'
+        },
+      },
+      {
+        path: 'order/incommig',
+        component: OrderedAssetActionComponent,
         pathMatch: 'full',
         data: {
           title: 'Order Assets'

@@ -32,6 +32,7 @@ export class AddAssetComponent implements OnInit {
   purchaseTypeList: any[] = [];
   asset: Asset;
   assetList: any[] = [];
+  modelList: any[] = [];
   assetModelList: any[] = [];
   productTypes: any[] = [];
   booleanList: any[] = [];
@@ -72,7 +73,7 @@ export class AddAssetComponent implements OnInit {
       assetType: new FormControl(null, [
         Validators.required,
       ]),
-      modelNo: new FormControl('', [
+      modelNo: new FormControl(null, [
         Validators.required,
       ]),
       serialNumber: new FormControl('', [
@@ -451,9 +452,26 @@ export class AddAssetComponent implements OnInit {
           this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
         }
       }
-      this.angForm.controls['assetType'].setValue("");
+      this.angForm.controls['assetType'].setValue(null);
     } else {
-      this.angForm.controls['assetType'].setValue("");
+      this.angForm.controls['assetType'].setValue(null);
+    }
+  }
+
+  @ViewChild("assetType") assetType;
+  populateModels(assetType) {
+    if (typeof assetType !== 'undefined') {
+      this.modelList = [];
+      for (let i = 0; i < this.assetModelList.length; i++) {
+        if (this.assetModelList[i].id == assetType.id) {
+          for (let k = 0; k < this.assetModelList[i].models.length; k++) {
+            this.modelList.push({ id: this.assetModelList[i].models[k], label: this.assetModelList[i].models[k] });
+          }
+        }
+      }
+      this.angForm.controls['modelNo'].setValue(null);
+    } else {
+      this.angForm.controls['modelNo'].setValue(null);
     }
   }
 
@@ -560,6 +578,7 @@ export class AddAssetComponent implements OnInit {
         this.asset.organisation = { id: this.asset.organisation.id, version: this.asset.organisation.version };
         this.angForm.get('productCategory').setValue(this.asset.moduleId);
         this.populateChildValues({ id: this.asset.moduleId });
+        this.populateModels({ id: this.asset.subModuleId });
         this.angForm.get('assetType').setValue(this.asset.subModuleId);
         this.angForm.get('modelNo').setValue(this.asset.modelNo);
         this.angForm.get('serialNumber').setValue(this.asset.serialNo);

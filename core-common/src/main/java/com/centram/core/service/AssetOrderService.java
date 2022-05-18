@@ -10,7 +10,6 @@ import com.centram.core.repository.AssetOrderRepository;
 import com.centram.domain.AssetOrder;
 import com.centram.domain.Module;
 import com.centram.domain.User;
-import com.centram.domain.enumarator.PurchaseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,33 @@ public class AssetOrderService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         orderNo = (orderNo.equalsIgnoreCase("")) ? null : orderNo;
         status = (status.equalsIgnoreCase("")) ? null : status;
-        Page<AssetOrder> assetOrderPage = assetOrderRepository.findAll(orderNo, status, loggedInUser.getOrganisationId(), pageable);
+        Page<AssetOrder> assetOrderPage = assetOrderRepository.findAll(orderNo, status, loggedInUser.getUserId(), pageable);
+        Module module = null;
+        for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
+            module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());
+            assetOrderPage.getContent().get(k).setModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getSubModuleId());
+            assetOrderPage.getContent().get(k).setSubModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setActualSubModuleName(module.getName());
+        }
+        return new PaginatedList<AssetOrder>(assetOrderPage);
+    }
+
+    /**
+     * get all Ordered Assets fo approval
+     *
+     * @param orderNo
+     * @param status
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<AssetOrder> getOrderedAssetsForApproval(String orderNo, String status, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        orderNo = (orderNo.equalsIgnoreCase("")) ? null : orderNo;
+        status = (status.equalsIgnoreCase("")) ? null : status;
+        Page<AssetOrder> assetOrderPage = assetOrderRepository.findAllOrderedAssetsForApproval(orderNo, status, loggedInUser.getUserId(), pageable);
         Module module = null;
         for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
             module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());

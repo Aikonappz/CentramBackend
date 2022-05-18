@@ -173,6 +173,26 @@ export class AssetInventoryComponent implements OnInit {
           this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
         }
       }
+      this.angForm.controls['assetType'].setValue(null);
+    } else {
+      this.angForm.controls['assetType'].setValue(null);
+    }
+  }
+
+  @ViewChild("assetType") assetType;
+  populateModels(assetType) {
+    if (typeof assetType !== 'undefined') {
+      this.modelList = [];
+      for (let i = 0; i < this.assetModelList.length; i++) {
+        if (this.assetModelList[i].id == assetType.id) {
+          for (let k = 0; k < this.assetModelList[i].models.length; k++) {
+            this.modelList.push({ id: this.assetModelList[i].models[k], label: this.assetModelList[i].models[k] });
+          }
+        }
+      }
+      this.angForm.controls['modelNo'].setValue(null);
+    } else {
+      this.angForm.controls['modelNo'].setValue(null);
     }
   }
 
