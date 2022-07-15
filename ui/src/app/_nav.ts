@@ -117,13 +117,19 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "ORDER ASSET" }
       },
       {
-        name: 'My Ordered Asset',
+        name: 'Ordered Assets',
         url: '/asset/ordered',
-        icon: 'fa fa-outdent',
+        icon: 'fa fa-indent',
         attributes: { "moduleName": "ORDER ASSET" }
       },
       {
-        name: 'Asset Inventory',
+        name: 'Ordered Asset',
+        url: '/asset/order/incommig',
+        icon: 'fa fa-outdent',
+        attributes: { "moduleName": "ORDERED ASSET ACTION" }
+      },
+      {
+        name: 'Asset Inventory Master',
         url: '/asset/inventory',
         icon: 'fa fa-tasks',
         attributes: { "moduleName": "MANAGE ASSET" }
@@ -141,7 +147,7 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "MY ASSET" }
       },
       {
-        name: "My Asset Requests",
+        name: "Asset Tickets",
         url: '/asset/requested',
         icon: 'fa fa-paper-plane',
         attributes: { "moduleName": "MY ASSET REQUEST" }
@@ -151,6 +157,12 @@ export const navItems: INavData[] = [
         url: '/asset/requested/incomming',
         icon: 'fa fa-angle-left',
         attributes: { "moduleName": "REQUESTED ASSET" }
+      },
+      {
+        name: 'Pending Asset Approval',
+        url: '/asset/approval/pending',
+        icon: 'fa fa-angle-left',
+        attributes: { "moduleName": "MY ASSET" }
       },
     ]
   },

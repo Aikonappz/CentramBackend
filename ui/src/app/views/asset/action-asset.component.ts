@@ -17,7 +17,7 @@ declare var $: any;
   styleUrls: ['./action-asset.component.scss']
 })
 export class AssetRequestActionComponent implements OnInit {
-  moduleName: string = "ORDER ASSET";
+  moduleName: string = "MY ASSET";
   newEntity: boolean = true;
   entityId: number;
   angForm: FormGroup;
@@ -118,7 +118,7 @@ export class AssetRequestActionComponent implements OnInit {
     this.incidentService
       .approveAssetRequest(assetOrderApprovalDTO)
       .subscribe((data: any) => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/asset/approval/pending']);
       });
   }
 
@@ -130,7 +130,7 @@ export class AssetRequestActionComponent implements OnInit {
         this.incident = data;
         if (this.loggedInUser.userId != this.incident.raisedUser.managerId) {
           //console.log("no right to visit!");
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/asset/approval/pending']);
         } else if (this.loggedInUser.userId == this.incident.raisedUser.managerId && this.incident.feedbackProvided) {
           //console.log("already feedback provided!");
           this.canApprove = false;
@@ -140,7 +140,7 @@ export class AssetRequestActionComponent implements OnInit {
           this.canApprove = true;
         } else {
           //console.log("can't provide feedback!");
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/asset/approval/pending']);
         }
       });
   }

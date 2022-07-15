@@ -86,6 +86,21 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
+    @Query("select i from Incident i left outer join i.asset a where " +
+            " ( " +
+            "   ((:incidentNo) is not null and UPPER(i.incidentNo) like (:incidentNo)) " +
+            "   OR " +
+            "   ((:incidentNo) is null) " +
+            " ) " +
+            " and i.approverUserId = (:approverUserId) " +
+            " and i.incidentType = 2 and i.approvalRequired = true "
+    )
+    Page<Incident> getPendingAssetApprovals(
+            @Param("incidentNo") String incidentNo,
+            @Param("approverUserId") BigInteger approverUserId,
+            Pageable pageable
+    );
+
     @Query("select i from Incident i left outer join i.asset a where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and i.incidentType = (:incidentType) and " +
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +

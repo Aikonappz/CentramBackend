@@ -263,6 +263,17 @@ public class Incident extends BaseEntity implements Serializable {
     private BigInteger oldAssetId;
 
     @ApiModelProperty(required = false, value = "")
+    @Column(name = "approval_required", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean approvalRequired = false;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @NotNull
+    @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class,})
+    private BigInteger approverUserId;
+
+    @ApiModelProperty(required = false, value = "")
     @Column(name = "asset_approved", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean assetApproved = false;

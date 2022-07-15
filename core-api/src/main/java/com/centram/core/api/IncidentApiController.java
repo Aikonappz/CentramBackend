@@ -186,6 +186,22 @@ public class IncidentApiController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all pending asset approval", nickname = "getPendingAssetApprovals", notes = "Get all pending asset approval", response = PaginatedList.class, tags = {"Incident",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.ListView.class)
+    @RequestMapping(value = "/asset/pending/approval", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY ASSET','SEARCH|READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<Incident>> getPendingAssetApprovals(
+            @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getPendingAssetApprovals(incidentNo,pageable), HttpStatus.OK);
+    }
+
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"Incident",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Method Not Allowed"),

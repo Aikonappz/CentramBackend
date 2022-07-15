@@ -26,6 +26,8 @@ import { UploadAssetComponent } from './modal/UploadAssetComponent';
 import { MyAssetComponent } from './my-asset.component';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 import { OrderedAssetActionComponent } from './in-ordered-asset.component';
+import { PendingAssetApprovalComponent } from './pending-asset-approval.component';
+import { ViewAssetRequestDetail } from './modal/ViewAssetRequestDetail';
 
 
 @NgModule({
@@ -46,6 +48,8 @@ import { OrderedAssetActionComponent } from './in-ordered-asset.component';
     DeallocateAsset,
     AssignIncidentComponent,
     OrderedAssetActionComponent,
+    PendingAssetApprovalComponent,
+    ViewAssetRequestDetail,
   ],
   imports: [
     CommonModule,

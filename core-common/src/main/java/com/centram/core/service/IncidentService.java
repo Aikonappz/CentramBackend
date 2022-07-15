@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -114,6 +115,27 @@ public class IncidentService {
     }
 
     /**
+     * get pending asset approval
+     * @param incidentNo
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> getPendingAssetApprovals( String incidentNo, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
+        Page<Incident> incidentPage = incidentRepository.getPendingAssetApprovals(incidentNo, loggedInUser.getUserId(), pageable);
+        incidentPage.getContent().stream()
+                .forEach(i->{
+                    Module module = moduleService.getModuleById(i.getModuleId());
+                    Module subModule = moduleService.getModuleById(i.getSubModuleId());
+                    i.setModuleName(module.getCustomerModuleName());
+                    i.setSubModuleName(subModule.getCustomerModuleName());
+                });
+        return new PaginatedList<Incident>(incidentPage);
+    }
+
+    /**
      * @param moduleId
      * @param subModuleId
      * @param priorityId
@@ -143,7 +165,7 @@ public class IncidentService {
             modFilter = true;
         }
         agingFilter = (agingFilter == null || agingFilter.equalsIgnoreCase("")) ? null : agingFilter;
-        return new PaginatedList<Incident>(incidentRepository.incidentReport(incidentType,moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, allOpen, allClosed, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentReport(incidentType, moduleId, subModuleId, priorityId, raisedUserId, assignedUserId, status, allOpen, allClosed, reOpened, start, end, modFilter, modSubModIds, agingFilter, organisationId, pageable));
     }
 
     /**
@@ -157,7 +179,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentEscalationReport(Integer incidentType , BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentEscalationReport(Integer incidentType, BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -175,7 +197,7 @@ public class IncidentService {
             modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
             modFilter = true;
         }
-        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(LicenseType.fromKey(incidentType),moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
+        return new PaginatedList<Incident>(incidentRepository.incidentEscalationReport(LicenseType.fromKey(incidentType), moduleId, subModuleId, priorityId, status, start, end, modFilter, modSubModIds, organisationId, pageable));
     }
 
     /**
@@ -189,7 +211,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> incidentReopenReport(Integer incidentType,  BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
+    public PaginatedList<Incident> incidentReopenReport(Integer incidentType, BigInteger moduleId, BigInteger subModuleId, BigInteger priorityId, Integer status, LocalDateTime start, LocalDateTime end, Pageable pageable, Boolean viaBatch, List<String> roleNames, BigInteger organisationId) {
         List<String> roles = new ArrayList<String>();
         if (viaBatch) {
             roles = roleNames;
@@ -486,7 +508,7 @@ public class IncidentService {
         Optional<Incident> optionalIncident = incidentRepository.findById(requestId);
         if (optionalIncident.isPresent()) {
             Incident incident = optionalIncident.get();
-            return loggedInUser.getUserId().compareTo(incident.getRaisedUser().getManagerId()) == 0;
+            return loggedInUser.getUserId().compareTo(incident.getApproverUserId()) == 0;
         }
         return false;
     }
@@ -558,6 +580,13 @@ public class IncidentService {
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
             incident.setSlaAt(this.getSLADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            if (incident.getIncidentType() == LicenseType.ASSET) {
+                Module assetType = moduleService.getModuleById(incident.getSubModuleId());
+                if (assetType.getRequireApproval()) {
+                    incident.setApprovalRequired(true);
+                    incident.setApproverUserId(incident.getRaisedUser().getManagerId());
+                }
+            }
         }
         Set<IncidentCommunication> communicationSet = new HashSet<IncidentCommunication>();
         for (IncidentCommunication incidentCommunication : incident.getCommunications()) {

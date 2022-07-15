@@ -35,4 +35,7 @@ export class IncidentService {
     deallocateAssetRequest(allocateAssetDTO: any): Observable<any> {
         return this.http.put('/v1/incident/deallocate-asset', allocateAssetDTO);
     }
+    pendingAssetApprovalService(request?: any): Observable<IncidentList> {
+        return this.http.get('/v1/incident/asset/pending/approval', { "params": request });
+    }
 }

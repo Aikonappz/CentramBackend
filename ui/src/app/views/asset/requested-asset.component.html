@@ -4,15 +4,11 @@
             <div class="card">
                 <div class="card-header ">
                     <div class="row">
-                        <div *ngIf="mode=='requested'" class="col-md-10">
+                        <div class="col-md-10">
                             <i class="fa fa-align-justify"></i>
                             My Asset Requests
                         </div>
-                        <div *ngIf="mode=='assigned'" class="col-md-10">
-                            <i class="fa fa-align-justify"></i>
-                            My Assets
-                        </div>
-                        <div *ngIf="mode=='requested'" class="col-md-2 float-right">
+                        <div class="col-md-2 float-right">
                             <div class="btn-group d-flex justify-content-between" dropdown>
                                 <button dropdownToggle type="button" class="btn btn-danger dropdown-toggle">Actions<span
                                         class="caret"></span></button>
@@ -36,13 +32,9 @@
                 </div>
                 <div class="card-body">
                     <div *ngIf="hasPermission('SEARCH')" class="card ">
-                        <div *ngIf="mode=='requested'" class="card-header">
+                        <div class="card-header">
                             <i class="fa fa-search"></i>
                             Search Asset Requests
-                        </div>
-                        <div *ngIf="mode=='assigned'" class="card-header">
-                            <i class="fa fa-search"></i>
-                            Search Assets
                         </div>
                         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
                             <div class="card-body">

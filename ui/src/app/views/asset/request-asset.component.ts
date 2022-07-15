@@ -265,7 +265,7 @@ export class RequestAssetComponent implements OnInit {
   formSubmit(sts: any) {
     if (this.angForm.valid) {
       if (sts === "DRAFT") {
-        let returnPath = '/asset/mine/requested';
+        let returnPath = '/asset/requested';
         if (this.referer === 'agent-all') {
           returnPath = '/asset/requested/incomming';
         } else if (this.referer === 'agent-mine') {
@@ -440,7 +440,7 @@ export class RequestAssetComponent implements OnInit {
   }
 
   callSaveIncidentService() {
-    let returnPath = '/asset/mine/requested';
+    let returnPath = '/asset/requested';
     if (this.referer === 'agent-all') {
       returnPath = '/asset/requested/incomming';
     } else if (this.referer === 'agent-mine') {

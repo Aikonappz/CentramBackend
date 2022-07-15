@@ -11,6 +11,7 @@ import { AssetRequestActionComponent } from './action-asset.component';
 import { IncommingRequestedAssetComponent } from './incomming-requested-asset.component';
 import { MyAssetComponent } from './my-asset.component';
 import { OrderedAssetActionComponent } from './in-ordered-asset.component';
+import { PendingAssetApprovalComponent } from './pending-asset-approval.component';
 
 const routes: Routes = [
   {
@@ -53,6 +54,22 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Action Assets Order'
+        },
+      },
+      {
+        path: 'approval/pending',
+        component: PendingAssetApprovalComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Pending Approvals'
+        },
+      },
+      {
+        path: 'approval/:requestId',
+        component: AssetRequestActionComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Take Action On Asset Request'
         },
       },
       {
@@ -110,14 +127,6 @@ const routes: Routes = [
         data: {
           title: 'Edit Incident'
         }
-      },
-      {
-        path: 'request/action/:requestId',
-        component: AssetRequestActionComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Take Action On Asset Request'
-        },
       },
       {
         path: 'requested/incomming',
