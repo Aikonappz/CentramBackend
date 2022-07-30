@@ -109,6 +109,11 @@ export const routes: Routes = [
         loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
       },
       {
+        path: 'permission',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/permission/permission.module').then(m => m.PermissionModule),
+      },
+      {
         path: 'notification',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/notification/notification.module').then(m => m.NotificationModule),

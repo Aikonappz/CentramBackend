@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.PermissionDTO;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
@@ -74,6 +75,9 @@ public class MiscApiController {
     private PriorityService priorityService;
 
     @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
     private HolidayCalenderService holidayCalenderService;
 
     @Autowired
@@ -87,6 +91,9 @@ public class MiscApiController {
 
     @Autowired
     private AssetModelService assetModelService;
+
+    @Autowired
+    private ActionService actionService;
 
     @ApiOperation(value = "Request a demo", nickname = "requestADemo", notes = "Request a demo", tags = {"Misc",})
     @ApiResponses(value = {
@@ -155,6 +162,66 @@ public class MiscApiController {
     @RequestMapping(value = "/all-role", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Role>> getRoles(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Role>>(roleService.getRoles(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save permission", nickname = "savePermission", notes = "Save permission", tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/permission", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    //@PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
+    public ResponseEntity<Void> savePermission(@ApiParam(value = "PermissionDTO object", required = true) @Valid @RequestBody PermissionDTO body) {
+        permissionService.save(body);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find action by id", nickname = "getActionById", notes = "Find action by id", response = Action.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Role.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 404, message = "Role not found")
+    })
+    @RequestMapping(value = "/action/{actionId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<Action> getActionById(@ApiParam(value = "id of action", required = true) @PathVariable("actionId") BigInteger actionId) {
+        return new ResponseEntity<Action>(actionService.getById(actionId), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Actions", nickname = "getActions", notes = "Get all Actions", response = PaginatedList.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/all-action", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Action>> getActions(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Action>>(actionService.getActions(pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Actions by module and role", nickname = "getActionsByRoleAndModule", notes = "Get all Actions by module and role", response = List.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/all-action-by-role-module/{roleId}/{moduleId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<List<Action>> getActionsByRoleAndModule(
+            @ApiParam(value = "id of role", required = true) @PathVariable("roleId") BigInteger roleId,
+            @ApiParam(value = "id of module", required = true) @PathVariable("moduleId") BigInteger moduleId
+    ) {
+        return new ResponseEntity<List<Action>>(permissionService.getActionsByRoleAndModule(roleId, moduleId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Module By Role", nickname = "getModulesByRole", notes = "Get all Module By Role", response = List.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = List.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/all-module-by-role/{roleId}", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<List<Module>> getModulesByRole(@ApiParam(value = "id of role", required = true) @PathVariable("roleId") BigInteger roleId) {
+        return new ResponseEntity<List<Module>>(permissionService.getModulesByRole(roleId), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find department by id", nickname = "getDepartentById", notes = "Find department by id", response = Department.class, tags = {"Misc",})

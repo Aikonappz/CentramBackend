@@ -92,4 +92,11 @@ public class Module implements Serializable {
     @Convert(converter = ModelConverter.class)
     @JsonView(Views.BasicView.class)
     private List<BigInteger> models;
+
+    @Transient
+    private String parentModuleName;
+
+    public Module(BigInteger id) {
+        this.id = id;
+    }
 }

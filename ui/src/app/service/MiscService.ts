@@ -14,6 +14,7 @@ import { DistributionList, DistributionListList } from '../model/DistributionLis
 import { Module } from '../model/Module';
 import { Vendor, VendorList } from '../model/Vendor';
 import { AssetModel } from '../model/AssetModel';
+import { PermissionDTO } from '../model/PermissionDTO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -86,6 +87,9 @@ export class MiscService {
     saveNotificationService(notifications: Notification[], request?: any): Observable<any> {
         return this.http.post('/v1/misc/notification', notifications, { "params": request });
     }
+    savePermissionService(notifications: Notification[], request?: any): Observable<any> {
+        return this.http.post('/v1/misc/notification', notifications, { "params": request });
+    }
     updateNotificationsStatusService(ids: number[], status: Status, request?: any): Observable<any> {
         return this.http.get('/v1/misc/notification/' + ids.join(",") + '/' + Status[status], { "params": request });
     }
@@ -101,6 +105,12 @@ export class MiscService {
     modulesService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-module', { "params": request });
     }
+    getModulesByRole(idRole: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/all-module-by-role/' + idRole, { "params": request });
+    }
+    getActionsByRoleAndModule(idRole: number, idModule: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/all-action-by-role-module/' + idRole + '/' + idModule, { "params": request });
+    }
     assetModelsService(request?: any): Observable<AssetModel> {
         return this.http.get('/v1/misc/all-asset-model', { "params": request });
     }
@@ -112,5 +122,11 @@ export class MiscService {
     }
     vendorService(id: number, request?: any): Observable<Vendor> {
         return this.http.get('/v1/misc/vendor/' + id, { "params": request });
+    }
+    permissionService(permissionDTO: PermissionDTO): Observable<any> {
+        return this.http.post('/v1/misc/permission', permissionDTO,);
+    }
+    actionsService(request?: any): Observable<any> {
+        return this.http.get('/v1/misc/all-action', { "params": request });
     }
 }

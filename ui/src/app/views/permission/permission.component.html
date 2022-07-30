@@ -1,0 +1,98 @@
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header ">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <i class="fa fa-align-justify"></i> Role Wise Permissions
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card ">
+                        <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="dataSaved">
+                            <h6>Permission changed successfully!</h6>
+                        </div>
+                        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col col-md-6 ">
+                                        <label class="form-col-form-label required-control-label"
+                                            for="roles">Role</label>
+                                        <ng-select (change)="changeRole($event)" #role [items]="roles"
+                                            placeholder="-- Select Role --" formControlName="role" id="role"
+                                            [multiple]="false" name="role" bindLabel="displayName" bindValue="id">
+                                        </ng-select>
+                                        <div *ngIf="f.role.touched && f.role.invalid" class="alert alert-danger-custom">
+                                            <div *ngIf="f.role.errors?.required">
+                                                Role is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-md-6 ">
+                                        <label class="form-col-form-label required-control-label"
+                                            for="modules">Module</label>
+                                        <ng-select [items]="modules" #module (change)="triggerModuleChange($event)"
+                                            placeholder="-- Select Module --" formControlName="module" id="module"
+                                            [multiple]="false" name="module" bindLabel="name" bindValue="id">
+                                        </ng-select>
+                                        <div *ngIf="f.module.touched && f.module.invalid"
+                                            class="alert alert-danger-custom">
+                                            <div *ngIf="f.module.errors?.required">
+                                                Module is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col col-md-6 d-none view-module">
+                                        <label class="form-col-form-label " for="actions">&nbsp;</label>
+                                        <br />
+                                        <button type="button" (click)="viewModules()" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-eye"></i> View Tagged Module
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-md-6 ">
+                                        <label class="form-col-form-label required-control-label"
+                                            for="actions">Action</label>
+                                        <ng-select [items]="actions" placeholder="-- Select Actions --"
+                                            formControlName="action" id="action" [multiple]="true" name="action"
+                                            bindLabel="name" bindValue="id">
+                                        </ng-select>
+                                        <div *ngIf="f.module.touched && f.module.invalid"
+                                            class="alert alert-danger-custom">
+                                            <div *ngIf="f.module.errors?.required">
+                                                Module is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col col-md-6 d-none view-action">
+                                        <label class="form-col-form-label " for="actions">&nbsp;</label>
+                                        <br />
+                                        <button type="submit" (click)="viewActions()" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-eye"></i> View Permissable Action
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-edit"></i> Save
+                                </button>
+                                <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
+                                    <i class="fa fa-close"></i> Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!--/.row-->
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+</div>
+<!--/.row-->

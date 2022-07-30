@@ -36,6 +36,16 @@ public class ModuleService {
     }
 
     @Transactional(readOnly = true)
+    public Module getModule(BigInteger moduleId) {
+        Optional<Module> moduleOptional = moduleRepository.findById(moduleId);
+        if (moduleOptional.isPresent()) {
+            return moduleOptional.get();
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public Module getModuleById(BigInteger moduleId) {
         Module module = redisService.getModuleById(moduleId);
         if (module == null) {

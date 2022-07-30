@@ -21,6 +21,12 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "USER" }
   },
   {
+    name: 'Permission',
+    url: '/permission',
+    icon: 'icon-target',
+    attributes: { "moduleName": "ORGANIZATION" }
+  },
+  {
     name: 'Masters',
     url: '/master',
     icon: 'icon-layers',
@@ -105,7 +111,7 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'Assets',
+    name: 'Assets - Admin',
     url: '/asset',
     icon: 'fa fa-cubes',
     attributes: { "moduleName": "ASSET" },
@@ -134,6 +140,14 @@ export const navItems: INavData[] = [
         icon: 'fa fa-tasks',
         attributes: { "moduleName": "MANAGE ASSET" }
       },
+    ]
+  },
+  {
+    name: 'Assets - Employee',
+    url: '/asset',
+    icon: 'fa fa-cubes',
+    attributes: { "moduleName": "ASSET" },
+    children: [
       {
         name: "Request Asset",
         url: '/asset/user/add/new',
@@ -153,16 +167,24 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "MY ASSET REQUEST" }
       },
       {
-        name: 'Requested Asset',
-        url: '/asset/requested/incomming',
-        icon: 'fa fa-angle-left',
-        attributes: { "moduleName": "REQUESTED ASSET" }
-      },
-      {
         name: 'Pending Asset Approval',
         url: '/asset/approval/pending',
         icon: 'fa fa-angle-left',
         attributes: { "moduleName": "MY ASSET" }
+      },
+    ]
+  },
+  {
+    name: 'Assets - Agent',
+    url: '/asset',
+    icon: 'fa fa-cubes',
+    attributes: { "moduleName": "ASSET" },
+    children: [
+      {
+        name: 'Requested Asset',
+        url: '/asset/requested/incomming',
+        icon: 'fa fa-angle-left',
+        attributes: { "moduleName": "REQUESTED ASSET" }
       },
     ]
   },

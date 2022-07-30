@@ -59,4 +59,10 @@ public class Permission implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "action_id", referencedColumnName = "id")
     private Action action;
+
+    public Permission(Role role, Module module, Action action) {
+        this.role = role;
+        this.module = module;
+        this.action = action;
+    }
 }

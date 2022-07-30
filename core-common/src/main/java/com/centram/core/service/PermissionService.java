@@ -1,16 +1,16 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.PermissionDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.PermissionRepository;
+import com.centram.domain.Action;
+import com.centram.domain.Module;
 import com.centram.domain.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +29,38 @@ public class PermissionService {
     @Autowired
     private RedisService redisService;
 
-    @Transactional
-    public Permission save(Permission permission) {
-        return permissionRepository.save(permission);
+    @Autowired
+    private ModuleService moduleService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private ActionService actionService;
+
+    @Transactional(readOnly = false)
+    public void save(PermissionDTO permissionDTO) {
+        permissionRepository.deletePermissionByRoleAndMoule(permissionDTO.getRoleId(), permissionDTO.getModuleId());
+        for (BigInteger actionId : permissionDTO.getActionIds()) {
+            permissionRepository.savePermission(permissionDTO.getRoleId(), permissionDTO.getModuleId(), actionId);
+        }
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "all_permissions", key = "'list'")
-    public Page<Permission> getPermissions(Pageable pageable) {
-        return permissionRepository.findAll(pageable);
+    public List<Module> getModulesByRole(BigInteger roleId) {
+        List<Module> modules = permissionRepository.getModulesByRole(roleId);
+        modules.stream()
+                .forEach(i -> {
+                    if (i.getParentModuleId() != null) {
+                        i.setParentModuleName(moduleService.getModuleById(i.getParentModuleId()).getName());
+                    }
+                });
+        return modules;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Action> getActionsByRoleAndModule(BigInteger roleId, BigInteger moduleId) {
+        return permissionRepository.getActionsByRoleAndModule(roleId, moduleId);
     }
 
     @Transactional(readOnly = true)

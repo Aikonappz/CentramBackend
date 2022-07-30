@@ -1,3 +1,6 @@
+import { Action } from "./Action";
+import { Module } from "./Module";
+import { Role } from "./Role";
 
 export class Permission {
     public moduleId: number;
@@ -13,6 +16,10 @@ export class Permission {
     public actionName: string;
     public requireApproval: boolean;
 
+    public action: Action;
+    public module: Module;
+    public role: Role;
+
     public constructor(d: any) {
         this.moduleId = d.moduleId;
         this.moduleName = d.moduleName;
@@ -27,4 +34,8 @@ export class Permission {
         this.roleName = d.roleName;
         this.requireApproval = d.requireApproval;
     }
+}
+export interface PermissionList {
+    content: Permission[];
+    totalElements: number;
 }

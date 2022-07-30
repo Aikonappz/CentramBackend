@@ -30,6 +30,16 @@ public class RoleService {
     @Autowired
     private RedisService redisService;
 
+    @Transactional(readOnly = true)
+    public Role getRole(BigInteger roleId) {
+        Optional<Role> optionalRole = roleRepository.findById(roleId);
+        if (optionalRole.isPresent()) {
+            return optionalRole.get();
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
     /**
      * @param roleId
      * @return
