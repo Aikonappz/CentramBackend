@@ -53,13 +53,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                     <tr>
                         <td><strong>Vendor Details</strong></td>
                         <td>
-                            Name: {{assetOrder.vendor.name}}<br />
-                            Purchase Type: {{assetOrder.purchaseType}}<br />
-                            <!--<div *ngIf="assetOrder.purchaseType=='RENTED'">
-                                Rent Start Date: {{formatDateTime(assetOrder.rentStartAt)}}<br />
-                                Rent End Date: {{formatDateTime(assetOrder.rentEndAt)}}<br />
-                            </div>-->
-                            <div *ngIf="assetOrder.existingAgreement==true">
+                            Name: {{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}<br />
+                            Purchase Type: {{assetOrder.purchaseType}}/{{assetOrder.rentDuration}}
+                            <div *ngIf="assetOrder.existingAgreement==true&&assetOrder.agreementEndAt!=null">
                                 Existing Agreement: Yes
                                 Agreement End Date: {{formatDateTime(assetOrder.agreementEndAt)}}<br />
                             </div>

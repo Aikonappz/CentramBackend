@@ -140,7 +140,7 @@ public class AssetOrderService {
             ZonedDateTime rentEndAt = ZonedDateTime.of(assetOrder.getRentEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
             assetOrder.setRentEndAt(rentEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
         }*/
-        if (!assetOrder.getExistingAgreement()) {
+        if (assetOrder.getAgreementEndAt() != null && !assetOrder.getExistingAgreement()) {
             ZonedDateTime agreementEndAt = ZonedDateTime.of(assetOrder.getAgreementEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
             assetOrder.setAgreementEndAt(agreementEndAt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
         }

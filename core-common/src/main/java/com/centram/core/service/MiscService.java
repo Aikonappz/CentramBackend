@@ -314,13 +314,13 @@ public class MiscService {
                         asset.setModuleId(module.getId());
                     }
                 }
-                if (data.get("ASSET_CATEGORY") == null || data.get("ASSET_CATEGORY").trim().equals("")) {
-                    rowWiseIssues.put(rowNo++, "Asset Category Required!");
+                if (data.get("PRODUCT_SUBCATEGORY") == null || data.get("PRODUCT_SUBCATEGORY").trim().equals("")) {
+                    rowWiseIssues.put(rowNo++, "Product Sub Category Required!");
                     continue;
                 } else {
-                    module = moduleService.getSubModuleByCustomerModuleNameAndParentModuleId(asset.getModuleId(), data.get("ASSET_CATEGORY").trim());
+                    module = moduleService.getSubModuleByCustomerModuleNameAndParentModuleId(asset.getModuleId(), data.get("PRODUCT_SUBCATEGORY").trim());
                     if (module == null) {
-                        rowWiseIssues.put(rowNo++, "Not a valid Asset Category!");
+                        rowWiseIssues.put(rowNo++, "Not a valid Product Sub Category!");
                         continue;
                     } else if (module.getParentModuleId().compareTo(asset.getModuleId()) != 0) {
                         rowWiseIssues.put(rowNo++, "Asset Category not mapped with Product Category!");
@@ -352,8 +352,8 @@ public class MiscService {
                         continue;
                     }
                 }
-                if (data.get("OFFICE_NAME") != null && !data.get("OFFICE_NAME").trim().equals("")) {
-                    location = locationService.getByOfficeName(data.get("OFFICE_NAME").trim().toUpperCase(Locale.ROOT));
+                if (data.get("ORG_NAME") != null && !data.get("ORG_NAME").trim().equals("")) {
+                    location = locationService.getByOfficeName(data.get("ORG_NAME").trim().toUpperCase(Locale.ROOT));
                     if (location != null) {
                         asset.setIsDepartment(false);
                         asset.setLocation(location);
@@ -379,7 +379,7 @@ public class MiscService {
                     asset.setIsLocation(false);
                 }
                 asset.setIsUnderWarranty(data.get("UNDER_WARRANT") != null && data.get("UNDER_WARRANT").trim().equalsIgnoreCase("YES"));
-                asset.setWarrantyExpiredAt(LocalDate.parse(data.get("WARRANTY_EXPIRED_ON"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
+                asset.setWarrantyExpiredAt(LocalDate.parse(data.get("WARRANTY_VALIDITY"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
                 if (data.get("PURCHASE_TYPE") == null || data.get("PURCHASE_TYPE").trim().equals("")) {
                     rowWiseIssues.put(rowNo++, "Purchase Type Required!");
                     continue;
@@ -393,15 +393,15 @@ public class MiscService {
                     } else {
                         asset.setRentalStartAt(LocalDate.parse(data.get("RENTAL_START_ON"), DateTimeFormatter.ofPattern(dateFormat)).atStartOfDay());
                     }
-                    if (data.get("RENTAL_END_ON") == null || data.get("RENTAL_END_ON").trim().equals("")) {
+                    if (data.get("RENTAL_ENDS_ON") == null || data.get("RENTAL_ENDS_ON").trim().equals("")) {
                         rowWiseIssues.put(rowNo++, "Rental End Required!");
                         continue;
                     } else {
-                        asset.setRentalEndAt(LocalDate.parse(data.get("RENTAL_END_ON"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
+                        asset.setRentalEndAt(LocalDate.parse(data.get("RENTAL_ENDS_ON"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
                     }
                 }
-                if (data.get("VENDOR") != null && !data.get("VENDOR").trim().equals("")) {
-                    vendor = vendorService.getByName(data.get("VENDOR").trim().toUpperCase(Locale.ROOT));
+                if (data.get("VENDOR_DETAILS") != null && !data.get("VENDOR_DETAILS").trim().equals("")) {
+                    vendor = vendorService.getByName(data.get("VENDOR_DETAILS").trim().toUpperCase(Locale.ROOT));
                     if (vendor != null) {
                         asset.setVendor(vendor);
                     } else {
@@ -1290,8 +1290,8 @@ public class MiscService {
             mailValues.put("rent_end_date", "");
         }*/
         mailValues.put("rent_start_date", "");
-        mailValues.put("rent_end_date", "");
-        mailValues.put("vendor_name", assetOrder.getVendor().getName());
+        mailValues.put("rent_end_date", assetOrder.getRentDuration());
+        mailValues.put("vendor_name", assetOrder.getVendor() == null? "Other" : assetOrder.getVendor().getName());
         mailValues.put("approver_index", 0);
         mailValues.put("order_id", assetOrder.getId());
         mailValues.put("app1_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());

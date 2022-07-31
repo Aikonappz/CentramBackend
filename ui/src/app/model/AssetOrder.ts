@@ -22,6 +22,7 @@ export class AssetOrder extends Base {
     vendor: any;
     existingAgreement: boolean;
     agreementEndAt: string;
+    rentDuration: string;
     purchaseType: any;
     rentStartAt: string;
     rentEndAt: string;

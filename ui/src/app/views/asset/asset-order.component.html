@@ -153,6 +153,9 @@
                     </div>
                   </div>
                 </div>
+                <div class="col proxy-col"></div>
+              </div>
+              <div class="row row-margin-05">
                 <div class="col extraAmount">
                   <label class="form-col-form-label required-control-label" for="extraAmount">Additional Amount</label>
                   <input type="text" formControlName="extraAmount" id="extraAmount" name="extraAmount"
@@ -169,8 +172,9 @@
                     </div>
                   </div>
                 </div>
-                <div class="col proxy-col"></div>
-                <div class="col proxy-col"></div>
+                <div class="col "></div>
+                <div class="col "></div>
+                <div class="col "></div>
               </div>
             </fieldset>
             <fieldset *ngIf="newEntity" class="border p-2">
@@ -203,6 +207,17 @@
                   </div>
                 </div>
                 <div class="col">
+                  <label class="form-col-form-label required-control-label" for="purchaseType">Purchase Type</label>
+                  <ng-select [items]="purchaseTypeList" placeholder="-- Select Purchase Type --"
+                    formControlName="purchaseType" id="purchaseType" name="purchaseType" bindLabel="label"
+                    bindValue="id"></ng-select>
+                  <div *ngIf="f.purchaseType.touched && f.purchaseType.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.purchaseType.errors?.required">
+                      Purchase Type is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col agreement-end-date d-none">
                   <label class="form-col-form-label required-control-label" for="agreementEndAt">Agreement End
                     Date</label>
                   <input type="date" [min]="getToday()" format="DD-MM-YYYY" formControlName="agreementEndAt"
@@ -214,17 +229,26 @@
                     </div>
                   </div>
                 </div>
-                <div class="col">
-                  <label class="form-col-form-label required-control-label" for="purchaseType">Purchase Type</label>
-                  <ng-select [items]="purchaseTypeList" placeholder="-- Select Purchase Type --"
-                    formControlName="purchaseType" id="purchaseType" name="purchaseType" bindLabel="label"
+                <div class="col proxy-agreement-end-date-col"></div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col duration-col">
+                  <label class="form-col-form-label required-control-label" for="purchaseType">Duration</label>
+                  <ng-select [items]="rentDurationList" placeholder="-- Select Rent Duration --"
+                    formControlName="rentDuration" id="rentDuration" name="rentDuration" bindLabel="label"
                     bindValue="id"></ng-select>
-                  <div *ngIf="f.purchaseType.touched && f.purchaseType.invalid" class="alert alert-danger-custom">
-                    <div *ngIf="f.purchaseType.errors?.required">
-                      Purchase Type is required!
+                  <div *ngIf="f.rentDuration.touched && f.rentDuration.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.rentDuration.errors?.required">
+                      Rent Duration is required!
                     </div>
                   </div>
                 </div>
+                <div class="col "></div>
+                <div class="col "></div>
+                <div class="col "></div>
+                <div class="col proxy-duration-col"></div>
+                <div class="col proxy-duration-col"></div>
+                <div class="col proxy-duration-col"></div>
               </div>
               <div class="row row-margin-05">
                 <div class="col rent d-none">

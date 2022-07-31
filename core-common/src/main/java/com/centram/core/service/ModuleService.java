@@ -68,7 +68,7 @@ public class ModuleService {
             if (module != null) {
                 redisService.saveModuleByCustomerModuleName(customerModuleName, module);
             } else {
-                throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+                return null;
             }
         }
         return module;
@@ -78,7 +78,7 @@ public class ModuleService {
     public Module getSubModuleByCustomerModuleNameAndParentModuleId(BigInteger parentModuleId, String customerModuleName) {
         Module module = moduleRepository.getSubModuleByCustomerModuleNameAndParentModuleId(parentModuleId, customerModuleName);
         if (module == null) {
-            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+            return null;
         }
         return module;
     }

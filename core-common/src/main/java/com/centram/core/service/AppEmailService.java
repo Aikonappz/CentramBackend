@@ -231,10 +231,10 @@ public class AppEmailService {
         context.setVariable("rent_start_date", mailValues.get("rent_start_date"));
         context.setVariable("rent_end_date", mailValues.get("rent_end_date"));
         context.setVariable("loc_name", mailValues.get("loc_name"));
-        mailValues.put("req_name", mailValues.get("req_name"));
-        mailValues.put("req_id", mailValues.get("req_id"));
-        mailValues.put("req_email", mailValues.get("req_email"));
-        mailValues.put("req_cnt_no", mailValues.get("req_cnt_no"));
+        context.setVariable("req_name", mailValues.get("req_name"));
+        context.setVariable("req_id", mailValues.get("req_id"));
+        context.setVariable("req_email", mailValues.get("req_email"));
+        context.setVariable("req_cnt_no", mailValues.get("req_cnt_no"));
         context.setVariable("asset_type", mailValues.get("asset_type"));
         context.setVariable("qty", mailValues.get("qty"));
         context.setVariable("agreement_end_date", mailValues.get("agreement_end_date"));

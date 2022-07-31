@@ -25,19 +25,11 @@ const routes: Routes = [
         redirectTo: 'ordered'
       },
       {
-        path: 'ordered',
-        component: OrderedAssetComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Ordered Assets'
-        },
-      },
-      {
         path: 'order',
         component: AssetOrderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Order Assets'
+          title: 'Order an Asset'
         },
       },
       {
@@ -56,6 +48,17 @@ const routes: Routes = [
           title: 'Action Assets Order'
         },
       },
+      {
+        path: 'ordered',
+        component: OrderedAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Orders Pending My Approval'
+        },
+      },
+
+
+
       {
         path: 'approval/pending',
         component: PendingAssetApprovalComponent,

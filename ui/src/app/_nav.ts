@@ -117,7 +117,7 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "ASSET" },
     children: [
       {
-        name: 'Order Asset',
+        name: 'Order an Asset',
         url: '/asset/order',
         icon: 'fa fa-plus',
         attributes: { "moduleName": "ORDER ASSET" }
@@ -129,7 +129,7 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "ORDER ASSET" }
       },
       {
-        name: 'Ordered Asset',
+        name: 'Orders Pending My Approval',
         url: '/asset/order/incommig',
         icon: 'fa fa-outdent',
         attributes: { "moduleName": "ORDERED ASSET ACTION" }

@@ -1,8 +1,6 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
-import com.centram.domain.enumarator.AssetType;
-import com.centram.domain.enumarator.ProductCategory;
 import com.centram.domain.enumarator.PurchaseType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
@@ -179,9 +177,8 @@ public class AssetOrder extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @Valid
-    @NotNull
     @OneToOne
-    @JoinColumn(name = "vendor_id", nullable = false, referencedColumnName = "id")
+    @JoinColumn(name = "vendor_id", nullable = true, referencedColumnName = "id")
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Vendor vendor;
 
@@ -201,6 +198,11 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private PurchaseType purchaseType;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "rent_duration", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private String rentDuration;
 
     /*@Column(name = "rent_start_at", nullable = true)
     @JsonView(Views.BasicView.class)

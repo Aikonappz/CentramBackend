@@ -35,6 +35,7 @@ export class AssetOrderComponent implements OnInit {
   vendorList: any[] = [];
 
   purchaseTypeList: any[] = [];
+  rentDurationList: any[] = [];
   assetOrder: AssetOrder;
 
   booleanList: any[] = [];
@@ -67,6 +68,9 @@ export class AssetOrderComponent implements OnInit {
     this.booleanList.push({ id: 1, label: 'Yes' });
     this.purchaseTypeList.push({ id: 'RENTED', label: 'RENTED' });
     this.purchaseTypeList.push({ id: 'OWNED', label: 'OWNED' });
+    this.rentDurationList.push({ id: '1-2 Years', label: '1-2 Years' });
+    this.rentDurationList.push({ id: '2-4 Years', label: '2-4 Years' });
+    this.rentDurationList.push({ id: 'More than 5 years', label: 'More than 5 years' });
     this.currencyList.push({ id: 'INR', label: 'INR' });
     this.currencyList.push({ id: 'USD', label: 'USD' });
     this.angForm = this.fb.group({
@@ -116,6 +120,8 @@ export class AssetOrderComponent implements OnInit {
       purchaseType: new FormControl(null, [
         Validators.required,
       ]),
+      rentDuration: new FormControl(null, [
+      ]),
       rentStartAt: new FormControl('', [
       ]),
       rentEndAt: new FormControl('', [
@@ -153,11 +159,37 @@ export class AssetOrderComponent implements OnInit {
       if (formGroup.controls['existingAgreement'].value == null) {
         formGroup.controls['existingAgreement'].setErrors({ required: true, notValidAgreement: false });
       } else {
-        if (formGroup.controls['existingAgreement'].value == '0') {
+        if (formGroup.controls['existingAgreement'].value == '0' && formGroup.controls['vendor'].value > 0) {
           formGroup.controls['existingAgreement'].setErrors({ required: false, notValidAgreement: true });
         } else {
           formGroup.controls['existingAgreement'].setErrors(null);
         }
+      }
+      if (formGroup.controls['vendor'].value > 0) {
+        $('.proxy-agreement-end-date-col').addClass("d-none");
+        $('.agreement-end-date').removeClass("d-none");
+        if (formGroup.controls['agreementEndAt'].value != null) {
+          formGroup.controls['agreementEndAt'].setErrors(null);
+        } else {
+          formGroup.controls['agreementEndAt'].setErrors({ required: true, });
+        }
+      } else {
+        $('.agreement-end-date').addClass("d-none");
+        $('.proxy-agreement-end-date-col').removeClass("d-none");
+        formGroup.controls['agreementEndAt'].setErrors(null);
+      }
+      if (formGroup.controls['purchaseType'].value == "RENTED") {
+        $('.proxy-duration-col').addClass("d-none");
+        $('.duration-col').removeClass("d-none");
+        if (formGroup.controls['rentDuration'].value != null) {
+          formGroup.controls['rentDuration'].setErrors(null);
+        } else {
+          formGroup.controls['rentDuration'].setErrors({ required: true, });
+        }
+      } else {
+        $('.duration-col').addClass("d-none");
+        $('.proxy-duration-col').removeClass("d-none");
+        formGroup.controls['rentDuration'].setErrors(null);
       }
       /*if (formGroup.controls['purchaseType'].value == "RENTED") {
         $('.proxy-rent').addClass("d-none");
@@ -306,7 +338,8 @@ export class AssetOrderComponent implements OnInit {
         .subscribe((data: any) => {
           let vendors = data.content;
           this.vendorList = [];
-          let c = 0;
+          this.vendorList.push({ id: 0, name: "Others" });
+          let c = 1;
           for (let indx = 0; indx < vendors.length; indx++) {
             if (String(vendors[indx].status) == 'ACTIVE') {
               this.vendorList[c++] = vendors[indx];
@@ -396,15 +429,28 @@ export class AssetOrderComponent implements OnInit {
       }
       this.assetOrder.purchaseType = PurchaseType[this.angForm.controls['purchaseType'].value];
       this.assetOrder.existingAgreement = this.angForm.controls['existingAgreement'].value == 1 ? true : false;
-      if (!this.assetOrder.existingAgreement) {
-        return;
-      } else {
-        this.assetOrder.agreementEndAt = AppUtility.prepareDateToString(moment(this.angForm.controls['agreementEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      }
-      for (let k in this.vendorList) {
-        if (this.angForm.controls['vendor'].value == this.vendorList[k].id) {
-          this.assetOrder.vendor = { id: this.vendorList[k].id, name: this.vendorList[k].name, version: this.vendorList[k].version };
+      if (this.angForm.controls['vendor'].value > 0) {
+        if (!this.assetOrder.existingAgreement) {
+          return;
+        } else {
+          this.assetOrder.agreementEndAt = AppUtility.prepareDateToString(moment(this.angForm.controls['agreementEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
         }
+      } else {
+        this.assetOrder.agreementEndAt = null;
+      }
+      if (this.angForm.controls['vendor'].value > 0) {
+        for (let k in this.vendorList) {
+          if (this.angForm.controls['vendor'].value == this.vendorList[k].id) {
+            this.assetOrder.vendor = { id: this.vendorList[k].id, name: this.vendorList[k].name, version: this.vendorList[k].version };
+          }
+        }
+      } else {
+        this.assetOrder.vendor = null;
+      }
+      if (this.angForm.controls['purchaseType'].value == 'RENTED') {
+        this.assetOrder.rentDuration = this.angForm.controls['rentDuration'].value;
+      } else {
+        this.assetOrder.rentDuration = null;
       }
       /*if (this.angForm.controls['purchaseType'].value == 'RENTED') {
         this.assetOrder.rentStartAt = AppUtility.prepareDateToString(moment(this.angForm.controls['rentStartAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());

@@ -9,7 +9,7 @@
           <div class="card-body">
             <table class="table table-bordered table-striped table-sm">
               <tr>
-                <td width="50%"><strong>For Department</strong></td>
+                <td width="50%"><strong>Specific Department</strong></td>
                 <td>{{assetOrder.isDepartment==true? 'Yes' : 'No'}}</td>
               </tr>
               <tr *ngIf="assetOrder.department!=null">
@@ -25,7 +25,7 @@
                 <td>{{assetOrder.moduleName}}</td>
               </tr>
               <tr>
-                <td><strong>Asset Category</strong></td>
+                <td><strong>Product Sub-Category</strong></td>
                 <td>{{assetOrder.subModuleName}}</td>
               </tr>
               <tr>
@@ -37,29 +37,28 @@
                 <td>{{assetOrder.quantity}}</td>
               </tr>
               <tr>
-                <td><strong>Cost Detail</strong></td>
+                <td><strong>Cost Details</strong></td>
                 <td>
-                  Currency: {{assetOrder.currency}}<br />
                   <div *ngIf="assetOrder.withinBudget==true">
                     With In Budget: Yes
                   </div>
                   <div *ngIf="assetOrder.withinBudget==false">
                     With In Budget: No<br />
-                    Total Cost: {{assetOrder.totalAmount}}<br />
-                    Available Budget Amount: {{assetOrder.limitAmount}}<br />
-                    Additional Amount: {{assetOrder.extraAmount}}
+                    Total Cost: {{assetOrder.currency}} {{assetOrder.totalAmount}}<br />
+                    Available Budget Amount: {{assetOrder.currency}} {{assetOrder.limitAmount}}<br />
+                    Additional Amount: {{assetOrder.currency}} {{assetOrder.extraAmount}}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td><strong>Vendor</strong></td>
-                <td>{{assetOrder.vendor?.name}}</td>
+                <td><strong>Vendor Name</strong></td>
+                <td>{{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}</td>
               </tr>
               <tr>
                 <td><strong>Existing Agreement With Vendor</strong></td>
                 <td>
                   {{assetOrder.existingAgreement==true? 'Yes' : 'No'}}<br />
-                  <div *ngIf="assetOrder.existingAgreement==true">
+                  <div *ngIf="assetOrder.existingAgreement==true&&assetOrder.agreementEndAt!=null">
                     Agreement End Date: {{formatDateTime(assetOrder.agreementEndAt)}}
                   </div>
                 </td>
@@ -67,7 +66,7 @@
               <tr>
                 <td><strong>Purchase Type</strong></td>
                 <td>
-                  {{assetOrder.purchaseType}}<br />
+                  {{assetOrder.purchaseType}}/{{assetOrder.rentDuration}}
                   <!-- <div *ngIf="assetOrder.purchaseType=='RENTED'">
                     Rent Start Date: {{formatDateTime(assetOrder.rentStartAt)}}<br />
                     Rent End Date: {{formatDateTime(assetOrder.rentEndAt)}}
@@ -75,7 +74,7 @@
                 </td>
               </tr>
               <tr>
-                <td><strong>Approver 1 Comment</strong></td>
+                <td><strong>Approver 1 Comments</strong></td>
                 <td>
                   <div *ngIf="assetOrder.approverUser1Comment!=null">
                     {{assetOrder.approverUser1?.firstName}} {{assetOrder.approverUser1?.lastName}}<br />
@@ -100,7 +99,7 @@
                 </td>
               </tr>
               <tr>
-                <td><strong>Approver 2 Comment</strong></td>
+                <td><strong>Approver 2 Comments</strong></td>
                 <td>
                   <div *ngIf="assetOrder.approverUser2Comment!=null">
                     {{assetOrder.approverUser2?.firstName}} {{assetOrder.approverUser2?.lastName}}<br />
