@@ -71,6 +71,11 @@ public class IncidentEmailVO implements Serializable {
     private String serialNo;
     private String modelNo;
     private Boolean deallocated;
+    private BigInteger oldAssetId;
+    private String ticketType;
+    private String oldAsset;
+    private String assetValidity;
+
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment, Boolean reopened, Boolean deallocated) {
         ZonedDateTime sla = incident.getSlaAt().atZone(ZoneId.systemDefault());
@@ -112,6 +117,10 @@ public class IncidentEmailVO implements Serializable {
             this.agentContactNo = incident.getAssignedUser().getContactNo();
         }
         this.reopened = false;
+        this.oldAsset = incident.getOldAsset();
+        this.ticketType = incident.getTicketType();
+        this.oldAssetId = incident.getOldAssetId();
+        this.assetValidity = this.status.equalsIgnoreCase("CLOSED") && this.ticketType != null && this.ticketType.equalsIgnoreCase("ALLOCATE") ? incident.getAssetValidity().format(DateTimeFormatter.ofPattern(dateTimeFormat)) : "";
     }
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment) {
@@ -152,6 +161,10 @@ public class IncidentEmailVO implements Serializable {
             this.agentContactNo = incident.getAssignedUser().getContactNo();
         }
         this.reopened = false;
+        this.oldAsset = incident.getOldAsset();
+        this.ticketType = incident.getTicketType();
+        this.oldAssetId = incident.getOldAssetId();
+        this.assetValidity = this.status.equalsIgnoreCase("CLOSED") && this.ticketType != null && this.ticketType.equalsIgnoreCase("ALLOCATE") ? incident.getAssetValidity().format(DateTimeFormatter.ofPattern(dateTimeFormat)) : "";
     }
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment, Boolean reopened) {
@@ -192,6 +205,10 @@ public class IncidentEmailVO implements Serializable {
             this.agentEmail = incident.getAssignedUser().getEmail();
             this.agentContactNo = incident.getAssignedUser().getContactNo();
         }
+        this.oldAsset = incident.getOldAsset();
+        this.ticketType = incident.getTicketType();
+        this.oldAssetId = incident.getOldAssetId();
+        this.assetValidity = this.status.equalsIgnoreCase("CLOSED") && this.ticketType != null && this.ticketType.equalsIgnoreCase("ALLOCATE") ? incident.getAssetValidity().format(DateTimeFormatter.ofPattern(dateTimeFormat)) : "";
     }
 
     public void populateEscalationMatrices() {

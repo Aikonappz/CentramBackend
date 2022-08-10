@@ -10,6 +10,7 @@ import com.centram.domain.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,16 @@ public class ModuleService {
 
     @Transactional(readOnly = true)
     public PaginatedList<Module> getModules(String licenseType, Pageable pageable) {
-        return new PaginatedList<Module>(moduleRepository.findAll(licenseType, pageable));
+        Page<Module> modulePage = moduleRepository.findAll(licenseType, pageable);
+        modulePage.getContent()
+                .stream()
+                .forEach(i -> {
+                    if (i.getParentModuleId() != null) {
+                        Module m = this.getModuleById(i.getParentModuleId());
+                        i.setParentModuleName(m.getCustomerModuleName() == null ? m.getName() : m.getCustomerModuleName());
+                    }
+                });
+        return new PaginatedList<Module>(modulePage);
     }
 
     @Transactional(readOnly = true)
@@ -77,9 +87,6 @@ public class ModuleService {
     @Transactional(readOnly = true)
     public Module getSubModuleByCustomerModuleNameAndParentModuleId(BigInteger parentModuleId, String customerModuleName) {
         Module module = moduleRepository.getSubModuleByCustomerModuleNameAndParentModuleId(parentModuleId, customerModuleName);
-        if (module == null) {
-            return null;
-        }
         return module;
     }
 

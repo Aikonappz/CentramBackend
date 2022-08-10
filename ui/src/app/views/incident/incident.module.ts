@@ -15,6 +15,7 @@ import { AssignedIncidentComponent } from './assignedincident.component';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 import { AgentIncidentComponent } from './agentincident.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { IncidentComponent } from './incident.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     EditIncidentComponent,
     AgentIncidentComponent,
     AssignIncidentComponent,
-    AssignedIncidentComponent
+    AssignedIncidentComponent,
+    IncidentComponent,
   ],
   imports: [
     CommonModule,

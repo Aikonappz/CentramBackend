@@ -22,7 +22,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'ordered'
+        //redirectTo: 'ordered'
+        component: AssetOrderComponent,
       },
       {
         path: 'order',
@@ -30,6 +31,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Order an Asset'
+        },
+      },
+      {
+        path: 'ordered',
+        component: OrderedAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Orders Pending My Approval'
         },
       },
       {
@@ -46,33 +55,6 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Action Assets Order'
-        },
-      },
-      {
-        path: 'ordered',
-        component: OrderedAssetComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Orders Pending My Approval'
-        },
-      },
-
-
-
-      {
-        path: 'approval/pending',
-        component: PendingAssetApprovalComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Pending Approvals'
-        },
-      },
-      {
-        path: 'approval/:requestId',
-        component: AssetRequestActionComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Take Action On Asset Request'
         },
       },
       {
@@ -100,6 +82,47 @@ const routes: Routes = [
         }
       },
       {
+        path: ':referer/add/:mode',
+        component: RequestAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Create Incident'
+        }
+      },
+      {
+        path: 'approval/pending',
+        component: PendingAssetApprovalComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Pending Approvals'
+        },
+      },
+      {
+        path: 'approval/:requestId',
+        component: AssetRequestActionComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Take Action On Asset Request'
+        },
+      },
+      {
+        path: 'requested/incomming',
+        component: IncommingRequestedAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Requested Asset'
+        },
+      },
+      {
+        path: ':referer/edit/:id',
+        component: RequestAssetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Incident'
+        }
+      },
+
+      {
         path: 'requested',
         component: RequestedAssetComponent,
         pathMatch: 'full',
@@ -115,30 +138,9 @@ const routes: Routes = [
           title: 'My Assets'
         },
       },
-      {
-        path: ':referer/add/:mode',
-        component: RequestAssetComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Create Incident'
-        }
-      },
-      {
-        path: ':referer/edit/:id',
-        component: RequestAssetComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Edit Incident'
-        }
-      },
-      {
-        path: 'requested/incomming',
-        component: IncommingRequestedAssetComponent,
-        pathMatch: 'full',
-        data: {
-          title: 'Requested Asset'
-        },
-      },
+
+
+
     ]
   }
 ];

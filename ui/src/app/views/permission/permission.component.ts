@@ -21,7 +21,7 @@ declare var $: any;
   styleUrls: ['./permission.component.scss']
 })
 export class PermissionComponent implements OnInit, OnDestroy {
-  moduleName: string = "ORGANIZATION";
+  moduleName: string = "PERMISSION";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   angForm: FormGroup;
   drStatus: { isOpen: boolean } = { isOpen: false };
@@ -31,7 +31,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
   permissionDTO: PermissionDTO;
 
-  roles: Role[];
+  roles: Role[] = [];
   modules: Module[];
   taggedModules: Module[];
   actions: Action[];
@@ -64,6 +64,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
       ]),
     });
 
+    //role 
     this.service
       .rolesService()
       .subscribe((data: any) => {
@@ -73,10 +74,21 @@ export class PermissionComponent implements OnInit, OnDestroy {
       .modulesService()
       .subscribe((data: any) => {
         this.modules = [];
+        let d = null;
         for (let k in data.content) {
-          if (data.content[k].appModule) {
-            this.modules.push(data.content[k]);
+          //if (data.content[k].appModule) {
+          d = data.content[k];
+          if (d.parentModuleId != null) {
+            if (d.licenseType == "INCIDENT") {
+              d.name = "INCIDENT/" + d.parentModuleName + "/" + d.name;
+            } else if (d.licenseType == "ASSET") {
+              d.name = "ASSET/" + d.parentModuleName + "/" + d.name;
+            } else {
+              d.name = d.parentModuleName + "/" + d.name;
+            }
           }
+          this.modules.push(d);
+          //}
         }
       });
     this.service

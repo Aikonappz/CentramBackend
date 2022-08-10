@@ -258,9 +258,15 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Asset asset;
 
-    @Transient
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "old_asset_id", nullable = true)
     @JsonView(Views.BasicView.class)
     private BigInteger oldAssetId;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "old_asset", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private String oldAsset;
 
     @ApiModelProperty(required = false, value = "")
     @Column(name = "approval_required", nullable = true)
@@ -289,9 +295,30 @@ public class Incident extends BaseEntity implements Serializable {
     private Boolean allocated = false;
 
     @ApiModelProperty(required = false, value = "")
+    @Column(name = "allocation_date_time", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime allocationDateTime;
+
+    @ApiModelProperty(required = false, value = "")
     @Column(name = "deallocated", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean deallocated = false;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "dealocation_date_time", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime deallocationDateTime;
+
+    @ApiModelProperty(required = false)
+    @Column(name = "asset_ticket_type", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private String ticketType;
+
+    @ApiModelProperty(required = false, value = "")
+    @Valid
+    @Column(name = "asset_validity", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime assetValidity;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

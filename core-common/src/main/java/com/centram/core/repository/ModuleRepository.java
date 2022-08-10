@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
 
-    @Query("select m from Module m where 1 = 1 and " +
+    @Query("select m from Module m where 1 = 1 and status = 1 and " +
             " ( " +
             "   ((:licenseType) = 'ALL' and m.licenseType in (0,1,2)) " +
             "   OR " +

@@ -372,6 +372,9 @@ public class AppEmailService {
         String recipientName = incidentEmailVO.getRecipientName();
         context = new Context(Locale.ENGLISH);
         context.setVariable("ord_status", incidentEmailVO.getAssetApproved() ? "Approved" : "Rejected");
+        context.setVariable("ticketType", (incidentEmailVO.getTicketType()));
+        context.setVariable("assetValidity", (incidentEmailVO.getAssetValidity()));
+        context.setVariable("assetDtl", (incidentEmailVO.getOldAsset()));
         context.setVariable("sl_no", (incidentEmailVO.getSerialNo()));
         context.setVariable("model", (incidentEmailVO.getModelNo()));
         context.setVariable("incident_title", (incidentEmailVO.getTitle()));

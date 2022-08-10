@@ -7,7 +7,7 @@ import { Location } from '@angular/common';
 import { Role } from '../../model/Role';
 import { MiscService } from '../../service/MiscService';
 import { Priority, PriorityList } from '../../model/Priority';
-import { Incident } from '../../model/Incident';
+import { Incident, IncidentList } from '../../model/Incident';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { Permission } from '../../model/Permssion';
 import { UserVO, UserVOListResponse } from '../../model/UserVO';
@@ -22,7 +22,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { ClientStorageService } from '../../service/ClientStorageService';
 import { AssetService } from '../../service/AssetService';
-import { AssetList } from '../../model/Asset';
+import { Asset, AssetList } from '../../model/Asset';
 declare var $: any;
 
 @Component({
@@ -43,6 +43,9 @@ export class RequestAssetComponent implements OnInit {
   priorities: any[] = [];
   roles: Role[] = [];
   users: UserVO[] = [];
+  availableAssetList: any[] = [];
+  allocatedAssetList: any[] = [];
+  ticketTypes: any[] = [];
   incident: Incident;
   incidentCommunication: IncidentCommunication;
   incidentCommunications: IncidentCommunication[] = [];
@@ -98,9 +101,17 @@ export class RequestAssetComponent implements OnInit {
       if (a.key > b.key) return 1;
       return 0;
     });
+
+    this.ticketTypes.push({ id: "ALLOCATE", label: "Allocation" });
+    this.ticketTypes.push({ id: "DEALLOCATE", label: "Deallocation" });
+
+    //this.assignedAssetList.push({ id: "DEALLOCATE", labelView: "Deallocate" });
+
     this.permissions = this.loggedInUserService.getModulePermissions();
     let p;
     this.moduleList = [];
+    this.allocatedAssetList = [];
+    this.availableAssetList = [];
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == 'ASSET') {
         p = new Permission(this.permissions[i]);
@@ -116,6 +127,11 @@ export class RequestAssetComponent implements OnInit {
         subModuleId: new FormControl(null, [
           Validators.required,
         ]),
+        ticketType: new FormControl(null, [
+          Validators.required,
+        ]),
+        deallocateId: new FormControl(null, [
+        ]),
         priorityId: new FormControl(null, [
           Validators.required,
         ]),
@@ -130,6 +146,8 @@ export class RequestAssetComponent implements OnInit {
         message: new FormControl('', [
           Validators.required,
         ]),
+      }, {
+        validators: this.newCustomValidations(),
       });
       this.miscService.prioritiesService({ "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
@@ -145,20 +163,38 @@ export class RequestAssetComponent implements OnInit {
                 if (logedinUser.userId != result.content[i].id)
                   this.users.push(result.content[i]);
               }
-              if (this.mode === 'draft' && this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY)) {
-                this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY));
-                if (this.draftData.new != null) {
-                  this.populateSubmodule({ moduleId: this.draftData.new.moduleId });
-                  this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
-                  this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
-                  this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
-                  if (this.draftData.new.watchList != null) {
-                    this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+              let c = 0;
+              this.incidentService
+                .userIncidentsService({ incidentType: "ASSET", assigned: 1 })
+                .subscribe((result: IncidentList) => {
+                  let data = result.content;
+                  for (let k in data) {
+                    if (data[k].asset != null) {
+                      //console.log(data[k].asset);
+                      this.availableAssetList[c] = data[k].asset;
+                      this.availableAssetList[c].txt = data[k].asset.modelNo + "/" + data[k].asset.serialNo;
+                      c++;
+                    }
                   }
-                  this.angForm.get('title').setValue(this.draftData.new.title);
-                  this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
-                }
-              }
+                  this.allocatedAssetList = this.availableAssetList;
+                  if (this.mode === 'draft' && this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY)) {
+                    this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_ASSET_DRAFT_KEY));
+                    if (this.draftData.new != null) {
+                      this.populateSubmodule({ moduleId: this.draftData.new.moduleId });
+                      this.angForm.get('moduleId').setValue(this.draftData.new.moduleId);
+                      this.angForm.get('subModuleId').setValue(this.draftData.new.subModuleId);
+                      this.angForm.get('priorityId').setValue(this.draftData.new.priority.id);
+                      this.angForm.get('ticketType').setValue(this.draftData.new.ticketType);
+                      this.populateAsset({ id: this.draftData.new.ticketType });
+                      this.angForm.get('deallocateId').setValue(this.draftData.new.oldAssetId);
+                      if (this.draftData.new.watchList != null) {
+                        this.angForm.get('watchList').setValue(this.draftData.new.watchList.map(String));
+                      }
+                      this.angForm.get('title').setValue(this.draftData.new.title);
+                      this.angForm.get('message').setValue(this.draftData.new.communications[0].message);
+                    }
+                  }
+                });
             });
         });
     } else {
@@ -171,6 +207,8 @@ export class RequestAssetComponent implements OnInit {
         fileInput: new FormControl('', [
         ]),
         asset: new FormControl(null, [
+        ]),
+        assetValidity: new FormControl('', [
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -206,6 +244,20 @@ export class RequestAssetComponent implements OnInit {
       //     formGroup.controls['existingAgreement'].setErrors(null);
       //   }
       // }
+    };
+  }
+
+  newCustomValidations() {
+    return (formGroup: FormGroup) => {
+      if (formGroup.controls['ticketType'].value == "DEALLOCATE") {
+        if (formGroup.controls['deallocateId'].value == null) {
+          formGroup.controls['deallocateId'].setErrors({ required: true, });
+        } else {
+          formGroup.controls['deallocateId'].setErrors(null);
+        }
+      } else {
+        formGroup.controls['deallocateId'].setErrors(null);
+      }
     };
   }
 
@@ -282,13 +334,16 @@ export class RequestAssetComponent implements OnInit {
             priority.version = this.priorities[i].version;
           }
         }
-        let asset = null;
+        let asset = this.incident.asset != null ? { id: this.incident.asset.id, modelNo: this.incident.asset.modelNo, serialNo: this.incident.asset.serialNo, } : null;
         for (let i in this.asstes) {
           if (this.asstes[i].id == this.angForm.controls['asset'].value) {
-            asset = { id: this.asstes[i].id };
+            asset = { id: this.asstes[i].id, modelNo: this.asstes[i].modelNo, serialNo: this.asstes[i].serialNo, };
           }
         }
         if (this.newEntity) {
+          inc.ticketType = this.angForm.controls['ticketType'].value;
+          if (this.angForm.controls['ticketType'].value == "DEALLOCATE")
+            inc.oldAssetId = this.angForm.controls['deallocateId'].value;
           inc.moduleId = this.angForm.controls['moduleId'].value;
           inc.subModuleId = this.angForm.controls['subModuleId'].value;
           inc.title = this.angForm.controls['title'].value;
@@ -308,6 +363,12 @@ export class RequestAssetComponent implements OnInit {
             inc.priority = priority;
             inc.asset = asset;
             inc.status = this.angForm.controls['newStatus'].value;
+            if (this.angForm.controls['assetValidity'].value != "") {
+              let mnt = moment(this.angForm.controls['assetValidity'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
+              inc.assetValidity = moment.utc(mnt).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT) + "T23:59:59";
+            } else {
+              inc.assetValidity = moment().utc().format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT) + "T23:59:59";
+            }
           }
           inc.communications.push(ic);
           inc.id = this.incident.id;
@@ -343,13 +404,23 @@ export class RequestAssetComponent implements OnInit {
             priority.organisation = null;
           }
         }
-        let asset = this.incident.asset != null ? this.incident.asset.id : null;
+        let asset = this.incident.asset != null ? { id: this.incident.asset.id, modelNo: this.incident.asset.modelNo, serialNo: this.incident.asset.serialNo, } : null;
         for (let i in this.asstes) {
           if (this.asstes[i].id == this.angForm.controls['asset'].value) {
-            asset = { id: this.asstes[i].id };
+            asset = { id: this.asstes[i].id, modelNo: this.asstes[i].modelNo, serialNo: this.asstes[i].serialNo, };
           }
         }
+        //console.log(asset);
         if (this.newEntity) {
+          this.incident.ticketType = this.angForm.controls['ticketType'].value;
+          if (this.angForm.controls['ticketType'].value == "DEALLOCATE") {
+            this.incident.oldAssetId = this.angForm.controls['deallocateId'].value;
+          }
+          for (let i in this.availableAssetList) {
+            if (this.incident.oldAssetId == this.availableAssetList[i].id) {
+              this.incident.oldAsset = this.availableAssetList[i].modelNo + "/" + this.availableAssetList[i].serialNo;
+            }
+          }
           this.incident.moduleId = this.angForm.controls['moduleId'].value;
           this.incident.subModuleId = this.angForm.controls['subModuleId'].value;
           this.incident.title = this.angForm.controls['title'].value;
@@ -368,10 +439,15 @@ export class RequestAssetComponent implements OnInit {
           if (this.hasAgentPermission && this.canEdit) {
             this.incident.priority = priority;
             this.incident.asset = asset;
+            if (asset != null)
+              this.incident.oldAsset = asset.modelNo + '/' + asset.serialNo;
             if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
               this.incident.status = this.angForm.controls['newStatus'].value;
             }
+          } else {
+            this.incident.priority = priority;
           }
+          this.incident.assetValidity = AppUtility.prepareDateToString(moment(this.angForm.controls['assetValidity'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
         }
         // prepare incidentCommunication object
         this.incidentCommunication = new IncidentCommunication();
@@ -382,6 +458,7 @@ export class RequestAssetComponent implements OnInit {
         this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };
         //console.log(this.incident);
         this.incident.incidentType = 2;
+        //console.log(this.incident);
         this.callSaveIncidentService();
       }
     } else {
@@ -480,6 +557,10 @@ export class RequestAssetComponent implements OnInit {
       .incidentService(id)
       .subscribe((data: any) => {
         //console.log(JSON.stringify(data));
+        this.incident.assetValidity = data.assetValidity;
+        this.incident.oldAsset = data.oldAsset;
+        this.incident.oldAssetId = data.oldAssetId;
+        this.incident.ticketType = data.ticketType;
         this.incident.version = data.version;
         this.incident.id = data.id;
         this.incident.moduleId = data.moduleId;
@@ -556,6 +637,8 @@ export class RequestAssetComponent implements OnInit {
           this.router.navigate(['/no-access']);
         }
         this.angForm.get('priorityId').setValue(this.incident.priority.id);
+        this.angForm.get('assetValidity').setValue(moment(this.incident.assetValidity).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
+        //console.log(JSON.stringify(this.incident));
         /*this.angForm.get('status').setValue(this.incident.status);
         console.log(JSON.stringify(this.incident));
         this.angForm.markAllAsTouched();*/
@@ -574,7 +657,10 @@ export class RequestAssetComponent implements OnInit {
                 if (this.hasAgentPermission) {
                   this.angForm.get('priorityId').setValue(this.draftData.existing[k].priority.id);
                   this.angForm.get('newStatus').setValue(this.draftData.existing[k].status);
-                  this.angForm.get('asset').setValue(this.draftData.existing[k].asset.id);
+                  if (this.draftData.existing[k].asset != null) {
+                    this.angForm.get('asset').setValue(this.draftData.existing[k].asset.id);
+                  }
+                  this.angForm.get('assetValidity').setValue(moment(this.draftData.existing[k].assetValidity).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
                 }
                 this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
                 break;
@@ -602,6 +688,7 @@ export class RequestAssetComponent implements OnInit {
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
     if (typeof moduleId !== 'undefined') {
+      //console.log(JSON.stringify(this.permissions));
       let c = 0;
       this.subModuleList = [];
       let p;
@@ -616,6 +703,35 @@ export class RequestAssetComponent implements OnInit {
       this.angForm.controls['subModuleId'].setValue(null);
     } else {
       this.angForm.controls['subModuleId'].setValue(null);
+    }
+  }
+
+  @ViewChild("ticketType") ticketType;
+  populateAsset(ticketType) {
+    if (typeof ticketType !== 'undefined') {
+      if (ticketType.id == "DEALLOCATE") {
+        let c = 0;
+        this.allocatedAssetList = [];
+        for (let i in this.availableAssetList) {
+          if (
+            this.availableAssetList[i].moduleId == this.angForm.controls['moduleId'].value
+            && this.availableAssetList[i].subModuleId == this.angForm.controls['subModuleId'].value
+          ) {
+            this.allocatedAssetList[c] = this.availableAssetList[i];
+            this.allocatedAssetList[c].txt = this.availableAssetList[i].modelNo + "/" + this.availableAssetList[i].serialNo;
+            c++;
+          }
+        }
+        $('.asset-dealloc-row').removeClass('d-none');
+        this.angForm.controls['deallocateId'].setValue(null);
+      } else {
+        this.allocatedAssetList = [];
+        $('.asset-dealloc-row').addClass('d-none');
+        this.angForm.controls['deallocateId'].setValue(null);
+      }
+    } else {
+      $('.asset-dealloc-row').addClass('d-none');
+      this.angForm.controls['deallocateId'].setValue(null);
     }
   }
 
@@ -646,6 +762,10 @@ export class RequestAssetComponent implements OnInit {
       return AppUtility.toTitleCase(str);
     }
     return '';
+  }
+
+  resetFile(element) {
+    element.value = "";
   }
 
 }

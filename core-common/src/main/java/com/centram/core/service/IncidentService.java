@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -116,17 +117,18 @@ public class IncidentService {
 
     /**
      * get pending asset approval
+     *
      * @param incidentNo
      * @param pageable
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> getPendingAssetApprovals( String incidentNo, Pageable pageable) {
+    public PaginatedList<Incident> getPendingAssetApprovals(String incidentNo, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         Page<Incident> incidentPage = incidentRepository.getPendingAssetApprovals(incidentNo, loggedInUser.getUserId(), pageable);
         incidentPage.getContent().stream()
-                .forEach(i->{
+                .forEach(i -> {
                     Module module = moduleService.getModuleById(i.getModuleId());
                     Module subModule = moduleService.getModuleById(i.getSubModuleId());
                     i.setModuleName(module.getCustomerModuleName());
@@ -304,7 +306,13 @@ public class IncidentService {
         serialNo = (!serialNo.equals("")) ? "%" + serialNo.toUpperCase() + "%" : null;
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, serialNo, title, intStatus, assigned, deallocated, loggedInUser.getUserId(), pageable));
+        Page<Incident> incidentPage = incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, serialNo, title, intStatus, assigned, deallocated, loggedInUser.getUserId(), pageable);
+        incidentPage.getContent().stream()
+                .forEach(i -> {
+                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+                });
+        return new PaginatedList<Incident>(incidentPage);
     }
 
     /**
@@ -337,7 +345,7 @@ public class IncidentService {
         module = moduleService.getModuleById(incident.get().getSubModuleId());
         incident.get().setSubModuleName(module.getCustomerModuleName());
         incident.get().setActualSubModuleName(module.getName());
-        incident.get().setOldAssetId(incident.get().getAsset() != null ? incident.get().getAsset().getId() : null);
+        incident.get().setOldAssetId(incident.get().getAsset() != null ? incident.get().getAsset().getId() : incident.get().getOldAssetId());
         return incident.get();
     }
 
@@ -582,9 +590,42 @@ public class IncidentService {
             incident.setSlaAt(this.getSLADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
             if (incident.getIncidentType() == LicenseType.ASSET) {
                 Module assetType = moduleService.getModuleById(incident.getSubModuleId());
-                if (assetType.getRequireApproval()) {
-                    incident.setApprovalRequired(true);
-                    incident.setApproverUserId(incident.getRaisedUser().getManagerId());
+                if (incident.getTicketType().equalsIgnoreCase("ALLOCATE")) {
+                    if (assetType.getRequireApproval()) {
+                        incident.setApprovalRequired(true);
+                        incident.setApproverUserId(incident.getRaisedUser().getManagerId());
+                    } else {
+                        incident.setApprovalRequired(false);
+                        incident.setFeedbackProvided(true);
+                        incident.setAssetApproved(true);
+                        incident.setApproverUserId(null);
+                    }
+                } else {
+                    incident.setApprovalRequired(false);
+                    incident.setFeedbackProvided(true);
+                    incident.setAssetApproved(true);
+                    incident.setApproverUserId(null);
+                    if (incident.getStatus() == IncidentStatus.CLOSED) {
+                        asset = assetService.getAssetById(incident.getOldAssetId());
+                        asset.setIsAvailable(true);
+                        assetService.save(asset);
+                        incidentRepository.markDeallocated(incident.getOldAssetId(), incident.getRaisedUser().getId(), LocalDateTime.now());
+                    }
+                }
+            }
+        }
+        if (incident.getIncidentType() == LicenseType.ASSET) {
+            if (incident.getTicketType().equalsIgnoreCase("ALLOCATE")) {
+                if (incident.getAsset() != null && incident.getStatus() == IncidentStatus.CLOSED) {
+                    incident.setAllocationDateTime(LocalDateTime.now());
+                }
+            } else {
+                if (incident.getStatus() == IncidentStatus.CLOSED) {
+                    //incident.setDeallocationDateTime(LocalDateTime.now());
+                    asset = assetService.getAssetById(incident.getOldAssetId());
+                    asset.setIsAvailable(true);
+                    assetService.save(asset);
+                    incidentRepository.markDeallocated(incident.getOldAssetId(), incident.getRaisedUser().getId(), LocalDateTime.now());
                 }
             }
         }
@@ -633,6 +674,11 @@ public class IncidentService {
             asset.setIsAvailable(false);
             assetService.save(asset);
             incident.setAsset(asset);
+        }
+        if (incident.getAssetValidity() != null) {
+            incident.setAssetValidity(incident.getAssetValidity().toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));
+        } else {
+            incident.setAssetValidity(LocalDateTime.parse("2099-12-31 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         }
         raisedIncident = incidentRepository.save(incident);
         // sorting incident communication via auto increment id

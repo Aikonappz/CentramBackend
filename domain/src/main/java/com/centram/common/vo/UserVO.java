@@ -34,6 +34,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     private String projectCode;
     private List<BigInteger> roles;
     private List<String> roleNames;
+    private List<String> roleViewNames;
     private Set<String> categories;
     private Set<String> subCategories;
     private Status status;

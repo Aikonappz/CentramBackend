@@ -30,7 +30,12 @@ export class Incident extends Base {
     allocated: boolean;
     deAllocated: boolean;
     oldAssetId: number;
+    ticketType: string;
+    oldAsset: string;
     asset: any;
+    assetValidity: any;
+    allocationDateTime: any;
+    deallocationDateTime: any;
     constructor() {
         super();
         this.id = null;
@@ -50,6 +55,11 @@ export class Incident extends Base {
         this.feedbackProvided = false;
         this.asset = null;
         this.assetApproved = false;
+        this.ticketType = null;
+        this.oldAsset = null;
+        this.assetValidity = null;
+        this.allocationDateTime = null;
+        this.deallocationDateTime = null;
     }
 }
 export interface IncidentList {

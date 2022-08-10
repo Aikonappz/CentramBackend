@@ -254,7 +254,7 @@ export class EditIncidentComponent implements OnInit {
       //   watchers[k] = val;
       // }
       if (sts === "DRAFT") {
-        let returnPath = '/incident/user';
+        let returnPath = '/incident/user/all';
         if (this.referer === 'agent-all') {
           returnPath = '/incident/agent/all';
         } else if (this.referer === 'agent-mine') {
@@ -406,7 +406,7 @@ export class EditIncidentComponent implements OnInit {
   }
 
   callSaveIncidentService() {
-    let returnPath = '/incident/user';
+    let returnPath = '/incident/user/all';
     if (this.referer === 'agent-all') {
       returnPath = '/incident/agent/all';
     } else if (this.referer === 'agent-mine') {
@@ -595,6 +595,10 @@ export class EditIncidentComponent implements OnInit {
       return AppUtility.toTitleCase(str);
     }
     return '';
+  }
+
+  resetFile(element) {
+    element.value = "";
   }
 
 }

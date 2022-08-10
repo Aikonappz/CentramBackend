@@ -41,7 +41,7 @@ import { IncidentService } from "../../../service/IncidentService";
           </div>
           <div class="card-footer">
             <button [disabled]="!angForm.valid" type="button" (click)="allocateAsset(incident.id)"
-              class="btn btn-primary btn-sm"><i class="fa fa-check-circle"></i> Allocate
+              class="btn btn-primary btn-sm"><i class="fa fa-minus-circle"></i> Deallocate
             </button>
             <button type="button" (click)="bsModalRef.hide()" class="btn btn-danger btn-sm">
               <i class="fa fa-close"></i> Cancel

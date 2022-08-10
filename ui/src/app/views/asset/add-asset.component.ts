@@ -298,10 +298,10 @@ export class AddAssetComponent implements OnInit {
           this.approver1List = [];
           for (let k in users) {
             users[k].nameWithId = users[k].employeeId + "/" + users[k].fullName;
-            if (users[k].roleNames.includes('ORG_OUTBOUND_ASSET_APPROVER')) {
+            if (users[k].roleNames.includes('ORG_ASSET_ORDER_APPROVER')) {
               this.approver1List.push(users[k]);
             }
-            if (users[k].roleNames.includes('ORG_MANAGE_ASSET')) {
+            if (users[k].roleNames.includes('ORG_ASSET_ADMIN')) {
               this.requesterList.push(users[k]);
             }
           }
@@ -312,8 +312,11 @@ export class AddAssetComponent implements OnInit {
           this.assetModelList = data.content;
           this.productTypes = [];
           for (let k in this.assetModelList) {
-            if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
-              this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
+            if (this.assetModelList[k].status == "ACTIVE"
+              && this.assetModelList[k].appModule == false
+              && this.assetModelList[k].parentModuleId == null
+              && this.assetModelList[k].assetOPSName != null)
+              this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].assetOPSName) });
           }
           //console.log(this.productTypes);
         });
@@ -402,10 +405,10 @@ export class AddAssetComponent implements OnInit {
                         this.approver1List = [];
                         for (let k in users) {
                           users[k].nameWithId = users[k].employeeId + "/" + users[k].fullName;
-                          if (users[k].roleNames.includes('ORG_OUTBOUND_ASSET_APPROVER')) {
+                          if (users[k].roleNames.includes('ORG_ASSET_ORDER_APPROVER')) {
                             this.approver1List.push(users[k]);
                           }
-                          if (users[k].roleNames.includes('ORG_MANAGE_ASSET')) {
+                          if (users[k].roleNames.includes('ORG_ASSET_ADMIN')) {
                             this.requesterList.push(users[k]);
                           }
                         }
@@ -415,8 +418,8 @@ export class AddAssetComponent implements OnInit {
                             this.assetModelList = data.content;
                             this.productTypes = [];
                             for (let k in this.assetModelList) {
-                              if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
-                                this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
+                              if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null && this.assetModelList[k].assetOPSName != null)
+                                this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].assetOPSName) });
                             }
                             //console.log(this.productTypes);
                             this.newEntity = false;
@@ -448,8 +451,8 @@ export class AddAssetComponent implements OnInit {
     if (typeof productCategory !== 'undefined') {
       this.assetList = [];
       for (let i = 0; i < this.assetModelList.length; i++) {
-        if (this.assetModelList[i].parentModuleId == productCategory.id) {
-          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
+        if (this.assetModelList[i].parentModuleId == productCategory.id && this.assetModelList[i].assetOPSName != null) {
+          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].assetOPSName) });
         }
       }
       this.angForm.controls['assetType'].setValue(null);

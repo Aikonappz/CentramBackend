@@ -9,7 +9,7 @@
           <div class="card-body">
             <table class="table table-bordered table-striped table-sm">
               <tr>
-                <td width="50%"><strong>Specific Department</strong></td>
+                <td width="50%"><strong>For any Specific Department?</strong></td>
                 <td>{{assetOrder.isDepartment==true? 'Yes' : 'No'}}</td>
               </tr>
               <tr *ngIf="assetOrder.department!=null">
@@ -40,7 +40,8 @@
                 <td><strong>Cost Details</strong></td>
                 <td>
                   <div *ngIf="assetOrder.withinBudget==true">
-                    With In Budget: Yes
+                    With In Budget: Yes<br />
+                    Total Cost: {{assetOrder.currency}} {{assetOrder.totalAmount}}
                   </div>
                   <div *ngIf="assetOrder.withinBudget==false">
                     With In Budget: No<br />
@@ -51,7 +52,7 @@
                 </td>
               </tr>
               <tr>
-                <td><strong>Vendor Name</strong></td>
+                <td><strong>Vendor Names</strong></td>
                 <td>{{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}</td>
               </tr>
               <tr>
@@ -66,7 +67,7 @@
               <tr>
                 <td><strong>Purchase Type</strong></td>
                 <td>
-                  {{assetOrder.purchaseType}}/{{assetOrder.rentDuration}}
+                  {{assetOrder.purchaseType}}{{assetOrder.rentDuration != null? '/' : ''}}{{assetOrder.rentDuration}}
                   <!-- <div *ngIf="assetOrder.purchaseType=='RENTED'">
                     Rent Start Date: {{formatDateTime(assetOrder.rentStartAt)}}<br />
                     Rent End Date: {{formatDateTime(assetOrder.rentEndAt)}}

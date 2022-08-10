@@ -9,7 +9,6 @@ import { AppUtility } from '../../config/AppUtility';
 import { IncidentStatus } from '../../model/enumerator/IncidentStatus';
 import { Incident } from '../../model/Incident';
 import { Permission } from '../../model/Permssion';
-import { IncidentDataSource } from '../../service/datasource/IncidentDataSource';
 import { UserAllocatedAssetDataSource } from '../../service/datasource/UserAllocatedAssetDataSource';
 import { IncidentService } from '../../service/IncidentService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
@@ -23,7 +22,7 @@ declare var $: any;
 export class MyAssetComponent implements OnInit {
   moduleName: string = "MY ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['inc', 'assetDtl', 'status',];
+  displayedColumns = ['inc', 'assetDtl', 'validity', 'allocation', 'deallocation', 'status',];
   private datasource: UserAllocatedAssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: any = [];

@@ -2,6 +2,8 @@ package com.centram.core.repository;
 
 
 import com.centram.domain.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +17,9 @@ import java.util.Optional;
 public interface RoleRepository extends PagingAndSortingRepository<Role, BigInteger> {
     @Query("select r from Role r where UPPER(r.name) in (:roles)")
     List<Role> getByRoleNames(@Param("roles") List<String> roles);
+
+    @Query("select r from Role r where status = 1")
+    Page<Role> findAll(@Param("pageable") Pageable pageable);
 
     Optional<Role> findByName(@Param("name") String name);
 

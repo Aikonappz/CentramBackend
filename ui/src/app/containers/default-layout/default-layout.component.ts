@@ -96,6 +96,12 @@ export class DefaultLayoutComponent implements OnInit {
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {
                 this.menuAttributes = this.newNavItems[c].children[sm].attributes;
+                //proxy menu assignment
+                // if (typeof this.menuAttributes.proxyMenu !== 'undefined') {
+                //   if (this.menuAttributes.proxyMenu == true) {
+                //     this.newNavItems[c].children[sm].url = this.router.url;
+                //   }
+                // }
                 if (typeof this.menuAttributes.licenceType !== 'undefined') {
                   let licences = this.menuAttributes.licenceType.split(',');
                   if (

@@ -40,7 +40,7 @@ import { UserVO } from "../../../model/UserVO";
                     </tr>
                     <tr>
                         <td><strong>Roles</strong></td>
-                        <td>{{usr.roleNames.join(',')}}</td>
+                        <td>{{usr.roleViewNames.join(',')}}</td>
                     </tr>
                     <tr>
                         <td><strong>Location</strong></td>

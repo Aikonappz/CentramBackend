@@ -22,6 +22,10 @@ import java.util.Set;
 public interface IncidentRepository extends PagingAndSortingRepository<Incident, BigInteger> {
 
     @Modifying
+    @Query("update Incident set deallocated = true, modifiedDate = (:modifiedDate), deallocationDateTime = (:modifiedDate) where raisedUser.id = (:userId) and asset.id = (:assetId)")
+    Integer markDeallocated(@Param("assetId") BigInteger assetId, @Param("userId") BigInteger userId, @Param("modifiedDate") LocalDateTime modifiedDate);
+
+    @Modifying
     @Query("update Incident set status = (:status), assignedUser.id = (:userId), modifiedDate = (:modifiedDate) where id in (:ids)")
     Integer assignIncidents(@Param("status") IncidentStatus status, @Param("userId") BigInteger userId, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("ids") List<BigInteger> ids);
 
@@ -93,7 +97,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:incidentNo) is null) " +
             " ) " +
             " and i.approverUserId = (:approverUserId) " +
-            " and i.incidentType = 2 and i.approvalRequired = true "
+            " and i.incidentType = 2 and i.approvalRequired = true and i.feedbackProvided <> true"
     )
     Page<Incident> getPendingAssetApprovals(
             @Param("incidentNo") String incidentNo,

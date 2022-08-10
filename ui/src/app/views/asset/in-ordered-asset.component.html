@@ -124,7 +124,7 @@
                                         <li role="menuitem">
                                             <a class="dropdown-item"
                                                 [routerLink]="['/asset/order/1/action/'+element.id]"
-                                                *ngIf="element.approverUser1Comment==null&&hasPermission('APPROVE')"
+                                                *ngIf="element.approverUser1Comment==null&&hasPermission('APPROVE')&&loggedInUser.userId==element.approverUser1.id"
                                                 href="javascript:void(0);">
                                                 <i class="cil-life-ring"></i>Approver 1 Action
                                             </a>
@@ -132,7 +132,7 @@
                                         <li role="menuitem">
                                             <a class="dropdown-item"
                                                 [routerLink]="['/asset/order/2/action/'+element.id]"
-                                                *ngIf="element.approvedUser1&&element.approverUser1Comment!=null&&element.approverUser2Comment==null&&hasPermission('APPROVE')"
+                                                *ngIf="element.approvedUser1&&element.approverUser1Comment!=null&&element.approverUser2Comment==null&&hasPermission('APPROVE')&&loggedInUser.userId==element.approverUser2.id"
                                                 href="javascript:void(0);">
                                                 <i class="cil-life-ring"></i>Approver 2 Action
                                             </a>

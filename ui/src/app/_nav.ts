@@ -23,7 +23,7 @@ export const navItems: INavData[] = [
   {
     name: 'Permission',
     url: '/permission',
-    icon: 'icon-target',
+    icon: 'icon-star',
     attributes: { "moduleName": "ORGANIZATION" }
   },
   {
@@ -83,108 +83,120 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "INCIDENT" },
     children: [
       {
+        name: 'Employee Access',
+        url: '/incident/user-route',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
+      },
+      {
         name: 'Create Incident',
         url: '/incident/user/add/new',
         icon: 'fa fa-plus',
-        attributes: { "moduleName": "MY INCIDENTS" }
+        attributes: { "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'My Incidents',
-        url: '/incident/user',
+        url: '/incident/user/all',
         icon: 'fa fa-ticket',
-        attributes: { "moduleName": "MY INCIDENTS" }
+        attributes: { "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Agent Access',
+        url: '/incident/agent-route',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "INCIDENT AGENT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'My Group Incidents',
         url: '/incident/agent/all',
         icon: 'fa fa-ticket',
-        class: 'highlighted-yellow',
-        attributes: { "moduleName": "MY GROUP INCIDENTS" }
+        attributes: { "moduleName": "MY GROUP INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Assigned Incidents',
         url: '/incident/agent/mine',
         icon: 'fa fa-space-shuttle',
-        class: 'highlighted-yellow',
-        attributes: { "moduleName": "MY GROUP INCIDENTS" }
+        attributes: { "moduleName": "MY GROUP INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
     ]
   },
   {
-    name: 'Assets - Admin',
+    name: 'Asset',
     url: '/asset',
     icon: 'fa fa-cubes',
     attributes: { "moduleName": "ASSET" },
     children: [
       {
+        name: 'Admin Access',
+        url: '/asset',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
+      },
+      {
         name: 'Order an Asset',
         url: '/asset/order',
         icon: 'fa fa-plus',
-        attributes: { "moduleName": "ORDER ASSET" }
+        attributes: { "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Ordered Assets',
         url: '/asset/ordered',
         icon: 'fa fa-indent',
-        attributes: { "moduleName": "ORDER ASSET" }
+        attributes: { "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
       },
       {
-        name: 'Orders Pending My Approval',
-        url: '/asset/order/incommig',
-        icon: 'fa fa-outdent',
-        attributes: { "moduleName": "ORDERED ASSET ACTION" }
-      },
-      {
-        name: 'Asset Inventory Master',
+        name: 'Inventory Master',
         url: '/asset/inventory',
         icon: 'fa fa-tasks',
-        attributes: { "moduleName": "MANAGE ASSET" }
+        attributes: { "moduleName": "MANAGE ASSET", "licenceType": "ALL,ASSET" }
       },
-    ]
-  },
-  {
-    name: 'Assets - Employee',
-    url: '/asset',
-    icon: 'fa fa-cubes',
-    attributes: { "moduleName": "ASSET" },
-    children: [
+      {
+        name: 'Pending Approval',
+        url: '/asset/order/incommig',
+        icon: 'fa fa-outdent',
+        attributes: { "moduleName": "ORDERED ASSET ACTION", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Employee Access',
+        url: '/asset',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "MY ASSET" }
+      },
       {
         name: "Request Asset",
         url: '/asset/user/add/new',
         icon: 'fa fa-plus-square',
-        attributes: { "moduleName": "MY ASSET" }
+        attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: "My Assets",
         url: '/asset/assigned',
         icon: 'fa fa-suitcase',
-        attributes: { "moduleName": "MY ASSET" }
+        attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: "Asset Tickets",
         url: '/asset/requested',
         icon: 'fa fa-paper-plane',
-        attributes: { "moduleName": "MY ASSET REQUEST" }
+        attributes: { "moduleName": "MY ASSET REQUEST", "licenceType": "ALL,ASSET" }
       },
       {
-        name: 'Pending Asset Approval',
+        name: 'Pending Approval',
         url: '/asset/approval/pending',
         icon: 'fa fa-angle-left',
-        attributes: { "moduleName": "MY ASSET" }
+        attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
       },
-    ]
-  },
-  {
-    name: 'Assets - Agent',
-    url: '/asset',
-    icon: 'fa fa-cubes',
-    attributes: { "moduleName": "ASSET" },
-    children: [
       {
-        name: 'Requested Asset',
+        name: 'Agent Access',
+        url: '/asset',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "REQUESTED ASSET" }
+      },
+      {
+        name: 'Asset Tickets',
         url: '/asset/requested/incomming',
         icon: 'fa fa-angle-left',
-        attributes: { "moduleName": "REQUESTED ASSET" }
+        attributes: { "moduleName": "REQUESTED ASSET", "licenceType": "ALL,ASSET" }
       },
     ]
   },

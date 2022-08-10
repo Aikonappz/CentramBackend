@@ -275,16 +275,20 @@ public class UserService implements UserDetailsService {
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         List<String> roleNames = null;
+        List<String> roleViewNames = null;
         List<Permission> permissions = null;
         List<Module> modules = null;
         List<Module> subModules = null;
         for (User user : page.getContent()) {
             userVO = new UserVO(user);
             roleNames = new ArrayList<>();
+            roleViewNames = new ArrayList<>();
             for (BigInteger roleId : userVO.getRoles()) {
                 roleNames.add(roleService.getById(roleId).getName());
+                roleViewNames.add(roleService.getById(roleId).getDisplayName());
             }
             userVO.setRoleNames(roleNames);
+            userVO.setRoleViewNames(roleViewNames);
             // prepare category & subcategory access list
             permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
             modules = permissions.stream()

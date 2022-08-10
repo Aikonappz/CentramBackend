@@ -67,10 +67,10 @@ public class AssetOrderService {
         Module module = null;
         for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
             module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());
-            assetOrderPage.getContent().get(k).setModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setModuleName(module.getAssetOPSName());
             assetOrderPage.getContent().get(k).setActualModuleName(module.getName());
             module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getSubModuleId());
-            assetOrderPage.getContent().get(k).setSubModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setSubModuleName(module.getAssetOPSName());
             assetOrderPage.getContent().get(k).setActualSubModuleName(module.getName());
         }
         return new PaginatedList<AssetOrder>(assetOrderPage);
@@ -93,10 +93,10 @@ public class AssetOrderService {
         Module module = null;
         for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
             module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());
-            assetOrderPage.getContent().get(k).setModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setModuleName(module.getAssetOPSName());
             assetOrderPage.getContent().get(k).setActualModuleName(module.getName());
             module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getSubModuleId());
-            assetOrderPage.getContent().get(k).setSubModuleName(module.getCustomerModuleName());
+            assetOrderPage.getContent().get(k).setSubModuleName(module.getAssetOPSName());
             assetOrderPage.getContent().get(k).setActualSubModuleName(module.getName());
         }
         return new PaginatedList<AssetOrder>(assetOrderPage);
@@ -112,10 +112,10 @@ public class AssetOrderService {
     public AssetOrder getAssetOrderById(BigInteger id) {
         AssetOrder assetOrder = assetOrderRepository.getById(id);
         Module module = moduleService.getModuleById(assetOrder.getModuleId());
-        assetOrder.setModuleName(module.getCustomerModuleName());
+        assetOrder.setModuleName(module.getAssetOPSName());
         assetOrder.setActualModuleName(module.getName());
         module = moduleService.getModuleById(assetOrder.getSubModuleId());
-        assetOrder.setSubModuleName(module.getCustomerModuleName());
+        assetOrder.setSubModuleName(module.getAssetOPSName());
         assetOrder.setActualSubModuleName(module.getName());
         return assetOrder;
     }
@@ -146,10 +146,10 @@ public class AssetOrderService {
         }
         assetOrder = assetOrderRepository.save(assetOrder);
         Module module = moduleService.getModuleById(assetOrder.getModuleId());
-        assetOrder.setModuleName(module.getCustomerModuleName());
+        assetOrder.setModuleName(module.getAssetOPSName());
         assetOrder.setActualModuleName(module.getName());
         module = moduleService.getModuleById(assetOrder.getSubModuleId());
-        assetOrder.setSubModuleName(module.getCustomerModuleName());
+        assetOrder.setSubModuleName(module.getAssetOPSName());
         assetOrder.setActualSubModuleName(module.getName());
         miscService.sendOutBoundAssetUpdateEmail(assetOrder);
         return assetOrder;
@@ -179,10 +179,10 @@ public class AssetOrderService {
                 throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
             }
             Module module = moduleService.getModuleById(assetOrder.getModuleId());
-            assetOrder.setModuleName(module.getCustomerModuleName());
+            assetOrder.setModuleName(module.getAssetOPSName());
             assetOrder.setActualModuleName(module.getName());
             module = moduleService.getModuleById(assetOrder.getSubModuleId());
-            assetOrder.setSubModuleName(module.getCustomerModuleName());
+            assetOrder.setSubModuleName(module.getAssetOPSName());
             assetOrder.setActualSubModuleName(module.getName());
             miscService.sendOutBoundAssetUpdateEmail(assetOrder);
             return assetOrder;

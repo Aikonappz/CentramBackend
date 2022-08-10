@@ -13,7 +13,7 @@
                 <td>{{incident?.moduleName}}</td>
               </tr>
               <tr>
-                <td><strong>Asset Category</strong></td>
+                <td><strong>Product Sub Category</strong></td>
                 <td>{{incident?.subModuleName}}</td>
               </tr>
               <tr>
@@ -39,11 +39,11 @@
                 </td>
               </tr>
               <tr>
-                <td><strong>Request User Details</strong></td>
+                <td><strong>Requested User Details</strong></td>
                 <td>
-                  {{incident.raisedUser?.firstName}} {{incident.raisedUser?.lastName}}<br />
-                  {{incident.raisedUser?.employeeId}}<br />
-                  {{incident.raisedUser?.projectCode}}
+                  Name : {{incident.raisedUser?.firstName}} {{incident.raisedUser?.lastName}}<br />
+                  Employee Id : {{incident.raisedUser?.employeeId}}<br />
+                  Project Code : {{incident.raisedUser?.projectCode}}
                 </td>
               </tr>
               <!-- <tr>

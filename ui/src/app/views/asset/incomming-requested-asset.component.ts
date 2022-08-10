@@ -414,40 +414,6 @@ export class IncommingRequestedAssetComponent implements OnInit {
     this.selection.selected.forEach(s => console.log(s.id));
   }
 
-  assign(inc: Incident) {
-    let moduleIds = [];
-    moduleIds.push(inc.moduleId);
-    moduleIds.push(inc.subModuleId);
-    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
-    let params = {
-      "moduleIds": moduleIds.join(','),
-      "actionName": 'SOLVE',
-    };
-    this.agentList = [];
-    this.userService
-      .getUsersByModuleAndAction(params)
-      .subscribe((data: UserVO[]) => {
-        for (let i = 0; i < data.length; i++) {
-          if (
-            this.loggedInUserService.hasRole('ORG_ASSET_AGENT_LEAD')
-            ||
-            this.loggedInUserService.hasRole('ORG_ASSET_AGENT_MANAGER')
-          ) {
-            if (this.confirmAgentRole(data[i].roleNames))
-              this.agentList.push(data[i]);
-          } else {
-            if (this.loggedInUser.userId == data[i].id)
-              this.agentList.push(data[i]);
-          }
-        }
-        this.selection.clear();
-        this.selection.select(inc);
-        this.canAssignNow = true;
-        this.openAssignModal();
-        //console.log(data);
-      });
-  }
-
   deallocate(inc: Incident) {
     const config: ModalOptions = {
       backdrop: 'static',

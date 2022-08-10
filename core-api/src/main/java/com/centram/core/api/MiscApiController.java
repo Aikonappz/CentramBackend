@@ -170,7 +170,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/permission", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    //@PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PERMISSION','WRITE',authentication.principal)")
     public ResponseEntity<Void> savePermission(@ApiParam(value = "PermissionDTO object", required = true) @Valid @RequestBody PermissionDTO body) {
         permissionService.save(body);
         return new ResponseEntity<Void>(HttpStatus.OK);

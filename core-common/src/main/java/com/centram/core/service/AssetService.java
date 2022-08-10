@@ -88,10 +88,10 @@ public class AssetService {
         Module module = null;
         for (int i = 0; i < assetPage.getContent().size(); i++) {
             module = moduleService.getModuleById(assetPage.getContent().get(i).getModuleId());
-            assetPage.getContent().get(i).setModuleName(module.getCustomerModuleName());
+            assetPage.getContent().get(i).setModuleName(module.getAssetOPSName());
             assetPage.getContent().get(i).setActualModuleName(module.getName());
             module = moduleService.getModuleById(assetPage.getContent().get(i).getSubModuleId());
-            assetPage.getContent().get(i).setSubModuleName(module.getCustomerModuleName());
+            assetPage.getContent().get(i).setSubModuleName(module.getAssetOPSName());
             assetPage.getContent().get(i).setActualSubModuleName(module.getName());
         }
         return new PaginatedList<Asset>(assetPage);

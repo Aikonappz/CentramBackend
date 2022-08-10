@@ -25,7 +25,7 @@ declare var $: any;
 export class AssetInventoryComponent implements OnInit {
   moduleName: string = "MANAGE ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['serialNo', 'productType', 'assetType', 'available', 'action'];
+  displayedColumns = ['productType', 'assetType', 'serialNo', 'available', 'action'];
   private datasource: AssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   angForm: FormGroup;
@@ -59,8 +59,11 @@ export class AssetInventoryComponent implements OnInit {
         this.assetModelList = data.content;
         this.productTypes = [];
         for (let k in this.assetModelList) {
-          if (this.assetModelList[k].status == "ACTIVE" && this.assetModelList[k].appModule == false && this.assetModelList[k].parentModuleId == null)
-            this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].customerModuleName) });
+          if (this.assetModelList[k].status == "ACTIVE"
+            && this.assetModelList[k].appModule == false
+            && this.assetModelList[k].parentModuleId == null
+            && this.assetModelList[k].assetOPSName != null)
+            this.productTypes.push({ id: this.assetModelList[k].id, label: AppUtility.toTitleCase(this.assetModelList[k].assetOPSName) });
         }
         //console.log(this.productTypes);
       });
@@ -169,8 +172,8 @@ export class AssetInventoryComponent implements OnInit {
     if (typeof productCategory !== 'undefined') {
       this.assetList = [];
       for (let i = 0; i < this.assetModelList.length; i++) {
-        if (this.assetModelList[i].parentModuleId == productCategory.id) {
-          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].customerModuleName) });
+        if (this.assetModelList[i].parentModuleId == productCategory.id && this.assetModelList[i].assetOPSName != null) {
+          this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].assetOPSName) });
         }
       }
       this.angForm.controls['assetType'].setValue(null);
@@ -184,7 +187,7 @@ export class AssetInventoryComponent implements OnInit {
     if (typeof assetType !== 'undefined') {
       this.modelList = [];
       for (let i = 0; i < this.assetModelList.length; i++) {
-        if (this.assetModelList[i].id == assetType.id) {
+        if (this.assetModelList[i].id == assetType.id && this.assetModelList[i].assetOPSName != null) {
           for (let k = 0; k < this.assetModelList[i].models.length; k++) {
             this.modelList.push({ id: this.assetModelList[i].models[k], label: this.assetModelList[i].models[k] });
           }

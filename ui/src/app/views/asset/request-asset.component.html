@@ -29,14 +29,44 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="subModuleId">Asset Category</label>
+                  <label class="form-col-form-label required-control-label" for="subModuleId">Product Sub
+                    Category</label>
                   <ng-select [items]="subModuleList" placeholder="-- Select Asset Category --"
                     formControlName="subModuleId" id="subModuleId" name="subModuleId" bindLabel="customerModuleName"
                     bindValue="moduleId">
                   </ng-select>
                   <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.subModuleId.errors?.required">
-                      Asset Category is required.
+                      Product Sub Category is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="ticketType">Ticket Type</label>
+                  <ng-select [items]="ticketTypes" (change)="populateAsset($event)" #ticketType
+                    placeholder="-- Select Ticket Type --" formControlName="ticketType" id="ticketType"
+                    name="ticketType" bindLabel="label" bindValue="id">
+                  </ng-select>
+                  <div *ngIf="f.ticketType.touched && f.ticketType.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.ticketType.errors?.required">
+                      Ticket Type is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+              </div>
+              <div class="row row-margin-05 asset-dealloc-row d-none">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="deallocateId">Deallocate Asset</label>
+                  <ng-select [items]="allocatedAssetList" placeholder="-- Select Asset  --"
+                    formControlName="deallocateId" id="deallocateId" name="deallocateId" bindLabel="txt" bindValue="id">
+                  </ng-select>
+                  <div *ngIf="f.deallocateId.touched && f.deallocateId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.deallocateId.errors?.required">
+                      Select which asset to deallocate.
                     </div>
                   </div>
                 </div>
@@ -132,7 +162,21 @@
                 </div>
               </div>
               <div class="row row-margin-05">
-                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                <div class="col">
+                  <label class="form-col-form-label" for="ticketType">Ticket Type</label>
+                  <input type="text" readonly value="{{incident.ticketType}}" id="ticketType" name="ticketType"
+                    class="form-control">
+                </div>
+                <div class="col" *ngIf="incident.ticketType!='ALLOCATE'">
+                  <label class=" form-col-form-label" for="oldAsset">Deallocate Requested Asset</label>
+                  <input type="text" readonly value="{{incident.ticketType!='ALLOCATE'? incident.oldAsset : ''}}"
+                    id="oldAsset" name="oldAsset" class="form-control">
+                </div>
+                <div class="col" *ngIf="incident.ticketType=='ALLOCATE'"></div>
+                <div class=" col"></div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col" *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'">
                   <label class="form-col-form-label" for="asset">Assigned Asset</label>
                   <div *ngIf="incident.asset != null">
                     <input type="text" readonly value="{{incident.asset.modelNo}}/{{incident.asset.serialNo}}"
@@ -142,10 +186,15 @@
                     <input type="text" readonly id="asset" name="asset" class="form-control">
                   </div>
                 </div>
-                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                <div class="col" *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'">
                   <label class="form-col-form-label" for="asset">Asset</label>
                   <ng-select [items]="asstes" placeholder="-- Select Asset --" formControlName="asset" id="asset"
                     name="asset" bindLabel="label" bindValue="id"></ng-select>
+                </div>
+                <div class="col" *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'">
+                  <label class="form-col-form-label" for="assetValidity">Asset Validity</label>
+                  <input type="date" formControlName="assetValidity" id="assetValidity" name="assetValidity"
+                    class="form-control" placeholder="Incident End" aria-label="Incident End">
                 </div>
                 <div class="col" *ngIf="!(hasAgentPermission&&canEdit)">
                   <label class="form-col-form-label" for="asset">Asset</label>
@@ -158,7 +207,7 @@
                   </div>
                 </div>
                 <div *ngIf="!(hasAgentPermission&&canEdit)" class="col"></div>
-                <div class="col"></div>
+                <div *ngIf="!(hasAgentPermission&&canEdit)" class="col"></div>
               </div>
               <div class="row row-margin-05">
                 <div class="col">
@@ -241,6 +290,7 @@
                   <div *ngIf="item.communicatedBy!=null" [ngClass]="{'highlight-grid-u': incident.raisedUser.id==item.communicatedBy.id,
                   'highlight-grid-a ': incident.raisedUser.id!=item.communicatedBy.id, 'row col-sm-12':true}">
                     <div class="col-sm-12">
+                      <div><strong>{{item.communicatedBy.firstName}} {{item.communicatedBy.lastName}}</strong></div>
                       <div [innerHTML]="item.message"></div>
                       <div>{{formatDateTime(item.createdDate)}}</div>
                       <!-- <div class="col-sm-12"> -->
@@ -282,8 +332,9 @@
                   <label class="form-col-form-label " for="fileInput">Attachments </label>
                   <i class="icon-info"
                     tooltip="Max file size can be 2 M.B and suported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png"></i>&nbsp;&nbsp;
-                  <input multiple="multiple" (change)="getFileDetails($event)" type="file" id="fileInput"
+                  <input #fileInput multiple="multiple" (change)="getFileDetails($event)" type="file" id="fileInput"
                     formControlName="fileInput" name="fileInput">
+                  <button (click)="resetFile(fileInput)" type="button" class="btn "><i class="fa fa-close"></i></button>
                   <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.fileInput.errors?.validAttachments">
                       Supported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png.

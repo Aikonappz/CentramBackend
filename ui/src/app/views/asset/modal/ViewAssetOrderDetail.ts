@@ -19,9 +19,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
             <div class="card ">
                 <table class="table table-bordered">
                     <tr>
-                        <td><strong>Order Details</strong></td>
+                        <td width="25%"><strong>Order Details</strong></td>
                         <td>
-                            <span [ngClass]="{
+                            Order No:<span [ngClass]="{
                             'badge':true
                             }">{{assetOrder.orderNo}}</span><br />
                             <div *ngIf="assetOrder.isDepartment==true">
@@ -36,10 +36,10 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                         <td><strong>Asset Details</strong></td>
                         <td>
                             Product Category: {{assetOrder.moduleName}}<br />
-                            Asset Category: {{assetOrder.subModuleName}}<br />
+                            Product Sub Category: {{assetOrder.subModuleName}}<br />
                             Model: {{assetOrder.model}}<br />
                             Quantity: {{assetOrder.quantity}}<br />
-                            Total Cost: {{assetOrder.totalAmount}}<br />
+                            Total Cost: {{assetOrder.currency}} {{assetOrder.totalAmount}}<br />
                             <div *ngIf="assetOrder.withinBudget==true">
                                 With In Budget: Yes
                             </div>
@@ -54,10 +54,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                         <td><strong>Vendor Details</strong></td>
                         <td>
                             Name: {{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}<br />
-                            Purchase Type: {{assetOrder.purchaseType}}/{{assetOrder.rentDuration}}
+                            Purchase Type: {{assetOrder.purchaseType}}{{assetOrder.rentDuration != null? '/'+assetOrder.rentDuration : ''}}
                             <div *ngIf="assetOrder.existingAgreement==true&&assetOrder.agreementEndAt!=null">
-                                Existing Agreement: Yes
-                                Agreement End Date: {{formatDateTime(assetOrder.agreementEndAt)}}<br />
+                                Existing Agreement: Yes/{{formatDateTime(assetOrder.agreementEndAt)}}<br />
                             </div>
                             <div *ngIf="assetOrder.existingAgreement==false">
                                 Existing Agreement: No

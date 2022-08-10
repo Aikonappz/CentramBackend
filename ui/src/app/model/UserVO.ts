@@ -16,6 +16,7 @@ export class UserVO {
     projectCode: string;
     roles: number[];
     roleNames: string[];
+    roleViewNames: string[];
     status: any;
     timeZone: string;
     managerId: number;
@@ -40,6 +41,7 @@ export class UserVO {
         this.projectCode = '';
         this.roles = [];
         this.roleNames = [];
+        this.roleViewNames = [];
         this.status = Status.ACTIVE;
         this.organisationId = null;
         this.locationId = null;
