@@ -121,9 +121,8 @@ const routes: Routes = [
           title: 'Edit Incident'
         }
       },
-
       {
-        path: 'requested',
+        path: 'requested/outgoing',
         component: RequestedAssetComponent,
         pathMatch: 'full',
         data: {
@@ -131,16 +130,13 @@ const routes: Routes = [
         },
       },
       {
-        path: 'assigned',
+        path: 'allocated',
         component: MyAssetComponent,
         pathMatch: 'full',
         data: {
           title: 'My Assets'
         },
       },
-
-
-
     ]
   }
 ];

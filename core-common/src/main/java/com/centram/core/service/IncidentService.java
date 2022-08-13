@@ -17,6 +17,7 @@ import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.MediaType;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.centram.common.utility.Utility.incidentNo;
-import static com.centram.common.utility.Utility.orderNo;
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
@@ -568,11 +567,15 @@ public class IncidentService {
             if (incident.getIncidentType() == LicenseType.INCIDENT) {
                 setting = organisationService.getOrganisationSettings();
                 prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
-                incident.setIncidentNo(incidentNo(prefix));
+                Long totalOrder = incidentRepository.getCount(LicenseType.INCIDENT, loggedInUser.getOrganisationId())+1;
+                String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
+                incident.setIncidentNo(orderNo);
             } else {
                 setting = organisationService.getOrganisationSettings();
                 prefix = (setting != null && setting.getInboundAssetRequestPrefix() != null) ? setting.getInboundAssetRequestPrefix() : inboundAssetReqPrefix;
-                incident.setIncidentNo(orderNo(prefix));
+                Long totalOrder = incidentRepository.getCount(LicenseType.INCIDENT, loggedInUser.getOrganisationId())+1;
+                String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
+                incident.setIncidentNo(orderNo);
             }
             /*fetch location*/
             Location location = locationService.getById(loggedInUser.getLocationId());
@@ -678,7 +681,7 @@ public class IncidentService {
         if (incident.getAssetValidity() != null) {
             incident.setAssetValidity(incident.getAssetValidity().toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));
         } else {
-            incident.setAssetValidity(LocalDateTime.parse("2099-12-31 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            incident.setAssetValidity(LocalDateTime.parse("9999-12-31 23:59", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         }
         raisedIncident = incidentRepository.save(incident);
         // sorting incident communication via auto increment id

@@ -47,6 +47,13 @@
                       Model is required!
                     </div>
                   </div>
+                  <input type="text" placeholder="Model No" formControlName="modelNoTxt" id="modelNoTxt"
+                    name="modelNoTxt" class="form-control d-none">
+                  <div *ngIf="f.modelNoTxt.touched && f.modelNoTxt.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.modelNoTxt.errors?.required">
+                      Model is required!
+                    </div>
+                  </div>
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="serialNumber">Serial No</label>
@@ -219,6 +226,25 @@
                   <label class="form-col-form-label" for="vendorContactNo">Vendor Contact No.</label>
                   <input type="text" [readonly]="true" formControlName="vendorContactNo" id="vendorContactNo"
                     name="vendorContactNo" class="form-control">
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="otherDetails">Other Details</label>
+                  <textarea id="otherDetails" rows="4" class="form-control textarea-non-resizable"
+                    formControlName="otherDetails" id="otherDetails" name="otherDetails"
+                    placeholder="Other Details"></textarea>
+                  <div *ngIf="f.otherDetails.touched && f.otherDetails.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.otherDetails.errors?.required">
+                      Other Details is required!
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
                 </div>
               </div>
             </fieldset>

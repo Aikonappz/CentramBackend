@@ -10,6 +10,7 @@ import com.centram.core.repository.AssetOrderRepository;
 import com.centram.domain.AssetOrder;
 import com.centram.domain.Module;
 import com.centram.domain.User;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
-
-import static com.centram.common.utility.Utility.orderNo;
 
 @Service
 public class AssetOrderService {
@@ -130,7 +130,9 @@ public class AssetOrderService {
     public AssetOrder save(AssetOrder assetOrder) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (assetOrder.getId() == null) {
-            assetOrder.setOrderNo(orderNo(outboundAssetReqPrefix));
+            Long totalAssetOrder = assetOrderRepository.getCountOfAssets(loggedInUser.getOrganisationId())+1;
+            String assetOrderNo = outboundAssetReqPrefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalAssetOrder), 4, "0");
+            assetOrder.setOrderNo(assetOrderNo);
             assetOrder.setRaisedUser(new User(userService.getUserById(loggedInUser.getUserId())));
             assetOrder.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         }

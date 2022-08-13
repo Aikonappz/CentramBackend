@@ -1256,8 +1256,8 @@ public class MiscService {
         Map<String, Object> mailValues = new HashMap<String, Object>();
         mailValues.put("currency", assetOrder.getCurrency());
         mailValues.put("ord_no", assetOrder.getOrderNo());
-        mailValues.put("dept_name", (assetOrder.getDepartment() != null) ? assetOrder.getDepartment().getName() : "");
-        mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getName() : "");
+        mailValues.put("dept_name", (assetOrder.getDepartment() != null) ? assetOrder.getDepartment().getName() : "NA");
+        mailValues.put("loc_name", (assetOrder.getLocation() != null) ? assetOrder.getLocation().getName() : "NA");
         mailValues.put("asset_type", assetOrder.getSubModuleName());
         mailValues.put("product_type", assetOrder.getModuleName());
         mailValues.put("qty", assetOrder.getQuantity());

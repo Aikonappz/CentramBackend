@@ -68,6 +68,7 @@ import { ClientStorageService } from './service/ClientStorageService';
 import { ChatComponent } from './views/chat/chat.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { LandingComponent } from './views/landing/landing.component';
+import { CommonAlert } from './containers/default-layout/modal/CommonAlert';
 
 @NgModule({
   imports: [
@@ -110,6 +111,7 @@ import { LandingComponent } from './views/landing/landing.component';
     ResetPasswordComponent,
     RequestDemoComponent,
     LogoutComponent,
+    CommonAlert,
     SpinnerComponent,
     ChatComponent,
     ErrormessageComponent,

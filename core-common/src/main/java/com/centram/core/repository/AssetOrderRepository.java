@@ -13,6 +13,10 @@ import java.math.BigInteger;
 
 @Repository
 public interface AssetOrderRepository extends JpaRepository<AssetOrder, BigInteger> {
+
+    @Query("SELECT COUNT(ao) FROM AssetOrder ao WHERE ao.organisation.id = (:organisationId)")
+    long getCountOfAssets(@Param("organisationId") BigInteger organisationId);
+
     @Query(value = "select ao from AssetOrder ao where ao.raisedUser.id = (:raisedUserId) and " +
             " ( " +
             "   ((:status) = 'PENDING' and ao.approvedUser1 = false and ao.approvedUser2  = false ) " +

@@ -120,7 +120,8 @@
                     class="form-control textarea-non-resizable"
                     placeholder="Incident Title">{{incident.title}}</textarea>
                 </div>
-                <div class="col" *ngIf="(hasAgentPermission&&canEdit)">
+                <div class="col"
+                  *ngIf="(hasAgentPermission&&canEdit&&(incident.status!='SOLUTION_PROVIDED'&&incident.status!='CLOSED'))">
                   <label class="form-col-form-label required-control-label" for="priorityId">Priority</label>
                   <ng-select [items]="priorities" placeholder="-- Select Priority --" formControlName="priorityId"
                     id="priorityId" name="priorityId" bindLabel="label" bindValue="id"></ng-select>
@@ -130,6 +131,12 @@
                     </div>
                   </div>
                 </div>
+                <div class="col"
+                  *ngIf="hasAgentPermission&&canEdit&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')">
+                  <label class="form-col-form-label" for="priorityReadOnly">Priority</label>
+                  <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"
+                    class="form-control">
+                </div>
                 <input *ngIf="!(hasAgentPermission&&canEdit)" type="hidden" value="{{incident.priority.id}}"
                   formControlName="priorityId" id="priorityId" name="priorityId">
                 <div class="col" *ngIf="hasAgentPermission&&!canEdit">
@@ -137,7 +144,8 @@
                   <input type="text" readonly value="{{incident.priority.name}}" id="priorityReadOnly"
                     class="form-control">
                 </div>
-                <div class="col" *ngIf="hasAgentPermission&&canEdit">
+                <div class="col"
+                  *ngIf="(hasAgentPermission&&canEdit&&(incident.status!='SOLUTION_PROVIDED'&&incident.status!='CLOSED'))">
                   <label class="form-col-form-label" for="newStatus">New Status</label>
                   <ng-select [items]="statusList" placeholder="-- Change Status --" formControlName="newStatus"
                     id="newStatus" name="newStatus" bindLabel="value" bindValue="key"></ng-select>
@@ -146,6 +154,11 @@
                       Status is required.
                     </div>
                   </div>
+                </div>
+                <div class="col"
+                  *ngIf="hasAgentPermission&&canEdit&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')">
+                  <label class="form-col-form-label" for="statusReadOnly">Status</label>
+                  <input type="text" readonly value="{{incident.status}}" id="statusReadOnly" class="form-control">
                 </div>
                 <div class="col" *ngIf="hasAgentPermission&&!canEdit">
                   <label class="form-col-form-label" for="statusReadOnly">Status</label>
@@ -186,15 +199,26 @@
                     <input type="text" readonly id="asset" name="asset" class="form-control">
                   </div>
                 </div>
-                <div class="col" *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'">
+                <div class="col"
+                  *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'&&(incident.status!='SOLUTION_PROVIDED'&&incident.status!='CLOSED')">
                   <label class="form-col-form-label" for="asset">Asset</label>
                   <ng-select [items]="asstes" placeholder="-- Select Asset --" formControlName="asset" id="asset"
                     name="asset" bindLabel="label" bindValue="id"></ng-select>
                 </div>
-                <div class="col" *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'">
+                <div class="col"
+                  *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'&&(incident.status!='SOLUTION_PROVIDED'&&incident.status!='CLOSED')">
                   <label class="form-col-form-label" for="assetValidity">Asset Validity</label>
                   <input type="date" formControlName="assetValidity" id="assetValidity" name="assetValidity"
                     class="form-control" placeholder="Incident End" aria-label="Incident End">
+                </div>
+                <div class="col"
+                  *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')">
+                  <label class="form-col-form-label" for="assetValidity">Asset Validity</label>
+                  <input type="date" disabled formControlName="assetValidity" id="assetValidity" name="assetValidity"
+                    class="form-control" placeholder="Incident End" aria-label="Incident End">
+                </div>
+                <div class="col"
+                  *ngIf="hasAgentPermission&&canEdit&&incident.ticketType!='DEALLOCATE'&&(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')">
                 </div>
                 <div class="col" *ngIf="!(hasAgentPermission&&canEdit)">
                   <label class="form-col-form-label" for="asset">Asset</label>
@@ -316,8 +340,14 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <!-- <label class="form-col-form-label required-control-label" for="message">Issue Details</label> -->
-                  <ckeditor [config]="{readOnly:false}" formControlName="message" name="message" id="message">
-                  </ckeditor>
+                  <div *ngIf="(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED')">
+                    <ckeditor [config]="{readOnly:true}" formControlName="message" name="message" id="message">
+                    </ckeditor>
+                  </div>
+                  <div *ngIf="(incident.status!='SOLUTION_PROVIDED'&&incident.status!='CLOSED')">
+                    <ckeditor [config]="{readOnly:false}" formControlName="message" name="message" id="message">
+                    </ckeditor>
+                  </div>
                   <!-- <ckeditor [config]="{readOnly:false,removePlugins:'about',removeButtons:'Cut,Copy,Paste,Undo,Redo,Anchor,'}"
                     formControlName="message" name="message" id="message"> -->
                   <div *ngIf="f.message.touched && f.message.invalid" class="alert alert-danger-custom">

@@ -21,6 +21,7 @@ export class Asset extends Base {
     rentalEndAt: any;
     isAvailable: boolean;
     vendor: any;
+    otherDetails: any;
     orderRequestedUser: any;
     approverUser1: any;
     approverUser2: any;

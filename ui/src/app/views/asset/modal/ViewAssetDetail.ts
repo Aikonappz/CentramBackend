@@ -21,7 +21,7 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
             <tr>
               <td><strong>Primary Details</strong></td>
               <td>
-                <span [ngClass]="{'badge':true}">{{element.serialNo}}</span><br />
+                Serial No: <span [ngClass]="{'badge':true}">{{element.serialNo}}</span><br />
                 Product Category: {{element.moduleName}}<br />
                 Asset Category : {{element.subModuleName}}<br />
                 Model No : {{element.modelNo}}<br />
@@ -54,6 +54,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                   Rental End Date: {{formatDateTime(element.rentalEndAt)}}<br />
                 </div>
                 Available: {{element.isAvailable==true? 'YES' : 'NO'}}
+                <div *ngIf="element.otherDetails!=null||element.otherDetails!=''">
+                Other Details: {{element.otherDetails}}
+                </div>
               </td>
             </tr>
             <tr>

@@ -21,6 +21,9 @@ import java.util.Set;
 @Repository
 public interface IncidentRepository extends PagingAndSortingRepository<Incident, BigInteger> {
 
+    @Query("SELECT COUNT(i) FROM Incident i WHERE i.incidentType = (:incidentType) and i.organisation.id = (:organisationId)")
+    long getCount(@Param("incidentType") LicenseType incidentType, @Param("organisationId") BigInteger organisationId);
+
     @Modifying
     @Query("update Incident set deallocated = true, modifiedDate = (:modifiedDate), deallocationDateTime = (:modifiedDate) where raisedUser.id = (:userId) and asset.id = (:assetId)")
     Integer markDeallocated(@Param("assetId") BigInteger assetId, @Param("userId") BigInteger userId, @Param("modifiedDate") LocalDateTime modifiedDate);

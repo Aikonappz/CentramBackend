@@ -13,6 +13,8 @@ import { ClientStorageService } from '../../service/ClientStorageService';
 import { PurchaseType } from '../../model/enumerator/PurchaseType';
 import { AssetOrder } from '../../model/AssetOrder';
 import { AssetOrderService } from '../../service/AssetOrderService';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { CommonAlert } from '../../containers/default-layout/modal/CommonAlert';
 declare var $: any;
 
 @Component({
@@ -28,6 +30,7 @@ export class AssetOrderComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   angForm: FormGroup;
+  modalRef: BsModalRef;
   hasAgentPermission: boolean;
   approver1List: any[] = [];
   departmentList: any[] = [];
@@ -57,6 +60,7 @@ export class AssetOrderComponent implements OnInit {
     private userService: UserService,
     private mediaService: MediaService,
     private clientStorageService: ClientStorageService,
+    private modalService: BsModalService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -94,6 +98,8 @@ export class AssetOrderComponent implements OnInit {
       ]),
       modelNo: new FormControl(null, [
         Validators.required,
+      ]),
+      modelNoTxt: new FormControl(null, [
       ]),
       currency: new FormControl(null, [
         Validators.required,
@@ -156,6 +162,22 @@ export class AssetOrderComponent implements OnInit {
 
   customValidations() {
     return (formGroup: FormGroup) => {
+      if (formGroup.controls['productCategory'].value == 158) {
+        if (formGroup.controls['modelNoTxt'].value == null || formGroup.controls['modelNoTxt'].value == "") {
+          //$('#modelNoTxt').removeClass("d-none");
+          //$('#modelNo').addClass("d-none");
+          formGroup.controls['modelNo'].setErrors(null);
+          formGroup.controls['modelNoTxt'].setErrors({ required: true });
+        } else {
+          //$('#modelNoTxt').addClass("d-none");
+          //$('#modelNo').removeClass("d-none");
+          formGroup.controls['modelNoTxt'].setErrors(null);
+        }
+      } else {
+        //$('#modelNoTxt').addClass("d-none");
+        //$('#modelNo').removeClass("d-none");
+        formGroup.controls['modelNoTxt'].setErrors(null);
+      }
       if (formGroup.controls['existingAgreement'].value == null) {
         formGroup.controls['existingAgreement'].setErrors({ required: true, notValidAgreement: false });
       } else {
@@ -411,7 +433,14 @@ export class AssetOrderComponent implements OnInit {
       this.assetOrder.subModuleId = this.angForm.controls['assetType'].value;
       this.assetOrder.quantity = this.angForm.controls['quantity'].value;
       this.assetOrder.totalAmount = this.angForm.controls['totalAmount'].value;
-      this.assetOrder.model = this.angForm.controls['modelNo'].value;
+      //console.log(this.angForm.controls['modelNoTxt'].value);
+      let modelNo = null;
+      if (this.assetOrder.moduleId == 158) {
+        modelNo = this.angForm.controls['modelNoTxt'].value;
+      } else {
+        modelNo = this.angForm.controls['modelNo'].value;
+      }
+      this.assetOrder.model = modelNo;
       this.assetOrder.withinBudget = this.angForm.controls['withinBudget'].value == 1 ? true : false;
       if (!this.assetOrder.withinBudget) {
         this.assetOrder.limitAmount = this.angForm.controls['limitAmount'].value;
@@ -468,14 +497,26 @@ export class AssetOrderComponent implements OnInit {
   }
 
   goBack() {
-    this._location.back();
+    this.router.navigate(['/asset/ordered']);
   }
 
   callSaveAssetOrderService(assetOrder: AssetOrder) {
     this.assetOrderService
       .saveAssetOrder(assetOrder)
       .subscribe((data: any) => {
-        this.router.navigate(['/asset/ordered']);
+        const config: ModalOptions = {
+          backdrop: 'static',
+          keyboard: false,
+          animated: true,
+          ignoreBackdropClick: true,
+          class: 'modal-bg',
+        };
+        const initialState = {
+          msg: "Your order has been successfully submitted.",
+          url: "/asset/ordered"
+        };
+        this.modalRef = this.modalService.show(CommonAlert, Object.assign({}, config, { initialState }));
+        //this.router.navigate(['/asset/ordered']);
       });
   }
 
@@ -504,6 +545,21 @@ export class AssetOrderComponent implements OnInit {
           this.assetList.push({ id: this.assetModelList[i].id, label: AppUtility.toTitleCase(this.assetModelList[i].assetOPSName) });
         }
       }
+      if (productCategory.label == "Infra Assets") {
+        $('#modelNoTxt').removeClass("d-none");
+        $('#modelNo').addClass("d-none");
+      } else {
+        $('#modelNoTxt').addClass("d-none");
+        $('#modelNo').removeClass("d-none");
+      }
+      this.angForm.controls['assetType'].setValue(null);
+    } else {
+      $('#modelNoTxt').addClass("d-none");
+      $('#modelNo').removeClass("d-none");
+      this.assetList = [];
+      this.modelList = [];
+      this.angForm.controls['assetType'].setValue(null);
+      this.angForm.controls['modelNo'].setValue(null);
     }
   }
 

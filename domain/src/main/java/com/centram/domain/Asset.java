@@ -198,6 +198,12 @@ public class Asset extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Boolean isAvailable = false;
 
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "other_details", columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
+    private String otherDetails;
+
     public Asset(@NotNull BigInteger id) {
         this.id = id;
     }

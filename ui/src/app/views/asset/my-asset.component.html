@@ -93,14 +93,14 @@
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="allocation">
-                            <th mat-header-cell *matHeaderCellDef> Status </th>
+                            <th mat-header-cell *matHeaderCellDef> Allocated At </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
                                 {{formatDateTime(element.allocationDateTime)}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="deallocation">
-                            <th mat-header-cell *matHeaderCellDef> Status </th>
+                            <th mat-header-cell *matHeaderCellDef> Deallocated At </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
                                 {{formatDateTime(element.deallocationDateTime)}}

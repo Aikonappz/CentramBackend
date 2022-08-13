@@ -96,20 +96,18 @@ export class DefaultLayoutComponent implements OnInit {
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {
                 this.menuAttributes = this.newNavItems[c].children[sm].attributes;
-                //proxy menu assignment
-                // if (typeof this.menuAttributes.proxyMenu !== 'undefined') {
-                //   if (this.menuAttributes.proxyMenu == true) {
-                //     this.newNavItems[c].children[sm].url = this.router.url;
-                //   }
-                // }
                 if (typeof this.menuAttributes.licenceType !== 'undefined') {
                   let licences = this.menuAttributes.licenceType.split(',');
                   if (
-                    licences.includes(this.loggedInUser.licenseType) &&
-                    this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-                    this.menuAttributes.moduleName === this.permissions[k].moduleName &&
-                    this.permissions[k].actions.includes('READ') &&
-                    parentId === this.permissions[k].moduleParentId
+                    licences.includes(this.loggedInUser.licenseType)
+                    && this.permissions[k].appModule == true
+                    && this.permissions[k].moduleParentId != null
+                    && parentId === this.permissions[k].moduleParentId
+                    &&
+                    (
+                      (this.menuAttributes.moduleName === this.permissions[k].moduleName
+                        && this.permissions[k].actions.includes('READ'))
+                    )
                   ) {
                     //console.log(this.newNavItems[c].children[sm]);
                     childMenus.push(this.newNavItems[c].children[sm]);
@@ -150,6 +148,21 @@ export class DefaultLayoutComponent implements OnInit {
     this.initListener();
     this.initInterval();
     this.clientStorageService.set(AppUtility.APP_LAST_ACTION_KEY, Date.now().toString());
+  }
+
+  hasModulePermission(moduleName: string, permissions: any[], additionalModule: string[]): boolean {
+    for (let k = 0; k < permissions.length; k++) {
+      if (additionalModule.length > 0) {
+        if (additionalModule.includes(permissions[k].moduleName) && permissions[k].actions.includes('READ')) {
+          return true
+        }
+      } else {
+        if (permissions[k].moduleName === moduleName && permissions[k].actions.includes('READ')) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   initListener() {

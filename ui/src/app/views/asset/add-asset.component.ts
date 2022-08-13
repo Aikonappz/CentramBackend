@@ -13,6 +13,8 @@ import { ClientStorageService } from '../../service/ClientStorageService';
 import { PurchaseType } from '../../model/enumerator/PurchaseType';
 import { Asset } from '../../model/Asset';
 import { AssetService } from '../../service/AssetService';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { CommonAlert } from '../../containers/default-layout/modal/CommonAlert';
 declare var $: any;
 
 @Component({
@@ -38,6 +40,7 @@ export class AddAssetComponent implements OnInit {
   booleanList: any[] = [];
   approver1List: any[] = [];
   requesterList: any[] = [];
+  modalRef: BsModalRef;
 
   constructor(
     private fb: FormBuilder,
@@ -51,6 +54,7 @@ export class AddAssetComponent implements OnInit {
     private userService: UserService,
     private mediaService: MediaService,
     private clientStorageService: ClientStorageService,
+    private modalService: BsModalService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -75,6 +79,8 @@ export class AddAssetComponent implements OnInit {
       ]),
       modelNo: new FormControl(null, [
         Validators.required,
+      ]),
+      modelNoTxt: new FormControl(null, [
       ]),
       serialNumber: new FormControl('', [
         //Validators.required,
@@ -107,6 +113,8 @@ export class AddAssetComponent implements OnInit {
       ]),
       vendor: new FormControl(null, [
         Validators.required,
+      ]),
+      otherDetails: new FormControl(null, [
       ]),
       vendorName: new FormControl('', [
       ]),
@@ -148,6 +156,22 @@ export class AddAssetComponent implements OnInit {
   }
   customValidations() {
     return (formGroup: FormGroup) => {
+      if (formGroup.controls['productCategory'].value == 158) {
+        if (formGroup.controls['modelNoTxt'].value == null || formGroup.controls['modelNoTxt'].value == "") {
+          //$('#modelNoTxt').removeClass("d-none");
+          //$('#modelNo').addClass("d-none");
+          formGroup.controls['modelNo'].setErrors(null);
+          formGroup.controls['modelNoTxt'].setErrors({ required: true });
+        } else {
+          //$('#modelNoTxt').addClass("d-none");
+          //$('#modelNo').removeClass("d-none");
+          formGroup.controls['modelNoTxt'].setErrors(null);
+        }
+      } else {
+        //$('#modelNoTxt').addClass("d-none");
+        //$('#modelNo').removeClass("d-none");
+        formGroup.controls['modelNoTxt'].setErrors(null);
+      }
       //serial no validator
       for (let k in this.assetModelList) {
         if (this.assetModelList[k].id == formGroup.controls['assetType'].value) {
@@ -456,8 +480,20 @@ export class AddAssetComponent implements OnInit {
         }
       }
       this.angForm.controls['assetType'].setValue(null);
+      if (productCategory.label == "Infra Assets") {
+        $('#modelNoTxt').removeClass("d-none");
+        $('#modelNo').addClass("d-none");
+      } else {
+        $('#modelNoTxt').addClass("d-none");
+        $('#modelNo').removeClass("d-none");
+      }
     } else {
+      $('#modelNoTxt').addClass("d-none");
+      $('#modelNo').removeClass("d-none");
+      this.assetList = [];
+      this.modelList = [];
       this.angForm.controls['assetType'].setValue(null);
+      this.angForm.controls['modelNo'].setValue(null);
     }
   }
 
@@ -525,8 +561,17 @@ export class AddAssetComponent implements OnInit {
         }
       }
       this.asset.moduleId = this.angForm.controls['productCategory'].value;
+      this.asset.otherDetails = this.angForm.controls['otherDetails'].value;
       this.asset.subModuleId = this.angForm.controls['assetType'].value;
-      this.asset.modelNo = this.angForm.controls['modelNo'].value;
+      //this.asset.modelNo = this.angForm.controls['modelNo'].value;
+      //console.log(this.angForm.controls['modelNoTxt'].value);
+      let modelNo = null;
+      if (this.asset.moduleId == 158) {
+        modelNo = this.angForm.controls['modelNoTxt'].value;
+      } else {
+        modelNo = this.angForm.controls['modelNo'].value;
+      }
+      this.asset.modelNo = modelNo;
       this.asset.serialNo = this.angForm.controls['serialNumber'].value;
       this.asset.isUnderWarranty = this.angForm.controls['isUnderWarranty'].value == 1 ? true : false;
       this.asset.purchaseType = PurchaseType[this.angForm.controls['purchaseType'].value];
@@ -568,7 +613,19 @@ export class AddAssetComponent implements OnInit {
     this.assetService
       .saveAsset(this.asset)
       .subscribe((data: any) => {
-        this.router.navigate(['/asset/inventory']);
+        //this.router.navigate(['/asset/inventory']);
+        const config: ModalOptions = {
+          backdrop: 'static',
+          keyboard: false,
+          animated: true,
+          ignoreBackdropClick: true,
+          class: 'modal-bg',
+        };
+        const initialState = {
+          msg: "The entries are successfully saved.",
+          url: "/asset/inventory"
+        };
+        this.modalRef = this.modalService.show(CommonAlert, Object.assign({}, config, { initialState }));
       });
   }
 
@@ -583,6 +640,7 @@ export class AddAssetComponent implements OnInit {
         this.populateChildValues({ id: this.asset.moduleId });
         this.populateModels({ id: this.asset.subModuleId });
         this.angForm.get('assetType').setValue(this.asset.subModuleId);
+        this.angForm.get('otherDetails').setValue(this.asset.otherDetails);
         this.angForm.get('modelNo').setValue(this.asset.modelNo);
         this.angForm.get('serialNumber').setValue(this.asset.serialNo);
         this.angForm.get('isDepartment').setValue(this.asset.isDepartment ? 1 : 0);

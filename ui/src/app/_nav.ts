@@ -21,7 +21,7 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "USER" }
   },
   {
-    name: 'Permission',
+    name: 'Permissions',
     url: '/permission',
     icon: 'icon-star',
     attributes: { "moduleName": "ORGANIZATION" }
@@ -128,9 +128,9 @@ export const navItems: INavData[] = [
     children: [
       {
         name: 'Admin Access',
-        url: '/asset',
+        url: '/asset/admin-route',
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "moduleName": "ASSET ADMIN", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Order an Asset',
@@ -158,9 +158,9 @@ export const navItems: INavData[] = [
       },
       {
         name: 'Employee Access',
-        url: '/asset',
+        url: '/asset/user-route',
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "MY ASSET" }
+        attributes: { "moduleName": "ASSET USER", "licenceType": "ALL,ASSET" }
       },
       {
         name: "Request Asset",
@@ -170,13 +170,13 @@ export const navItems: INavData[] = [
       },
       {
         name: "My Assets",
-        url: '/asset/assigned',
+        url: '/asset/allocated',
         icon: 'fa fa-suitcase',
         attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: "Asset Tickets",
-        url: '/asset/requested',
+        url: '/asset/requested/outgoing',
         icon: 'fa fa-paper-plane',
         attributes: { "moduleName": "MY ASSET REQUEST", "licenceType": "ALL,ASSET" }
       },
@@ -184,13 +184,13 @@ export const navItems: INavData[] = [
         name: 'Pending Approval',
         url: '/asset/approval/pending',
         icon: 'fa fa-angle-left',
-        attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "moduleName": "ASSET REQUEST APPROVAL", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Agent Access',
-        url: '/asset',
+        url: '/asset/agent-route',
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "REQUESTED ASSET" }
+        attributes: { "moduleName": "ASSET AGENT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Tickets',

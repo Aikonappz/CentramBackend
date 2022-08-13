@@ -85,6 +85,13 @@
                       Model is required!
                     </div>
                   </div>
+                  <input type="text" placeholder="Model No" formControlName="modelNoTxt" id="modelNoTxt"
+                    name="modelNoTxt" class="form-control d-none">
+                  <div *ngIf="f.modelNoTxt.touched && f.modelNoTxt.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.modelNoTxt.errors?.required">
+                      Model is required!
+                    </div>
+                  </div>
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="quantity">Quantity</label>
