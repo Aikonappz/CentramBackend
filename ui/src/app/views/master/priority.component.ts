@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Status } from '../../model/enumerator/Status';
 import { LocationVO } from '../../model/LocationVO';
@@ -21,10 +21,12 @@ export class PriorityComponent implements OnInit {
   displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
   private datasource: PriorityDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  type: string;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
+    private route: ActivatedRoute,
     private service: MiscService
   ) {
     router.events.subscribe(event => {
@@ -51,8 +53,17 @@ export class PriorityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.datasource = new PriorityDataSource(this.service);
-    this.datasource.loadData();
+    this.route.params.subscribe(params => {
+      this.type = this.route.snapshot.paramMap.get('type');
+      console.log(this.type);
+      if (this.type == "asset") {
+        this.displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
+      } else {
+        this.displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
+      }
+      this.datasource = new PriorityDataSource(this.service);
+      this.datasource.loadData(0, 10, { priorityType: this.type.toUpperCase() });
+    });
   }
 
   ngAfterViewInit() {
@@ -71,10 +82,10 @@ export class PriorityComponent implements OnInit {
   }
 
   edit(loc: LocationVO) {
-    this.router.navigate(['/master/priority/edit/' + loc.id]);
+    this.router.navigate(['/master/priority/' + this.type + '/edit/' + loc.id]);
   }
   add() {
-    this.router.navigate(['/master/priority/add']);
+    this.router.navigate(['/master/priority/' + this.type + '/add']);
   }
 
   updateStatus(prty: Priority) {
@@ -91,8 +102,8 @@ export class PriorityComponent implements OnInit {
     }
   }
 
-  loadData() {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize);
+  loadData(req = {}) {
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
 
 }

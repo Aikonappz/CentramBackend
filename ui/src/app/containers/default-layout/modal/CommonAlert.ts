@@ -49,7 +49,9 @@ export class CommonAlert implements OnInit {
   }
   close() {
     this.bsModalRef.hide();
-    this.router.navigate([this.url]);
+    if (this.url != null) {
+      this.router.navigate([this.url]);
+    }
   }
   ngOnInit() { }
   ngAfterViewInit() { }

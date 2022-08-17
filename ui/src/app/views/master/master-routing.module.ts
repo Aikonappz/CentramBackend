@@ -73,7 +73,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'priority',
+        path: 'priority/:type',
         component: PriorityComponent,
         pathMatch: 'full',
         data: {
@@ -81,7 +81,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'priority/add',
+        path: 'priority/:licenceType/add',
         component: EditPriorityComponent,
         pathMatch: 'full',
         data: {
@@ -89,7 +89,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'priority/edit/:id',
+        path: 'priority/:licenceType/edit/:id',
         component: EditPriorityComponent,
         pathMatch: 'full',
         data: {

@@ -52,8 +52,12 @@
                 </td>
               </tr>
               <tr>
-                <td><strong>Vendor Names</strong></td>
-                <td>{{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}</td>
+                <td><strong>Vendor Name</strong></td>
+                <td>{{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}<br />
+                  <div *ngIf="assetOrder.otherDetails!=null">
+                    Other Details: {{assetOrder.otherDetails}}
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td><strong>Existing Agreement With Vendor</strong></td>

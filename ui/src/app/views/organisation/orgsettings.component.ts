@@ -67,19 +67,19 @@ export class OrgSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.angForm = this.fb.group({
       incidentPrefix: new FormControl('', [
-        Validators.maxLength(5),
+        Validators.maxLength(10),
         Validators.pattern(this.alphaNumericRegex),
       ]),
       assetPrefix: new FormControl('', [
-        Validators.maxLength(5),
+        Validators.maxLength(10),
         Validators.pattern(this.alphaNumericRegex),
       ]),
       outboundAssetRequestPrefix: new FormControl('', [
-        Validators.maxLength(5),
+        Validators.maxLength(10),
         Validators.pattern(this.alphaNumericRegex),
       ]),
       inboundAssetRequestPrefix: new FormControl('', [
-        Validators.maxLength(5),
+        Validators.maxLength(10),
         Validators.pattern(this.alphaNumericRegex),
       ]),
       ticketAllocationType: new FormControl('', [

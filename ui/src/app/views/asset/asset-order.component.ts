@@ -97,7 +97,7 @@ export class AssetOrderComponent implements OnInit {
         Validators.maxLength(4),
       ]),
       modelNo: new FormControl(null, [
-        Validators.required,
+        //Validators.required,
       ]),
       modelNoTxt: new FormControl(null, [
       ]),
@@ -131,6 +131,8 @@ export class AssetOrderComponent implements OnInit {
       rentStartAt: new FormControl('', [
       ]),
       rentEndAt: new FormControl('', [
+      ]),
+      otherDetails: new FormControl(null, [
       ]),
       approverUser1: new FormControl(null, [
         Validators.required,
@@ -166,17 +168,17 @@ export class AssetOrderComponent implements OnInit {
         if (formGroup.controls['modelNoTxt'].value == null || formGroup.controls['modelNoTxt'].value == "") {
           //$('#modelNoTxt').removeClass("d-none");
           //$('#modelNo').addClass("d-none");
-          formGroup.controls['modelNo'].setErrors(null);
-          formGroup.controls['modelNoTxt'].setErrors({ required: true });
+          //formGroup.controls['modelNo'].setErrors(null);
+          //formGroup.controls['modelNoTxt'].setErrors({ required: true });
         } else {
           //$('#modelNoTxt').addClass("d-none");
           //$('#modelNo').removeClass("d-none");
-          formGroup.controls['modelNoTxt'].setErrors(null);
+          //formGroup.controls['modelNoTxt'].setErrors(null);
         }
       } else {
         //$('#modelNoTxt').addClass("d-none");
         //$('#modelNo').removeClass("d-none");
-        formGroup.controls['modelNoTxt'].setErrors(null);
+        //formGroup.controls['modelNoTxt'].setErrors(null);
       }
       if (formGroup.controls['existingAgreement'].value == null) {
         formGroup.controls['existingAgreement'].setErrors({ required: true, notValidAgreement: false });
@@ -433,6 +435,7 @@ export class AssetOrderComponent implements OnInit {
       this.assetOrder.subModuleId = this.angForm.controls['assetType'].value;
       this.assetOrder.quantity = this.angForm.controls['quantity'].value;
       this.assetOrder.totalAmount = this.angForm.controls['totalAmount'].value;
+      this.assetOrder.otherDetails = this.angForm.controls['otherDetails'].value;
       //console.log(this.angForm.controls['modelNoTxt'].value);
       let modelNo = null;
       if (this.assetOrder.moduleId == 158) {
@@ -440,7 +443,7 @@ export class AssetOrderComponent implements OnInit {
       } else {
         modelNo = this.angForm.controls['modelNo'].value;
       }
-      this.assetOrder.model = modelNo;
+      this.assetOrder.model = modelNo == "" || modelNo == null ? null : modelNo;
       this.assetOrder.withinBudget = this.angForm.controls['withinBudget'].value == 1 ? true : false;
       if (!this.assetOrder.withinBudget) {
         this.assetOrder.limitAmount = this.angForm.controls['limitAmount'].value;

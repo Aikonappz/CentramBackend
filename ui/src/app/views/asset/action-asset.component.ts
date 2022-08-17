@@ -97,6 +97,12 @@ export class AssetRequestActionComponent implements OnInit {
   get f() { return this.angForm.controls; }
 
   formSubmit(mode: string) {
+    if (mode == 'REJECT') {
+      let res = window.confirm("Do you really want to reject the request?")
+      if (!res) {
+        return;
+      }
+    }
     let assetOrderApprovalDTO = new AssetApprovalDTO();
     assetOrderApprovalDTO.id = this.incident.id;
     let approved = mode == 'APPROVE' ? true : false;

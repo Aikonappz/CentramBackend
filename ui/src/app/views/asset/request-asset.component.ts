@@ -149,7 +149,7 @@ export class RequestAssetComponent implements OnInit {
       }, {
         validators: this.newCustomValidations(),
       });
-      this.miscService.prioritiesService({ "sort": "name,asc" })
+      this.miscService.prioritiesService({ "priorityType": "ASSET", "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
           for (let k in this.priorities) {
@@ -216,7 +216,7 @@ export class RequestAssetComponent implements OnInit {
       }, {
         validators: this.customValidations(),
       });
-      this.miscService.prioritiesService({ "sort": "name,asc" })
+      this.miscService.prioritiesService({ "priorityType": "ASSET", "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
           for (let k in this.priorities) {

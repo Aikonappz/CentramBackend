@@ -112,7 +112,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             " ( " +
             "   ((:status) <> 9 and i.status = (:status)) " +
             "   OR " +
-            "   ((:status) = 9) " +
+            "   ((:status) = 9) and i.status <> 4 " +
             " ) and " +
             " ( " +
             "   ((:serialNo) is not null and UPPER(a.serialNo) like (:serialNo)) " +

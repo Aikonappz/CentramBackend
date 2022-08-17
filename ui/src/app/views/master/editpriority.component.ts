@@ -26,6 +26,7 @@ export class EditPriorityComponent implements OnInit {
   timeList: any[] = [];
   nameList: any[] = [];
   angForm: FormGroup;
+  type: string;
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -94,6 +95,10 @@ export class EditPriorityComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.type = this.route.snapshot.paramMap.get('licenceType');
+
+    });
     if (!this.route.snapshot.paramMap.has('id')) { } else {
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.newEntity = false;
@@ -119,6 +124,7 @@ export class EditPriorityComponent implements OnInit {
       this.priority.name = this.angForm.controls['name'].value;
       this.priority.description = this.angForm.controls['description'].value;
       this.priority.sla = this.angForm.controls['sla'].value;
+      this.priority.priorityType = this.type.toUpperCase() == "ASSET" ? 0 : 1;
       /* process department and location */
       this.priority.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user.status);
@@ -135,7 +141,7 @@ export class EditPriorityComponent implements OnInit {
       .savePriorityService(this.priority)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/master/priority']);
+        this.router.navigate(['/master/priority/' + this.type]);
       });
   }
 

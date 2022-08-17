@@ -126,7 +126,7 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
       });
-      this.miscService.prioritiesService({ "sort": "name,asc" })
+      this.miscService.prioritiesService({ "priorityType": "INCIDENT", "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
           for (let k in this.priorities) {
@@ -168,7 +168,7 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
       });
-      this.miscService.prioritiesService({ "sort": "name,asc" })
+      this.miscService.prioritiesService({ "priorityType": "INCIDENT", "sort": "name,asc" })
         .subscribe((result: PriorityList) => {
           this.priorities = result.content;
           for (let k in this.priorities) {

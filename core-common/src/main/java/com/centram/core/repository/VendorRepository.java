@@ -19,6 +19,9 @@ public interface VendorRepository extends JpaRepository<Vendor, BigInteger> {
     @Query("select v from Vendor v join v.organisation org where UPPER(v.name) = UPPER((:name)) and org.id = (:organisationId)")
     Vendor getByName(@Param("name") String name, @Param("organisationId") BigInteger organisationId);
 
+    @Query("select v from Vendor v join v.organisation org where v.vendorType = (:vendorType) and UPPER(v.name) = UPPER((:name)) and org.id = (:organisationId)")
+    Vendor getByNameAndType(@Param("vendorType") VendorType vendorType, @Param("name") String name, @Param("organisationId") BigInteger organisationId);
+
     @Query("select v from Vendor v join v.vendorModules vm join v.organisation org where vm.moduleId = (:moduleId) and vm.subModuleId = (:subModuleId) and org.id = (:organisationId)")
     List<Vendor> getByModuleIdAndSubModuleId(@Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId, @Param("organisationId") BigInteger organisationId);
 

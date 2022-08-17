@@ -86,6 +86,12 @@ public class VendorService {
         return vendorRepository.getByName(name, loggedInUser.getOrganisationId());
     }
 
+    @Transactional(readOnly = true)
+    public Vendor getByNameAndType(VendorType vendorType, String name) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return vendorRepository.getByNameAndType(vendorType, name, loggedInUser.getOrganisationId());
+    }
+
     /**
      * get all vendor
      *

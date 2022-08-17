@@ -573,7 +573,7 @@ public class IncidentService {
             } else {
                 setting = organisationService.getOrganisationSettings();
                 prefix = (setting != null && setting.getInboundAssetRequestPrefix() != null) ? setting.getInboundAssetRequestPrefix() : inboundAssetReqPrefix;
-                Long totalOrder = incidentRepository.getCount(LicenseType.INCIDENT, loggedInUser.getOrganisationId())+1;
+                Long totalOrder = incidentRepository.getCount(LicenseType.ASSET, loggedInUser.getOrganisationId())+1;
                 String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
                 incident.setIncidentNo(orderNo);
             }

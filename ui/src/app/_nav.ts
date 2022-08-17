@@ -45,10 +45,16 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "LOCATION" }
       },
       {
-        name: 'Priority',
-        url: '/master/priority',
+        name: 'Priority -Incident',
+        url: '/master/priority/incident',
         icon: 'icon-star',
-        attributes: { "moduleName": "PRIORITY" }
+        attributes: { "moduleName": "PRIORITY", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Priority -Asset',
+        url: '/master/priority/asset',
+        icon: 'icon-star',
+        attributes: { "moduleName": "PRIORITY", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Holiday Calender',
@@ -151,7 +157,7 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "MANAGE ASSET", "licenceType": "ALL,ASSET" }
       },
       {
-        name: 'Pending Approval',
+        name: 'Pending Approvals',
         url: '/asset/order/incommig',
         icon: 'fa fa-outdent',
         attributes: { "moduleName": "ORDERED ASSET ACTION", "licenceType": "ALL,ASSET" }
@@ -181,7 +187,7 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "MY ASSET REQUEST", "licenceType": "ALL,ASSET" }
       },
       {
-        name: 'Pending Approval',
+        name: 'Pending Approvals',
         url: '/asset/approval/pending',
         icon: 'fa fa-angle-left',
         attributes: { "moduleName": "ASSET REQUEST APPROVAL", "licenceType": "ALL,ASSET" }

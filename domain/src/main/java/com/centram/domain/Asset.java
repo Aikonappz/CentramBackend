@@ -80,9 +80,9 @@ public class Asset extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String actualSubModuleName;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @NotNull
-    @Column(name = "model_no", columnDefinition = "varchar(255) not null")
+    @Column(name = "model_no", columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String modelNo;
 
@@ -200,7 +200,7 @@ public class Asset extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "other_details", columnDefinition = "varchar(255) not null")
+    @Column(name = "other_details", columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String otherDetails;
 

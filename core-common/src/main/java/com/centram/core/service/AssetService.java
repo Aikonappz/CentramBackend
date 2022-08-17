@@ -233,7 +233,7 @@ public class AssetService {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
         List<Map<String, String>> values = new ArrayList<Map<String, String>>();
-        List<String> commonHeaders = Arrays.asList("PRODUCT_CATEGORY","PRODUCT_SUBCATEGORY","MODEL","SERIAL_NO","DEPARTMENT_NAME","ORG_NAME","LOCATION_NAME","UNDER_WARRANTY","WARRANTY_VALIDITY","PURCHASE_TYPE","RENTAL_START_ON","RENTAL_ENDS_ON","VENDOR_DETAILS","REQUESTED_BY","APPROVER_1","APPROVER_2");
+        List<String> commonHeaders = Arrays.asList("PRODUCT_CATEGORY","PRODUCT_SUBCATEGORY","MODEL","SERIAL_NO","DEPARTMENT_NAME","ORG_NAME","LOCATION_NAME","UNDER_WARRANTY","WARRANTY_VALIDITY","PURCHASE_TYPE","RENTAL_START_ON","RENTAL_ENDS_ON","VENDOR_DETAILS","OTHER_DETAILS","REQUESTED_BY","APPROVER_1","APPROVER_2");
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
              CSVParser csvParser = new CSVParser(fileReader,
                      CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())

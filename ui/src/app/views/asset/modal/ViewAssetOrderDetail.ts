@@ -61,6 +61,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                             <div *ngIf="assetOrder.existingAgreement==false">
                                 Existing Agreement: No
                             </div>
+                            <div *ngIf="assetOrder.otherDetails!=null">
+                            Other Details: {{assetOrder.otherDetails}}
+                            </div>
                         </td>
                     </tr>
                     <tr>

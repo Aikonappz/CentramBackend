@@ -1,7 +1,9 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.enumarator.PriorityType;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -31,7 +33,7 @@ import java.math.BigInteger;
 @Audited
 @Table(
         name = "priority",
-        uniqueConstraints = @UniqueConstraint(name = "priority_org_constraint", columnNames = {"name", "organisation_id"}),
+        uniqueConstraints = @UniqueConstraint(name = "priority_org_type_constraint", columnNames = {"name", "organisation_id","priority_type"}),
         indexes = {
                 @Index(name = "prty_org_idx", columnList = "organisation_id", unique = false),
         }
@@ -79,4 +81,12 @@ public class Priority extends BaseEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "organisation_id", referencedColumnName = "id")
     private Organisation organisation;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "priority_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private PriorityType priorityType;
 }

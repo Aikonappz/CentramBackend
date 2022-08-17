@@ -26,6 +26,7 @@ export class AssetOrder extends Base {
     purchaseType: any;
     rentStartAt: string;
     rentEndAt: string;
+    otherDetails: string;
     approverUser1: any;
     approvedUser1: boolean;
     approverUser1Comment: string;

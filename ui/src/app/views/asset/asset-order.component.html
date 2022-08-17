@@ -77,7 +77,7 @@
                   </div>
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="modelNo">Model</label>
+                  <label class="form-col-form-label" for="modelNo">Model</label>
                   <ng-select [items]="modelList" placeholder="-- Select Model --" formControlName="modelNo" id="modelNo"
                     modelNo name="modelNo" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.modelNo.touched && f.modelNo.invalid" class="alert alert-danger-custom">
@@ -239,6 +239,17 @@
                 <div class="col proxy-agreement-end-date-col"></div>
               </div>
               <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label" for="otherDetails">Other Details</label>
+                  <textarea id="otherDetails" rows="4" class="form-control textarea-non-resizable"
+                    formControlName="otherDetails" id="otherDetails" name="otherDetails"
+                    placeholder="Other Details"></textarea>
+                  <div *ngIf="f.otherDetails.touched && f.otherDetails.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.otherDetails.errors?.required">
+                      Other Details is required!
+                    </div>
+                  </div>
+                </div>
                 <div class="col duration-col">
                   <label class="form-col-form-label required-control-label" for="purchaseType">Duration</label>
                   <ng-select [items]="rentDurationList" placeholder="-- Select Rent Duration --"
@@ -250,10 +261,10 @@
                     </div>
                   </div>
                 </div>
-                <div class="col "></div>
-                <div class="col "></div>
-                <div class="col "></div>
-                <div class="col proxy-duration-col"></div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
                 <div class="col proxy-duration-col"></div>
                 <div class="col proxy-duration-col"></div>
               </div>

@@ -227,6 +227,12 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
 
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "other_details", columnDefinition = "varchar(255)")
+    @JsonView(Views.BasicView.class)
+    private String otherDetails;
+
     public AssetOrder(@NotNull BigInteger id) {
         this.id = id;
     }

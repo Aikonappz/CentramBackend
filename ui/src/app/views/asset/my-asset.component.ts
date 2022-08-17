@@ -22,7 +22,7 @@ declare var $: any;
 export class MyAssetComponent implements OnInit {
   moduleName: string = "MY ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['inc', 'assetDtl', 'validity', 'allocation', 'deallocation', 'status',];
+  displayedColumns = ['assetDtl', 'validity', 'allocation', 'deallocation', 'status',];
   private datasource: UserAllocatedAssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: any = [];
@@ -145,6 +145,14 @@ export class MyAssetComponent implements OnInit {
   formatDateTime(d: string) {
     if (d != null && d != "") {
       return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+    }
+    return null;
+  }
+
+  formatDate(d: string) {
+    if (d != null && d != "") {
+      //return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
+      return moment.utc(d).format(AppUtility.APP_VIEW_DATE_FORMAT);
     }
     return null;
   }

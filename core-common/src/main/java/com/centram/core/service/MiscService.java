@@ -11,10 +11,7 @@ import com.centram.common.vo.UserVO;
 import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
-import com.centram.domain.enumarator.LicenseType;
-import com.centram.domain.enumarator.NotificationType;
-import com.centram.domain.enumarator.PurchaseType;
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -81,12 +78,17 @@ public class MiscService {
     private String dateFormat;
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
     private String appLocalDateTimeFormat;
+    private final String dtFormat = "dd/MM/yyyy";
     @Value("${app.mail.reply.email}")
     private String appReplyToEmail;
     @Value("${app.temp.path}")
     private String appTmpPath;
     @Autowired
     private NotificationService notificationService;
+
+    /*public static void main(String[] args) {
+        log.info(String.valueOf(LocalDate.parse("10/12/1982", DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+    }*/
 
     /**
      * Onboard request
@@ -329,11 +331,11 @@ public class MiscService {
                         asset.setSubModuleId(module.getId());
                     }
                 }
-                if (data.get("MODEL") == null || data.get("MODEL").trim().equals("")) {
-                    rowWiseIssues.put(rowNo++, "Asset Model Required!");
-                    continue;
-                } else {
+                if (data.get("MODEL") != null && !data.get("MODEL").trim().equals("")) {
                     asset.setModelNo(data.get("MODEL").trim());
+                }
+                if (data.get("OTHER_DETAILS") != null && !data.get("OTHER_DETAILS").trim().equals("")) {
+                    asset.setOtherDetails(data.get("OTHER_DETAILS").trim());
                 }
                 if (module.getGenerateAssetNo()) {
                     setting = organisationService.getOrganisationSettings();
@@ -379,7 +381,7 @@ public class MiscService {
                     asset.setIsLocation(false);
                 }
                 asset.setIsUnderWarranty(data.get("UNDER_WARRANT") != null && data.get("UNDER_WARRANT").trim().equalsIgnoreCase("YES"));
-                asset.setWarrantyExpiredAt(LocalDate.parse(data.get("WARRANTY_VALIDITY"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
+                asset.setWarrantyExpiredAt(LocalDate.parse(data.get("WARRANTY_VALIDITY"), DateTimeFormatter.ofPattern(dtFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
                 if (data.get("PURCHASE_TYPE") == null || data.get("PURCHASE_TYPE").trim().equals("")) {
                     rowWiseIssues.put(rowNo++, "Purchase Type Required!");
                     continue;
@@ -391,17 +393,17 @@ public class MiscService {
                         rowWiseIssues.put(rowNo++, "Rental Start Required!");
                         continue;
                     } else {
-                        asset.setRentalStartAt(LocalDate.parse(data.get("RENTAL_START_ON"), DateTimeFormatter.ofPattern(dateFormat)).atStartOfDay());
+                        asset.setRentalStartAt(LocalDate.parse(data.get("RENTAL_START_ON"), DateTimeFormatter.ofPattern(dtFormat)).atStartOfDay());
                     }
                     if (data.get("RENTAL_ENDS_ON") == null || data.get("RENTAL_ENDS_ON").trim().equals("")) {
                         rowWiseIssues.put(rowNo++, "Rental End Required!");
                         continue;
                     } else {
-                        asset.setRentalEndAt(LocalDate.parse(data.get("RENTAL_ENDS_ON"), DateTimeFormatter.ofPattern(dateFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
+                        asset.setRentalEndAt(LocalDate.parse(data.get("RENTAL_ENDS_ON"), DateTimeFormatter.ofPattern(dtFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
                     }
                 }
                 if (data.get("VENDOR_DETAILS") != null && !data.get("VENDOR_DETAILS").trim().equals("")) {
-                    vendor = vendorService.getByName(data.get("VENDOR_DETAILS").trim().toUpperCase(Locale.ROOT));
+                    vendor = vendorService.getByNameAndType(VendorType.ASSET, data.get("VENDOR_DETAILS").trim().toUpperCase(Locale.ROOT));
                     if (vendor != null) {
                         asset.setVendor(vendor);
                     } else {
@@ -1261,7 +1263,7 @@ public class MiscService {
         mailValues.put("asset_type", assetOrder.getSubModuleName());
         mailValues.put("product_type", assetOrder.getModuleName());
         mailValues.put("qty", assetOrder.getQuantity());
-        mailValues.put("model", assetOrder.getModel());
+        mailValues.put("model", assetOrder.getModel() == null ? "NA" : assetOrder.getModel());
         mailValues.put("req_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
         mailValues.put("req_id", assetOrder.getRaisedUser().getEmployeeId());
         mailValues.put("req_email", assetOrder.getRaisedUser().getEmail());
@@ -1291,7 +1293,7 @@ public class MiscService {
         }*/
         mailValues.put("rent_start_date", "");
         mailValues.put("rent_end_date", assetOrder.getRentDuration());
-        mailValues.put("vendor_name", assetOrder.getVendor() == null? "Other" : assetOrder.getVendor().getName());
+        mailValues.put("vendor_name", assetOrder.getVendor() == null ? "Other" : assetOrder.getVendor().getName());
         mailValues.put("approver_index", 0);
         mailValues.put("order_id", assetOrder.getId());
         mailValues.put("app1_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());
@@ -1333,7 +1335,7 @@ public class MiscService {
             mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
             mailValues.put("feedback", assetOrder.getApproverUser1Comment());
-            mailValues.put("ord_status", assetOrder.getApprovedUser1() ? "Approved" : "Rejected");
+            mailValues.put("ord_status", assetOrder.getApprovedUser1() ? "Completed" : "Rejected");
             mailValues.put("subject", "approver1FeedbackMailSubject");
             mailValues.put("body", "approver1FeedbackMailBody");
             mailValues.put("to", assetOrder.getRaisedUser().getEmail());
@@ -1342,7 +1344,7 @@ public class MiscService {
             mailValues.put("notification", new Notification(null, null, assetOrder.getApproverUser1(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());
             mailValues.put("feedback", assetOrder.getApproverUser2Comment());
-            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Approved" : "Rejected");
+            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Completed" : "Rejected");
             mailValues.put("subject", "approver2FeedbackMailSubject");
             mailValues.put("body", "approver2FeedbackMailBody");
             mailValues.put("to", assetOrder.getApproverUser1().getEmail());
@@ -1350,7 +1352,7 @@ public class MiscService {
             mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
             mailValues.put("feedback", assetOrder.getApproverUser2Comment());
-            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Approved" : "Rejected");
+            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Completed" : "Rejected");
             mailValues.put("subject", "approver2FeedbackMailSubject");
             mailValues.put("body", "approver2FeedbackMailBody");
             mailValues.put("to", assetOrder.getRaisedUser().getEmail());

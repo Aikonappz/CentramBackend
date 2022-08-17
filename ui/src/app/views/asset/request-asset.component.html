@@ -244,11 +244,12 @@
                   <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
                     class="form-control">
                 </div>
-                <div class="col">
+                <div class="col" *ngIf="incident.ticketType!='DEALLOCATE'">
                   <label class="form-col-form-label" for="approved">Approved By Manager</label>
                   <input type="text" id="approved" readonly
                     value="{{incident.feedbackProvided&&incident.assetApproved? 'YES' : 'NO'}}" class="form-control">
                 </div>
+                <div class="col" *ngIf="incident.ticketType=='DEALLOCATE'"></div>
               </div>
               <div class="row row-margin-05">
                 <div class="col">

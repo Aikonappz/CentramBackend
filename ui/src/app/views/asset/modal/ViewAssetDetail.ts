@@ -54,7 +54,7 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                   Rental End Date: {{formatDateTime(element.rentalEndAt)}}<br />
                 </div>
                 Available: {{element.isAvailable==true? 'YES' : 'NO'}}
-                <div *ngIf="element.otherDetails!=null||element.otherDetails!=''">
+                <div *ngIf="element.otherDetails!=null">
                 Other Details: {{element.otherDetails}}
                 </div>
               </td>

@@ -8,6 +8,7 @@ export class Priority extends Base {
     description: string;
     sla: string;
     status: any;
+    priorityType: any;
     organisation: Organisation;
     constructor() {
         super();
@@ -17,6 +18,7 @@ export class Priority extends Base {
         this.sla = '';
         this.status = Status.ACTIVE;
         this.organisation = new Organisation();
+        this.priorityType = null;
     }
 }
 

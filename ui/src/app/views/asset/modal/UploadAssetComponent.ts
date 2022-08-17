@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
-import { BsModalRef } from "ngx-bootstrap/modal";
+import { BsModalRef, BsModalService, ModalOptions } from "ngx-bootstrap/modal";
+import { CommonAlert } from "../../../containers/default-layout/modal/CommonAlert";
 import { AssetService } from "../../../service/AssetService";
 import { UserService } from "../../../service/UserService";
 
@@ -56,6 +57,7 @@ export class UploadAssetComponent implements OnInit {
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
     private assetService: AssetService,
+    private modalService: BsModalService,
   ) {
     this.angFormUpload = this.fb.group({
       fileInput: new FormControl(null, [
@@ -111,6 +113,19 @@ export class UploadAssetComponent implements OnInit {
         .uploadAssetsService(formData, { 'headers': headers })
         .subscribe((data: any) => {
           this.bsModalRef.hide();
+          const config: ModalOptions = {
+            backdrop: 'static',
+            keyboard: false,
+            animated: true,
+            ignoreBackdropClick: true,
+            class: 'modal-bg',
+          };
+          const initialState = {
+            msg: "Your upload was successful. Please refer to your mail for more details.",
+            url: null,
+          };
+          ///modalRef: BsModalRef;
+          this.bsModalRef = this.modalService.show(CommonAlert, Object.assign({}, config, { initialState }));
         });
     } else {
       console.log("Invalid Form!");

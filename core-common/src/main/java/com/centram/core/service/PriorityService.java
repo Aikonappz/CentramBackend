@@ -7,6 +7,7 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.PriorityRepository;
 import com.centram.domain.Priority;
+import com.centram.domain.enumarator.PriorityType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,9 @@ public class PriorityService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Priority> getPriorities(Pageable pageable) {
+    public PaginatedList<Priority> getPriorities(String priorityType, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<Priority>(priorityRepository.getPriorityByOrganisation(loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Priority>(priorityRepository.getPriorityByOrganisation(PriorityType.valueOf(priorityType), loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
