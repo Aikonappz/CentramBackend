@@ -31,7 +31,7 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="subModuleId">Product Sub
                     Category</label>
-                  <ng-select [items]="subModuleList" placeholder="-- Select Asset Category --"
+                  <ng-select [items]="subModuleList" placeholder="-- Select Product Sub Category --"
                     formControlName="subModuleId" id="subModuleId" name="subModuleId" bindLabel="customerModuleName"
                     bindValue="moduleId">
                   </ng-select>
@@ -240,7 +240,7 @@
                     class="form-control">
                 </div>
                 <div class="col">
-                  <label class="form-col-form-label" for="subModuleName">Asset Category</label>
+                  <label class="form-col-form-label" for="subModuleName">Product Sub Category</label>
                   <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
                     class="form-control">
                 </div>

@@ -532,4 +532,8 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("userSubModules") List<BigInteger> userSubModules,
             @Param("organisationId") BigInteger organisationId
     );
+
+    @Query("select i from Incident i where i.status = 4 and i.asset.id is not null and i.ticketType = 'ALLOCATE' and " +
+            " i.incidentType = 2 and i.organisation.id = (:organisationId) ")
+    List<Incident> getAllocatedAssets(@Param("organisationId") BigInteger organisationId);
 }

@@ -136,6 +136,11 @@ public class IncidentService {
         return new PaginatedList<Incident>(incidentPage);
     }
 
+    @Transactional(readOnly = true)
+    public List<Incident> getAllocatedAssets(BigInteger organisationId) {
+        return incidentRepository.getAllocatedAssets(organisationId);
+    }
+
     /**
      * @param moduleId
      * @param subModuleId
@@ -390,7 +395,7 @@ public class IncidentService {
      * @return
      */
     @Transactional(readOnly = false)
-    public Incident update(Incident incidents) {
+    public Incident saveViaBatch(Incident incidents) {
         return incidentRepository.save(incidents);
     }
 

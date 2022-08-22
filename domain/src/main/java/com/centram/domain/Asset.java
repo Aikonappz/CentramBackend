@@ -204,6 +204,16 @@ public class Asset extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String otherDetails;
 
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "warranty_expiration_msg_sent", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean warrantyExpirationMessageSent = false;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "warranty_expired_msg_sent", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean warrantyExpiredMessageSent = false;
+
     public Asset(@NotNull BigInteger id) {
         this.id = id;
     }

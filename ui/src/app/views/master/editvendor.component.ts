@@ -6,8 +6,6 @@ import { Location } from '@angular/common';
 import { MiscService } from '../../service/MiscService';
 import { AppUtility } from '../../config/AppUtility';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
-import { Module } from '../../model/Module';
-import { DistributionListModule } from '../../model/DistributionListModule';
 import { Vendor } from '../../model/Vendor';
 import { VendorModule } from '../../model/VendorModule';
 import { Status } from '../../model/enumerator/Status';
@@ -215,15 +213,22 @@ export class EditVendorComponent implements OnInit {
       this.vendor.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value == "" ? null : this.angForm.controls['ticketAllocationType'].value;
       this.vendor.vendorType = this.type.toUpperCase() == "ASSET" ? 0 : 1;
       this.vendorModules = [];
+      let c = 0;
       for (let i in this.submoduleIds) {
-        this.vendorModules[i] = new DistributionListModule(
-          this.angForm.controls['dlModuleId'].value,
-          this.submoduleIds[i]
-        );
+        //console.log(this.submoduleIds[i]);
+        for (let k in this.subModuleList) {
+          if (this.subModuleList[k].id == this.submoduleIds[i]) {
+            this.vendorModules[i] = new VendorModule(
+              this.subModuleList[k].parentModuleId,
+              this.subModuleList[k].id
+            );
+            c++;
+          }
+        }
       }
       this.vendor.vendorModules = this.vendorModules;
       this.vendor.organisation = null;
-      //console.log(this.user.status);
+      //console.log(this.vendor);
       //console.log(this.angForm.controls['status'].value);
       this.callSaveVendorService();
     } else {
@@ -259,13 +264,18 @@ export class EditVendorComponent implements OnInit {
         this.vendor.ticketAllocationType = data.ticketAllocationType;
         this.vendor.inHouse = data.inHouse;
         //console.log(JSON.stringify(this.user));
-        this.populateSubmodule({ id: this.vendor.vendorModules[0].moduleId });
+        let parentModules = [];
+        for (let i in this.vendor.vendorModules) {
+          parentModules[i] = { id: this.vendor.vendorModules[i].moduleId };
+        }
         this.submoduleIds = [];
-        let moduleId = null;
+        let moduleIds = [];
         for (let k in this.vendor.vendorModules) {
           this.submoduleIds.push(this.vendor.vendorModules[k].subModuleId);
-          moduleId = this.vendor.vendorModules[k].moduleId;
+          moduleIds.push(this.vendor.vendorModules[k].moduleId);
         }
+        this.angForm.get('dlModuleId').setValue(moduleIds.map(Number));
+        this.populateSubmodule(parentModules);
         //this.populateSubmodule(moduleId);
         this.angForm.get('inHouse').setValue(this.vendor.inHouse);
         this.angForm.get('name').setValue(this.vendor.name);
@@ -273,7 +283,6 @@ export class EditVendorComponent implements OnInit {
         this.angForm.get('contactEmail').setValue(this.vendor.contactEmail);
         this.angForm.get('contactName').setValue(this.vendor.contactName);
         this.angForm.get('contactNumber').setValue(this.vendor.contactNumber);
-        this.angForm.get('dlModuleId').setValue(moduleId);
         this.angForm.get('dlSubModuleId').setValue(this.submoduleIds.map(Number));
         this.angForm.get('dlSubModuleId').markAsTouched();
         this.angForm.get('ticketAllocationType').setValue(this.vendor.ticketAllocationType);
@@ -284,11 +293,16 @@ export class EditVendorComponent implements OnInit {
 
   @ViewChild("dlModuleId") dlModuleId;
   populateSubmodule(mId) {
+    //console.log(mId);
     if (typeof mId !== 'undefined') {
       let c = 0;
+      let moduleIds = [];
+      for (let i = 0; i < mId.length; i++) {
+        moduleIds.push(mId[i].id);
+      }
       this.subModuleList = [];
       for (let i = 0; i < this.modules.length; i++) {
-        if (this.modules[i].parentModuleId == mId.id) {
+        if (moduleIds.length > 0 && moduleIds.includes(this.modules[i].parentModuleId)) {
           this.modules[i].customerModuleName = AppUtility.toTitleCase(this.modules[i].customerModuleName);
           this.subModuleList.push(this.modules[i]);
           c++;

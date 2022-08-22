@@ -550,6 +550,113 @@ public class AppEmailService {
 
     @Transactional
     //@Async("asyncExecutor")
+    public void assetWarrantyExpiration(Map<String, Object> mailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ASSET_WARRANTY_EXPIRATION_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("ASSET_WARRANTY_EXPIRATION_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get("subject").toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get("content").toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("exp_date", mailValues.get("exp_date"));
+        context.setVariable("asset_no", mailValues.get("asset_no"));
+        context.setVariable("adminTeamEmail", mailValues.get("adminTeamEmail"));
+        mailSubject = StringEscapeUtils.unescapeHtml4(templateEngine.process(mailSubject, context));
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", "Asset Manager,");
+        context.setVariable("exp_date", mailValues.get("exp_date"));
+        context.setVariable("asset_no", mailValues.get("asset_no"));
+        context.setVariable("adminTeamEmail", mailValues.get("adminTeamEmail"));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        String body = StringEscapeUtils.unescapeHtml4(baseEmailTemplate);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", ((List<String>) mailValues.get("recipients")).toArray(new String[0]));
+        mailMap.put("bcc", new String[]{});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", body);
+        log.info("ASSET EXPIRATION EMAIL TITLE: {}", mailSubject);
+        log.info("ASSET EXPIRATION EMAIL BODY: {}", body);
+        emailService.sendMail(mailMap);
+        if (mailValues.containsKey("userToNotify")) {
+            List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
+            for (UserVO uv : userVOS) {
+                notificationService.save(
+                        Collections.singletonList(
+                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
+                        )
+                );
+            }
+        }
+    }
+
+    @Transactional
+    //@Async("asyncExecutor")
+    public void assetValidityExpiration(Map<String, Object> mailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ASSET_VALIDITY_EXPIRATION_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("ASSET_VALIDITY_EXPIRATION_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get("subject").toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get("content").toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("exp_date", mailValues.get("exp_date"));
+        context.setVariable("asset_no", mailValues.get("asset_no"));
+        context.setVariable("adminTeamEmail", mailValues.get("adminTeamEmail"));
+        mailSubject = StringEscapeUtils.unescapeHtml4(templateEngine.process(mailSubject, context));
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", "Asset Manager,");
+        context.setVariable("exp_date", mailValues.get("exp_date"));
+        context.setVariable("asset_no", mailValues.get("asset_no"));
+        context.setVariable("adminTeamEmail", mailValues.get("adminTeamEmail"));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        String body = StringEscapeUtils.unescapeHtml4(baseEmailTemplate);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", ((List<String>) mailValues.get("recipients")).toArray(new String[0]));
+        mailMap.put("bcc", new String[]{});
+        mailMap.put("cc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", body);
+        log.info("ASSET EXPIRATION EMAIL TITLE: {}", mailSubject);
+        log.info("ASSET EXPIRATION EMAIL BODY: {}", body);
+        emailService.sendMail(mailMap);
+        if (mailValues.containsKey("userToNotify")) {
+            List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
+            for (UserVO uv : userVOS) {
+                notificationService.save(
+                        Collections.singletonList(
+                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
+                        )
+                );
+            }
+        }
+    }
+
+
+    @Transactional
+    //@Async("asyncExecutor")
     public void organisationNotification(Map<String, Object> mailValues, Boolean expired) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ORGANISATION_UPDATE"));
         String baseEmailTemplate = appConfigurations.stream()

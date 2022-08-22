@@ -1,5 +1,4 @@
 import { Base } from "./Base";
-import { Organisation } from "./Organisation";
 
 export class VendorModule extends Base {
     moduleId: number;

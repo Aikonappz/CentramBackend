@@ -320,6 +320,16 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private LocalDateTime assetValidity;
 
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "validity_expiration_msg_sent", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean validityExpirationMessageSent = false;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "validity_expired_msg_sent", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean validityExpiredMessageSent = false;
+
     public Incident(@NotNull BigInteger id) {
         this.id = id;
     }

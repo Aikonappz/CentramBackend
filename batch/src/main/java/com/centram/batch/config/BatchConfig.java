@@ -105,6 +105,16 @@ public class BatchConfig {
     }
 
     @Bean
+    public AllocatedAssetValidityExpiry allocatedAssetValidityExpiry() {
+        return new AllocatedAssetValidityExpiry();
+    }
+
+    @Bean
+    public AssetWarrantyExpiry assetWarrantyExpiry() {
+        return new AssetWarrantyExpiry();
+    }
+
+    @Bean
     public SlaNotify incidentSLANotification() {
         return new SlaNotify();
     }

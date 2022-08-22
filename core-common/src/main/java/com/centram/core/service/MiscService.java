@@ -45,6 +45,7 @@ import static com.centram.common.utility.Utility.assetNo;
 public class MiscService {
 
     private static final Logger log = LoggerFactory.getLogger(MiscService.class);
+    private final String dtFormat = "dd/MM/yyyy";
     @Value("${app.default.asset.prefix}")
     public String appDefaultAssetPrefix;
     @Autowired
@@ -78,7 +79,6 @@ public class MiscService {
     private String dateFormat;
     @Value("${app.local.date.time.format:yyyy-MM-dd'T'HH:mm}")
     private String appLocalDateTimeFormat;
-    private final String dtFormat = "dd/MM/yyyy";
     @Value("${app.mail.reply.email}")
     private String appReplyToEmail;
     @Value("${app.temp.path}")
@@ -1227,6 +1227,37 @@ public class MiscService {
         mailValues.put("recipients", orgEmails);
         mailValues.put("userToNotify", users);
         appEmailService.organisationNotification(mailValues, expired);
+    }
+
+    @Transactional
+    @Async("asyncExecutor")
+    public void assetWarrantyExpiration(Asset asset) {
+        List<UserVO> userVOS = userService.getUsersByRolesAndOrganisation(Arrays.asList("ORG_ASSET_ADMIN"), asset.getOrganisation().getId());
+        Map<String, Object> mailValues = new HashMap<String, Object>();
+        mailValues.put("asset_no", asset.getSerialNo());
+        mailValues.put("exp_date", asset.getWarrantyExpiredAt().format(DateTimeFormatter.ofPattern(dateFormat)));
+        mailValues.put("adminTeamEmail", appReplyToEmail);
+        mailValues.put("recipients", userVOS.stream().filter(i -> {
+            return i.getEmail() != null;
+        }).map(UserVO::getEmail).collect(Collectors.toList()));
+        mailValues.put("userToNotify", userVOS);
+        appEmailService.assetWarrantyExpiration(mailValues);
+    }
+
+    @Transactional
+    @Async("asyncExecutor")
+    public void assetValidityExpiration(Incident incident) {
+        UserVO userVO = new UserVO(incident.getRaisedUser());
+        List<UserVO> userVOS = Arrays.asList(userVO);
+        Map<String, Object> mailValues = new HashMap<String, Object>();
+        mailValues.put("asset_no", incident.getAsset().getSerialNo());
+        mailValues.put("exp_date", incident.getAssetValidity().format(DateTimeFormatter.ofPattern(dateFormat)));
+        mailValues.put("adminTeamEmail", appReplyToEmail);
+        mailValues.put("recipients", userVOS.stream().filter(i -> {
+            return i.getEmail() != null;
+        }).map(UserVO::getEmail).collect(Collectors.toList()));
+        mailValues.put("userToNotify", userVOS);
+        appEmailService.assetValidityExpiration(mailValues);
     }
 
     @Transactional

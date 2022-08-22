@@ -97,6 +97,21 @@ public class AssetService {
         return new PaginatedList<Asset>(assetPage);
     }
 
+    @Transactional(readOnly = true)
+    public List<Asset> getAssets(BigInteger organisationId) {
+        List<Asset> assets = assetRepository.findAll(organisationId);
+        Module module = null;
+        for (int i = 0; i < assets.size(); i++) {
+            module = moduleService.getModuleById(assets.get(i).getModuleId());
+            assets.get(i).setModuleName(module.getAssetOPSName());
+            assets.get(i).setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assets.get(i).getSubModuleId());
+            assets.get(i).setSubModuleName(module.getAssetOPSName());
+            assets.get(i).setActualSubModuleName(module.getName());
+        }
+        return assets;
+    }
+
     /**
      * get Asset By Id
      *
@@ -153,6 +168,11 @@ public class AssetService {
         }
     }
 
+    @Transactional(readOnly = false)
+    public Asset saveViaBatch(Asset asset) {
+        return proxyService.saveAsset(asset);
+    }
+
     @Transactional(readOnly = true)
     public ByteArrayInputStream download(String productCategory, String assetType, String modelNo, String serialNo, Integer assetAvailable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -199,11 +219,11 @@ public class AssetService {
                 data = Arrays.asList(
                         module.getCustomerModuleName(),
                         subModule.getCustomerModuleName(),
-                        asset.getModelNo(),
+                        asset.getModelNo() == null ? "NA" : asset.getModelNo(),
                         asset.getSerialNo(),
                         asset.getRaisedForLocation().getName(),
-                        asset.getDepartment() == null ? "" : asset.getDepartment().getName(),
-                        asset.getLocation() == null ? "" : asset.getLocation().getOfficeName(),
+                        asset.getDepartment() == null ? "NA" : asset.getDepartment().getName(),
+                        asset.getLocation() == null ? "NA" : asset.getLocation().getOfficeName(),
                         asset.getVendor().getName(),
                         asset.getIsUnderWarranty() ? "YES" : "NO",
                         asset.getWarrantyExpiredAt().format(DateTimeFormatter.ofPattern(dateFormat)),
@@ -233,7 +253,7 @@ public class AssetService {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
         List<Map<String, String>> values = new ArrayList<Map<String, String>>();
-        List<String> commonHeaders = Arrays.asList("PRODUCT_CATEGORY","PRODUCT_SUBCATEGORY","MODEL","SERIAL_NO","DEPARTMENT_NAME","ORG_NAME","LOCATION_NAME","UNDER_WARRANTY","WARRANTY_VALIDITY","PURCHASE_TYPE","RENTAL_START_ON","RENTAL_ENDS_ON","VENDOR_DETAILS","OTHER_DETAILS","REQUESTED_BY","APPROVER_1","APPROVER_2");
+        List<String> commonHeaders = Arrays.asList("PRODUCT_CATEGORY", "PRODUCT_SUBCATEGORY", "MODEL", "SERIAL_NO", "DEPARTMENT_NAME", "ORG_NAME", "LOCATION_NAME", "UNDER_WARRANTY", "WARRANTY_VALIDITY", "PURCHASE_TYPE", "RENTAL_START_ON", "RENTAL_ENDS_ON", "VENDOR_DETAILS", "OTHER_DETAILS", "REQUESTED_BY", "APPROVER_1", "APPROVER_2");
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
              CSVParser csvParser = new CSVParser(fileReader,
                      CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())

@@ -9,6 +9,7 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AssetOrderRepository;
 import com.centram.domain.AssetOrder;
 import com.centram.domain.Module;
+import com.centram.domain.Setting;
 import com.centram.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -130,6 +131,8 @@ public class AssetOrderService {
     public AssetOrder save(AssetOrder assetOrder) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (assetOrder.getId() == null) {
+            Setting setting = organisationService.getOrganisationSettings();
+            outboundAssetReqPrefix = (setting != null && setting.getOutboundAssetRequestPrefix() != null) ? setting.getOutboundAssetRequestPrefix() : outboundAssetReqPrefix;
             Long totalAssetOrder = assetOrderRepository.getCountOfAssets(loggedInUser.getOrganisationId())+1;
             String assetOrderNo = outboundAssetReqPrefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalAssetOrder), 4, "0");
             assetOrder.setOrderNo(assetOrderNo);

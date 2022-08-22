@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, BigInteger> {
@@ -54,4 +55,7 @@ public interface AssetRepository extends JpaRepository<Asset, BigInteger> {
             @Param("organisationId") BigInteger organisationId,
             Pageable pageable
     );
+
+    @Query(value = "select a from Asset a where a.organisation.id = (:organisationId) and a.warrantyExpirationMessageSent = false and a.warrantyExpiredMessageSent = false")
+    List<Asset> findAll(@Param("organisationId") BigInteger organisationId);
 }

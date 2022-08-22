@@ -13,7 +13,7 @@
             <div class="row">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="dlModuleId">Category</label>
-                <ng-select [items]="moduleList" #dlModuleId (change)="populateSubmodule($event)"
+                <ng-select [items]="moduleList" #dlModuleId [multiple]="true" (change)="populateSubmodule($event)"
                   placeholder="-- Select Category --" formControlName="dlModuleId" id="dlModuleId" name="dlModuleId"
                   bindLabel="customerModuleName" bindValue="id"></ng-select>
                 <div *ngIf="f.dlModuleId.touched && f.dlModuleId.invalid" class="alert alert-danger-custom">
@@ -50,7 +50,7 @@
             <div class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="name">Vendor Name</label>
-                <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
+                <input type="text" formControlName="name" id="name" name="name" class="form-control"
                   placeholder="Vendor Name" aria-label="Vendor Name">
                 <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.name.errors?.required">
@@ -63,7 +63,7 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contactName">Contact Person Name</label>
-                <input type="text" formControlName="contactName" ngModel id="contactName" name="contactName"
+                <input type="text" formControlName="contactName" id="contactName" name="contactName"
                   class="form-control" placeholder="Contact Person Name" aria-label="Contact Person Name">
                 <div *ngIf="f.contactName.touched && f.contactName.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.contactName.errors?.required">
@@ -76,7 +76,7 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contactEmail">Email</label>
-                <input type="text" formControlName="contactEmail" ngModel id="contactEmail" name="contactEmail"
+                <input type="text" formControlName="contactEmail" id="contactEmail" name="contactEmail"
                   class="form-control" placeholder="Contact Person Email" aria-label="Contact Person Email">
                 <div *ngIf="f.contactEmail.touched && f.contactEmail.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.contactEmail.errors?.required">
@@ -92,7 +92,7 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contactNumber">Contact Number</label>
-                <input type="text" formControlName="contactNumber" ngModel id="contactNumber" name="contactNumber"
+                <input type="text" formControlName="contactNumber" id="contactNumber" name="contactNumber"
                   class="form-control" placeholder="Vendor Name" aria-label="Vendor Name">
                 <div *ngIf="f.contactNumber.touched && f.contactNumber.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.contactNumber.errors?.required">
@@ -107,7 +107,7 @@
             <div class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contactAddress">Address</label>
-                <textarea formControlName="contactAddress" ngModel id="contactAddress" name="contactAddress" rows="4"
+                <textarea formControlName="contactAddress" id="contactAddress" name="contactAddress" rows="4"
                   class="form-control textarea-non-resizable" placeholder="Vendor Address"></textarea>
                 <div *ngIf="f.contactAddress.touched && f.contactAddress.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.contactAddress.errors?.required">
@@ -139,7 +139,7 @@
                 <div class="col-md-9 col-form-label">
                   <div class="form-check form-check-inline mr-1" id="inline-radios">
                     <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
-                      name="inHouse" ngModel value="1">
+                      name="inHouse" value="1">
                     <label class="form-check-label" for="inHouse">In House</label>
                   </div>
                 </div>

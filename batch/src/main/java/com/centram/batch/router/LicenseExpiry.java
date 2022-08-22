@@ -22,7 +22,7 @@ import java.util.List;
 
 public class LicenseExpiry extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(LicenseExpiry.class);
-    @Value("${app.org.notification.cron}")
+    @Value("${app.org.license.notification.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
@@ -48,10 +48,10 @@ public class LicenseExpiry extends RouteBuilder {
                     }
                 })
                 .log(LoggingLevel.INFO, "license-expiry -> ${header.CURRENT_DATE_TIME}")
-                .to("direct:processOrganisationNotifications");
+                .to("direct:processOrganisationLicenseNotifications");
 
-        from("direct:processOrganisationNotifications")
-                .routeId("process-organisation-notifications")
+        from("direct:processOrganisationLicenseNotifications")
+                .routeId("process-organisation-license-notifications")
                 .loop(simple("${body.size}"))
                 .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {

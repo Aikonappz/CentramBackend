@@ -113,7 +113,7 @@ public class SlaNotify extends RouteBuilder {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("[{}] notification triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
                         incident.setAgentNotification1At(LocalDateTime.now());
-                        incident = incidentService.update(incident);
+                        incident = incidentService.saveViaBatch(incident);
                         miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
                     }
                 })
@@ -145,7 +145,7 @@ public class SlaNotify extends RouteBuilder {
                         log.info("[{}] notification triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
                         incident.setStatus(IncidentStatus.SLA_ABOUT_TO_BREACH);
                         incident.setAgentNotification2At(LocalDateTime.now());
-                        incident = incidentService.update(incident);
+                        incident = incidentService.saveViaBatch(incident);
                         miscService.notifyWip75PercentTimePassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" 75% time passed! Please complete within SLA.")));
                     }
                 })
@@ -178,7 +178,7 @@ public class SlaNotify extends RouteBuilder {
                         incident.setStatus(IncidentStatus.SLA_BREACHED);
                         incident.setSlaBreached(true);
                         incident.setEscalation1At(LocalDateTime.now());
-                        incident = incidentService.update(incident);
+                        incident = incidentService.saveViaBatch(incident);
                         miscService.notifySlaBreached(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
@@ -209,7 +209,7 @@ public class SlaNotify extends RouteBuilder {
                         Incident incident = (Incident) exchange.getIn().getBody();
                         log.info("[{}] notification triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
                         incident.setEscalation2At(LocalDateTime.now());
-                        incident = incidentService.update(incident);
+                        incident = incidentService.saveViaBatch(incident);
                         miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
                     }
                 })
