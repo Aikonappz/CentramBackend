@@ -13,6 +13,8 @@ import { EscalationReportComponent } from './escalationreport.component';
 import { ReopenReportComponent } from './reopenreport.component';
 import { AgingReportComponent } from './agingreport.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { VendorReportComponent } from './vendor.report.component';
+import { OrderReportComponent } from './order.report.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     EscalationReportComponent,
     ReopenReportComponent,
     AgingReportComponent,
+    VendorReportComponent,
+    OrderReportComponent,
   ],
   imports: [
     CommonModule,

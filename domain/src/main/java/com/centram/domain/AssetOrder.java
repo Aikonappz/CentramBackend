@@ -157,6 +157,10 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String approverUser1Comment;
 
+    @Column(name = "approver_user1_feedback_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime approverUser1FeedbackAt;
+
     @ApiModelProperty(required = true, value = "")
     @Valid
     @NotNull
@@ -174,6 +178,10 @@ public class AssetOrder extends BaseEntity implements Serializable {
     @Column(name = "approver_user2_comment", nullable = true)
     @JsonView(Views.BasicView.class)
     private String approverUser2Comment;
+
+    @Column(name = "approver_user2_feedback_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime approverUser2FeedbackAt;
 
     @ApiModelProperty(required = true, value = "")
     @Valid

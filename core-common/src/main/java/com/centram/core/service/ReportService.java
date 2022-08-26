@@ -4,12 +4,8 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
-import com.centram.domain.Incident;
-import com.centram.domain.IncidentCommunication;
-import com.centram.domain.Organisation;
-import com.centram.domain.enumarator.IncidentStatus;
-import com.centram.domain.enumarator.LicenseType;
-import com.centram.domain.enumarator.Status;
+import com.centram.domain.*;
+import com.centram.domain.enumarator.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -31,6 +27,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -41,6 +38,12 @@ public class ReportService {
 
     @Autowired
     private OrganisationService organisationService;
+
+    @Autowired
+    private VendorService miscService;
+
+    @Autowired
+    private AssetOrderService assetOrderService;
 
     @Autowired
     private IncidentService incidentService;
@@ -105,6 +108,16 @@ public class ReportService {
             start = end.minusDays(90);
         }
         return incidentService.incidentReport(LicenseType.valueOf(incidentType).ordinal(), mId, smId, pId, null, null, null, intStatus, false, false, false, start, end, pageable, false, null, null);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedList<Vendor> vendorReport(String inHouse, VendorType vendorType, Pageable pageable) {
+        return miscService.getVendors(inHouse, vendorType, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedList<AssetOrder> getOrderedAssetsForReport(String orderNo, String status, Pageable pageable) {
+        return assetOrderService.getOrderedAssetsForReport(orderNo, status, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -438,4 +451,145 @@ public class ReportService {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
+
+    @Transactional(readOnly = true)
+    public ByteArrayInputStream vendorReportDownload(String inHouse, VendorType vendorType) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+        List<String> data = new ArrayList<String>();
+        PaginatedList<Vendor> page = miscService.getVendors(inHouse, vendorType, Pageable.unpaged());
+        List<Vendor> vendors = page.getContent();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList(
+                    "Name",
+                    "Contact Name",
+                    "Contact Email",
+                    "Contact Number",
+                    "Contact Address",
+                    "Product Categories",
+                    "Product Sub Categories"
+            );
+            csvPrinter.printRecord(data);
+            List<BigInteger> moduleIds = new ArrayList<BigInteger>();
+            List<BigInteger> subModuleIds = new ArrayList<BigInteger>();
+            List<String> modules = new ArrayList<String>();
+            List<String> subModules = new ArrayList<String>();
+            for (Vendor vendor : vendors) {
+                moduleIds = vendor.getVendorModules().stream()
+                        .map(VendorModule::getModuleId).collect(Collectors.toList());
+                subModuleIds = vendor.getVendorModules().stream()
+                        .map(VendorModule::getSubModuleId).collect(Collectors.toList());
+                modules = new ArrayList<String>();
+                subModules = new ArrayList<String>();
+                for (BigInteger m : moduleIds) {
+                    modules.add(moduleService.getModuleById(m).getName());
+                }
+                for (BigInteger sm : subModuleIds) {
+                    subModules.add(moduleService.getModuleById(sm).getName());
+                }
+                data = Arrays.asList(
+                        vendor.getName(),
+                        vendor.getContactName(),
+                        vendor.getContactEmail(),
+                        vendor.getContactNumber(),
+                        vendor.getContactAddress(),
+                        String.join(",", modules),
+                        String.join(",", subModules)
+                );
+                csvPrinter.printRecord(data);
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public ByteArrayInputStream orderReportDownload(String orderNo, String status) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+        List<String> data = new ArrayList<String>();
+        PaginatedList<AssetOrder> page = assetOrderService.getOrderedAssetsForReport(orderNo, status, Pageable.unpaged());
+        List<AssetOrder> assetOrders = page.getContent();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList(
+                    "Order No",
+                    "Department Name",
+                    "Organization Name",
+                    "Product Category",
+                    "Product Sub-Category",
+                    "Model",
+                    "Quantity",
+                    "Currency",
+                    "Total Cost",
+                    "Within Budget?",
+                    "Available Budget Amount",
+                    "Additional Amount",
+                    "Vendor Name",
+                    "Purchase Type",
+                    "Existing Agreement?",
+                    "Agreement Valid Till",
+                    "Duration",
+                    "Other details",
+                    "Requester ID",
+                    "Requester Name",
+                    "Approver1 ID",
+                    "Approver1 Name",
+                    "Approver1 Email",
+                    "Approver1 Status",
+                    "Approver1 Feedback",
+                    "Approver2 Feedback Date",
+                    "Approver2 ID",
+                    "Approver2 Name",
+                    "Approver2 Email",
+                    "Approver2 Status",
+                    "Approver2 Feedback",
+                    "Approver2 Feedback Date"
+            );
+            csvPrinter.printRecord(data);
+            for (AssetOrder assetOrder : assetOrders) {
+                data = Arrays.asList(
+                        assetOrder.getOrderNo(),
+                        assetOrder.getDepartment() == null ? "NA" : assetOrder.getDepartment().getName(),
+                        assetOrder.getLocation() == null ? "NA" : assetOrder.getLocation().getOfficeName(),
+                        assetOrder.getModuleName(),
+                        assetOrder.getSubModuleName(),
+                        assetOrder.getModel(),
+                        String.valueOf(assetOrder.getQuantity()),
+                        assetOrder.getCurrency(),
+                        String.valueOf(assetOrder.getTotalAmount()),
+                        assetOrder.getWithinBudget() ? "YES" : "NO",
+                        !assetOrder.getWithinBudget() ? assetOrder.getLimitAmount().toString() : "NA",
+                        !assetOrder.getWithinBudget() ? assetOrder.getExtraAmount().toString() : "NA",
+                        assetOrder.getVendor() != null ? assetOrder.getVendor().getName() : "Others",
+                        assetOrder.getPurchaseType().name(),
+                        assetOrder.getExistingAgreement() ? "YES" : "NO",
+                        assetOrder.getVendor() != null ? assetOrder.getAgreementEndAt().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
+                        assetOrder.getPurchaseType() == PurchaseType.RENTED ? assetOrder.getRentDuration()!= null && assetOrder.getRentDuration()!= ""? assetOrder.getRentDuration() : "NA" : "NA",
+                        assetOrder.getOtherDetails() != null && !assetOrder.getOtherDetails().equals("") ? assetOrder.getOtherDetails() : "NA",
+                        assetOrder.getRaisedUser().getEmployeeId(),
+                        assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName(),
+                        assetOrder.getApproverUser1().getEmployeeId(),
+                        assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName(),
+                        assetOrder.getApproverUser1().getEmail(),
+                        assetOrder.getApproverUser1FeedbackAt() != null ? (assetOrder.getApprovedUser1() ? "Approved" : "Rejected") : "Feedback Not Provided Yet",
+                        assetOrder.getApproverUser1FeedbackAt() != null ? assetOrder.getApproverUser1Comment() : "NA",
+                        assetOrder.getApproverUser1FeedbackAt() != null ? assetOrder.getApproverUser1FeedbackAt().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
+                        assetOrder.getApproverUser2().getEmployeeId(),
+                        assetOrder.getApproverUser2().getFirstName() + " " + assetOrder.getApproverUser2().getLastName(),
+                        assetOrder.getApproverUser2().getEmail(),
+                        assetOrder.getApproverUser2FeedbackAt() != null ? (assetOrder.getApprovedUser2() ? "Approved" : "Rejected") : "Feedback Not Provided Yet",
+                        assetOrder.getApproverUser2FeedbackAt() != null ? assetOrder.getApproverUser2Comment() : "NA",
+                        assetOrder.getApproverUser2FeedbackAt() != null ? assetOrder.getApproverUser2FeedbackAt().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA"
+                );
+                csvPrinter.printRecord(data);
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
+    }
+
 }

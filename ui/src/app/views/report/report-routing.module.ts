@@ -2,10 +2,12 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AdminReportComponent } from './adminreport.component';
 import { AgingReportComponent } from './agingreport.component';
+import { VendorReportComponent } from './vendor.report.component';
 import { EscalationReportComponent } from './escalationreport.component';
 import { IncidentReportComponent } from './incidentreport.component';
 import { ReopenReportComponent } from './reopenreport.component';
 import { ReportComponent } from './report.component';
+import { OrderReportComponent } from './order.report.component';
 
 const routes: Routes = [
   {
@@ -60,6 +62,22 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Incident Report'
+        },
+      },
+      {
+        path: 'vendor-report/:licenceType',
+        component: VendorReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Vendor Report'
+        },
+      },
+      {
+        path: 'order-report',
+        component: OrderReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Order Report'
         },
       },
     ]

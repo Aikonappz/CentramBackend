@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -65,6 +66,24 @@ public class AssetOrderService {
         orderNo = (orderNo.equalsIgnoreCase("")) ? null : orderNo;
         status = (status.equalsIgnoreCase("")) ? null : status;
         Page<AssetOrder> assetOrderPage = assetOrderRepository.findAll(orderNo, status, loggedInUser.getUserId(), pageable);
+        Module module = null;
+        for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
+            module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());
+            assetOrderPage.getContent().get(k).setModuleName(module.getAssetOPSName());
+            assetOrderPage.getContent().get(k).setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getSubModuleId());
+            assetOrderPage.getContent().get(k).setSubModuleName(module.getAssetOPSName());
+            assetOrderPage.getContent().get(k).setActualSubModuleName(module.getName());
+        }
+        return new PaginatedList<AssetOrder>(assetOrderPage);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedList<AssetOrder> getOrderedAssetsForReport(String orderNo, String status, Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        orderNo = (orderNo.equalsIgnoreCase("")) ? null : orderNo;
+        status = (status.equalsIgnoreCase("")) ? null : status;
+        Page<AssetOrder> assetOrderPage = assetOrderRepository.findAllForReport(orderNo, status, loggedInUser.getOrganisationId(), pageable);
         Module module = null;
         for (int k = 0; k < assetOrderPage.getContent().size(); k++) {
             module = moduleService.getModuleById(assetOrderPage.getContent().get(k).getModuleId());
@@ -175,11 +194,13 @@ public class AssetOrderService {
             if (assetApprovalDTO.getApproverNo() == 1) {
                 assetOrder.setApprovedUser1(assetApprovalDTO.getApproval());
                 assetOrder.setApproverUser1Comment(assetApprovalDTO.getFeedback());
+                assetOrder.setApproverUser1FeedbackAt(LocalDateTime.now());
                 assetOrder = assetOrderRepository.save(assetOrder);
             } else if (assetApprovalDTO.getApproverNo() == 2) {
                 assetOrder.setApprovedUser2(assetApprovalDTO.getApproval());
                 assetOrder.setApproverUser2Comment(assetApprovalDTO.getFeedback());
                 assetOrder = assetOrderRepository.save(assetOrder);
+                assetOrder.setApproverUser2FeedbackAt(LocalDateTime.now());
             } else {
                 throw new AppException(GenericErrorCode.UNKNOWN_ERROR);
             }

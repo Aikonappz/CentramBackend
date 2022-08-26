@@ -38,5 +38,16 @@ export class ReportService {
     downloadIncidentAgingReport(request?: any): Observable<any> {
         return this.http.get('/v1/report/incident-aging/download', { "params": request, responseType: 'blob' });
     }
-
+    vendorReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/vendor', { "params": request });
+    }
+    downloadVendorReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/vendor/download', { "params": request, responseType: 'blob' });
+    }
+    orderReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/order', { "params": request });
+    }
+    downloadOrderReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/order/download', { "params": request, responseType: 'blob' });
+    }
 }

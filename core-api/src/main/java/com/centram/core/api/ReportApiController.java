@@ -5,10 +5,13 @@ import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.ReportService;
+import com.centram.domain.AssetOrder;
 import com.centram.domain.Incident;
 import com.centram.domain.Organisation;
+import com.centram.domain.Vendor;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -203,7 +206,7 @@ public class ReportApiController {
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReopenReport(incidentType,moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(reportService.incidentReopenReport(incidentType, moduleId, subModuleId, priorityId, status, start, end, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "incident reopen report download", nickname = "incidentReopenReportDownload", notes = "incident reopen report download", response = PaginatedList.class, tags = {"Report",})
@@ -269,11 +272,83 @@ public class ReportApiController {
             @ApiParam(value = "Start Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @ApiParam(value = "End Date Time", defaultValue = "", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end
     ) {
-        final InputStreamResource resource = new InputStreamResource(reportService.incidentAgingReportDownload(incidentType,moduleId, subModuleId, priorityId, status, start, end));
+        final InputStreamResource resource = new InputStreamResource(reportService.incidentAgingReportDownload(incidentType, moduleId, subModuleId, priorityId, status, start, end));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "incident-reopen-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(resource);
     }
 
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "vendor report", nickname = "vendorReport", notes = "vendor report", response = PaginatedList.class, tags = {"Report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.ListView.class)
+    @RequestMapping(value = "/vendor", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR REPORT','READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<Vendor>> vendorReport(
+            @ApiParam(value = "Vendor Type", defaultValue = "", required = false) @RequestParam(value = "vendorType", defaultValue = "INCIDENT", required = false) String vendorType,
+            @ApiParam(value = "In House Vendor", defaultValue = "", required = false) @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Vendor>>(reportService.vendorReport(inHouse, VendorType.valueOf(vendorType), pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "vendor report download", nickname = "vendorReportDownload", notes = "vendor report download", response = PaginatedList.class, tags = {"Report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/vendor/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR REPORT','READ',authentication.principal)")
+    public ResponseEntity<Resource> vendorReportDownload(
+            @ApiParam(value = "Vendor Type", defaultValue = "", required = false) @RequestParam(value = "vendorType", defaultValue = "INCIDENT", required = false) String vendorType,
+            @ApiParam(value = "In House Vendor", defaultValue = "", required = false) @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        final InputStreamResource resource = new InputStreamResource(reportService.vendorReportDownload(inHouse, VendorType.valueOf(vendorType)));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "vendor-" + vendorType + "-" + System.currentTimeMillis() + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "order report", nickname = "orderReport", notes = "order report", response = PaginatedList.class, tags = {"Report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.ListView.class)
+    @RequestMapping(value = "/order", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER REPORT','READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<AssetOrder>> orderReport(
+            @ApiParam(value = "order no", defaultValue = "", required = false) @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
+            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<AssetOrder>>(reportService.getOrderedAssetsForReport(orderNo, status, pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "order report download", nickname = "orderReportDownload", notes = "order report download", response = PaginatedList.class, tags = {"Report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/order/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER REPORT','READ',authentication.principal)")
+    public ResponseEntity<Resource> orderReportDownload(
+            @ApiParam(value = "order no", defaultValue = "", required = false) @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
+            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status
+    ) {
+        final InputStreamResource resource = new InputStreamResource(reportService.orderReportDownload(orderNo, status));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "order-" + System.currentTimeMillis() + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
+    }
 }

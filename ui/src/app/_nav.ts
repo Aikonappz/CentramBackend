@@ -227,26 +227,68 @@ export const navItems: INavData[] = [
       {
         name: 'Incident Report',
         url: '/report/incident-report',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Incident Report',
+        url: '/report/incident-report',
         icon: 'fa fa-file',
-        attributes: { "moduleName": "INCIDENT REPORT" }
+        attributes: { "moduleName": "INCIDENT REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Escalation Report',
         url: '/report/escalation-report',
         icon: 'fa fa-file-excel-o',
-        attributes: { "moduleName": "ESCALATION REPORT" }
+        attributes: { "moduleName": "ESCALATION REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Reopen Report',
         url: '/report/reopen-report',
         icon: 'fa fa-folder-open',
-        attributes: { "moduleName": "REOPEN REPORT" }
+        attributes: { "moduleName": "REOPEN REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Aging Report',
         url: '/report/aging-report',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "AGING REPORT" }
+        attributes: { "moduleName": "AGING REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      // {
+      //   name: 'Asset Report',
+      //   url: '/report/asset-order-report',
+      //   class: 'highlighted-yellow',
+      //   attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,INCIDENT" }
+      // },
+      // {
+      //   name: 'Order Report',
+      //   url: '/report/asset-order-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      // {
+      //   name: 'Allocation Report',
+      //   url: '/report/asset-allocation-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "ALLOCATION REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      // {
+      //   name: 'Ticket Report',
+      //   url: '/report/asset-ticket-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "TICKETS REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      {
+        name: 'Vendor Report',
+        url: '/report/vendor-report/asset',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Order Report',
+        url: '/report/order-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
       },
     ]
   },
