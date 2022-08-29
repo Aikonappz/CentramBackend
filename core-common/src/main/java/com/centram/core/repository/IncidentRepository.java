@@ -536,4 +536,98 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
     @Query("select i from Incident i where i.status = 4 and i.asset.id is not null and i.ticketType = 'ALLOCATE' and " +
             " i.incidentType = 2 and i.organisation.id = (:organisationId) ")
     List<Incident> getAllocatedAssets(@Param("organisationId") BigInteger organisationId);
+
+    @Query(value = "select i.* from incident i "+
+            " where i.incident_type = 2 and i.raised_user_id = 12 "+
+            " and i.asset_ticket_type = 'ALLOCATE' and i.asset_approved = 1 and i.feedback_provided = 1 " +
+            " and i.allocated = 1 and i.asset_id is not null "+
+            " and i.asset_id not in (select asset_id from incident d where " +
+            " d.asset_ticket_type = 'DEALLOCATE' and d.asset_id = i.asset_id " +
+            " and i.status = 4 and i.created_date < d.created_date)", nativeQuery = true)
+    Page<Incident> getUserAllocatedAssets(
+            @Param("incidentType") LicenseType incidentType,
+            @Param("status") IncidentStatus status,
+            @Param("raisedUserId") BigInteger raisedUserId,
+            Pageable pageable
+    );
+
+    @Query("select i from Incident i left outer join i.asset a where i.organisation.id = (:organisationId) and i.moduleId in (:modSubModIds) and i.subModuleId in (:modSubModIds) and i.incidentType = (:incidentType) and " +
+            " ( " +
+            "   ((:status) <> 9 and i.status = (:status)) " +
+            "   OR " +
+            "   ((:status) = 9) "+
+            " ) and " +
+            " ( " +
+            "   ((:serialNo) is not null and UPPER(a.serialNo) like (:serialNo)) " +
+            "   OR " +
+            "   ((:serialNo) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:approved) = 1 and i.feedbackProvided = true and i.assetApproved = true) " +
+            "   OR " +
+            "   ((:approved) <= 0) " +
+            " ) and " +
+            " ( " +
+            "   ((:assigned) = 1 and i.assetApproved = true and i.feedbackProvided = true and i.allocated = true and a.id is not null) " +
+            "   OR " +
+            "   ((:assigned) = 0 and i.allocated = false and a.id is null) " +
+            "   OR " +
+            "   ((:assigned) = -1) " +
+            " ) and " +
+            " ( " +
+            "   ((:deallocated) = 1 and i.deallocated = true and i.ticketType = 'DEALLOCATE' and i.status = 4 ) " +
+            "   OR " +
+            "   ((:deallocated) = 0 and i.allocated = true and i.ticketType = 'ALLOCATE' and i.status = 4) " +
+            "   OR " +
+            "   ((:deallocated) = -1 ) " +
+            " ) and " +
+            " ( " +
+            "   ((:moduleId) is not null and i.moduleId = (:moduleId)) " +
+            "   OR " +
+            "   ((:moduleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:subModuleId) is not null and i.subModuleId = (:subModuleId)) " +
+            "   OR " +
+            "   ((:subModuleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:priorityId) is not null and i.priority.id = (:priorityId)) " +
+            "   OR " +
+            "   ((:priorityId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:assignedUserId) is not null and i.assignedUser.id = (:assignedUserId)) " +
+            "   OR " +
+            "   ((:assignedUserId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:incidentNo) is not null and UPPER(i.incidentNo) like (:incidentNo)) " +
+            "   OR " +
+            "   ((:incidentNo) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:title) is not null and UPPER(i.title) like (:title)) " +
+            "   OR " +
+            "   ((:title) is null) " +
+            " ) "
+    )
+    Page<Incident> assetTicketReport(
+            @Param("incidentType") LicenseType incidentType,
+            @Param("approved") Integer approved,
+            @Param("serialNo") String serialNo,
+            @Param("assigned") Integer assigned,
+            @Param("deallocated") Integer deallocated,
+            @Param("incidentNo") String incidentNo,
+            @Param("moduleId") BigInteger moduleId,
+            @Param("subModuleId") BigInteger subModuleId,
+            @Param("priorityId") BigInteger priorityId,
+            @Param("assignedUserId") BigInteger assignedUserId,
+            @Param("modSubModIds") List<BigInteger> modSubModIds,
+            @Param("title") String title,
+            @Param("status") Integer status,
+            @Param("organisationId") BigInteger organisationId,
+            Pageable pageable
+    );
+
 }

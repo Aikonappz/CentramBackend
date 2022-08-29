@@ -117,6 +117,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
                 //console.log(actions);
               }
               this.angForm.get('action').setValue(actions.map(Number));
+            } else {
+              this.angForm.controls['action'].setValue(null);
+              $('.view-action').addClass("d-none");
             }
           });
       } else {

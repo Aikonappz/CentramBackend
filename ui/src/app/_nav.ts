@@ -290,6 +290,12 @@ export const navItems: INavData[] = [
         icon: 'fa fa-file-text',
         attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
       },
+      {
+        name: 'Asset Tickets Report',
+        url: '/report/asset-tickets-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
+      },
     ]
   },
 ];

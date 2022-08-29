@@ -51,6 +51,9 @@ public class ReportService {
     @Autowired
     private ModuleService moduleService;
 
+    @Autowired
+    private UserService userService;
+
     @Transactional(readOnly = true)
     public PaginatedList<Organisation> organisationReport(String name, Status status, LicenseType licenseType, Pageable pageable) {
         return organisationService.getOrganisations(name, status, licenseType, pageable);
@@ -118,6 +121,11 @@ public class ReportService {
     @Transactional(readOnly = true)
     public PaginatedList<AssetOrder> getOrderedAssetsForReport(String orderNo, String status, Pageable pageable) {
         return assetOrderService.getOrderedAssetsForReport(orderNo, status, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedList<Incident> assetTicketReport(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+        return incidentService.assetTicketReport(incidentType, assigned, deallocated, serialNo, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -506,6 +514,102 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
+    public ByteArrayInputStream assetTicketReportDownload(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+        List<String> data = new ArrayList<String>();
+        PaginatedList<Incident> page = incidentService.assetTicketReport(
+                incidentType,
+                assigned,
+                deallocated,
+                serialNo,
+                approved,
+                incidentNo,
+                moduleId,
+                subModuleId,
+                priorityId,
+                assignedUserId,
+                title,
+                status,
+                Pageable.unpaged()
+        );
+        List<Incident> incidents = page.getContent();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList(
+                    "Request No.",
+                    "Ticket Type",
+                    "Product Category",
+                    "Product Sub Category",
+                    "Priority",
+                    "Request Detail",
+                    "Current Status",
+                    "Requester ID",
+                    "Requester Name",
+                    "Requester Email",
+                    "Requester Department",
+                    "Requester Location",
+                    "Requester Organization",
+                    "Requester Manager",
+                    "Approved by Manager?",
+                    "Approver ID",
+                    "Approver Name",
+                    "Approver Email",
+                    "Asset Serial No",
+                    "Allocated On",
+                    "Deallocated On",
+                    "Agent Name",
+                    "Agent Email",
+                    "First Level Escalation?",
+                    "Second Level Escalation?",
+                    "Requested Date",
+                    "SLA Due Date",
+                    "Closed Date"
+            );
+            csvPrinter.printRecord(data);
+            User manager = null;
+            for (Incident incident : incidents) {
+                if (incident.getRaisedUser().getManagerId() != null)
+                    manager = new User(userService.getUserById(incident.getRaisedUser().getManagerId()));
+                data = Arrays.asList(
+                        incident.getIncidentNo(),
+                        incident.getTicketType(),
+                        incident.getModuleName(),
+                        incident.getSubModuleName(),
+                        incident.getPriority().getName(),
+                        incident.getTitle(),
+                        incident.getStatus().name(),
+                        incident.getRaisedUser().getEmployeeId(),
+                        incident.getRaisedUser().getFirstName() + " " + incident.getRaisedUser().getLastName(),
+                        incident.getRaisedUser().getEmail(),
+                        incident.getRaisedUser().getDepartment().getName(),
+                        incident.getRaisedUser().getLocation().getName(),
+                        incident.getRaisedUser().getLocation().getOfficeName(),
+                        manager != null ? manager.getFirstName() + " " + manager.getLastName() : "NA",
+                        incident.getApprovalRequired() ? incident.getAssetApproved() && incident.getFeedbackProvided() ? "YES" : "NO" : "NA",
+                        incident.getApprovalRequired() ? manager != null ? manager.getEmployeeId() : "NA" : "NA",
+                        incident.getApprovalRequired() ? manager != null ? manager.getFirstName() + " " + manager.getLastName() : "NA" : "NA",
+                        incident.getApprovalRequired() ? manager != null ? manager.getEmail() : "NA" : "NA",
+                        incident.getAsset() != null ? incident.getAsset().getSerialNo() : "NA",
+                        incident.getAllocationDateTime() != null ? incident.getAllocationDateTime().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
+                        incident.getDeallocationDateTime() != null ? incident.getDeallocationDateTime().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
+                        incident.getAssignedUser() != null ? incident.getAssignedUser().getFirstName() + " " + incident.getAssignedUser().getLastName() : "NA",
+                        incident.getAssignedUser() != null ? incident.getAssignedUser().getEmail() : "NA",
+                        incident.getEscalation1At() != null ? "YES" : "NO",
+                        incident.getEscalation2At() != null ? "YES" : "NO",
+                        incident.getCreatedDate().format(DateTimeFormatter.ofPattern(dateFormat)),
+                        incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateFormat)),
+                        incident.getStatus() == IncidentStatus.CLOSED ? incident.getModifiedDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA"
+                );
+                csvPrinter.printRecord(data);
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
+    }
+
+    @Transactional(readOnly = true)
     public ByteArrayInputStream orderReportDownload(String orderNo, String status) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
@@ -566,7 +670,7 @@ public class ReportService {
                         assetOrder.getPurchaseType().name(),
                         assetOrder.getExistingAgreement() ? "YES" : "NO",
                         assetOrder.getVendor() != null ? assetOrder.getAgreementEndAt().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
-                        assetOrder.getPurchaseType() == PurchaseType.RENTED ? assetOrder.getRentDuration()!= null && assetOrder.getRentDuration()!= ""? assetOrder.getRentDuration() : "NA" : "NA",
+                        assetOrder.getPurchaseType() == PurchaseType.RENTED ? assetOrder.getRentDuration() != null && assetOrder.getRentDuration() != "" ? assetOrder.getRentDuration() : "NA" : "NA",
                         assetOrder.getOtherDetails() != null && !assetOrder.getOtherDetails().equals("") ? assetOrder.getOtherDetails() : "NA",
                         assetOrder.getRaisedUser().getEmployeeId(),
                         assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName(),

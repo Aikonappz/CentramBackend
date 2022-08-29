@@ -50,4 +50,10 @@ export class ReportService {
     downloadOrderReport(request?: any): Observable<any> {
         return this.http.get('/v1/report/order/download', { "params": request, responseType: 'blob' });
     }
+    assetReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/asset', { "params": request });
+    }
+    downloadAssetReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/asset/download', { "params": request, responseType: 'blob' });
+    }
 }

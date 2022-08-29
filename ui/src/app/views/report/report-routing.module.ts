@@ -8,6 +8,7 @@ import { IncidentReportComponent } from './incidentreport.component';
 import { ReopenReportComponent } from './reopenreport.component';
 import { ReportComponent } from './report.component';
 import { OrderReportComponent } from './order.report.component';
+import { AssetTicketReportComponent } from './asset.ticket.report.component';
 
 const routes: Routes = [
   {
@@ -78,6 +79,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Asset Order Report'
+        },
+      },
+      {
+        path: 'asset-tickets-report',
+        component: AssetTicketReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Tickets Report'
         },
       },
     ]

@@ -126,7 +126,7 @@ export class IncommingRequestedAssetComponent implements OnInit {
         //console.log(this.tmpuserList);
         //console.log(this.tmpagentList);
       });
-    this.miscService.prioritiesService({ "sort": "name,asc" })
+    this.miscService.prioritiesService({  "priorityType": "ASSET","sort": "name,asc" })
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
       });

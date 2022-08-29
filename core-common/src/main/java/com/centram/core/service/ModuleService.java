@@ -39,7 +39,7 @@ public class ModuleService {
                 .forEach(i -> {
                     if (i.getParentModuleId() != null) {
                         Module m = this.getModuleById(i.getParentModuleId());
-                        i.setParentModuleName(m.getCustomerModuleName() == null ? m.getName() : m.getCustomerModuleName());
+                        i.setParentModuleName(m.getCustomerModuleName() == null || m.getCustomerModuleName().equals("") ? m.getName() : m.getCustomerModuleName());
                     }
                 });
         return new PaginatedList<Module>(modulePage);

@@ -20,6 +20,9 @@ export class IncidentService {
     userIncidentsService(request?: any): Observable<IncidentList> {
         return this.http.get('/v1/incident/user', { "params": request });
     }
+    userAllocatedAssetsService(request?: any): Observable<IncidentList> {
+        return this.http.get('/v1/incident/allocated-assets', { "params": request });
+    }
     incidentService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/incident/' + id, { "params": request });
     }

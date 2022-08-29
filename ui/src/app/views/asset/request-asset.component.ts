@@ -165,7 +165,7 @@ export class RequestAssetComponent implements OnInit {
               }
               let c = 0;
               this.incidentService
-                .userIncidentsService({ incidentType: "ASSET", assigned: 1 })
+                .userAllocatedAssetsService({ incidentType: "ASSET", assigned: 1 })
                 .subscribe((result: IncidentList) => {
                   let data = result.content;
                   for (let k in data) {
@@ -404,10 +404,10 @@ export class RequestAssetComponent implements OnInit {
             priority.organisation = null;
           }
         }
-        let asset = this.incident.asset != null ? { id: this.incident.asset.id, modelNo: this.incident.asset.modelNo, serialNo: this.incident.asset.serialNo, } : null;
+        let asset = this.incident.asset != null ? { id: this.incident.asset.id, modelNo: this.incident.asset.modelNo, version: this.incident.asset.version, serialNo: this.incident.asset.serialNo, } : null;
         for (let i in this.asstes) {
           if (this.asstes[i].id == this.angForm.controls['asset'].value) {
-            asset = { id: this.asstes[i].id, modelNo: this.asstes[i].modelNo, serialNo: this.asstes[i].serialNo, };
+            asset = { id: this.asstes[i].id, modelNo: this.asstes[i].modelNo, serialNo: this.asstes[i].serialNo, version: this.asstes[i].version, };
           }
         }
         //console.log(asset);

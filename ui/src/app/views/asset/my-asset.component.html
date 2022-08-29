@@ -89,7 +89,14 @@
                             <th mat-header-cell *matHeaderCellDef> Asset Validity </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
-                                {{formatDate(element.assetValidity)}}
+                                <div
+                                    *ngIf="element.ticketType=='ALLOCATE'&&element.allocated&&element.status=='CLOSED'">
+                                    {{formatDate(element.assetValidity)}}
+                                </div>
+                                <div
+                                    *ngIf="element.ticketType=='DEALLOCATE'&&element.deallocated&&element.status=='CLOSED'">
+
+                                </div>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="allocation">
@@ -110,7 +117,15 @@
                             <th mat-header-cell *matHeaderCellDef> Status </th>
                             <td [attr.data-label]="element.status" id="id-status-{{element.id}}" mat-cell
                                 *matCellDef="let element">
-                                {{element.allocated&&!element.deallocated? 'Allocated' : 'Deallocated'}}
+                                <div
+                                    *ngIf="element.ticketType=='ALLOCATE'&&element.allocated&&element.status=='CLOSED'">
+                                    Allocated
+                                </div>
+                                <div
+                                    *ngIf="element.ticketType=='DEALLOCATE'&&element.deallocated&&element.status=='CLOSED'">
+                                    Deallocated
+                                </div>
+                                <!-- {{element.ticketType=='DEALLOCATE'&&element.deallocated&&element.status=='CLOSED'}} -->
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="action">

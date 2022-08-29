@@ -214,4 +214,20 @@ public class IncidentApiController {
         incidentService.assetApprovalAction(body);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all allocated assets", nickname = "getUserAllocatedAssets", notes = "Get all allocated assets", response = PaginatedList.class, tags = {"Incident",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.ListView.class)
+    @RequestMapping(value = "/allocated-assets", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MY ASSET,MY INCIDENTS,MY ASSET REQUEST','READ|SEARCH,READ|SEARCH,READ|SEARCH',authentication.principal)")
+    public ResponseEntity<PaginatedList<Incident>> getUserAllocatedAssets(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getUserAllocatedAssets(pageable), HttpStatus.OK);
+    }
 }
