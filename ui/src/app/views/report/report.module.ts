@@ -16,6 +16,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { VendorReportComponent } from './vendor.report.component';
 import { OrderReportComponent } from './order.report.component';
 import { AssetTicketReportComponent } from './asset.ticket.report.component';
+import { AssetAssignmentReportComponent } from './asset.asignment.report.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { AssetTicketReportComponent } from './asset.ticket.report.component';
     VendorReportComponent,
     OrderReportComponent,
     AssetTicketReportComponent,
+    AssetAssignmentReportComponent,
   ],
   imports: [
     CommonModule,

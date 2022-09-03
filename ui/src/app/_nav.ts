@@ -296,11 +296,17 @@ export const navItems: INavData[] = [
         icon: 'fa fa-file-text',
         attributes: { "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
       },
+      {
+        name: 'Asset Assignment Report',
+        url: '/report/asset-assignment-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }
+      },
     ]
   },
 ];
 
-
+//attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }
 /*export const navItems: INavData[] = [
   {
     name: 'Dashboard',

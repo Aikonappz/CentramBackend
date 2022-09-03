@@ -160,7 +160,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Category {{orgAdminChunkedTilesData.length}}</b>
+              class="accordion-toggle"><b> Incidents By Category</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdminChunkedTilesData">
@@ -189,7 +189,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Category</b>
+              class="accordion-toggle"><b>Asset Tickets By Category</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of orgAdmin2ChunkedTilesData">
@@ -218,7 +218,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Status</b>
+              class="accordion-toggle"><b> Incidents By Status</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdmin1ChunkedTilesData">
@@ -247,7 +247,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Status</b>
+              class="accordion-toggle"><b>Asset Tickets By Status</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of orgAdmin3ChunkedTilesData">
@@ -583,7 +583,7 @@
       <div class="card">
         <div class="card-body">
           <div id="dataSets-org-category-admin" class="row-margin-05">
-            <h3 class="accordion-toggle"><b>Incidents By Aging</b></h3>
+            <h3 class="accordion-toggle"><b>Generel Incidents By Aging</b></h3>
             <div>
               <div class="row">
                 <div class="col-sm-6 col-lg-4">
@@ -667,7 +667,7 @@
                 </div>
               </div>
             </div>
-            <h3 class="accordion-toggle"><b>Incidents By Priority</b></h3>
+            <h3 class="accordion-toggle"><b>Generel Incidents By Priority</b></h3>
             <div>
               <div class="row" *ngFor="let rows of ca1ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -751,12 +751,9 @@
                 </div>
               </div>
             </div>
-
-
-
-
-            <h3 class="accordion-toggle"><b>Incidents By Status</b></h3>
-            <div>
+            <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
+              class="accordion-toggle"><b>Incidents By Status</b></h3>
+            <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">

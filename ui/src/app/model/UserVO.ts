@@ -28,6 +28,7 @@ export class UserVO {
     departmentId: number;
     department: string;
     licenseType: LicenseType;
+    label: string;
 
     constructor() {
         this.id = null;

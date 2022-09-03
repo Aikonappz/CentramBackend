@@ -91,6 +91,7 @@ export class ViewIncidentDetails implements OnInit {
   ) {
   }
   ngOnInit(): void {
+    console.log(this.params);
     this.datasource = new ReportIncidentDataSource(this.service);
     this.datasource.loadData(0, 5, this.params);
   }
@@ -122,10 +123,14 @@ export class ViewIncidentDetails implements OnInit {
 
   redirectTo(type, id) {
     this.bsModalRef.hide()
-    if (type == "agent") {
+    if (type == "agent" && this.params.incidentType == "INCIDENT") {
       this.router.navigate(['/incident/agent-all/edit/' + id]);
-    } else {
+    } else if (type == "user" && this.params.incidentType == "INCIDENT") {
       this.router.navigate(['/incident/user/edit/' + id]);
+    } else if (type == "agent" && this.params.incidentType == "ASSET") {
+      this.router.navigate(['asset/agent-all/edit/' + id]);
+    } else if (type == "user" && this.params.incidentType == "ASSET") {
+      this.router.navigate(['asset/user/edit/' + id]);
     }
   }
 

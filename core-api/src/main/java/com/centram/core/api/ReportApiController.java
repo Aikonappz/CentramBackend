@@ -357,7 +357,7 @@ public class ReportApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/asset", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET TICKET REPORT','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET TICKET REPORT,ASSET ASIGNENT REPORT','READ,READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> assetTicketReport(
             @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Asset Assigned", defaultValue = "-1", required = false) @RequestParam(value = "assigned", defaultValue = "-1", required = false) Integer assigned,
@@ -366,6 +366,7 @@ public class ReportApiController {
             @ApiParam(value = "Approved Asset", defaultValue = "-1", required = false) @RequestParam(value = "approved", defaultValue = "-1", required = false) Integer approved,
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
+            @ApiParam(value = "raisedUserId", defaultValue = "", required = false) @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId,
             @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
             @ApiParam(value = "moduleId", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "subModuleId", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
@@ -375,7 +376,8 @@ public class ReportApiController {
     ) {
         return new ResponseEntity<PaginatedList<Incident>>(reportService.assetTicketReport(
                 incidentType, assigned, deallocated, serialNo, approved,
-                incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable
+                incidentNo, moduleId, subModuleId, priorityId, assignedUserId, raisedUserId,
+                title, status, pageable
         ), HttpStatus.OK);
     }
 
@@ -395,6 +397,7 @@ public class ReportApiController {
             @ApiParam(value = "Approved Asset", defaultValue = "-1", required = false) @RequestParam(value = "approved", defaultValue = "-1", required = false) Integer approved,
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
+            @ApiParam(value = "raisedUserId", defaultValue = "", required = false) @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId,
             @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
             @ApiParam(value = "moduleId", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
             @ApiParam(value = "subModuleId", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
@@ -403,10 +406,43 @@ public class ReportApiController {
     ) {
         final InputStreamResource resource = new InputStreamResource(reportService.assetTicketReportDownload(
                 incidentType, assigned, deallocated, serialNo, approved, incidentNo,
-                moduleId, subModuleId, priorityId, assignedUserId, title, status
+                moduleId, subModuleId, priorityId, assignedUserId,raisedUserId, title, status
         ));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "asset-ticket-" + System.currentTimeMillis() + ".csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "asset assignment report download", nickname = "assetAssignmentReportDownload", notes = "asset assignment report download", response = PaginatedList.class, tags = {"Report",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/asset/assignment/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASIGNENT REPORT','READ',authentication.principal)")
+    public ResponseEntity<Resource> assetAssignmentReportDownload(
+            @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
+            @ApiParam(value = "Asset Assigned", defaultValue = "-1", required = false) @RequestParam(value = "assigned", defaultValue = "-1", required = false) Integer assigned,
+            @ApiParam(value = "Asset Deallocated", defaultValue = "-1", required = false) @RequestParam(value = "deallocated", defaultValue = "-1", required = false) Integer deallocated,
+            @ApiParam(value = "Serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
+            @ApiParam(value = "Approved Asset", defaultValue = "-1", required = false) @RequestParam(value = "approved", defaultValue = "-1", required = false) Integer approved,
+            @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
+            @ApiParam(value = "assignedUserId", defaultValue = "", required = false) @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId,
+            @ApiParam(value = "raisedUserId", defaultValue = "", required = false) @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId,
+            @ApiParam(value = "priorityId", defaultValue = "", required = false) @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId,
+            @ApiParam(value = "moduleId", defaultValue = "", required = false) @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
+            @ApiParam(value = "subModuleId", defaultValue = "", required = false) @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
+            @ApiParam(value = "title", defaultValue = "", required = false) @RequestParam(value = "title", defaultValue = "", required = false) String title,
+            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status
+    ) {
+        final InputStreamResource resource = new InputStreamResource(reportService.assetAssignmentReportDownload(
+                incidentType, assigned, deallocated, serialNo, approved, incidentNo,
+                moduleId, subModuleId, priorityId, assignedUserId,raisedUserId, title, status
+        ));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "asset-assignment-" + System.currentTimeMillis() + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(resource);
     }

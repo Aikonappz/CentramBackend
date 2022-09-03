@@ -102,6 +102,10 @@ public class Module implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<BigInteger> models;
 
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "dashboard_box_colour")
+    private String dashboardBoxColour;
+
     @Transient
     private String parentModuleName;
 

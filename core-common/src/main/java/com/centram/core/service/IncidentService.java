@@ -115,12 +115,13 @@ public class IncidentService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> assetTicketReport(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
+    public PaginatedList<Incident> assetTicketReport(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String raisedUserId, String title, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<String> roles = loggedInUser.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toList());
         List<Permission> permissions = permissionService.getPermissionByRoleNames(roles);
         List<BigInteger> modSubModIds = permissions.stream().filter(i -> !i.getModule().getAppModule()).map(i -> i.getModule().getId()).collect(Collectors.toList());
         BigInteger uId = (!assignedUserId.equals("")) ? BigInteger.valueOf(Long.valueOf(assignedUserId)) : null;
+        BigInteger ruId = (!raisedUserId.equals("")) ? BigInteger.valueOf(Long.valueOf(raisedUserId)) : null;
         BigInteger pId = (!priorityId.equals("")) ? BigInteger.valueOf(Long.valueOf(priorityId)) : null;
         BigInteger mId = (!moduleId.equals("")) ? BigInteger.valueOf(Long.valueOf(moduleId)) : null;
         BigInteger smId = (!subModuleId.equals("")) ? BigInteger.valueOf(Long.valueOf(subModuleId)) : null;
@@ -128,7 +129,7 @@ public class IncidentService {
         serialNo = (!serialNo.equals("")) ? "%" + serialNo.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        Page<Incident> incidentPage = incidentRepository.assetTicketReport(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
+        Page<Incident> incidentPage = incidentRepository.assetTicketReport(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, ruId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
         incidentPage.getContent().stream()
                 .forEach(i -> {
                     Module module = moduleService.getModuleById(i.getModuleId());

@@ -124,8 +124,8 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public PaginatedList<Incident> assetTicketReport(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status, Pageable pageable) {
-        return incidentService.assetTicketReport(incidentType, assigned, deallocated, serialNo, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, title, status, pageable);
+    public PaginatedList<Incident> assetTicketReport(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String raisedUserId, String title, String status, Pageable pageable) {
+        return incidentService.assetTicketReport(incidentType, assigned, deallocated, serialNo, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, raisedUserId, title, status, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -514,24 +514,13 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream assetTicketReportDownload(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String title, String status) {
+    public ByteArrayInputStream assetTicketReportDownload(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String raisedUserId, String title, String status) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
-        PaginatedList<Incident> page = incidentService.assetTicketReport(
-                incidentType,
-                assigned,
-                deallocated,
-                serialNo,
-                approved,
-                incidentNo,
-                moduleId,
-                subModuleId,
-                priorityId,
-                assignedUserId,
-                title,
-                status,
-                Pageable.unpaged()
+        PaginatedList<Incident> page = incidentService.assetTicketReport(incidentType, assigned, deallocated,
+                serialNo, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, raisedUserId,
+                title, status, Pageable.unpaged()
         );
         List<Incident> incidents = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
@@ -686,6 +675,55 @@ public class ReportService {
                         assetOrder.getApproverUser2FeedbackAt() != null ? (assetOrder.getApprovedUser2() ? "Approved" : "Rejected") : "Feedback Not Provided Yet",
                         assetOrder.getApproverUser2FeedbackAt() != null ? assetOrder.getApproverUser2Comment() : "NA",
                         assetOrder.getApproverUser2FeedbackAt() != null ? assetOrder.getApproverUser2FeedbackAt().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA"
+                );
+                csvPrinter.printRecord(data);
+            }
+            csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public ByteArrayInputStream assetAssignmentReportDownload(String incidentType, Integer assigned, Integer deallocated, String serialNo, Integer approved, String incidentNo, String moduleId, String subModuleId, String priorityId, String assignedUserId, String raisedUserId, String title, String status) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
+        List<String> data = new ArrayList<String>();
+        PaginatedList<Incident> page = incidentService.assetTicketReport(incidentType, assigned, deallocated,
+                serialNo, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, raisedUserId,
+                title, status, Pageable.unpaged()
+        );
+        List<Incident> incidents = page.getContent();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList(
+                    "Asset Serial No.",
+                    "Allocated to: ID",
+                    "Allocated to: Name",
+                    "Allocated to: Email",
+                    "Department",
+                    "Location",
+                    "Organization",
+                    "Allocated On",
+                    "Deallocated On",
+                    "Status"
+            );
+            csvPrinter.printRecord(data);
+            User manager = null;
+            for (Incident incident : incidents) {
+                if (incident.getRaisedUser().getManagerId() != null)
+                    manager = new User(userService.getUserById(incident.getRaisedUser().getManagerId()));
+                data = Arrays.asList(
+                        incident.getAsset() != null ? incident.getAsset().getSerialNo() : "NA",
+                        incident.getRaisedUser().getEmployeeId(),
+                        incident.getRaisedUser().getFirstName() + " " + incident.getRaisedUser().getLastName(),
+                        incident.getRaisedUser().getEmail(),
+                        incident.getRaisedUser().getDepartment().getName(),
+                        incident.getRaisedUser().getLocation().getName(),
+                        incident.getRaisedUser().getLocation().getOfficeName(),
+                        incident.getAllocationDateTime() != null ? incident.getAllocationDateTime().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
+                        incident.getDeallocationDateTime() != null ? incident.getDeallocationDateTime().format(DateTimeFormatter.ofPattern(dateFormat)) : "NA",
+                        incident.getTicketType()
                 );
                 csvPrinter.printRecord(data);
             }

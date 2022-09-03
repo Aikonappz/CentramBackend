@@ -602,6 +602,11 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             "   ((:assignedUserId) is null) " +
             " ) and " +
             " ( " +
+            "   ((:raisedUserId) is not null and i.raisedUser.id = (:raisedUserId)) " +
+            "   OR " +
+            "   ((:raisedUserId) is null) " +
+            " ) and " +
+            " ( " +
             "   ((:incidentNo) is not null and UPPER(i.incidentNo) like (:incidentNo)) " +
             "   OR " +
             "   ((:incidentNo) is null) " +
@@ -623,6 +628,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("priorityId") BigInteger priorityId,
             @Param("assignedUserId") BigInteger assignedUserId,
+            @Param("raisedUserId") BigInteger raisedUserId,
             @Param("modSubModIds") List<BigInteger> modSubModIds,
             @Param("title") String title,
             @Param("status") Integer status,
