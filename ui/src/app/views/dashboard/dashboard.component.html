@@ -9,7 +9,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-info">
+                  <div class="card text-white " style="background-color: #437FF7">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
                         class="btn btn-transparent p-0 float-right">
@@ -22,7 +22,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-warning">
+                  <div class="card text-white " style="background-color: #08D621">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
                         class="btn btn-transparent p-0 float-right">
@@ -35,7 +35,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-success purple ">
+                  <div class="card text-white " style="background-color: #F63C6D">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
                         class="btn btn-transparent p-0 float-right">
@@ -60,7 +60,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-danger">
+                  <div class="card text-white" style="background-color: #437FF7">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
                         class="btn btn-transparent p-0 float-right">
@@ -73,7 +73,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-success">
+                  <div class="card text-white " style="background-color:  #08D621">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
                         class="btn btn-transparent p-0 float-right">
@@ -87,7 +87,7 @@
                 <!--/.col-->
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-facebook">
+                  <div class="card text-white " style="background-color: #F63C6D">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
                         class="btn btn-transparent p-0 float-right">
@@ -120,7 +120,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-info">
+                  <div class="card text-white " style="background-color: #18CB0F">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminUserDetail({})'
                         class="btn btn-transparent p-0 float-right">
@@ -133,7 +133,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-warning">
+                  <div class="card text-white " style="background-color: #6F5EEC">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
                         class="btn btn-transparent p-0 float-right">
@@ -146,7 +146,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white cyan">
+                  <div class="card text-white " style="background-color: #B652DA">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
                         class="btn btn-transparent p-0 float-right">
@@ -284,7 +284,7 @@
         <div class="card-body">
           <div id="dataSets-org-user" class="row-margin-05">
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Category</b>
+              class="accordion-toggle"><b> Incidents By Category</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of userChunkedTilesData">
@@ -313,7 +313,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Category</b>
+              class="accordion-toggle"><b>Asset Tickets By Category</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of user2ChunkedTilesData">
@@ -342,7 +342,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Status</b>
+              class="accordion-toggle"><b> Incidents By Status</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of user1ChunkedTilesData">
@@ -371,7 +371,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>ASSET Incidents By Status</b>
+              class="accordion-toggle"><b>Asset Tickets By Status</b>
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of user3ChunkedTilesData">
@@ -408,7 +408,7 @@
         <div class="card-body">
           <div id="dataSets-org-agent" class="row-margin-05">
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Priority</b></h3>
+              class="accordion-toggle"><b> Incidents By Priority</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agent1ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -436,7 +436,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Priority</b></h3>
+              class="accordion-toggle"><b>Asset Tickets By Priority</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent4ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -464,7 +464,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Category</b></h3>
+              class="accordion-toggle"><b> Incidents By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agentChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -492,7 +492,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Category</b></h3>
+              class="accordion-toggle"><b>Asset Tickets By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent3ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -520,7 +520,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Status</b></h3>
+              class="accordion-toggle"><b> Incidents By Status</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agent2ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -548,7 +548,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Status</b></h3>
+              class="accordion-toggle"><b>Asset Tickets By Status</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent5ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -583,11 +583,11 @@
       <div class="card">
         <div class="card-body">
           <div id="dataSets-org-category-admin" class="row-margin-05">
-            <h3 class="accordion-toggle"><b>Generel Incidents By Aging</b></h3>
+            <h3 class="accordion-toggle"><b> Incidents By Aging</b></h3>
             <div>
               <div class="row">
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-info orange">
+                  <div class="card text-white " style="background-color: #F46E3E;">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=5"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -600,7 +600,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-primary pink">
+                  <div class="card text-white " style="background-color: #19E1B6">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=10"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -613,7 +613,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-warning green">
+                  <div class="card text-white " style="background-color: #6F5EEC">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=20"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -628,7 +628,7 @@
               </div>
               <div class="row">
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-info purple">
+                  <div class="card text-white " style="background-color: #18CB0F;">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=30"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -641,7 +641,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-6 col-lg-4">
-                  <div class="card text-white bg-primary">
+                  <div class="card text-white " style="background-color: #B652DA">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">60"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -667,7 +667,7 @@
                 </div>
               </div>
             </div>
-            <h3 class="accordion-toggle"><b>Generel Incidents By Priority</b></h3>
+            <h3 class="accordion-toggle"><b> Incidents By Priority</b></h3>
             <div>
               <div class="row" *ngFor="let rows of ca1ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -694,7 +694,7 @@
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Generel Incidents By Category</b></h3>
+              class="accordion-toggle"><b> Incidents By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of caChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -722,8 +722,8 @@
                 </div>
               </div>
             </div>
-            <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
-              class="accordion-toggle"><b>Asset Incidents By Category</b></h3>
+            <!-- <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')"
+              class="accordion-toggle"><b> Asset Tickets By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of ca4ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
@@ -750,9 +750,9 @@
                   </canvas>
                 </div>
               </div>
-            </div>
+            </div> -->
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"
-              class="accordion-toggle"><b>Incidents By Status</b></h3>
+              class="accordion-toggle"><b> Incidents By Status</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">

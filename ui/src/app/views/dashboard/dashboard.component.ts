@@ -87,101 +87,101 @@ export class DashboardComponent implements OnInit {
 
   public siteAdminChart1Labels: Label[] = [];
   public siteAdminChart1Data: MultiDataSet = [];
-  public siteAdminChart1Colors: any[] = [{ backgroundColor: ["#63C2DE", "#FAC008", "#7048C1"] }];
+  public siteAdminChart1Colors: any[] = [{ backgroundColor: ["#437FF7", "#08D621", "#F63C6D"] }];
 
   public siteAdminChart2Labels: Label[] = [];
   public siteAdminChart2Data: MultiDataSet = [];
-  public siteAdminChart2Colors: any[] = [{ backgroundColor: ["#EE6A6C", "#5FBD74", "#3B5998",] }];
+  public siteAdminChart2Colors: any[] = [{ backgroundColor: ["#437FF7", "#08D621", "#F63C6D",] }];
 
   public orgAdminChart1Labels: Label[] = [];
   public orgAdminChart1Data: MultiDataSet = [];
   public hasOrgAdminChart1Data: boolean = false;
-  public orgAdminChart1Colors: any[] = [{ backgroundColor: ["#CCDE82", "#CEF2D1", "#B2EEFC", "#B4B6FA", "#F5B9CA", "#F890B5", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public orgAdminChart1Colors: any[] = [{ backgroundColor: ["#F46E3E", "#19E1B6", "#6F5EEC", "#18CB0F", "#B652DA", "#CF755D", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public orgAdminChart2Labels: Label[] = [];
   public orgAdminChart2Data: MultiDataSet = [];
   public hasOrgAdminChart2Data: boolean = false;
-  public orgAdminChart2Colors: any[] = [{ backgroundColor: ["#F9A68F", "#79CD75", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public orgAdminChart2Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];
 
   public orgAdminChart3Labels: Label[] = [];
   public orgAdminChart3Data: MultiDataSet = [];
   public hasOrgAdminChart3Data: boolean = false;
-  public orgAdminChart3Colors: any[] = [{ backgroundColor: ["#CCDE82", "#CEF2D1", "#B2EEFC", "#B4B6FA", "#F5B9CA", "#F890B5", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public orgAdminChart3Colors: any[] = [{ backgroundColor: ["#2BB51D", "#11B7B3", "#E43451", "#B4B6FA", "#F5B9CA", "#F890B5", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public orgAdminChart4Labels: Label[] = [];
   public orgAdminChart4Data: MultiDataSet = [];
   public hasOrgAdminChart4Data: boolean = false;
-  public orgAdminChart4Colors: any[] = [{ backgroundColor: ["#F9A68F", "#79CD75", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public orgAdminChart4Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];
 
   public userChart1Labels: Label[] = [];
   public userChart1Data: MultiDataSet = [];
   public hasUserChart1Data: boolean = false;
-  public userChart1Colors: any[] = [{ backgroundColor: ["#CCDE82", "#CEF2D1", "#B2EEFC", "#B4B6FA", "#F5B9CA", "#F890B5", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public userChart1Colors: any[] = [{ backgroundColor: ["#F46E3E", "#19E1B6", "#6F5EEC", "#18CB0F", "#B652DA", "#CF755D", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public userChart2Labels: Label[] = [];
   public userChart2Data: MultiDataSet = [];
   public hasUserChart2Data: boolean = false;
-  public userChart2Colors: any[] = [{ backgroundColor: ["#F9A68F", "#79CD75", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public userChart2Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];
 
   public userChart3Labels: Label[] = [];
   public userChart3Data: MultiDataSet = [];
   public hasUserChart3Data: boolean = false;
-  public userChart3Colors: any[] = [{ backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public userChart3Colors: any[] = [{ backgroundColor: ["#2BB51D", "#11B7B3", "#E43451", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public userChart4Labels: Label[] = [];
   public userChart4Data: MultiDataSet = [];
   public hasUserChart4Data: boolean = false;
-  public userChart4Colors: any[] = [{ backgroundColor: ["#42A3B8", "#adff2f", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public userChart4Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];
 
   public agentChart1Labels: Label[] = [];
   public agentChart1Data: MultiDataSet = [];
   public hasAgentChart1Data: boolean = false;
-  public agentChart1Colors: any[] = [{ backgroundColor: ["#CCDE82", "#CEF2D1", "#B2EEFC", "#B4B6FA", "#F5B9CA", "#F890B5", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public agentChart1Colors: any[] = [{ backgroundColor: ["#F46E3E", "#19E1B6", "#6F5EEC", "#18CB0F", "#B652DA", "#CF755D", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public agentChart2Labels: Label[] = [];
   public agentChart2Data: MultiDataSet = [];
   public hasAgentChart2Data: boolean = false;
-  public agentChart2Colors: any[] = [{ backgroundColor: ["#9FF3EB", "#F9FDD3", "#EDD0BD", "#C0DDAD", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",] }];
+  public agentChart2Colors: any[] = [{ backgroundColor: ["#437FF7", "#F63C6D", "#08D621", "#27BFCB",] }];
 
   public agentChart3Labels: Label[] = [];
   public agentChart3Data: MultiDataSet = [];
   public hasAgentChart3Data: boolean = false;
-  public agentChart3Colors: any[] = [{ backgroundColor: ["#F9A68F", "#79CD75", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public agentChart3Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];
 
   public agentChart4Labels: Label[] = [];
   public agentChart4Data: MultiDataSet = [];
   public hasAgentChart4Data: boolean = false;
-  public agentChart4Colors: any[] = [{ backgroundColor: ["#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public agentChart4Colors: any[] = [{ backgroundColor: ["#2BB51D", "#11B7B3", "#E43451", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public agentChart5Labels: Label[] = [];
   public agentChart5Data: MultiDataSet = [];
   public hasAgentChart5Data: boolean = false;
-  public agentChart5Colors: any[] = [{ backgroundColor: ["#3DA8D8", "#E9518B", "#FAC008", "#7048C1", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",] }];
+  public agentChart5Colors: any[] = [{ backgroundColor: ["#437FF7", "#F63C6D", "#08D621", "#27BFCB",] }];
 
   public agentChart6Labels: Label[] = [];
   public agentChart6Data: MultiDataSet = [];
   public hasAgentChart6Data: boolean = false;
-  public agentChart6Colors: any[] = [{ backgroundColor: ["#42A3B8", "#adff2f", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public agentChart6Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];;
 
   public categoryAdminChart1Labels: Label[] = [];
   public categoryAdminChart1Data: MultiDataSet = [];
   public hasCategoryAdminChart1Data: boolean = false;
-  public categoryAdminChart1Colors: any[] = [{ backgroundColor: ["#CCDE82", "#CEF2D1", "#B2EEFC", "#B4B6FA", "#F5B9CA", "#F890B5", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
+  public categoryAdminChart1Colors: any[] = [{ backgroundColor: ["#F46E3E", "#19E1B6", "#6F5EEC", "#18CB0F", "#B652DA", "#CF755D", "#D2B6CE", "#D6F094", "#AAEEDE", "#63CA96", "#E9518B", "#adff2f", "#7048C1", "#F8CB00", "#3B5998", "#EE6A6C", "#42A3B8", "#ffc107", "#f86c6b", "#6f42c1"] }];
 
   public categoryAdminChart2Labels: Label[] = [];
   public categoryAdminChart2Data: MultiDataSet = [];
   public hasCategoryAdminChart2Data: boolean = false;
-  public categoryAdminChart2Colors: any[] = [{ backgroundColor: ["#9FF3EB", "#F9FDD3", "#EDD0BD", "#C0DDAD", "#fd72e6", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",] }];
+  public categoryAdminChart2Colors: any[] = [{ backgroundColor: ["#437FF7", "#F63C6D", "#08D621", "#27BFCB",] }];
 
   public categoryAdminChart3Labels: Label[] = [];
   public categoryAdminChart3Data: MultiDataSet = [];
   public hasCategoryAdminChart3Data: boolean = false;
-  public categoryAdminChart3Colors: any[] = [{ backgroundColor: ["#F8CB0F", "#E9528D", "#5FBE76", "#7249C2", "#3EA9D8", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",] }];
+  public categoryAdminChart3Colors: any[] = [{ backgroundColor: ["#F46E3E", "#19E1B6", "#6F5EEC", "#18CB0F", "#B652DA", "#ffc107", "#17a2b8", "#20c997", "#ffc107", "#f86c6b", "#6FC8CE",] }];
 
   public categoryAdminChart4Labels: Label[] = [];
   public categoryAdminChart4Data: MultiDataSet = [];
   public hasCategoryAdminChart4Data: boolean = false;
-  public categoryAdminChart4Colors: any[] = [{ backgroundColor: ["#F9A68F", "#79CD75", "#7048C1", "#63CA96", "#f86c6b", "#FAC008", "#3B5998", "#E9518B", "#63C2DE", "#ffc107", "#F8CB00",] }];
+  public categoryAdminChart4Colors: any[] = [{ backgroundColor: ["#E43451", "#2BB51D",] }];
 
   public categoryAdminChart5Labels: Label[] = [];
   public categoryAdminChart5Data: MultiDataSet = [];
@@ -1296,6 +1296,9 @@ export class DashboardComponent implements OnInit {
             };
             dataPoints.push(this.categoryAdminDashboardVO.moduleWiseIncidents[i].count);
             this.categoryAdminChart1Labels.push(this.categoryAdminDashboardVO.moduleWiseIncidents[i].moduleName);
+            if (this.hasCategoryAdminChart1Data == false) {
+              this.hasCategoryAdminChart1Data = this.categoryAdminDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
+            }
           }
           this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
           this.categoryAdminChart1Data = [dataPoints];
