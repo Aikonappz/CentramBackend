@@ -8,7 +8,7 @@
             </h3>
             <div>
               <div class="row">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #437FF7">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
@@ -21,7 +21,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #08D621">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
@@ -34,7 +34,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #F63C6D">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
@@ -59,7 +59,7 @@
             </h3>
             <div>
               <div class="row">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white" style="background-color: #437FF7">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
@@ -72,7 +72,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color:  #08D621">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
@@ -86,7 +86,7 @@
                 </div>
                 <!--/.col-->
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #F63C6D">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
@@ -119,7 +119,7 @@
             </h3>
             <div>
               <div class="row">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #18CB0F">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminUserDetail({})'
@@ -132,7 +132,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #6F5EEC">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
@@ -145,7 +145,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col">
                   <div class="card text-white " style="background-color: #B652DA">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
@@ -164,7 +164,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdminChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -180,7 +180,7 @@
               <div
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasOrgAdminChart1Data"
                 class="row">
-                <div class="col">
+                <div class="col-12">
                   <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="orgAdminChart1($event)" [colors]="orgAdminChart1Colors" [data]="orgAdminChart1Data"
                     [labels]="orgAdminChart1Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
