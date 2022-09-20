@@ -651,6 +651,16 @@ form.ng-pristine.ng-invalid.ng-touched {
   background: #e5097f; 
 }
 
+.cdk-overlay-container {
+  position: fixed;
+
+  z-index: 9999;
+}
+.mat-select-panel {
+
+  top: 45px;
+  position: absolute;
+}
 
 /* chat box*/
 /* ---------- LIVE-CHAT ---------- */
