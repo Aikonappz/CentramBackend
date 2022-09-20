@@ -15,6 +15,7 @@ import { Module } from '../model/Module';
 import { Vendor, VendorList } from '../model/Vendor';
 import { AssetModel } from '../model/AssetModel';
 import { PermissionDTO } from '../model/PermissionDTO';
+import { ChatMessage } from '../model/ChatMessage';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -128,5 +129,8 @@ export class MiscService {
     }
     actionsService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-action', { "params": request });
+    }
+    initiateChatService(chatMessage: ChatMessage): Observable<any> {
+        return this.http.post('/v1/misc/chat-message', chatMessage,);
     }
 }

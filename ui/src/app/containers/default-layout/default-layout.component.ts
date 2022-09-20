@@ -18,6 +18,7 @@ import { ClientStorageService } from '../../service/ClientStorageService';
 import { Router } from '@angular/router';
 import { LogoutWarningComponent } from './modal/LogoutWarningComponent';
 import { LoggedInUser } from '../../model/LoggedInUser';
+import { SelectAgentForChat } from './modal/SelectAgentForChat';
 declare var $: any;
 
 @Component({
@@ -256,19 +257,13 @@ export class DefaultLayoutComponent implements OnInit {
       }
 
       $('#live-chat header').on('click', function () {
-
         $('.chat').slideToggle(300, 'swing');
         $('.chat-message-counter').fadeToggle(300, 'swing');
-
       });
-
       $('.chat-close').on('click', function (e) {
-
         e.preventDefault();
         $('#live-chat').fadeOut(300);
-
       });
-
     });
   }
 
@@ -368,6 +363,26 @@ export class DefaultLayoutComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  selectAgent() {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-bg',
+    };
+    const initialState = {
+
+    };
+    this.modalRef = this.modalService.show(SelectAgentForChat,
+      Object.assign({}, config, { initialState })
+    );
+  }
+
+  chatAction(action: string) {
+    alert(action);
   }
 
 }

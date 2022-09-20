@@ -150,7 +150,6 @@ public class UserService implements UserDetailsService {
             loggedInUser.setUserAuthId(userAuth.getId());
             //save data in redis
             redisTemplate.opsForValue().set(email, loggedInUser);
-
             return loggedInUser;
         } else {
             throw new UsernameNotFoundException("User not found with username: " + email);

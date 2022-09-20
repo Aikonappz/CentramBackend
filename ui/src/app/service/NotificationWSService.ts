@@ -4,7 +4,6 @@ import * as SockJS from 'sockjs-client';
 
 import { NotificationService } from './NotificationService';
 import { environment } from '../../environments/environment';
-import { AppUtility } from '../config/AppUtility';
 import { LoggedInUserService } from './LoggedInUserService';
 
 
@@ -21,7 +20,7 @@ export class NotificationWSService {
     ) { }
 
     connect(): void {
-        console.log('webSocket Connection');
+        console.log('Web Socket Connection for Genarel Notifications');
         const ws = new SockJS(
             environment.appWSServiceEndpoint,
             null,

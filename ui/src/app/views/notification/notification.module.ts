@@ -7,11 +7,13 @@ import { MatTableModule } from '@angular/material/table';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NotificationRoutingModule } from './notification-routing.module';
 import { NotificationViewComponent } from './modal/NotificationViewComponent';
+import { SafePipe } from '../../service/pipe/SafePipe';
 
 @NgModule({
   declarations: [
     NotificationComponent,
-    NotificationViewComponent
+    NotificationViewComponent,
+    SafePipe,
   ],
   imports: [
     CommonModule,

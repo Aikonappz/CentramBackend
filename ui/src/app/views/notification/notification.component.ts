@@ -10,6 +10,7 @@ import { Notification, NotificationList } from '../../model/Notification';
 import { NotificationDataSource } from '../../service/datasource/NotificationSource';
 import { MiscService } from '../../service/MiscService';
 import { NotificationViewComponent } from './modal/NotificationViewComponent';
+declare var $: any;
 
 @Component({
   selector: 'app-notification',
@@ -19,7 +20,7 @@ import { NotificationViewComponent } from './modal/NotificationViewComponent';
 export class NotificationComponent implements OnInit {
   notification: Notification;
   modalRef: BsModalRef;
-  displayedColumns = ['notificationTitle', 'notificationBody', 'action'];
+  displayedColumns = ['notificationTitle', 'action'];
   private datasource: NotificationDataSource
   @ViewChild(MatPaginator) paginator: MatPaginator;
   entityId: number;
@@ -87,7 +88,24 @@ export class NotificationComponent implements OnInit {
           });
       });
     }
+    var self = this;
+    $(function () {
+      $(document).delegate('#accept', 'click', function () {
+        self.closeModal();
+        $('#live-chat').removeClass("d-none");
+        $('#live-chat').fadeIn(300);
+      });
+      $(document).delegate('#reject', 'click', function () {
+        self.closeModal();
+      });
+    });
   }
+
+  closeModal() {
+    console.log("clossing modal....");
+    this.modalRef.hide();
+  }
+
 
   ngAfterViewInit() {
     this.datasource.counter$
@@ -131,6 +149,15 @@ export class NotificationComponent implements OnInit {
   viewNotification(id: number) {
     this.service.notificationService(id, {})
       .subscribe((data: Notification) => {
+        // let notificationBody = data.notificationBody;
+        // try {
+        //   data.notificationBody = window.atob(notificationBody);
+        //   console.log("Encoded -> ", data.notificationBody);
+        // } catch (e) {
+        //   data.notificationBody = notificationBody;
+        //   console.log("Not Encoded -> ", data.notificationBody);
+        // }
+        console.log(data.notificationBody);
         const config: ModalOptions = {
           backdrop: 'static',
           keyboard: false,
