@@ -8,7 +8,7 @@
             </h3>
             <div>
               <div class="row">
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #437FF7">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
@@ -21,7 +21,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #08D621">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
@@ -34,7 +34,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #F63C6D">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
@@ -49,7 +49,7 @@
                 <!--/.col-->
               </div>
               <div class="row">
-                <canvas baseChart width="4" height="1" (chartHover)="chartHovered($event)"
+                <canvas baseChart width="5" height="1" (chartHover)="chartHovered($event)"
                   (chartClick)="siteAdminChart1($event)" [colors]="siteAdminChart1Colors" [data]="siteAdminChart1Data"
                   [labels]="siteAdminChart1Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                 </canvas>
@@ -59,7 +59,7 @@
             </h3>
             <div>
               <div class="row">
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white" style="background-color: #437FF7">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
@@ -72,7 +72,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color:  #08D621">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
@@ -86,7 +86,7 @@
                 </div>
                 <!--/.col-->
                 <!--/.col-->
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #F63C6D">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
@@ -101,7 +101,7 @@
                 <!--/.col-->
               </div>
               <div class="row">
-                <canvas baseChart width="4" height="1" (chartHover)="chartHovered($event)"
+                <canvas baseChart width="5" height="1" (chartHover)="chartHovered($event)"
                   (chartClick)="siteAdminChart2($event)" [colors]="siteAdminChart2Colors" [data]="siteAdminChart2Data"
                   [labels]="siteAdminChart2Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                 </canvas>
@@ -119,7 +119,7 @@
             </h3>
             <div>
               <div class="row">
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #18CB0F">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminUserDetail({})'
@@ -132,7 +132,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #6F5EEC">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
@@ -145,7 +145,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #B652DA">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
@@ -164,7 +164,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdminChunkedTilesData">
-                <div class="col" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -181,7 +181,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasOrgAdminChart1Data"
                 class="row">
                 <div class="col-12">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="orgAdminChart1($event)" [colors]="orgAdminChart1Colors" [data]="orgAdminChart1Data"
                     [labels]="orgAdminChart1Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -193,7 +193,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of orgAdmin2ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
@@ -210,7 +210,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasOrgAdminChart3Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)='orgAdminChart3($event)' [colors]="orgAdminChart3Colors" [data]="orgAdminChart3Data"
                     [labels]="orgAdminChart3Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -222,7 +222,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdmin1ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -239,7 +239,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasOrgAdminChart2Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="orgAdminChart2($event)" [colors]="orgAdminChart2Colors" [data]="orgAdminChart2Data"
                     [labels]="orgAdminChart2Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -251,7 +251,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of orgAdmin3ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
@@ -268,7 +268,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasOrgAdminChart4Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)='orgAdminChart4($event)' [colors]="orgAdminChart4Colors" [data]="orgAdminChart4Data"
                     [labels]="orgAdminChart4Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -288,7 +288,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of userChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -305,7 +305,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasUserChart1Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="userChart1($event)" [colors]="userChart1Colors" [data]="userChart1Data"
                     [labels]="userChart1Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -317,7 +317,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of user2ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
@@ -334,7 +334,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasUserChart3Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="userChart3($event)" [colors]="userChart3Colors" [data]="userChart3Data"
                     [labels]="userChart3Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -346,7 +346,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of user1ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -363,7 +363,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasUserChart2Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="userChart2($event)" [colors]="userChart2Colors" [data]="userChart2Data"
                     [labels]="userChart2Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -375,7 +375,7 @@
             </h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of user3ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
@@ -392,7 +392,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasUserChart4Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="userChart4($event)" [colors]="userChart4Colors" [data]="userChart4Data"
                     [labels]="userChart4Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -411,7 +411,7 @@
               class="accordion-toggle"><b> Incidents By Priority</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agent1ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
@@ -428,7 +428,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasAgentChart2Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="agentChart1($event)" [colors]="agentChart2Colors" [data]="agentChart2Data"
                     [labels]="agentChart2Labels" [chartType]="chartType" [options]="chartOptions"
                     [legend]="true"></canvas>
@@ -439,7 +439,7 @@
               class="accordion-toggle"><b>Asset Tickets By Priority</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent4ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent","ASSET")'
@@ -456,7 +456,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasAgentChart5Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="agentChart5($event)" [colors]="agentChart5Colors" [data]="agentChart5Data"
                     [labels]="agentChart5Labels" [chartType]="chartType" [options]="chartOptions"
                     [legend]="true"></canvas>
@@ -467,7 +467,7 @@
               class="accordion-toggle"><b> Incidents By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agentChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
@@ -484,7 +484,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasAgentChart1Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="agentChart2($event)" [colors]="agentChart1Colors" [data]="agentChart1Data"
                     [labels]="agentChart1Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -495,7 +495,7 @@
               class="accordion-toggle"><b>Asset Tickets By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent3ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent","ASSET")'
@@ -512,7 +512,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasAgentChart4Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="agentChart4($event)" [colors]="agentChart4Colors" [data]="agentChart4Data"
                     [labels]="agentChart4Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -523,7 +523,7 @@
               class="accordion-toggle"><b> Incidents By Status</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agent2ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
@@ -540,7 +540,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasAgentChart3Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="agentChart3($event)" [colors]="agentChart3Colors" [data]="agentChart3Data"
                     [labels]="agentChart3Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -551,7 +551,7 @@
               class="accordion-toggle"><b>Asset Tickets By Status</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent5ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent","ASSET")'
@@ -568,7 +568,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET') && hasAgentChart6Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="agentChart6($event)" [colors]="agentChart6Colors" [data]="agentChart6Data"
                     [labels]="agentChart6Labels" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                   </canvas>
@@ -586,7 +586,7 @@
             <h3 class="accordion-toggle"><b> Incidents By Aging</b></h3>
             <div>
               <div class="row">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #F46E3E;">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=5"},"user")'
@@ -599,7 +599,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #19E1B6">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=10"},"user")'
@@ -612,7 +612,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #6F5EEC">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=20"},"user")'
@@ -625,9 +625,7 @@
                   </div>
                 </div>
                 <!--/.col-->
-              </div>
-              <div class="row">
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #18CB0F;">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=30"},"user")'
@@ -639,8 +637,7 @@
                     </div>
                   </div>
                 </div>
-                <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
+                <div class="col-sm-4 col-lg-2">
                   <div class="card text-white " style="background-color: #B652DA">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">60"},"user")'
@@ -652,14 +649,10 @@
                     </div>
                   </div>
                 </div>
-                <!--/.col-->
-                <div class="col-sm-6 col-lg-4">
-                </div>
-                <!--/.col-->
               </div>
               <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="caChart1($event)" [colors]="categoryAdminChart3Colors"
                     [data]="categoryAdminChart3Data" [labels]="categoryAdminChart3Labels" [chartType]="chartType"
                     [options]="chartOptions" [legend]="true">
@@ -670,7 +663,7 @@
             <h3 class="accordion-toggle"><b> Incidents By Priority</b></h3>
             <div>
               <div class="row" *ngFor="let rows of ca1ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -685,7 +678,7 @@
               </div>
               <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="caChart2($event)" [colors]="categoryAdminChart2Colors"
                     [data]="categoryAdminChart2Data" [labels]="categoryAdminChart2Labels" [chartType]="chartType"
                     [options]="chartOptions" [legend]="true">
@@ -697,7 +690,7 @@
               class="accordion-toggle"><b> Incidents By Category</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of caChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -714,7 +707,7 @@
                 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT') && hasCategoryAdminChart1Data"
                 class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="caChart3($event)" [colors]="categoryAdminChart1Colors"
                     [data]="categoryAdminChart1Data" [labels]="categoryAdminChart1Labels" [chartType]="chartType"
                     [options]="chartOptions" [legend]="true">
@@ -755,7 +748,7 @@
               class="accordion-toggle"><b> Incidents By Status</b></h3>
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
-                <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
+                <div class="col-sm-4 col-lg-2" *ngFor="let item of rows">
                   <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
@@ -770,7 +763,7 @@
               </div>
               <div *ngIf="categoryAdminDashboardVO.priorityWiseIncidents.length>0" class="row">
                 <div class="col">
-                  <canvas width="4" height="1" baseChart (chartHover)="chartHovered($event)"
+                  <canvas width="5" height="1" baseChart (chartHover)="chartHovered($event)"
                     (chartClick)="caChart4($event)" [colors]="categoryAdminChart4Colors"
                     [data]="categoryAdminChart4Data" [labels]="categoryAdminChart4Labels" [chartType]="chartType"
                     [options]="chartOptions" [legend]="true">

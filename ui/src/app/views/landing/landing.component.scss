@@ -630,12 +630,12 @@ font-size: 60px;
 
 .heading-group-dark h3{
       font-size: 50px;
-    color: #121212;
+    color: #fff;
     line-height: 60px; 
 }
 .heading-group-dark p{
     font-size: 16px;
-    color: #121212;
+    color: #fff;
     margin-bottom: 20px;
   
 }
@@ -653,13 +653,13 @@ font-size: 60px;
     background: none;
     width: 100%;
     border: none;
-    border-bottom:1px solid #000 ;
+    border-bottom:1px solid #fff ;
         height: 58px;
-        color: #000;
+        color: #fff;
 }
 .form-control-custom:active{
     background: none;
-    border-bottom:1px solid #000 ;
+    border-bottom:1px solid #fff ;
 }
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -675,21 +675,21 @@ input:-webkit-autofill:active{
         background: none;
     width: 100%;
     border: none;
-    border-bottom:1px solid #000 ;
+    border-bottom:1px solid #fff ;
         height: 100px;
-        color: #000;
+        color: #fff;
 }
 
 ::-webkit-input-placeholder { /* Edge */
-color: #000;
+color: #fff;
 }
 
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
- color: #000;
+ color: #fff;
 }
 
 ::placeholder {
-  color: #000;
+  color: #fff;
 }
 
 .btn-submit{
