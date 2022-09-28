@@ -130,7 +130,10 @@ export class MiscService {
     actionsService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-action', { "params": request });
     }
-    initiateChatService(chatMessage: ChatMessage): Observable<any> {
+    startChatService(chatMessage: ChatMessage): Observable<any> {
         return this.http.post('/v1/misc/chat-message', chatMessage,);
+    }
+    initiateChatService(chatRoomId: string, request?: any): Observable<any> {
+        return this.http.put('/v1/misc/chat-message' + chatRoomId, { "params": request });
     }
 }

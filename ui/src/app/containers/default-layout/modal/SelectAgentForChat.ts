@@ -1,10 +1,14 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { BsModalRef, ModalOptions } from "ngx-bootstrap/modal";
+import { Subscription } from "rxjs";
 import { AppUtility } from "../../../config/AppUtility";
 import { ChatMessage } from "../../../model/ChatMessage";
 import { LoggedInUser } from "../../../model/LoggedInUser";
 import { Permission } from "../../../model/Permssion";
+import { ChatRoomService } from "../../../service/ChatRoomService";
+import { ChatService } from "../../../service/ChatService";
+import { ChatWSService } from "../../../service/ChatWSService";
 import { LoggedInUserService } from "../../../service/LoggedInUserService";
 import { MiscService } from "../../../service/MiscService";
 declare var $: any;
@@ -117,12 +121,17 @@ export class SelectAgentForChat implements OnInit {
   subModuleList: Permission[];
   parentModuleList: any[] = [];
   loggedInUser: LoggedInUser;
+  subscription: Subscription;
+  chatRoomId: string;;
+
+
   constructor(
     private fb: FormBuilder,
     public bsModalRef: BsModalRef,
     public options: ModalOptions,
     private loggedInUserService: LoggedInUserService,
     private miscService: MiscService,
+    private chatRoomService: ChatRoomService,
   ) {
     this.parentModuleList.push({ id: 'ASSET', label: 'Asset' });
     this.parentModuleList.push({ id: 'INCIDENT', label: 'Incident' });
@@ -153,6 +162,7 @@ export class SelectAgentForChat implements OnInit {
     });
   }
   ngOnInit() {
+    this.subscription = this.chatRoomService.currentChatRoomId.subscribe(chatRoomId => this.chatRoomId = chatRoomId);
   }
 
   ngAfterViewInit() {
@@ -164,15 +174,16 @@ export class SelectAgentForChat implements OnInit {
   get f() { return this.angFormAssign.controls; }
 
   initiateChat(req: any) {
-    this.miscService.initiateChatService(req)
+    this.miscService.startChatService(req)
       .subscribe((data: any) => {
-        console.log("completed....");
+        //console.log("completed....", JSON.stringify(data));
         this.bsModalRef.hide();
-        $(function () {
-          $('#live-chat').removeClass("d-none");
-          $('#live-chat').fadeIn(300);
-        });
+        this.chatRoomService.setChatRoomId(data.roomId);
       });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   assignIncident() {

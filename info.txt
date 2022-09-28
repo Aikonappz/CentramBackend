@@ -33,7 +33,7 @@ mysql -u root -p centram < /tmp/centram.sql
 
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/core-api/target/core-service-api.jar  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
-scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/appcentram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/db/centram.sql  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 ssh -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com
 sudo unzip -o /tmp/ui.zip  -d /usr/share/nginx/html/

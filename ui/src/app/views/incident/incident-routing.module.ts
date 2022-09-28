@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { AgentIncidentComponent } from './agentincident.component';
 import { AssignedIncidentComponent } from './assignedincident.component';
 import { EditIncidentComponent } from './editincident.component';
-import { IncidentComponent } from './incident.component';
 import { UserIncidentComponent } from './userincident.component';
 
 const routes: Routes = [
@@ -15,11 +14,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: IncidentComponent,
-      },
-      {
-        path: ':targetroute',
-        component: IncidentComponent,
+        redirectTo: 'user/all'
       },
       {
         path: 'user/all',

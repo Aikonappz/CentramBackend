@@ -9,13 +9,13 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "DASHBOARD" }
   },
   {
-    name: 'Organization',
+    name: 'Organizations',
     url: '/organization',
     icon: 'icon-target',
     attributes: { "moduleName": "ORGANIZATION" }
   },
   {
-    name: 'User',
+    name: 'Users',
     url: '/user',
     icon: 'icon-people',
     attributes: { "moduleName": "USER" }
@@ -90,6 +90,7 @@ export const navItems: INavData[] = [
     children: [
       {
         name: 'Employee Access',
+        title: true,
         url: '/incident/user-route',
         class: 'highlighted-yellow',
         attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
@@ -108,7 +109,7 @@ export const navItems: INavData[] = [
       },
       {
         name: 'Agent Access',
-        url: '/incident/agent-route',
+        title: true,
         class: 'highlighted-yellow',
         attributes: { "moduleName": "INCIDENT AGENT", "licenceType": "ALL,INCIDENT" }
       },
@@ -134,7 +135,7 @@ export const navItems: INavData[] = [
     children: [
       {
         name: 'Admin Access',
-        url: '/asset/admin-route',
+        title: true,
         class: 'highlighted-yellow',
         attributes: { "moduleName": "ASSET ADMIN", "licenceType": "ALL,ASSET" }
       },
@@ -164,7 +165,7 @@ export const navItems: INavData[] = [
       },
       {
         name: 'Employee Access',
-        url: '/asset/user-route',
+        title: true,
         class: 'highlighted-yellow',
         attributes: { "moduleName": "ASSET USER", "licenceType": "ALL,ASSET" }
       },
@@ -194,7 +195,7 @@ export const navItems: INavData[] = [
       },
       {
         name: 'Agent Access',
-        url: '/asset/agent-route',
+        title: true,
         class: 'highlighted-yellow',
         attributes: { "moduleName": "ASSET AGENT", "licenceType": "ALL,ASSET" }
       },
@@ -213,7 +214,7 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "MY NOTIFICATIONS" }
   },
   {
-    name: 'Report',
+    name: 'Reports',
     url: '/report',
     icon: 'fa fa-folder',
     attributes: { "moduleName": "REPORT" },

@@ -13,6 +13,7 @@ import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -624,6 +625,25 @@ public class MiscApiController {
     public ResponseEntity<ChatMessage> save(@ApiParam(value = "Chat Message object", required = true) @Valid @RequestBody ChatMessage body) {
         return new ResponseEntity<ChatMessage>(chatMessageService.save(body), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/chat-message/action/{chatRoomId}", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    public ResponseEntity<List<ChatMessage>> chatAction(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") String chatRoomId) {
+        return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatAction(chatRoomId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/chat/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity generateDummyNotification(
+            @RequestBody ChatMessage body
+    ) throws JsonProcessingException {
+        log.info("Consumed message: " + objectMapper.writeValueAsString(body));
+        simpMessagingTemplate.convertAndSend("/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12" , objectMapper.writeValueAsString(body));
+        return new ResponseEntity(body, HttpStatus.OK);
+    }
+
+    /*@RequestMapping(value = "/chat-message", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<ChatMessage> save(@ApiParam(value = "Chat Message object", required = true) @Valid @RequestBody ChatMessage body) {
+        return new ResponseEntity<ChatMessage>(chatMessageService.save(body), HttpStatus.OK);
+    }*/
 
     /*@RequestMapping(value = "/all-chat-message", produces = {"application/json"}, method = RequestMethod.GET)
     @JsonView(Views.ListView.class)

@@ -30,6 +30,7 @@ export const environment = {
 //   appServiceEndpoint: 'http://3.108.58.220:7001/api',
 //   appWSServiceEndpoint: 'http://3.108.58.220:7001/app-ws-notification',
 //   appWSNotificationTopic: '/topic/notification',
+//   appWSChatTopic: '/topic/chat',
 //   appWSCred: {
 //     "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
 //     "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="

@@ -15,6 +15,6 @@ import java.math.BigInteger;
 
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, BigInteger> {
-    /*@Query(value = "select cm from ChatMessage cm where cm.chatRoom.id = (:chatRoomId)")
-    Page<ChatMessage> findAll(@Param("chatRoomId") BigInteger chatRoomId, Pageable pageable);*/
+    @Query(value = "select cm from ChatMessage cm where cm.roomId = (:chatRoomId)")
+    Page<ChatMessage> findAll(@Param("chatRoomId") String chatRoomId, Pageable pageable);
 }

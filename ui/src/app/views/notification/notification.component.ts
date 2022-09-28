@@ -4,9 +4,11 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Status } from '../../model/enumerator/Status';
 import { Notification, NotificationList } from '../../model/Notification';
+import { ChatRoomService } from '../../service/ChatRoomService';
 import { NotificationDataSource } from '../../service/datasource/NotificationSource';
 import { MiscService } from '../../service/MiscService';
 import { NotificationViewComponent } from './modal/NotificationViewComponent';
@@ -26,6 +28,9 @@ export class NotificationComponent implements OnInit {
   entityId: number;
   angForm: FormGroup;
   searchedData: Object = {};
+  subscription: Subscription;
+  chatRoomId: string;;
+
   constructor(
     private fb: FormBuilder,
     private service: MiscService,
@@ -33,6 +38,7 @@ export class NotificationComponent implements OnInit {
     private router: Router,
     private modalService: BsModalService,
     private route: ActivatedRoute,
+    private chatRoomService: ChatRoomService,
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -94,11 +100,17 @@ export class NotificationComponent implements OnInit {
         self.closeModal();
         $('#live-chat').removeClass("d-none");
         $('#live-chat').fadeIn(300);
+        self.initateChat($('#accept').attr("data-com-id"));
       });
       $(document).delegate('#reject', 'click', function () {
         self.closeModal();
       });
     });
+  }
+
+  initateChat(chatReqId) {
+    this.service.initiateChatService(chatReqId, {});
+    this.chatRoomService.setChatRoomId(chatReqId);
   }
 
   closeModal() {
@@ -157,7 +169,7 @@ export class NotificationComponent implements OnInit {
         //   data.notificationBody = notificationBody;
         //   console.log("Not Encoded -> ", data.notificationBody);
         // }
-        console.log(data.notificationBody);
+        //console.log(data.notificationBody);
         const config: ModalOptions = {
           backdrop: 'static',
           keyboard: false,
