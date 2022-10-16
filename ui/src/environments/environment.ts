@@ -3,23 +3,6 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
-export const environment = {
-  production: false,
-  appUrl: 'https://www.google.com',
-  appBrandName: 'Centram',
-  appDevName: 'Centram Dev',
-  appLandingPage: '/',
-  appName: 'Centram',
-  appServiceEndpoint: 'http://localhost:7001/api',
-  appWSServiceEndpoint: 'http://localhost:7001/app-ws-notification',
-  appWSNotificationTopic: '/topic/notification',
-  appWSChatTopic: '/topic/chat',
-  appWSCred: {
-    "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
-    "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
-  }
-};
-
 // export const environment = {
 //   production: false,
 //   appUrl: 'https://www.google.com',
@@ -27,8 +10,8 @@ export const environment = {
 //   appDevName: 'Centram Dev',
 //   appLandingPage: '/',
 //   appName: 'Centram',
-//   appServiceEndpoint: 'http://3.108.58.220:7001/api',
-//   appWSServiceEndpoint: 'http://3.108.58.220:7001/app-ws-notification',
+//   appServiceEndpoint: 'http://localhost:7001/api',
+//   appWSServiceEndpoint: 'http://localhost:7001/app-ws-notification',
 //   appWSNotificationTopic: '/topic/notification',
 //   appWSChatTopic: '/topic/chat',
 //   appWSCred: {
@@ -36,3 +19,20 @@ export const environment = {
 //     "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
 //   }
 // };
+
+export const environment = {
+  production: false,
+  appUrl: 'https://www.google.com',
+  appBrandName: 'Centram',
+  appDevName: 'Centram Dev',
+  appLandingPage: '/',
+  appName: 'Centram',
+  appServiceEndpoint: 'http://3.108.58.220:7001/api',
+  appWSServiceEndpoint: 'http://3.108.58.220:7001/app-ws-notification',
+  appWSNotificationTopic: '/topic/notification',
+  appWSChatTopic: '/topic/chat',
+  appWSCred: {
+    "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
+    "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
+  }
+};
