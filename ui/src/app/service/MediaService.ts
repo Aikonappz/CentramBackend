@@ -12,8 +12,8 @@ export class MediaService {
 
     constructor(private http: ApiHttpService) { }
 
-    saveMediaService(entityId: number, entityType: EntityType, mediaType: MediaType, formData: FormData, request?: any): Observable<any> {
-        return this.http.post('/v1/media/upload-media/' + entityId + '/' + EntityType[entityType] + '/' + MediaType[mediaType], formData, request);
+    saveMediaService(entityId: number, entityType: EntityType, mediaType: MediaType, chatRoomId: string, formData: FormData, request?: any): Observable<any> {
+        return this.http.post('/v1/media/upload-media/' + entityId + '/' + EntityType[entityType] + '/' + MediaType[mediaType] + '/' + chatRoomId, formData, request);
     }
 
     deleteMediaService(mediaId: number, request?: any): Observable<any> {

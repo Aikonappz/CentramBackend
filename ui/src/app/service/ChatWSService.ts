@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 
-import { NotificationService } from './NotificationService';
 import { environment } from '../../environments/environment';
 import { LoggedInUserService } from './LoggedInUserService';
 import { ChatService } from './ChatService';
@@ -26,10 +25,11 @@ export class ChatWSService {
             {}
         );
         let loggedInUser = this.loggedInUserService.getLoggedInUser();
+        //let topicName = "/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12";
         let topicName = environment.appWSChatTopic + "/" + chatRoomId;
         this.stompClient = Stomp.over(ws);
         //TODO : need to check
-        this.stompClient.debug = null;
+        //this.stompClient.debug = true;
         const _this = this;
         _this.stompClient.connect(
             environment.appWSCred,
@@ -42,7 +42,7 @@ export class ChatWSService {
             }, function (error) {
                 console.log('chat errorCallBack -> ' + error);
                 setTimeout(() => {
-                    this.connect();
+                    this.connect(chatRoomId);
                 }, 5000);
             });
     }
@@ -63,7 +63,7 @@ export class ChatWSService {
         // }, 5000);
     }
     onMessageReceived(message) {
-        //console.log('Message Recieved from Server :: ' + message);
+        // console.log('Message Recieved from Server :: ' + message);
         // Emits the event.
         this.chatService.chatMessage.emit(JSON.parse(message.body));
     }

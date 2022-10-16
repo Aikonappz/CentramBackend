@@ -4,25 +4,22 @@ package com.centram.core.service;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
-import com.centram.common.utility.PaginatedList;
-import com.centram.common.vo.NotificationVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.ChatMessageRepository;
-import com.centram.core.repository.ChatRoomRepository;
-import com.centram.domain.*;
+import com.centram.domain.AppConfiguration;
+import com.centram.domain.ChatMessage;
+import com.centram.domain.Notification;
+import com.centram.domain.User;
 import com.centram.domain.enumarator.MessageStatus;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +29,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -58,12 +53,31 @@ public class ChatMessageService {
 
     @Transactional
     public ChatMessage save(ChatMessage chatMessage) {
-        if (chatMessage.getRoomId() == null) {
-            chatMessage.setRoomId(UUID.randomUUID().toString());
-        }
         chatMessage.setConversationTime(LocalDateTime.now());
         UserVO sender = userService.getUserById(chatMessage.getSenderId());
         UserVO recipient = null;
+        if (chatMessage.getRoomId() == null) {
+            chatMessage.setRoomId(UUID.randomUUID().toString());
+        } else {
+            Page<ChatMessage> chatMessages = chatMessageRepository.findAll(
+                    chatMessage.getRoomId(),
+                    PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "id"))
+            );
+            if (chatMessages.getContent().size() > 0) {
+                ChatMessage firstMessage = chatMessages.getContent().get(0);
+                if (firstMessage.getRoomId() != null) {
+                    chatMessage.setModuleId(firstMessage.getModuleId());
+                    chatMessage.setSubModuleId(firstMessage.getSubModuleId());
+                    if (chatMessage.getSenderId().compareTo(firstMessage.getSenderId()) == 0) {
+                        chatMessage.setRecipientId(firstMessage.getRecipientId());
+                    } else if (chatMessage.getSenderId().compareTo(firstMessage.getRecipientId()) == 0) {
+                        chatMessage.setRecipientId(firstMessage.getSenderId());
+                    }
+                } else {
+                    throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+                }
+            }
+        }
         if (chatMessage.getRecipientId() != null) {
             recipient = userService.getUserById(chatMessage.getRecipientId());
             chatMessage.setRecipientName(recipient.getFullName());
@@ -72,7 +86,7 @@ public class ChatMessageService {
         chatMessage.setStatus(MessageStatus.DELIVERED);
         ChatMessage message = chatMessageRepository.save(chatMessage);
         this.notifyAgent(Arrays.asList(message.getModuleId(), message.getSubModuleId()), message.getRoomId());
-        miscService.pushChats(Arrays.asList(message), recipient == null ? chatMessage.getSenderId() : recipient.getId());
+        miscService.pushChats(Arrays.asList(message), recipient == null ? Boolean.TRUE : Boolean.FALSE);
         return message;
     }
 
@@ -86,13 +100,25 @@ public class ChatMessageService {
                     i.setRecipientId(recipient.getId());
                     i.setRecipientName(recipient.getFullName());
                     i.setStatus(MessageStatus.RECEIVED);
-                    miscService.pushChats(Arrays.asList(i), recipient == null ? i.getSenderId() : recipient.getId());
+                    miscService.pushChats(Arrays.asList(i), Boolean.TRUE);
                 });
+        return chatMessageRepository.saveAll(chatMessagePage.getContent());
+    }
+
+    @Transactional
+    public List<ChatMessage> chatClose(String chatRoomId) {
+        Page<ChatMessage> chatMessagePage = chatMessageRepository.findAll(chatRoomId, Pageable.unpaged());
+        chatMessagePage.getContent().stream()
+                .forEach(i -> {
+                            i.setRoomClosed(true);
+                        }
+                );
         return chatMessageRepository.saveAll(chatMessagePage.getContent());
     }
 
     @Transactional(readOnly = true)
     private void notifyAgent(List<BigInteger> modules, String roomId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<UserVO> userList = userService.getUsersByModuleAndAction(modules, "SOLVE");
         Notification notification = new Notification();
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("CHAT_ACTION_NOTIFICATION"));
@@ -107,18 +133,25 @@ public class ChatMessageService {
         templateEngine.setTemplateResolver(templateResolver);
         Context context = new Context(Locale.ENGLISH);
         context.setVariable("com_id", roomId);
-
         body = templateEngine.process(appConfiguration.getConfigurationValue(), context);
         for (UserVO userVO : userList) {
-            notification = new Notification();
-            notification.setUser(new User(userVO));
-            notification.setNotificationType(NotificationType.ACTIONABLE);
-            notification.setStatus(Status.PUSHED);
-            notification.setNotificationTitle(title);
-            notification.setNotificationBody(body);
-            //notification.setNotificationBody(new String(Base64.getEncoder().encode(appConfiguration.getConfigurationValue().getBytes(StandardCharsets.UTF_8))));
-            notificationService.save(notification);
+            if (userVO.getId().compareTo(loggedInUser.getUserId()) != 0) {
+                notification = new Notification();
+                notification.setUser(new User(userVO));
+                notification.setNotificationType(NotificationType.ACTIONABLE);
+                notification.setStatus(Status.PUSHED);
+                notification.setNotificationTitle(title);
+                notification.setNotificationBody(body);
+                //notification.setNotificationBody(new String(Base64.getEncoder().encode(appConfiguration.getConfigurationValue().getBytes(StandardCharsets.UTF_8))));
+                notificationService.save(notification);
+            }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessage> chatMassages(String chatRoomId) {
+        Page<ChatMessage> chatMessagePage = chatMessageRepository.findAll(chatRoomId, Pageable.unpaged());
+        return chatMessagePage.getContent();
     }
 
     @Transactional(readOnly = true)

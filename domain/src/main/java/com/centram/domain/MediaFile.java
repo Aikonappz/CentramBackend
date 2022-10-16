@@ -67,8 +67,13 @@ public class MediaFile implements Serializable {
     @JsonView({Views.InternalView.class})
     private byte[] content;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @Column(name = "entity_id", columnDefinition = "BIGINT")
     @JsonView({Views.BasicView.class, Views.DetailView.class})
     private BigInteger entityId;
+
+    @ApiModelProperty(required = false, value = "")
+    @Column(name = "chat_room_id")
+    @JsonView({Views.BasicView.class, Views.DetailView.class})
+    private String chatRoomId;
 }

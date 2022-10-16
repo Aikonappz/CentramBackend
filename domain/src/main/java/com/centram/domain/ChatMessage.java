@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -16,9 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Action
@@ -111,4 +107,9 @@ public class ChatMessage implements Serializable {
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     @Transient
     private List<MediaFile> attachments;
+
+    @ApiModelProperty(required = true, value = "")
+    @Column(name = "room_closed", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private Boolean roomClosed = false;
 }

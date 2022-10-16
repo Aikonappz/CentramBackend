@@ -104,24 +104,24 @@ export class PermissionComponent implements OnInit, OnDestroy {
       let mdl = module.id;
       let rl = this.angForm.controls['role'].value;
       if (rl != null && mdl != null) {
-        this.service
-          .getActionsByRoleAndModule(rl, mdl, {})
-          .subscribe((data: any) => {
-            this.permisableActions = data;
-            //$('.view-action').removeClass("d-none");
-            //console.log(data);
-            if (this.permisableActions.length > 0) {
-              let actions = [];
-              for (let k in this.permisableActions) {
-                actions.push(this.permisableActions[k].id);
-                //console.log(actions);
-              }
-              this.angForm.get('action').setValue(actions.map(Number));
-            } else {
-              this.angForm.controls['action'].setValue(null);
-              $('.view-action').addClass("d-none");
-            }
-          });
+        // this.service
+        //   .getActionsByRoleAndModule(rl, mdl, {})
+        //   .subscribe((data: any) => {
+        //     this.permisableActions = data;
+        //     //$('.view-action').removeClass("d-none");
+        //     //console.log(data);
+        //     if (this.permisableActions.length > 0) {
+        //       let actions = [];
+        //       for (let k in this.permisableActions) {
+        //         actions.push(this.permisableActions[k].id);
+        //         //console.log(actions);
+        //       }
+        //       this.angForm.get('action').setValue(actions.map(Number));
+        //     } else {
+        //       this.angForm.controls['action'].setValue(null);
+        //       $('.view-action').addClass("d-none");
+        //     }
+        //   });
       } else {
         this.angForm.controls['action'].setValue(null);
         $('.view-action').addClass("d-none");
@@ -211,13 +211,13 @@ export class PermissionComponent implements OnInit, OnDestroy {
       this.permissionDTO.moduleId = this.angForm.controls['module'].value;
       this.permissionDTO.roleId = this.angForm.controls['role'].value;
       this.permissionDTO.actionIds = this.angForm.controls['action'].value;
-      //console.log(this.permissionDTO);
-      this.service
-        .permissionService(this.permissionDTO)
-        .subscribe((data: any) => {
-          this.dataSaved = true;
-          this.angForm.reset();
-        });
+      console.log(this.permissionDTO);
+      // this.service
+      //   .permissionService(this.permissionDTO)
+      //   .subscribe((data: any) => {
+      //     this.dataSaved = true;
+      //     this.angForm.reset();
+      //   });
     } else {
       console.log("Invalid Form!");
     }

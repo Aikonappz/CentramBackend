@@ -376,64 +376,33 @@
     <i class="fa fa-comments" aria-hidden="true"></i>
   </a>
   <div id="live-chat" class="d-none">
-    <header class="clearfix">
-      <div class="row justify-content-between align-items-center">
-        <h4>Mehmet Mert</h4>
-        <div>
-          <a href="#" class="after-chat-connect chat-icon d-none"><i class="fa fa-paperclip"></i></a>
-          <a href="#" class="after-chat-connect chat-icon d-none"><i class="fa fa-desktop"></i></a>
-          <a href="#" class="chat-close"><i class="fa fa-times"></i></a>
-          <!-- <a href="#" class="chat-icon"><i class="fa fa-list-ul"></i></a>           -->
-        </div>
-      </div>
-      <span class="chat-message-counter">3</span>
-    </header>
-    <div class="chat">
-      <div class="chat-history">
-        <!-- <div class="chat-message clearfix">
-          <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
-          <div class="chat-message-content clearfix">
-            <div class="chat-message-color">
-              <span class="chat-time">13:35</span>
-              <h5>John Doe</h5>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, explicabo quasi ratione odio dolorum
-                harum.</p>
-            </div>
-          </div> 
-        </div>
-        <hr>
-        <div class="chat-message clearfix">
-          <img src="http://gravatar.com/avatar/2c0ad52fc5943b78d6abe069cc08f320?s=32" alt="" width="32" height="32">
-          <div class="chat-message-content clearfix">
-            <div class="chat-message-color">
-              <span class="chat-time">13:37</span>
-              <h5>Marco Biedermann</h5>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis, nulla accusamus magni vel debitis
-                numquam qui tempora rem voluptatem delectus!</p>
-            </div>
+    <form [formGroup]="angChatForm" (ngSubmit)="chatInteractation()" novalidate method="post">
+      <header class="clearfix">
+        <div class="row justify-content-between align-items-center">
+          <h4>{{chatHeaderTxt}}/<span id="chat-session-timeout">&nbsp;{{chatTimeLeft}}</span></h4>
+          <div>
+            <a href="#" class="after-chat-connect chat-icon d-none"><i class="fa fa-desktop"></i></a>
+            <a href="#" class="after-chat-connect chat-icon ">
+              <!-- <i class="fa fa-paperclip"></i> -->
+              <input #fileInput (change)="getFileDetails($event)" type="file" id="fileInput" formControlName="fileInput"
+                name="fileInput">
+            </a>
+            <a href="#" class="chat-close"><i class="fa fa-times"></i></a>
           </div>
         </div>
-        <hr>
-        <div class="chat-message clearfix">
-          <img src="http://lorempixum.com/32/32/people" alt="" width="32" height="32">
-          <div class="chat-message-content clearfix">
-            <div class="chat-message-color">
-              <span class="chat-time">13:38</span>
-              <h5>John Doe</h5>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
-            </div>
-          </div>
+        <!-- <span class="chat-message-counter">3</span> -->
+      </header>
+      <div class="chat">
+        <div class="chat-history" id="current-chat-window">
         </div>
-        <hr> -->
-      </div>
-      <!-- <p class="chat-feedback">Lorem ipsum dolor sit amet, consectetur adipisicing.</p> -->
-      <form action="#" method="post">
+        <!-- <p class="chat-feedback">Lorem ipsum dolor sit amet, consectetur adipisicing.</p> -->
         <fieldset>
-          <input type="text" placeholder="Mesajınızı Yazın" autofocus>
-          <input type="hidden">
+          <input type="text" autocomplete="off" placeholder="Aa" formControlName="chatMessage" id="chatMessage"
+            name="chatMessage">
+          <input type="hidden" formControlName="chatRoomId" id="chatRoomId" name="chatRoomId">
         </fieldset>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
   <span><a href="{{appUrl}}">{{appBrandName}}</a> &copy; {{currentYear}} {{appDevName}}.</span>
   <span class="ml-auto">Powered by <a href="{{appUrl}}">{{appDevName}}</a></span>

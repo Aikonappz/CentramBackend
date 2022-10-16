@@ -98,8 +98,8 @@ export class NotificationComponent implements OnInit {
     $(function () {
       $(document).delegate('#accept', 'click', function () {
         self.closeModal();
-        $('#live-chat').removeClass("d-none");
-        $('#live-chat').fadeIn(300);
+        //$('#live-chat').removeClass("d-none");
+        //$('#live-chat').fadeIn(300);
         self.initateChat($('#accept').attr("data-com-id"));
       });
       $(document).delegate('#reject', 'click', function () {
@@ -109,7 +109,10 @@ export class NotificationComponent implements OnInit {
   }
 
   initateChat(chatReqId) {
-    this.service.initiateChatService(chatReqId, {});
+    this.service.agentSideInitiateChatService(chatReqId, {})
+      .subscribe((data: any) => {
+        //alert("data");
+      });
     this.chatRoomService.setChatRoomId(chatReqId);
   }
 

@@ -615,10 +615,10 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<ChatRoom>>(chatRoomService.findAll(chatRoomNo, pageable), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/chat-room/{chatRoomId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/chat-message/{chatRoomId}", produces = {"application/json"}, method = RequestMethod.GET)
     @JsonView({Views.DetailView.class,})
-    public ResponseEntity<ChatRoom> getChatRoomById(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") BigInteger chatRoomId) {
-        return new ResponseEntity<ChatRoom>(chatRoomService.get(chatRoomId), HttpStatus.OK);
+    public ResponseEntity<List<ChatMessage>> getChatMessages(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") String chatRoomId) {
+        return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatMassages(chatRoomId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/chat-message", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
@@ -631,12 +631,17 @@ public class MiscApiController {
         return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatAction(chatRoomId), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/chat-message/close/{chatRoomId}", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    public ResponseEntity<List<ChatMessage>> chatClose(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") String chatRoomId) {
+        return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatClose(chatRoomId), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/chat/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity generateDummyNotification(
             @RequestBody ChatMessage body
     ) throws JsonProcessingException {
         log.info("Consumed message: " + objectMapper.writeValueAsString(body));
-        simpMessagingTemplate.convertAndSend("/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12" , objectMapper.writeValueAsString(body));
+        simpMessagingTemplate.convertAndSend("/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12", objectMapper.writeValueAsString(body));
         return new ResponseEntity(body, HttpStatus.OK);
     }
 

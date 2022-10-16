@@ -96,7 +96,7 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
       },
       {
-        name: 'Create Incident',
+        name: 'Create an Incident',
         url: '/incident/user/add/new',
         icon: 'fa fa-plus',
         attributes: { "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
@@ -244,7 +244,7 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "ESCALATION REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
-        name: 'Reopen Report',
+        name: 'Reopened Report',
         url: '/report/reopen-report',
         icon: 'fa fa-folder-open',
         attributes: { "moduleName": "REOPEN REPORT", "licenceType": "ALL,INCIDENT" }

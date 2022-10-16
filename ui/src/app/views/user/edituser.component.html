@@ -32,12 +32,12 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label required-control-label" for="email">Email</label>
+                <label class="form-col-form-label required-control-label" for="email">Email ID</label>
                 <input type="text" [readonly]="!newEntity" formControlName="email" ngModel id="email" name="email"
-                  class="form-control" placeholder="Last name" aria-label="Email">
+                  class="form-control" placeholder="Email ID" aria-label="Email">
                 <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.email.errors?.required">
-                    Email is required.
+                    Email ID is required.
                   </div>
                   <div *ngIf="f.email.errors?.email">
                     Invalid input! Only email allowed.
@@ -72,7 +72,7 @@
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="employeeId">Employee ID</label>
                 <input type="text" formControlName="employeeId" ngModel id="employeeId" name="employeeId"
-                  class="form-control" placeholder="Employee ID." aria-label="Employee ID.">
+                  class="form-control" placeholder="Employee ID." aria-label="Employee ID">
                 <div *ngIf="f.employeeId.touched && f.employeeId.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.employeeId.errors?.required">
                     Employee ID. is required.

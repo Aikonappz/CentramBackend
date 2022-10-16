@@ -35,9 +35,9 @@
                                     <div class="col col-md-6 ">
                                         <label class="form-col-form-label required-control-label"
                                             for="modules">Module</label>
-                                        <ng-select [items]="modules" #module (change)="triggerModuleChange($event)"
-                                            placeholder="-- Select Module --" formControlName="module" id="module"
-                                            [multiple]="false" name="module" bindLabel="name" bindValue="id">
+                                        <ng-select [items]="modules" placeholder="-- Select Module --" [multiple]="true"
+                                            formControlName="module" id="module" [multiple]="false" name="module"
+                                            bindLabel="name" bindValue="id">
                                         </ng-select>
                                         <div *ngIf="f.module.touched && f.module.invalid"
                                             class="alert alert-danger-custom">

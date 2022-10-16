@@ -133,7 +133,13 @@ export class MiscService {
     startChatService(chatMessage: ChatMessage): Observable<any> {
         return this.http.post('/v1/misc/chat-message', chatMessage,);
     }
-    initiateChatService(chatRoomId: string, request?: any): Observable<any> {
-        return this.http.put('/v1/misc/chat-message' + chatRoomId, { "params": request });
+    agentSideInitiateChatService(chatRoomId: string, request?: any): Observable<any> {
+        return this.http.put('/v1/misc/chat-message/action/' + chatRoomId, { "params": request });
+    }
+    closeChatService(chatRoomId: string, request?: any): Observable<any> {
+        return this.http.put('/v1/misc/chat-message/close/' + chatRoomId, { "params": request });
+    }
+    chatMassagesService(chatRoomId: string, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/chat-message/' + chatRoomId, { "params": request });
     }
 }

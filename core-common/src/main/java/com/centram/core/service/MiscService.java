@@ -99,13 +99,15 @@ public class MiscService {
     private ObjectMapper objectMapper;
 
     @Async("asyncExecutor")
-    public void pushChats(List<ChatMessage> chatMessages, BigInteger recipientId) {
+    public void pushChats(List<ChatMessage> chatMessages, Boolean requiredDelay) {
         try {
-            Thread.sleep(4000);
             for (ChatMessage chatMessage : chatMessages) {
+                if (requiredDelay) {
+                    Thread.sleep(2000);
+                }
                 log.info("CHAT ROOM ID {}.", chatMessage.getRoomId());
                 simpMessagingTemplate.convertAndSend(
-                        appWsBrokerPrefix.concat("/chat/").concat(String.valueOf(chatMessage.getRoomId())).concat("/").concat(String.valueOf(recipientId)),
+                        appWsBrokerPrefix.concat("/chat/").concat(String.valueOf(chatMessage.getRoomId())),
                         objectMapper.writeValueAsString(chatMessage)
                 );
             }

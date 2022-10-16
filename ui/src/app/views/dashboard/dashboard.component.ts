@@ -269,9 +269,9 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.activeCompanies);
           dataPoints.push(this.adminDashboard.inactiveCompanies);
           this.siteAdminChart1Labels = [
-            "Total",
-            "Active",
-            "Inactive",
+            "Total Organizations",
+            "Active Organizations",
+            "Inactive Organizations",
           ];
           this.siteAdminChart1Data = [dataPoints];
 
@@ -288,9 +288,9 @@ export class DashboardComponent implements OnInit {
           //   "Incident License Type",
           // ];
           this.siteAdminChart2Labels = [
-            "All License Type",
-            "Asset License Type",
-            "Incident License Type",
+            "Licence Type - All",
+            "Licence Type - Incident",
+            "Licence Type - Asset",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -839,9 +839,9 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.activeCompanies);
           dataPoints.push(this.adminDashboard.inactiveCompanies);
           this.siteAdminChart1Labels = [
-            "Total",
-            "Active",
-            "Inactive",
+            "Total Organizations",
+            "Active Organizations",
+            "Inactive Organizations",
           ];
           this.siteAdminChart1Data = [dataPoints];
 
@@ -858,9 +858,9 @@ export class DashboardComponent implements OnInit {
           //   "Incident License Type",
           // ];
           this.siteAdminChart2Labels = [
-            "All License Type",
-            "Asset License Type",
-            "Incident License Type",
+            "Licence Type - All",
+            "Licence Type - Incident",
+            "Licence Type - Asset",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -1415,11 +1415,11 @@ export class DashboardComponent implements OnInit {
   }
 
   siteAdminChart1(e: any) {
-    if (this.getChartSegmentData(e) === "Total") {
+    if (this.getChartSegmentData(e) === "Total Organizations") {
       this.viewSiteAdmin({ "status": "ALL" });
-    } else if (this.getChartSegmentData(e) === "Active") {
+    } else if (this.getChartSegmentData(e) === "Active Organizations") {
       this.viewSiteAdmin({ "status": "ACTIVE" })
-    } else if (this.getChartSegmentData(e) === "Inactive") {
+    } else if (this.getChartSegmentData(e) === "Inactive Organizations") {
       this.viewSiteAdmin({ "status": "INACTIVE" })
     } else {
       this.viewSiteAdmin({ "status": "ALL" });

@@ -4,5 +4,6 @@ public enum EntityType {
     ORGANISATION,
     USER,
     INCIDENT,
-    ASSET_REQUEST
+    ASSET_REQUEST,
+    CHAT
 }
