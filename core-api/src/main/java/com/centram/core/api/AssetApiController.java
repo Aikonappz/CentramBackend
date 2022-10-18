@@ -133,4 +133,22 @@ public class AssetApiController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(resource);
     }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get assets by user location/organisation/department", nickname = "getFilteredAssets", notes = "Get assets by user location/organisation/department", response = PaginatedList.class, tags = {"Asset",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @JsonView(Views.ListView.class)
+    @RequestMapping(value = "/available-asset", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET,REQUESTED ASSET','READ|SEARCH,WRITE|SOLVE|ASSIGN',authentication.principal) || @appSecurityUtilityService.hasOrgAdminAccess(authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
+    public ResponseEntity<PaginatedList<Asset>> getAvailableAssets(
+            @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
+            @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
+            @ApiParam(value = "Request Raised User Id", required = false) @RequestParam(value = "requestRaisedId", required = false) BigInteger requestRaisedId,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Asset>>(assetService.getAvailableAssets(productCategory, assetType, requestRaisedId, pageable), HttpStatus.OK);
+    }
 }

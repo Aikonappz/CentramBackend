@@ -40,9 +40,11 @@ public class PermissionService {
 
     @Transactional(readOnly = false)
     public void save(PermissionDTO permissionDTO) {
-        permissionRepository.deletePermissionByRoleAndMoule(permissionDTO.getRoleId(), permissionDTO.getModuleId());
+        permissionRepository.deletePermissionByRoleAndMoules(permissionDTO.getRoleId(), permissionDTO.getModuleIds());
         for (BigInteger actionId : permissionDTO.getActionIds()) {
-            permissionRepository.savePermission(permissionDTO.getRoleId(), permissionDTO.getModuleId(), actionId);
+            for (BigInteger moduleId : permissionDTO.getModuleIds()) {
+                permissionRepository.savePermission(permissionDTO.getRoleId(), moduleId, actionId);
+            }
         }
     }
 

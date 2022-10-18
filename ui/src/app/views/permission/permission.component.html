@@ -36,8 +36,8 @@
                                         <label class="form-col-form-label required-control-label"
                                             for="modules">Module</label>
                                         <ng-select [items]="modules" placeholder="-- Select Module --" [multiple]="true"
-                                            formControlName="module" id="module" [multiple]="false" name="module"
-                                            bindLabel="name" bindValue="id">
+                                            formControlName="module" id="module" name="module" bindLabel="name"
+                                            bindValue="id">
                                         </ng-select>
                                         <div *ngIf="f.module.touched && f.module.invalid"
                                             class="alert alert-danger-custom">

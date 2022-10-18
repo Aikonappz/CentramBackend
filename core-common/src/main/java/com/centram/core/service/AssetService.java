@@ -5,6 +5,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.UserVO;
 import com.centram.core.repository.AssetRepository;
 import com.centram.domain.Asset;
 import com.centram.domain.Module;
@@ -64,6 +65,24 @@ public class AssetService {
 
     @Autowired
     private AssetRepository assetRepository;
+
+    @Transactional(readOnly = true)
+    public PaginatedList<Asset> getAvailableAssets(String productCategory, String assetType, BigInteger requestRaisedId, Pageable pageable) {
+        UserVO userVO = userService.getUserById(requestRaisedId);
+        BigInteger mId = (productCategory == null || productCategory.equals("")) ? null : BigInteger.valueOf(Long.valueOf(productCategory));
+        BigInteger smId = (assetType == null || assetType.equals("")) ? null : BigInteger.valueOf(Long.valueOf(assetType));
+        Page<Asset> assetPage = assetRepository.findAll(mId, smId, userVO.getLocationId(), userVO.getDepartmentId(), userVO.getOrganisationId(), pageable);
+        Module module = null;
+        for (int i = 0; i < assetPage.getContent().size(); i++) {
+            module = moduleService.getModuleById(assetPage.getContent().get(i).getModuleId());
+            assetPage.getContent().get(i).setModuleName(module.getAssetOPSName());
+            assetPage.getContent().get(i).setActualModuleName(module.getName());
+            module = moduleService.getModuleById(assetPage.getContent().get(i).getSubModuleId());
+            assetPage.getContent().get(i).setSubModuleName(module.getAssetOPSName());
+            assetPage.getContent().get(i).setActualSubModuleName(module.getName());
+        }
+        return new PaginatedList<Asset>(assetPage);
+    }
 
     /**
      * get Assets by organisation and search criteria

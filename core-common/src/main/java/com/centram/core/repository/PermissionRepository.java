@@ -23,8 +23,8 @@ public interface PermissionRepository extends JpaRepository<Permission, BigInteg
     void savePermission(@Param("roleId") BigInteger roleId, @Param("moduleId") BigInteger moduleId, @Param("actionId") BigInteger actionId);
 
     @Modifying
-    @Query("delete from Permission p where p.role.id = (:roleId) and p.module.id = (:moduleId)")
-    void deletePermissionByRoleAndMoule(@Param("roleId") BigInteger roleId, @Param("moduleId") BigInteger moduleId);
+    @Query("delete from Permission p where p.role.id = (:roleId) and p.module.id in (:moduleIds)")
+    void deletePermissionByRoleAndMoules(@Param("roleId") BigInteger roleId, @Param("moduleIds") List<BigInteger> moduleIds);
 
     @Query("select p from Permission p where p.role.id = (:roleId)")
     List<Permission> getPermissionByRoleId(@Param("roleId") BigInteger roleId);

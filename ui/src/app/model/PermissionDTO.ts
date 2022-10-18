@@ -1,11 +1,11 @@
 export class PermissionDTO {
     roleId: number;
-    moduleId: number[];
+    moduleIds: number[];
     actionIds: number[];
 
     constructor() {
         this.roleId = null;
-        this.moduleId = [];
+        this.moduleIds = [];
         this.actionIds = [];
     }
 }

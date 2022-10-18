@@ -208,16 +208,16 @@ export class PermissionComponent implements OnInit, OnDestroy {
   formSubmit() {
     if (this.angForm.valid) {
       this.permissionDTO = new PermissionDTO();
-      this.permissionDTO.moduleId = this.angForm.controls['module'].value;
+      this.permissionDTO.moduleIds = this.angForm.controls['module'].value;
       this.permissionDTO.roleId = this.angForm.controls['role'].value;
       this.permissionDTO.actionIds = this.angForm.controls['action'].value;
-      console.log(this.permissionDTO);
-      // this.service
-      //   .permissionService(this.permissionDTO)
-      //   .subscribe((data: any) => {
-      //     this.dataSaved = true;
-      //     this.angForm.reset();
-      //   });
+      //console.log(this.permissionDTO);
+      this.service
+        .permissionService(this.permissionDTO)
+        .subscribe((data: any) => {
+          this.dataSaved = true;
+          this.angForm.reset();
+        });
     } else {
       console.log("Invalid Form!");
     }

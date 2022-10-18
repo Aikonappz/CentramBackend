@@ -676,7 +676,7 @@ export class RequestAssetComponent implements OnInit {
 
   getAssets() {
     this.assetService
-      .assetsService({ available: 1, productCategory: this.incident.moduleId, assetType: this.incident.subModuleId })
+      .availableAssetsService({ available: 1, productCategory: this.incident.moduleId, assetType: this.incident.subModuleId, requestRaisedId: this.incident.raisedUser.id, })
       .subscribe((data: AssetList) => {
         this.asstes = [];
         this.asstes = data.content;

@@ -18,6 +18,9 @@ export class AssetService {
     assetsService(request?: any): Observable<AssetList> {
         return this.http.get('/v1/asset/all', { "params": request });
     }
+    availableAssetsService(request?: any): Observable<AssetList> {
+        return this.http.get('/v1/asset/available-asset', { "params": request });
+    }
     assetService(id: number, request?: any): Observable<Asset> {
         return this.http.get('/v1/asset/' + id, { "params": request });
     }
