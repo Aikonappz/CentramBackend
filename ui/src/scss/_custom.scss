@@ -217,12 +217,15 @@
 
 // Here you can add other styles
 .alert-danger-custom{
-    background-color: none !important;
-    border-color: none !important;
-    color: red !important;
-    font-size: x-small !important;
-    margin-bottom: 0rem !important;
-    padding: 0.2rem 0 0.2rem !important;
+  background-color: #ff000014 !important;
+  border-color: #ebdddd !important;
+  color: red !important;
+  font-size: x-small !important;
+  margin-bottom: 0rem !important;
+  padding: 5px;
+  text-align: center;
+  font-size: 12px !important;
+  margin-top: 4px;
 }
 .row-margin-05 { margin-top: 0.5em; }
 .row-margin-10 { margin-top: 1.0em; }
@@ -736,7 +739,6 @@ a.chat-button-open {
   border: 1px solid #ccc;
   background: #f5f5f5;
  
-  padding: 8px;
   outline: none;
   width: 100%;
 }
@@ -858,10 +860,37 @@ a.chat-close {
   font-style: italic; 
   margin: 0 0 0 80px;
 }
-.chat{
-
+.selection-form{
+  border-radius: 15px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 2px 0px 20px 8px rgb(0 0 0 / 6%);
   }
 
+
+  .card-title-custom{
+    background-color: #f70;
+    color: #fff;
+    font-size:14px;
+  }
+  .card-title-custom h6{
+    font-size: inherit;
+    line-height: 20px;
+    margin-bottom: 0px;
+  }
+
+.ng-select.ng-select-searchable .ng-select-container .ng-value-container .ng-input {
+    opacity: 0 !important;
+}
+.after-chat-connect{
+  cursor: pointer;
+}
+.file-fild{
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+  
+}
 
 /*chat box*/
 
