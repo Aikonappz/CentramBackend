@@ -301,22 +301,18 @@
 .badge-re-opened {
   color: #fff;
   background-color: #e83e8c;
-  padding: 4px !important;
 }
 .badge-sla-about-to-breach {
   color: #fff;
   background-color: orange;
-  padding: 4px !important;
 }
 .badge-sla-breached {
   color: #fff;
   background-color: red;
-  padding: 4px !important;
 }
 .badge-closed {
   color: #fff;
   background-color: #63CA96;
-  padding:4px !important;
 }
 .cyan{
   border-color: #17a2b8 !important;
@@ -325,10 +321,6 @@
 .teal{
   border-color: #20c997 !important;
   background-color: #20c997 !important;
-
-
-
-
 }
 .green{
   border-color: #4dbd74 !important;
@@ -459,11 +451,6 @@
   padding: 10px 10px;
 }
 .ui-accordion-content .card{
-  //height: 300px;
-  //max-width: 300px;
-  //border: none;
-  //border-radius: 0px;
-  //padding: 10px;
   height: 175px;
   border: none;
   border-radius: 0px;
@@ -552,12 +539,8 @@ width: 100%;
   color: #fff;
   font-size: 15px;
 }
-.mat-table td:first-child{
-  padding: 8px 24px !important;
-  color: #525252;
-}
 .mat-table td{
-  padding: 8px 0px !important;
+  padding: 8px 10px !important;
   color: #525252;
 }
 .gray {
@@ -641,7 +624,7 @@ table.mat-table {
   padding-left: 0px;
 }
 form.ng-pristine.ng-invalid.ng-touched {
- /* background: #fbfbfb;*/
+  background: #fbfbfb;
 }
 .card-footer {
   padding: 0.75rem 1.25rem;
@@ -867,10 +850,3 @@ a.chat-close {
 
 
 /*chat box*/
-
-
-.badge {
-
-  padding: 0;
-
-}

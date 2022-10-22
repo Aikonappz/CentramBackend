@@ -122,7 +122,7 @@ export class SelectAgentForChat implements OnInit {
   parentModuleList: any[] = [];
   loggedInUser: LoggedInUser;
   subscription: Subscription;
-  chatRoomId: string;;
+  chatRoomId: string;
 
 
   constructor(

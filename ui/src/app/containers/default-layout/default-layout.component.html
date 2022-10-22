@@ -375,11 +375,97 @@
   <a href="javascript:void(0);" (click)="selectAgent()" class="chat-button-open">
     <i class="fa fa-comments" aria-hidden="true"></i>
   </a>
-  <div id="live-chat" class="d-none">
-    <form [formGroup]="angChatForm" (ngSubmit)="chatInteractation()" novalidate method="post">
+  <div id="live-chat" >
+
+    <div class="card selection-form d-none ">
+      <div [ngClass]="{'d-none': canAssign === true, 'card-body' : true }">
+        <div class="row">
+          <h6>Please search with module, category and sub category!</h6>
+        </div>
+      </div>
+      <form [ngClass]="{'d-none': canAssign === false}" [formGroup]="angFormAssign" (ngSubmit)="assignIncident()"
+        novalidate>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <label class="form-col-form-label required-control-label" for="parentModule">Module</label>
+              <ng-select [items]="parentModuleList" placeholder="-- Select Module --" #parentModule
+                (change)="populateModule($event)" formControlName="parentModule" id="parentModule" name="parentModule"
+                bindLabel="label" bindValue="id">
+              </ng-select>
+              <div *ngIf="f.parentModule.touched && f.parentModule.invalid" class="alert alert-danger-custom">
+                <div *ngIf="f.parentModule.errors?.required">
+                  Parent Module is required.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="form-col-form-label required-control-label" for="moduleId">
+                <span *ngIf="f.parentModule.value=='ASSET'">Product Category</span>
+                <span *ngIf="f.parentModule.value=='INCIDENT'||f.parentModule.value==''||f.parentModule.value==null">
+                  Category</span>
+              </label>
+              <ng-select [items]="moduleList" placeholder="-- Select Product Category --" #moduleId
+                (change)="populateSubmodule($event)" formControlName="moduleId" id="moduleId" name="moduleId"
+                bindLabel="customerModuleName" bindValue="moduleId">
+              </ng-select>
+              <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
+                <div *ngIf="f.moduleId.errors?.required">
+                  Field is required.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="form-col-form-label required-control-label" for="subModuleId">
+                <span *ngIf="f.parentModule.value=='ASSET'">Product Sub Category</span>
+                <span *ngIf="f.parentModule.value=='INCIDENT'||f.parentModule.value==''||f.parentModule.value==null">Sub
+                  Category</span>
+              </label>
+              <ng-select [items]="subModuleList" placeholder="-- Select Asset Category --" formControlName="subModuleId"
+                id="subModuleId" name="subModuleId" bindLabel="customerModuleName" bindValue="moduleId">
+              </ng-select>
+              <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
+                <div *ngIf="f.subModuleId.errors?.required">
+                  Field is required.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="form-col-form-label required-control-label" for="subModuleId">
+                <span>Message</span>
+              </label>
+              <textarea id="message" rows="4" class="form-control textarea-non-resizable" formControlName="message"
+                id="message" name="message" placeholder="Message"></textarea>
+              <div *ngIf="f.message.touched && f.message.invalid" class="alert alert-danger-custom">
+                <div *ngIf="f.message.errors?.required">
+                  Message is required!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button [disabled]="!angFormAssign.valid" type="submit" class="btn btn-primary btn-sm">
+            <i class="fa fa-male"></i> Start Chat
+          </button>
+          <button type="button" (click)="bsModalRef.hide()" class="btn btn-danger btn-sm">
+            <i class="fa fa-close"></i> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <form [formGroup]="angChatForm" class="chat-form " (ngSubmit)="chatInteractation()" novalidate method="post">
       <header class="clearfix">
         <div class="row justify-content-between align-items-center">
-          <h4>{{chatHeaderTxt}}/<span id="chat-session-timeout">&nbsp;{{chatTimeLeft}}</span></h4>
+          <!-- <h4>{{chatHeaderTxt}}/<span id="chat-session-timeout">&nbsp;{{chatTimeLeft}}</span></h4> -->
+          <h4>Message/09.00</h4>
           <div>
             <a href="#" class="after-chat-connect chat-icon d-none"><i class="fa fa-desktop"></i></a>
             <a href="#" class="after-chat-connect chat-icon ">

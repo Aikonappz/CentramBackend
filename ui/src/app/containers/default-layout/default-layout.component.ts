@@ -23,7 +23,7 @@ import { Subscription } from 'rxjs';
 import { ChatRoomService } from '../../service/ChatRoomService';
 import { ChatWSService } from '../../service/ChatWSService';
 import { ChatService } from '../../service/ChatService';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChatMessage } from '../../model/ChatMessage';
 import { EntityType } from '../../model/enumerator/EntityType';
 import { MediaService } from '../../service/MediaService';
@@ -73,7 +73,16 @@ export class DefaultLayoutComponent implements OnInit {
   selectedFiles?: FileList;
   /*Chat specific*/
 
+  canAssign: boolean;
+  angFormAssign: FormGroup;
+
+  moduleList: Permission[] = [];
+  subModuleList: Permission[];
+  parentModuleList: any[] = [];
+
+
   constructor(
+    private fb: FormBuilder,
     private service: MiscService,
     private pushNotifications: PushNotificationsService,
     private notificationService: NotificationService,
@@ -183,7 +192,31 @@ export class DefaultLayoutComponent implements OnInit {
     this.initListener();
     this.initInterval();
     this.clientStorageService.set(AppUtility.APP_LAST_ACTION_KEY, Date.now().toString());
+
+    this.angFormAssign = this.fb.group({
+      parentModule: new FormControl(null, [
+        Validators.required,
+      ]),
+      moduleId: new FormControl(null, [
+        Validators.required,
+      ]),
+      subModuleId: new FormControl(null, [
+        Validators.required,
+      ]),
+      message: new FormControl(null, [
+        Validators.required,
+      ]),
+    });
+
+    this.parentModuleList.push({ id: 'ASSET', label: 'Asset' });
+    this.parentModuleList.push({ id: 'INCIDENT', label: 'Incident' });
+    this.permissions = this.loggedInUserService.getModulePermissions();
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+
   }
+
+
+  get f() { return this.angFormAssign.controls; }
 
   hasModulePermission(moduleName: string, permissions: any[], additionalModule: string[]): boolean {
     for (let k = 0; k < permissions.length; k++) {
@@ -720,19 +753,30 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
   selectAgent() {
-    const config: ModalOptions = {
-      backdrop: 'static',
-      keyboard: false,
-      animated: true,
-      ignoreBackdropClick: true,
-      class: 'modal-bg',
-    };
-    const initialState = {
 
-    };
-    this.modalRef = this.modalService.show(SelectAgentForChat,
-      Object.assign({}, config, { initialState })
-    );
+    $(function () {
+      //alert("sadj hasdaskdj");
+      $('.live-chat').slideToggle(300, 'swing');
+      $('.chat-message-counter').fadeToggle(300, 'swing');
+
+      //$('.form-selection').removeClass("d-none");
+      //$('.chat-section').addClass("d-none");
+
+
+    });
+    // const config: ModalOptions = {
+    //   backdrop: 'static',
+    //   keyboard: false,
+    //   animated: true,
+    //   ignoreBackdropClick: true,
+    //   class: 'modal-bg',
+    // };
+    // const initialState = {
+
+    // };
+    // this.modalRef = this.modalService.show(SelectAgentForChat,
+    //   Object.assign({}, config, { initialState })
+    // );
   }
 
   chatAction(action: string) {
