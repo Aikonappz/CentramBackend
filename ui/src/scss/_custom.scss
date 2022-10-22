@@ -318,6 +318,7 @@
   background-color: #63CA96;
   padding:4px !important;
 }
+
 .cyan{
   border-color: #17a2b8 !important;
   background-color: #17a2b8 !important;
@@ -459,12 +460,8 @@
   padding: 10px 10px;
 }
 .ui-accordion-content .card{
-  //height: 300px;
-  //max-width: 300px;
-  //border: none;
-  //border-radius: 0px;
-  //padding: 10px;
-  height: 175px;
+  height: 300px;
+  max-width: 300px;
   border: none;
   border-radius: 0px;
   padding: 10px;
