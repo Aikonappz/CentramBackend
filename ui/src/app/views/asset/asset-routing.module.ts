@@ -22,8 +22,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        //redirectTo: 'ordered'
-        component: AssetOrderComponent,
+        redirectTo: 'allocated'
       },
       {
         path: 'order',

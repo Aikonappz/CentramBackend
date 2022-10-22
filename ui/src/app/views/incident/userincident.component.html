@@ -15,7 +15,7 @@
                                     <li role="menuitem">
                                         <a class="dropdown-item" (click)="add('draft')" *ngIf="hasPermission('WRITE')"
                                             href="javascript:void(0);">
-                                            <i class="icon-pencil"></i> Drafted Incident
+                                            <i class="icon-pencil"></i> Draft Incidents
                                         </a>
                                     </li>
                                     <li role="menuitem">
@@ -93,7 +93,7 @@
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="assignedUser">
-                            <th mat-header-cell *matHeaderCellDef> Assigned User </th>
+                            <th mat-header-cell *matHeaderCellDef> Assigned To </th>
                             <td [attr.data-label]="element.status" mat-cell *matCellDef="let element">
                                 {{element.assignedUser?.firstName}}&nbsp;{{element.assignedUser?.lastName}}<br />
                                 {{element.assignedUser?.email}}

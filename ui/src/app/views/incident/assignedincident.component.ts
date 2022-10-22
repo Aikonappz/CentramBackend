@@ -111,7 +111,8 @@ export class AssignedIncidentComponent implements OnInit {
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == "INCIDENT") {
         p = new Permission(this.permissions[i]);
-        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        p.customerModuleName = p.customerModuleName;
+        //AppUtility.toTitleCase(p.customerModuleName);
         this.moduleList.push(p);
       }
     }
@@ -264,7 +265,8 @@ export class AssignedIncidentComponent implements OnInit {
       for (let i = 0; i < this.permissions.length; i++) {
         if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == "INCIDENT") {
           p = new Permission(this.permissions[i]);
-          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          p.customerModuleName = p.customerModuleName;
+          //AppUtility.toTitleCase(p.customerModuleName);
           this.subModuleList[c] = p;
           c++;
         }

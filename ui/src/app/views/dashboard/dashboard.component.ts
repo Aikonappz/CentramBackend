@@ -269,9 +269,9 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.activeCompanies);
           dataPoints.push(this.adminDashboard.inactiveCompanies);
           this.siteAdminChart1Labels = [
-            "Total",
-            "Active",
-            "Inactive",
+            "Total Organizations",
+            "Active Organizations",
+            "Inactive Organizations",
           ];
           this.siteAdminChart1Data = [dataPoints];
 
@@ -288,9 +288,9 @@ export class DashboardComponent implements OnInit {
           //   "Incident License Type",
           // ];
           this.siteAdminChart2Labels = [
-            "All License Type",
-            "Asset License Type",
-            "Incident License Type",
+            "Licence Type - All",
+            "Licence Type - Incident",
+            "Licence Type - Asset",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -337,7 +337,7 @@ export class DashboardComponent implements OnInit {
                 this.hasOrgAdminChart1Data = this.orgAdminDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 3);
+            this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 5);
             this.orgAdminChart1Data = [dataPoints];
 
             dataPoints = [];
@@ -363,7 +363,7 @@ export class DashboardComponent implements OnInit {
                 this.hasOrgAdminChart2Data = this.orgAdminDashboardVO.statusWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.orgAdmin1ChunkedTilesData = this.chunk(this.orgAdmin1TilesData, 3);
+            this.orgAdmin1ChunkedTilesData = this.chunk(this.orgAdmin1TilesData, 5);
             this.orgAdminChart2Data = [dataPoints];
 
             dataPoints = [];
@@ -382,7 +382,7 @@ export class DashboardComponent implements OnInit {
                 this.hasOrgAdminChart3Data = this.orgAdminDashboardVO.moduleWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.orgAdmin2ChunkedTilesData = this.chunk(this.orgAdmin2TilesData, 3);
+            this.orgAdmin2ChunkedTilesData = this.chunk(this.orgAdmin2TilesData, 5);
             this.orgAdminChart3Data = [dataPoints];
 
             dataPoints = [];
@@ -408,7 +408,7 @@ export class DashboardComponent implements OnInit {
                 this.hasOrgAdminChart4Data = this.orgAdminDashboardVO.statusWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.orgAdmin3ChunkedTilesData = this.chunk(this.orgAdmin3TilesData, 3);
+            this.orgAdmin3ChunkedTilesData = this.chunk(this.orgAdmin3TilesData, 5);
             this.orgAdminChart4Data = [dataPoints];
             $(function () {
               $("#dataSets-org-admin").accordion({
@@ -449,7 +449,7 @@ export class DashboardComponent implements OnInit {
                 this.hasUserChart1Data = this.userDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.userChunkedTilesData = this.chunk(this.userTilesData, 3);
+            this.userChunkedTilesData = this.chunk(this.userTilesData, 5);
             this.userChart1Data = [dataPoints];
 
             dataPoints = [];
@@ -468,7 +468,7 @@ export class DashboardComponent implements OnInit {
                 this.hasUserChart3Data = this.userDashboardVO.moduleWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.user2ChunkedTilesData = this.chunk(this.user2TilesData, 3);
+            this.user2ChunkedTilesData = this.chunk(this.user2TilesData, 5);
             this.userChart3Data = [dataPoints];
 
             dataPoints = [];
@@ -495,7 +495,7 @@ export class DashboardComponent implements OnInit {
                 this.hasUserChart2Data = this.userDashboardVO.statusWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.user1ChunkedTilesData = this.chunk(this.user1TilesData, 3);
+            this.user1ChunkedTilesData = this.chunk(this.user1TilesData, 5);
             this.userChart2Data = [dataPoints];
 
             dataPoints = [];
@@ -522,7 +522,7 @@ export class DashboardComponent implements OnInit {
                 this.hasUserChart4Data = this.userDashboardVO.statusWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.user3ChunkedTilesData = this.chunk(this.user3TilesData, 3);
+            this.user3ChunkedTilesData = this.chunk(this.user3TilesData, 5);
             this.userChart4Data = [dataPoints];
             $(function () {
               $("#dataSets-org-user").accordion({
@@ -566,7 +566,7 @@ export class DashboardComponent implements OnInit {
                 this.hasAgentChart1Data = this.agentDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.agentChunkedTilesData = this.chunk(this.agentTilesData, 3);
+            this.agentChunkedTilesData = this.chunk(this.agentTilesData, 5);
             this.agentChart1Data = [dataPoints];
 
             dataPoints = [];
@@ -588,7 +588,7 @@ export class DashboardComponent implements OnInit {
                 this.hasAgentChart4Data = this.agentDashboardVO.moduleWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.agent3ChunkedTilesData = this.chunk(this.agent3TilesData, 3);
+            this.agent3ChunkedTilesData = this.chunk(this.agent3TilesData, 5);
             this.agentChart4Data = [dataPoints];
 
             dataPoints = [];
@@ -610,7 +610,7 @@ export class DashboardComponent implements OnInit {
                 this.hasAgentChart2Data = this.agentDashboardVO.priorityWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 3);
+            this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 5);
             this.agentChart2Data = [dataPoints];
 
             dataPoints = [];
@@ -632,7 +632,7 @@ export class DashboardComponent implements OnInit {
                 this.hasAgentChart5Data = this.agentDashboardVO.priorityWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.agent4ChunkedTilesData = this.chunk(this.agent4TilesData, 3);
+            this.agent4ChunkedTilesData = this.chunk(this.agent4TilesData, 5);
             this.agentChart5Data = [dataPoints];
 
 
@@ -659,7 +659,7 @@ export class DashboardComponent implements OnInit {
                 this.hasAgentChart3Data = this.agentDashboardVO.statusWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.agent2ChunkedTilesData = this.chunk(this.agent2TilesData, 3);
+            this.agent2ChunkedTilesData = this.chunk(this.agent2TilesData, 5);
             this.agentChart3Data = [dataPoints];
 
             dataPoints = [];
@@ -685,7 +685,7 @@ export class DashboardComponent implements OnInit {
                 this.hasAgentChart6Data = this.agentDashboardVO.statusWiseAssetIncidents[i].count > 0 ? true : false;
               }
             }
-            this.agent5ChunkedTilesData = this.chunk(this.agent5TilesData, 3);
+            this.agent5ChunkedTilesData = this.chunk(this.agent5TilesData, 5);
             this.agentChart6Data = [dataPoints];
 
             $(function () {
@@ -730,7 +730,7 @@ export class DashboardComponent implements OnInit {
                 this.hasCategoryAdminChart1Data = this.categoryAdminDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
               }
             }
-            this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
+            this.caChunkedTilesData = this.chunk(this.caTilesData, 5);
             this.categoryAdminChart1Data = [dataPoints];
 
             dataPoints = [];
@@ -770,7 +770,7 @@ export class DashboardComponent implements OnInit {
               dataPoints.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].count);
               this.categoryAdminChart2Labels.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].priority);
             }
-            this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 3);
+            this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 5);
             this.categoryAdminChart2Data = [dataPoints];
 
             dataPoints = [];
@@ -792,7 +792,7 @@ export class DashboardComponent implements OnInit {
               dataPoints.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].count);
               this.categoryAdminChart4Labels.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].status);
             }
-            this.ca3ChunkedTilesData = this.chunk(this.ca3TilesData, 3);
+            this.ca3ChunkedTilesData = this.chunk(this.ca3TilesData, 5);
             this.categoryAdminChart4Data = [dataPoints];
 
             dataPoints = [];
@@ -839,9 +839,9 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.activeCompanies);
           dataPoints.push(this.adminDashboard.inactiveCompanies);
           this.siteAdminChart1Labels = [
-            "Total",
-            "Active",
-            "Inactive",
+            "Total Organizations",
+            "Active Organizations",
+            "Inactive Organizations",
           ];
           this.siteAdminChart1Data = [dataPoints];
 
@@ -858,9 +858,9 @@ export class DashboardComponent implements OnInit {
           //   "Incident License Type",
           // ];
           this.siteAdminChart2Labels = [
-            "All License Type",
-            "Asset License Type",
-            "Incident License Type",
+            "Licence Type - All",
+            "Licence Type - Incident",
+            "Licence Type - Asset",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -907,7 +907,7 @@ export class DashboardComponent implements OnInit {
               this.hasOrgAdminChart1Data = this.orgAdminDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 3);
+          this.orgAdminChunkedTilesData = this.chunk(this.orgAdminTilesData, 5);
           this.orgAdminChart1Data = [dataPoints];
 
           dataPoints = [];
@@ -933,7 +933,7 @@ export class DashboardComponent implements OnInit {
               this.hasOrgAdminChart2Data = this.orgAdminDashboardVO.statusWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.orgAdmin1ChunkedTilesData = this.chunk(this.orgAdmin1TilesData, 3);
+          this.orgAdmin1ChunkedTilesData = this.chunk(this.orgAdmin1TilesData, 5);
           this.orgAdminChart2Data = [dataPoints];
 
           dataPoints = [];
@@ -952,7 +952,7 @@ export class DashboardComponent implements OnInit {
               this.hasOrgAdminChart3Data = this.orgAdminDashboardVO.moduleWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.orgAdmin2ChunkedTilesData = this.chunk(this.orgAdmin2TilesData, 3);
+          this.orgAdmin2ChunkedTilesData = this.chunk(this.orgAdmin2TilesData, 5);
           this.orgAdminChart3Data = [dataPoints];
 
           dataPoints = [];
@@ -978,7 +978,7 @@ export class DashboardComponent implements OnInit {
               this.hasOrgAdminChart4Data = this.orgAdminDashboardVO.statusWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.orgAdmin3ChunkedTilesData = this.chunk(this.orgAdmin3TilesData, 3);
+          this.orgAdmin3ChunkedTilesData = this.chunk(this.orgAdmin3TilesData, 5);
           this.orgAdminChart4Data = [dataPoints];
           $(function () {
             $("#dataSets-org-admin").accordion({
@@ -1019,7 +1019,7 @@ export class DashboardComponent implements OnInit {
               this.hasUserChart1Data = this.userDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.userChunkedTilesData = this.chunk(this.userTilesData, 3);
+          this.userChunkedTilesData = this.chunk(this.userTilesData, 5);
           this.userChart1Data = [dataPoints];
 
           dataPoints = [];
@@ -1038,7 +1038,7 @@ export class DashboardComponent implements OnInit {
               this.hasUserChart3Data = this.userDashboardVO.moduleWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.user2ChunkedTilesData = this.chunk(this.user2TilesData, 3);
+          this.user2ChunkedTilesData = this.chunk(this.user2TilesData, 5);
           this.userChart3Data = [dataPoints];
 
           dataPoints = [];
@@ -1065,7 +1065,7 @@ export class DashboardComponent implements OnInit {
               this.hasUserChart2Data = this.userDashboardVO.statusWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.user1ChunkedTilesData = this.chunk(this.user1TilesData, 3);
+          this.user1ChunkedTilesData = this.chunk(this.user1TilesData, 5);
           this.userChart2Data = [dataPoints];
 
           dataPoints = [];
@@ -1092,7 +1092,7 @@ export class DashboardComponent implements OnInit {
               this.hasUserChart4Data = this.userDashboardVO.statusWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.user3ChunkedTilesData = this.chunk(this.user3TilesData, 3);
+          this.user3ChunkedTilesData = this.chunk(this.user3TilesData, 5);
           this.userChart4Data = [dataPoints];
           $(function () {
             $("#dataSets-org-user").accordion({
@@ -1136,7 +1136,7 @@ export class DashboardComponent implements OnInit {
               this.hasAgentChart1Data = this.agentDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.agentChunkedTilesData = this.chunk(this.agentTilesData, 3);
+          this.agentChunkedTilesData = this.chunk(this.agentTilesData, 5);
           this.agentChart1Data = [dataPoints];
 
           dataPoints = [];
@@ -1158,7 +1158,7 @@ export class DashboardComponent implements OnInit {
               this.hasAgentChart4Data = this.agentDashboardVO.moduleWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.agent3ChunkedTilesData = this.chunk(this.agent3TilesData, 3);
+          this.agent3ChunkedTilesData = this.chunk(this.agent3TilesData, 5);
           this.agentChart4Data = [dataPoints];
 
           dataPoints = [];
@@ -1180,7 +1180,7 @@ export class DashboardComponent implements OnInit {
               this.hasAgentChart2Data = this.agentDashboardVO.priorityWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 3);
+          this.agent1ChunkedTilesData = this.chunk(this.agent1TilesData, 5);
           this.agentChart2Data = [dataPoints];
 
           dataPoints = [];
@@ -1202,7 +1202,7 @@ export class DashboardComponent implements OnInit {
               this.hasAgentChart5Data = this.agentDashboardVO.priorityWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.agent4ChunkedTilesData = this.chunk(this.agent4TilesData, 3);
+          this.agent4ChunkedTilesData = this.chunk(this.agent4TilesData, 5);
           this.agentChart5Data = [dataPoints];
 
 
@@ -1229,7 +1229,7 @@ export class DashboardComponent implements OnInit {
               this.hasAgentChart3Data = this.agentDashboardVO.statusWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.agent2ChunkedTilesData = this.chunk(this.agent2TilesData, 3);
+          this.agent2ChunkedTilesData = this.chunk(this.agent2TilesData, 5);
           this.agentChart3Data = [dataPoints];
 
           dataPoints = [];
@@ -1255,7 +1255,7 @@ export class DashboardComponent implements OnInit {
               this.hasAgentChart6Data = this.agentDashboardVO.statusWiseAssetIncidents[i].count > 0 ? true : false;
             }
           }
-          this.agent5ChunkedTilesData = this.chunk(this.agent5TilesData, 3);
+          this.agent5ChunkedTilesData = this.chunk(this.agent5TilesData, 5);
           this.agentChart6Data = [dataPoints];
 
           $(function () {
@@ -1300,7 +1300,7 @@ export class DashboardComponent implements OnInit {
               this.hasCategoryAdminChart1Data = this.categoryAdminDashboardVO.moduleWiseIncidents[i].count > 0 ? true : false;
             }
           }
-          this.caChunkedTilesData = this.chunk(this.caTilesData, 3);
+          this.caChunkedTilesData = this.chunk(this.caTilesData, 5);
           this.categoryAdminChart1Data = [dataPoints];
 
           dataPoints = [];
@@ -1319,7 +1319,7 @@ export class DashboardComponent implements OnInit {
             dataPoints.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].count);
             this.categoryAdminChart2Labels.push(this.categoryAdminDashboardVO.priorityWiseIncidents[i].priority);
           }
-          this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 3);
+          this.ca1ChunkedTilesData = this.chunk(this.ca1TilesData, 5);
           this.categoryAdminChart2Data = [dataPoints];
 
           dataPoints = [];
@@ -1341,7 +1341,7 @@ export class DashboardComponent implements OnInit {
             dataPoints.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].count);
             this.categoryAdminChart4Labels.push(this.categoryAdminDashboardVO.statusWiseIncidents[i].status);
           }
-          this.ca3ChunkedTilesData = this.chunk(this.ca3TilesData, 3);
+          this.ca3ChunkedTilesData = this.chunk(this.ca3TilesData, 5);
           this.categoryAdminChart4Data = [dataPoints];
 
           dataPoints = [];
@@ -1415,11 +1415,11 @@ export class DashboardComponent implements OnInit {
   }
 
   siteAdminChart1(e: any) {
-    if (this.getChartSegmentData(e) === "Total") {
+    if (this.getChartSegmentData(e) === "Total Organizations") {
       this.viewSiteAdmin({ "status": "ALL" });
-    } else if (this.getChartSegmentData(e) === "Active") {
+    } else if (this.getChartSegmentData(e) === "Active Organizations") {
       this.viewSiteAdmin({ "status": "ACTIVE" })
-    } else if (this.getChartSegmentData(e) === "Inactive") {
+    } else if (this.getChartSegmentData(e) === "Inactive Organizations") {
       this.viewSiteAdmin({ "status": "INACTIVE" })
     } else {
       this.viewSiteAdmin({ "status": "ALL" });

@@ -42,7 +42,7 @@ import { IncidentService } from "../../../service/IncidentService";
                                 <input type="hidden" [(ngModel)]="incidents" formControlName="incidents" ngModel
                                     id="incidents" name="incidents">
                                 <label class="form-col-form-label required-control-label"
-                                    for="incidents">Incident</label>
+                                    for="incidents">Incident Number</label>
                                 <textarea formControlName="selectedIncidents"
                                     class="form-control textarea-non-resizable" id="selectedIncidents"
                                     name="selectedIncidents" readonly>
@@ -57,7 +57,7 @@ import { IncidentService } from "../../../service/IncidentService";
                         </div>
                         <div class="row row-margin-05">
                             <div class="col">
-                                <label class="form-col-form-label required-control-label" for="comment">Comment</label>
+                                <label class="form-col-form-label required-control-label" for="comment">Comments</label>
                                 <textarea formControlName="comment" id="comment" name="comment" rows="4"
                                     class="form-control textarea-non-resizable"></textarea>
                                 <div *ngIf="uf.comment.touched && uf.comment.invalid" class="alert alert-danger-custom">

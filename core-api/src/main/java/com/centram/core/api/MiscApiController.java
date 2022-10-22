@@ -13,6 +13,7 @@ import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -94,6 +95,12 @@ public class MiscApiController {
 
     @Autowired
     private ActionService actionService;
+
+    @Autowired
+    private ChatRoomService chatRoomService;
+
+    @Autowired
+    private ChatMessageService chatMessageService;
 
     @ApiOperation(value = "Request a demo", nickname = "requestADemo", notes = "Request a demo", tags = {"Misc",})
     @ApiResponses(value = {
@@ -593,4 +600,63 @@ public class MiscApiController {
         simpMessagingTemplate.convertAndSend("/topic/notification/" + body.getUserId(), objectMapper.writeValueAsString(body));
         return new ResponseEntity(body, HttpStatus.OK);
     }*/
+
+    @RequestMapping(value = "/chat-room", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<ChatRoom> save(@ApiParam(value = "Chat Room object", required = true) @Valid @RequestBody ChatRoom body) {
+        return new ResponseEntity<ChatRoom>(chatRoomService.save(body), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/all-chat-room", produces = {"application/json"}, method = RequestMethod.GET)
+    @JsonView(Views.ListView.class)
+    public ResponseEntity<PaginatedList<ChatRoom>> findAll(
+            @ApiParam(value = "Chat Room Id", defaultValue = "", required = false) @RequestParam(value = "chatRoomNo", defaultValue = "", required = false) String chatRoomNo,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<ChatRoom>>(chatRoomService.findAll(chatRoomNo, pageable), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/chat-message/{chatRoomId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @JsonView({Views.DetailView.class,})
+    public ResponseEntity<List<ChatMessage>> getChatMessages(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") String chatRoomId) {
+        return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatMassages(chatRoomId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/chat-message", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<ChatMessage> save(@ApiParam(value = "Chat Message object", required = true) @Valid @RequestBody ChatMessage body) {
+        return new ResponseEntity<ChatMessage>(chatMessageService.save(body), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/chat-message/action/{chatRoomId}", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    public ResponseEntity<List<ChatMessage>> chatAction(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") String chatRoomId) {
+        return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatAction(chatRoomId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/chat-message/close/{chatRoomId}", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
+    public ResponseEntity<List<ChatMessage>> chatClose(@ApiParam(value = "id of chat room", required = true) @PathVariable("chatRoomId") String chatRoomId) {
+        return new ResponseEntity<List<ChatMessage>>(chatMessageService.chatClose(chatRoomId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/chat/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity generateDummyNotification(
+            @RequestBody ChatMessage body
+    ) throws JsonProcessingException {
+        log.info("Consumed message: " + objectMapper.writeValueAsString(body));
+        simpMessagingTemplate.convertAndSend("/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12", objectMapper.writeValueAsString(body));
+        return new ResponseEntity(body, HttpStatus.OK);
+    }
+
+    /*@RequestMapping(value = "/chat-message", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<ChatMessage> save(@ApiParam(value = "Chat Message object", required = true) @Valid @RequestBody ChatMessage body) {
+        return new ResponseEntity<ChatMessage>(chatMessageService.save(body), HttpStatus.OK);
+    }*/
+
+    /*@RequestMapping(value = "/all-chat-message", produces = {"application/json"}, method = RequestMethod.GET)
+    @JsonView(Views.ListView.class)
+    public ResponseEntity<PaginatedList<ChatMessage>> findAll(
+            @ApiParam(value = "Chat Room Id", defaultValue = "", required = true) @RequestParam(value = "chatRoomId", defaultValue = "", required = false) BigInteger chatRoomId,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<ChatMessage>>(chatMessageService.findAll(chatRoomId, pageable), HttpStatus.OK);
+    }*/
+
 }

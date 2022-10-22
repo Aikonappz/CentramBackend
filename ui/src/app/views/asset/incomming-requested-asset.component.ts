@@ -126,7 +126,7 @@ export class IncommingRequestedAssetComponent implements OnInit {
         //console.log(this.tmpuserList);
         //console.log(this.tmpagentList);
       });
-    this.miscService.prioritiesService({  "priorityType": "ASSET","sort": "name,asc" })
+    this.miscService.prioritiesService({ "priorityType": "ASSET", "sort": "name,asc" })
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
       });
@@ -136,7 +136,8 @@ export class IncommingRequestedAssetComponent implements OnInit {
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == "ASSET") {
         p = new Permission(this.permissions[i]);
-        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        p.customerModuleName = p.customerModuleName;
+        //AppUtility.toTitleCase(p.customerModuleName);
         this.moduleList.push(p);
       }
     }
@@ -313,7 +314,8 @@ export class IncommingRequestedAssetComponent implements OnInit {
       for (let i = 0; i < this.permissions.length; i++) {
         if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == "ASSET") {
           p = new Permission(this.permissions[i]);
-          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          p.customerModuleName = p.customerModuleName;
+          //AppUtility.toTitleCase(p.customerModuleName);
           this.subModuleList[c] = p;
           c++;
         }

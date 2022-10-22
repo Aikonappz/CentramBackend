@@ -99,7 +99,8 @@ export class EditIncidentComponent implements OnInit {
     for (let i in this.permissions) {
       if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == 'INCIDENT') {
         p = new Permission(this.permissions[i]);
-        p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+        p.customerModuleName = p.customerModuleName;
+        //AppUtility.toTitleCase(p.customerModuleName);
         this.moduleList.push(p);
       }
     }
@@ -428,7 +429,7 @@ export class EditIncidentComponent implements OnInit {
             headers.set('Accept', 'application/json');
             let commId = data.communications[0].id;
             this.mediaService
-              .saveMediaService(commId, EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION, formData, { 'headers': headers })
+              .saveMediaService(commId, EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION, "NA", formData, { 'headers': headers })
               .subscribe((data: any) => {
                 this.router.navigate([returnPath]);
               });
@@ -558,7 +559,8 @@ export class EditIncidentComponent implements OnInit {
       for (let i = 0; i < this.permissions.length; i++) {
         if (this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == 'INCIDENT') {
           p = new Permission(this.permissions[i]);
-          p.customerModuleName = AppUtility.toTitleCase(p.customerModuleName);
+          p.customerModuleName = p.customerModuleName;
+          //AppUtility.toTitleCase(p.customerModuleName);
           this.subModuleList[c] = p;
           c++;
         }
@@ -592,7 +594,8 @@ export class EditIncidentComponent implements OnInit {
 
   makeTitleCase(str: string): string {
     if (str != '' && typeof str != "undefined") {
-      return AppUtility.toTitleCase(str);
+      //return AppUtility.toTitleCase(str);
+      return str;
     }
     return '';
   }

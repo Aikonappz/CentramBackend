@@ -12,6 +12,8 @@ import com.centram.core.repository.AppConfigRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -85,6 +88,35 @@ public class MiscService {
     private String appTmpPath;
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Value("${app.ws.broker.prefix}")
+    private String appWsBrokerPrefix;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Async("asyncExecutor")
+    public void pushChats(List<ChatMessage> chatMessages, Boolean requiredDelay) {
+        try {
+            for (ChatMessage chatMessage : chatMessages) {
+                if (requiredDelay) {
+                    Thread.sleep(2000);
+                }
+                log.info("CHAT ROOM ID {}.", chatMessage.getRoomId());
+                simpMessagingTemplate.convertAndSend(
+                        appWsBrokerPrefix.concat("/chat/").concat(String.valueOf(chatMessage.getRoomId())),
+                        objectMapper.writeValueAsString(chatMessage)
+                );
+            }
+        } catch (JsonProcessingException e) {
+            log.error("CHAT PUSH ISSUE {}", e.getOriginalMessage());
+        } catch (InterruptedException e) {
+            log.error("CHAT PUSH DELAY THREAD INTERRUPTED {}", e.getMessage());
+        }
+    }
 
     /*public static void main(String[] args) {
         log.info(String.valueOf(LocalDate.parse("10/12/1982", DateTimeFormatter.ofPattern("dd/MM/yyyy"))));

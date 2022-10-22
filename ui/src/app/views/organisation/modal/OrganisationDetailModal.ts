@@ -54,11 +54,11 @@ import { Organisation } from "../../../model/Organisation";
                         <td>{{org.licenseType}}</td>
                     </tr>
                     <tr>
-                        <td><strong>License Start</strong></td>
+                        <td><strong>License Start Date</strong></td>
                         <td>{{formatDate(org.licenseStart)}}</td>
                     </tr>
                     <tr>
-                        <td><strong>License End</strong></td>
+                        <td><strong>License End Date</strong></td>
                         <td>{{formatDate(org.licenseEnd)}}</td>
                     </tr>
                     <tr>

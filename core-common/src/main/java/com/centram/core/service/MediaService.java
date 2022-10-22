@@ -61,7 +61,7 @@ public class MediaService {
     }
 
     @Transactional(readOnly = false)
-    public void uploadMediaFile(BigInteger entityId, EntityType entityType, MediaType mediaType, MultipartFile[] multipartFiles) {
+    public List<MediaFile> uploadMediaFile(BigInteger entityId, EntityType entityType, MediaType mediaType, String chatRoomId, MultipartFile[] multipartFiles) {
         LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (multipartFiles.length > 0) {
             try {
@@ -72,7 +72,8 @@ public class MediaService {
                         continue;
                     }
                     mediaFile = new MediaFile();
-                    mediaFile.setEntityId(entityId);
+                    mediaFile.setChatRoomId(chatRoomId.equalsIgnoreCase("NA") ? null : chatRoomId);
+                    mediaFile.setEntityId(entityId.compareTo(BigInteger.ZERO) == 0 ? null : entityId);
                     mediaFile.setEntityType(entityType);
                     mediaFile.setFileName(multipartFile.getOriginalFilename());
                     mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(multipartFile.getOriginalFilename()));
@@ -80,7 +81,7 @@ public class MediaService {
                     mediaFile.setMediaType(mediaType);
                     mediaFileList.add(mediaFile);
                 }
-                mediaFileRepository.saveAll(mediaFileList);
+                return mediaFileRepository.saveAll(mediaFileList);
             } catch (IOException e) {
                 throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
             }

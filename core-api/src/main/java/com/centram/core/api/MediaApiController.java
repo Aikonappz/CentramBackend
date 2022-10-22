@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "media", description = "Media Api")
@@ -43,15 +44,18 @@ public class MediaApiController {
             @ApiResponse(code = 404, message = "Media not found"),
             @ApiResponse(code = 405, message = "Validation exception")
     })
-    @RequestMapping(value = "/upload-media/{entityId}/{entityType}/{mediaType}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
-    public ResponseEntity uploadMedia(
+    @RequestMapping(value = "/upload-media/{entityId}/{entityType}/{mediaType}/{chatRoomId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
+    public ResponseEntity<List<MediaFile>> uploadMedia(
             @ApiParam(value = "Media id", required = true) @PathVariable("entityId") BigInteger entityId,
             @ApiParam(value = "Entity type", required = true) @PathVariable("entityType") EntityType entityType,
             @ApiParam(value = "Media type", required = true) @PathVariable("mediaType") com.centram.domain.enumarator.MediaType mediaType,
-            @ApiParam(value = "Users CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile[] multipartFiles
+            @ApiParam(value = "Chat Room id", required = true) @PathVariable("chatRoomId") String chatRoomId,
+            @ApiParam(value = "File", required = true) @RequestParam(name = "file", required = true) MultipartFile[] multipartFiles
     ) {
-        mediaService.uploadMediaFile(entityId, entityType, mediaType, multipartFiles);
-        return new ResponseEntity<MediaFile>(HttpStatus.OK);
+        return new ResponseEntity<List<MediaFile>>(
+                mediaService.uploadMediaFile(entityId, entityType, mediaType, chatRoomId, multipartFiles),
+                HttpStatus.OK
+        );
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Delete a media", nickname = "deleteMedia", notes = "Delete a media", response = Void.class, tags = {"media",})
