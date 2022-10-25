@@ -162,7 +162,7 @@ export class SelectAgentForChat implements OnInit {
     });
   }
   ngOnInit() {
-    this.subscription = this.chatRoomService.currentChatRoomId.subscribe(chatRoomId => this.chatRoomId = chatRoomId);
+   // this.subscription = this.chatRoomService.currentChatRoomId.subscribe(chatRoomId => this.chatRoomId = chatRoomId);
   }
 
   ngAfterViewInit() {

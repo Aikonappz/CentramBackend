@@ -69,8 +69,6 @@ import { ChatComponent } from './views/chat/chat.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { LandingComponent } from './views/landing/landing.component';
 import { CommonAlert } from './containers/default-layout/modal/CommonAlert';
-import { SelectAgentForChat } from './containers/default-layout/modal/SelectAgentForChat';
-import { SafePipe } from './service/pipe/SafePipe';
 
 @NgModule({
   imports: [
@@ -117,7 +115,6 @@ import { SafePipe } from './service/pipe/SafePipe';
     SpinnerComponent,
     ChatComponent,
     ErrormessageComponent,
-    SelectAgentForChat,
   ],
   providers: [
     CheckLoggedInOuter,

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, } from '@angular/core';
 import * as moment from 'moment';
 import { PushNotificationsService } from 'ng-push-ivy';
 import { environment } from '../../../environments/environment';
@@ -18,7 +18,6 @@ import { ClientStorageService } from '../../service/ClientStorageService';
 import { Router } from '@angular/router';
 import { LogoutWarningComponent } from './modal/LogoutWarningComponent';
 import { LoggedInUser } from '../../model/LoggedInUser';
-import { SelectAgentForChat } from './modal/SelectAgentForChat';
 import { Subscription } from 'rxjs';
 import { ChatRoomService } from '../../service/ChatRoomService';
 import { ChatWSService } from '../../service/ChatWSService';
@@ -54,6 +53,7 @@ export class DefaultLayoutComponent implements OnInit {
   timerHandler: any;
   chatTimerHandler: any;
   isProd: boolean = false;
+  chatSelection: boolean = false;
 
   /*Chat specific*/
   subscription: Subscription;
@@ -75,11 +75,10 @@ export class DefaultLayoutComponent implements OnInit {
 
   canAssign: boolean;
   angFormAssign: FormGroup;
-
   moduleList: Permission[] = [];
   subModuleList: Permission[];
   parentModuleList: any[] = [];
-
+  canCommunate: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -405,7 +404,9 @@ export class DefaultLayoutComponent implements OnInit {
           //alert("data");
         });
     }
-    //alert("Close Chat button clicked!");
+    $(function () {
+      $('#live-chat').addClass('d-none');
+    });
   }
 
   // chatInteractation(content: string) {
@@ -506,15 +507,17 @@ export class DefaultLayoutComponent implements OnInit {
       if (!roles.includes('EMP') && roles.includes('AGENT')) {
         $('.nav-item').removeClass('highlighted-yellow');
       }
-      $('#live-chat header').on('click', function () {
-        $('.chat').slideToggle(300, 'swing');
-        $('.chat-message-counter').fadeToggle(300, 'swing');
+      $('#live-chat header').on('click', function (e) {
+        if (!$(e.target).hasClass('chat-close')) {
+          $('.chat').slideToggle(300, 'swing');
+          $('.chat-message-counter').fadeToggle(300, 'swing');
+        }
       });
-      $('.chat-close').on('click', function (e) {
-        e.preventDefault();
-        //$('#live-chat').fadeOut(300);
-        self.closeChat();
-      });
+      // $('.chat-close').on('click', function (e) {
+      //   e.preventDefault();
+      //   //$('#live-chat').fadeOut(300);
+      //   self.closeChat();
+      // });
       $(document).delegate('.attachment', 'click', function () {
         self.downloadFile($(this).attr('data-cntrl'));
         //self.closeModal();
@@ -537,10 +540,7 @@ export class DefaultLayoutComponent implements OnInit {
       if (chatRoomId !== null) {
         this.chatRoomId = chatRoomId;
         this.clientStorageService.set(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY, chatRoomId);
-        $(function () {
-          $('#live-chat').removeClass("d-none");
-          $('#live-chat').fadeIn(300);
-        });
+        this.chatSelection = false;
         this.chatStart();
         //console.log(this.chatRoomId);
         this.chatWSSocketService.connect(this.chatRoomId);
@@ -549,6 +549,11 @@ export class DefaultLayoutComponent implements OnInit {
           .subscribe((data: any) => {
             //console.log('receive message', data);
             //console.log("here I am");
+
+            // if(this.canCommunate){
+
+            // }
+
             var msgIdsKey = AppUtility.APP_LAST_CHAT_ROOM_MSG_KEY_PREFIX + "-" + this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY) + "-" + this.loggedInUser.userId;
             var chatIds = [];
             //console.log(this.clientStorageService.get(msgIdsKey));
@@ -752,12 +757,16 @@ export class DefaultLayoutComponent implements OnInit {
     return false;
   }
 
-  selectAgent() {
+  closeChatInitiateForm() {
+    alert("Close Chat Initiate Form!");
+  }
 
+  selectAgent() {
+    this.chatSelection = true;
     $(function () {
-      //alert("sadj hasdaskdj");
-      $('.live-chat').slideToggle(300, 'swing');
-      $('.chat-message-counter').fadeToggle(300, 'swing');
+      $('#live-chat').removeClass('d-none');
+      //$('.chat').slideToggle(300, 'swing');
+      //$('.chat-message-counter').fadeToggle(300, 'swing');
 
       //$('.form-selection').removeClass("d-none");
       //$('.chat-section').addClass("d-none");
@@ -781,6 +790,79 @@ export class DefaultLayoutComponent implements OnInit {
 
   chatAction(action: string) {
     alert(action);
+  }
+
+
+
+  @ViewChild("parentModule") parentModule;
+  populateModule(parentModule) {
+    if (typeof parentModule !== 'undefined') {
+      let c = 0;
+      this.moduleList = [];
+      let p;
+      for (let i = 0; i < this.permissions.length; i++) {
+        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == null && this.permissions[i].licenseType == parentModule.id) {
+          p = new Permission(this.permissions[i]);
+          p.customerModuleName = p.customerModuleName;
+          //AppUtility.toTitleCase(p.customerModuleName);
+          this.moduleList[c] = p;
+          c++;
+        }
+      }
+      this.angFormAssign.controls['moduleId'].setValue(null);
+      this.angFormAssign.controls['subModuleId'].setValue(null);
+    } else {
+      this.angFormAssign.controls['moduleId'].setValue(null);
+      this.angFormAssign.controls['subModuleId'].setValue(null);
+    }
+  }
+
+  @ViewChild("moduleId") moduleId;
+  populateSubmodule(moduleId) {
+    if (typeof moduleId !== 'undefined') {
+      let c = 0;
+      this.subModuleList = [];
+      let p;
+      for (let i = 0; i < this.permissions.length; i++) {
+        if (this.permissions[i].appModule == false && this.permissions[i].moduleParentId == moduleId.moduleId && this.permissions[i].licenseType == this.angFormAssign.controls['parentModule'].value) {
+          p = new Permission(this.permissions[i]);
+          p.customerModuleName = p.customerModuleName;
+          //AppUtility.toTitleCase(p.customerModuleName);
+          this.subModuleList[c] = p;
+          c++;
+        }
+      }
+      this.angFormAssign.controls['subModuleId'].setValue(null);
+    } else {
+      this.angFormAssign.controls['subModuleId'].setValue(null);
+    }
+  }
+
+  initiateChat(req: any) {
+    this.miscService.startChatService(req)
+      .subscribe((data: any) => {
+        //console.log("completed....", JSON.stringify(data));
+        this.chatRoomService.setChatRoomId(data.roomId);
+      });
+  }
+
+  chatInitiate() {
+    if (this.angFormAssign.valid) {
+      var chatmessage = new ChatMessage();
+      chatmessage.content = this.angFormAssign.controls['message'].value;
+      chatmessage.moduleId = this.angFormAssign.controls['moduleId'].value;
+      chatmessage.subModuleId = this.angFormAssign.controls['subModuleId'].value;
+      chatmessage.attachments = [];
+      chatmessage.recipientId = null;
+      chatmessage.recipientName = null;
+      chatmessage.senderId = this.loggedInUser.userId;
+      chatmessage.senderName = null;
+      chatmessage.status = null;
+      chatmessage.intiateChat = true;
+      this.initiateChat(chatmessage);
+    } else {
+      console.log("Invalid Form!");
+    }
   }
 
 }
