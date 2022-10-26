@@ -684,12 +684,13 @@ form.ng-pristine.ng-invalid.ng-touched {
 a.chat-button-open {
   
   position: fixed;
-  right: 15px;
-  bottom: 15px;
+  right: 0;
+  bottom: 50px;
   width: 50px;
   height: 50px;
   background: #263c76;
-  border-radius: 100px;
+  border-top-left-radius: 100px;
+  border-bottom-left-radius: 100px;
   text-align: center;
   line-height: 50px;
   font-size: 22px;
@@ -697,12 +698,17 @@ a.chat-button-open {
 }
 
 #live-chat {
-  bottom: 0;
+  bottom: 51px;
   font-size: 13px;
   right: 80px;
   position: fixed;
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
+  box-shadow: 4px 11px 15px 7px rgb(0 0 0 / 6%);
+}
+
+#live-chat form textarea{
+  height: 77px;
 }
 
 #live-chat header {
@@ -710,7 +716,9 @@ a.chat-button-open {
   border-radius: 5px 5px 0 0;
   color: #fff;
   cursor: pointer;
-  padding: 16px 24px;
+  padding: 10px 24px;
+
+  margin: 0px;
 }
 
 #live-chat h4:before {
@@ -736,11 +744,14 @@ a.chat-button-open {
 }
 
 #live-chat input[type="text"] {
-  border: 1px solid #ccc;
+  border: 1px solid #e7e7e7;
   background: #f5f5f5;
- 
   outline: none;
-  width: 100%;
+  padding: 6px;
+  width: 80%;
+  border-radius: 4px;
+  flex: 0 0 80%;
+  max-width: 80%;
 }
 .chat-message-color {
   background: #f1f8fb;
@@ -782,28 +793,28 @@ a.chat-button-open {
 }
 
 a.chat-close {
-  background: #f00;
+  background: #3d538b;
   border-radius: 50%;
   color: #fff;
   display: inline-block;
-  font-size: 12px;
-  line-height: 26px;
+  font-size: 14px;
+  line-height: 24px;
   margin: 2px 0 0px 4px;
   text-align: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 .chat-icon{
   background: #20a8d8;
-  border-radius: 50%;
+  border-radius: 5px;
   color: #fff;
   display: inline-block;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 28px;
   margin: 2px 0 0px 4px;
   text-align: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
 }
 .chat-icon:hover{
   background: #f70;
@@ -825,7 +836,7 @@ a.chat-close {
 
 
 .chat-history::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #fff; 
 }
  
 
@@ -848,12 +859,18 @@ a.chat-close {
 }
 
 .chat-message-content {
-  margin-left: 56px;
+  margin-left: 36px;
 }
 
 .chat-time {
   float: right;
   font-size: 10px;
+}
+.fild-flex-control{
+  display: flex;
+}
+.fild-flex-control input[type=text]{
+  padding: 4px;
 }
 
 .chat-feedback {
@@ -899,4 +916,15 @@ a.chat-close {
 
   padding: 0;
 
+}
+
+.app-header .nav-item .nav-link .badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -16px;
+  margin-left: 0;
+  width: 17px;
+  height: 17px;
+  line-height: 17px;
 }
