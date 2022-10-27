@@ -111,7 +111,7 @@ export class NotificationComponent implements OnInit {
   initateChat(chatReqId) {
     this.service.agentSideInitiateChatService(chatReqId, {})
       .subscribe((data: any) => {
-        //alert("data");
+        alert("data");
       });
     this.chatRoomService.setChatRoomId(chatReqId);
   }

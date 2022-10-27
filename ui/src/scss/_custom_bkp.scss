@@ -217,15 +217,12 @@
 
 // Here you can add other styles
 .alert-danger-custom{
-  background-color: #ff000014 !important;
-  border-color: #ebdddd !important;
-  color: red !important;
-  font-size: x-small !important;
-  margin-bottom: 0rem !important;
-  padding: 5px;
-  text-align: center;
-  font-size: 12px !important;
-  margin-top: 4px;
+    background-color: none !important;
+    border-color: none !important;
+    color: red !important;
+    font-size: x-small !important;
+    margin-bottom: 0rem !important;
+    padding: 0.2rem 0 0.2rem !important;
 }
 .row-margin-05 { margin-top: 0.5em; }
 .row-margin-10 { margin-top: 1.0em; }
@@ -304,24 +301,19 @@
 .badge-re-opened {
   color: #fff;
   background-color: #e83e8c;
-  padding: 4px !important;
 }
 .badge-sla-about-to-breach {
   color: #fff;
   background-color: orange;
-  padding: 4px !important;
 }
 .badge-sla-breached {
   color: #fff;
   background-color: red;
-  padding: 4px !important;
 }
 .badge-closed {
   color: #fff;
   background-color: #63CA96;
-  padding:4px !important;
 }
-
 .cyan{
   border-color: #17a2b8 !important;
   background-color: #17a2b8 !important;
@@ -329,10 +321,6 @@
 .teal{
   border-color: #20c997 !important;
   background-color: #20c997 !important;
-
-
-
-
 }
 .green{
   border-color: #4dbd74 !important;
@@ -463,8 +451,7 @@
   padding: 10px 10px;
 }
 .ui-accordion-content .card{
-  height: 300px;
-  max-width: 300px;
+  height: 175px;
   border: none;
   border-radius: 0px;
   padding: 10px;
@@ -552,12 +539,8 @@ width: 100%;
   color: #fff;
   font-size: 15px;
 }
-.mat-table td:first-child{
-  padding: 8px 24px !important;
-  color: #525252;
-}
 .mat-table td{
-  padding: 8px 0px !important;
+  padding: 8px 10px !important;
   color: #525252;
 }
 .gray {
@@ -641,7 +624,7 @@ table.mat-table {
   padding-left: 0px;
 }
 form.ng-pristine.ng-invalid.ng-touched {
- /* background: #fbfbfb;*/
+  background: #fbfbfb;
 }
 .card-footer {
   padding: 0.75rem 1.25rem;
@@ -684,13 +667,12 @@ form.ng-pristine.ng-invalid.ng-touched {
 a.chat-button-open {
   
   position: fixed;
-  right: 0;
-  bottom: 50px;
+  right: 15px;
+  bottom: 15px;
   width: 50px;
   height: 50px;
   background: #263c76;
-  border-top-left-radius: 100px;
-  border-bottom-left-radius: 100px;
+  border-radius: 100px;
   text-align: center;
   line-height: 50px;
   font-size: 22px;
@@ -698,17 +680,12 @@ a.chat-button-open {
 }
 
 #live-chat {
-  bottom: 51px;
+  bottom: 0;
   font-size: 13px;
   right: 80px;
   position: fixed;
   width: 100%;
-  max-width: 300px;
-  box-shadow: 4px 11px 15px 7px rgb(0 0 0 / 6%);
-}
-
-#live-chat form textarea{
-  height: 77px;
+  max-width: 400px;
 }
 
 #live-chat header {
@@ -716,9 +693,7 @@ a.chat-button-open {
   border-radius: 5px 5px 0 0;
   color: #fff;
   cursor: pointer;
-  padding: 10px 24px;
-
-  margin: 0px;
+  padding: 16px 24px;
 }
 
 #live-chat h4:before {
@@ -744,14 +719,12 @@ a.chat-button-open {
 }
 
 #live-chat input[type="text"] {
-  border: 1px solid #e7e7e7;
+  border: 1px solid #ccc;
   background: #f5f5f5;
+ 
+  padding: 8px;
   outline: none;
-  padding: 6px;
-  width: 80%;
-  border-radius: 4px;
-  flex: 0 0 80%;
-  max-width: 80%;
+  width: 100%;
 }
 .chat-message-color {
   background: #f1f8fb;
@@ -793,28 +766,28 @@ a.chat-button-open {
 }
 
 a.chat-close {
-  background: #3d538b;
+  background: #f00;
   border-radius: 50%;
   color: #fff;
   display: inline-block;
-  font-size: 14px;
-  line-height: 24px;
+  font-size: 12px;
+  line-height: 26px;
   margin: 2px 0 0px 4px;
   text-align: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
 }
 .chat-icon{
   background: #20a8d8;
-  border-radius: 5px;
+  border-radius: 50%;
   color: #fff;
   display: inline-block;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 28px;
   margin: 2px 0 0px 4px;
   text-align: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
 }
 .chat-icon:hover{
   background: #f70;
@@ -836,7 +809,7 @@ a.chat-close {
 
 
 .chat-history::-webkit-scrollbar-track {
-  background: #fff; 
+  background: #f1f1f1; 
 }
  
 
@@ -859,72 +832,21 @@ a.chat-close {
 }
 
 .chat-message-content {
-  margin-left: 36px;
+  margin-left: 56px;
 }
 
 .chat-time {
   float: right;
   font-size: 10px;
 }
-.fild-flex-control{
-  display: flex;
-}
-.fild-flex-control input[type=text]{
-  padding: 4px;
-}
 
 .chat-feedback {
   font-style: italic; 
   margin: 0 0 0 80px;
 }
-.selection-form{
-  border-radius: 15px;
-  overflow: hidden;
-  border: none;
-  box-shadow: 2px 0px 20px 8px rgb(0 0 0 / 6%);
+.chat{
+
   }
 
-
-  .card-title-custom{
-    background-color: #f70;
-    color: #fff;
-    font-size:14px;
-  }
-  .card-title-custom h6{
-    font-size: inherit;
-    line-height: 20px;
-    margin-bottom: 0px;
-  }
-
-.ng-select.ng-select-searchable .ng-select-container .ng-value-container .ng-input {
-    opacity: 0 !important;
-}
-.after-chat-connect{
-  cursor: pointer;
-}
-.file-fild{
-  opacity: 0;
-  visibility: hidden;
-  display: none;
-  
-}
 
 /*chat box*/
-
-
-.badge {
-
-  padding: 0;
-
-}
-
-.app-header .nav-item .nav-link .badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -16px;
-  margin-left: 0;
-  width: 17px;
-  height: 17px;
-  line-height: 17px;
-}
