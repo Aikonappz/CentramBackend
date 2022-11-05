@@ -14,7 +14,7 @@ import { LocationVO } from '../../model/LocationVO';
   styleUrls: ['./editholidaycalender.component.scss']
 })
 export class EditHolidayCalenderComponent implements OnInit {
-  moduleName: string = "HOLIDAY CALENDER";
+  moduleName: string = "HOLIDAY CALENDAR";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
@@ -181,7 +181,7 @@ export class EditHolidayCalenderComponent implements OnInit {
       .saveHolidayCalenderService(formData)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/master/calender']);
+        this.router.navigate(['/master/calendar']);
       });
   }
 

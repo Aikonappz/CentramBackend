@@ -1481,4 +1481,30 @@ public class MiscService {
             appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
         }
     }
+
+    @Transactional(readOnly = true)
+    @Async("asyncExecutor")
+    public void sendChatInteractionEmail(List<ChatMessage> chatMessages) {
+        Module category = moduleService.getModule(chatMessages.get(0).getModuleId());
+        Module subCategory = moduleService.getModule(chatMessages.get(0).getSubModuleId());
+        UserVO sender = userService.getUserById(chatMessages.get(0).getSenderId());
+        UserVO recipient = null;
+        if (chatMessages.get(0).getRecipientId() != null) {
+            recipient = userService.getUserById(chatMessages.get(0).getRecipientId());
+        }
+        String chats = "";
+        for (ChatMessage chatMessage : chatMessages) {
+            chats +=  sender.getFullName() + " : " + chatMessage.getContent() + "\n\r";
+        }
+        Map<String, Object> attributes = new HashMap<String, Object>();
+        attributes.put("recipientName", recipient.getFullName());
+        attributes.put("moduleName", category.getLicenseType().toString());
+        attributes.put("categoryName", category.getCustomerModuleName());
+        attributes.put("subCategoryName", subCategory.getCustomerModuleName());
+        attributes.put("interactions", chats);
+        attributes.put("to", new String[]{sender.getEmail()});
+        attributes.put("cc", recipient != null ? new String[]{recipient.getEmail()} : new String[]{});
+        attributes.put("bcc", new String[]{});
+        appEmailService.sendChatInteractionEmail(attributes);
+    }
 }

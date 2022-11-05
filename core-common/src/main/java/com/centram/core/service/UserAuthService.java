@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class UserAuthService {
@@ -27,6 +28,11 @@ public class UserAuthService {
     @Transactional(readOnly = true)
     public UserAuth getById(BigInteger appAuthId) {
         return userAuthRepository.findById(appAuthId).get();
+    }
+
+    @Transactional(readOnly = true)
+    public int anyUserOnline(List<BigInteger> userIds) {
+        return userAuthRepository.anyUserOnline(userIds);
     }
 
 }

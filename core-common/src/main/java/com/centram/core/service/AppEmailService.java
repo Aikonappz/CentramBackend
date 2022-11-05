@@ -336,6 +336,49 @@ public class AppEmailService {
         emailService.sendMail(mailMap);
     }
 
+    @Transactional
+    //@Async("asyncExecutor")
+    public void sendChatInteractionEmail(Map<String, Object> attributes) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "CHAT_INTERACTION_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
+                .findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream()
+                .filter(ac -> ac.getConfigurationKey().equals("CHAT_INTERACTION_EMAIL_TEMPLATE"))
+                .findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get("subject").toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get("content").toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        context.setVariable("recipientName", attributes.get("recipientName"));
+        mailSubject = templateEngine.process(mailSubject, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipientName", attributes.get("recipientName"));
+        context.setVariable("moduleName", attributes.get("moduleName"));
+        context.setVariable("categoryName", attributes.get("categoryName"));
+        context.setVariable("subCategoryName", attributes.get("subCategoryName"));
+        context.setVariable("interactions", attributes.get("interactions"));
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", attributes.get("recipientName"));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", attributes.get("to"));
+        mailMap.put("cc", attributes.get("cc"));
+        mailMap.put("bcc", attributes.get("bcc"));
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        log.info("CHAT INTERACTION EMAIL TITLE: {}", mailSubject);
+        log.info("CHAT INTERACTION BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")

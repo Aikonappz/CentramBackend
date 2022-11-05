@@ -57,10 +57,10 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "PRIORITY", "licenceType": "ALL,ASSET" }
       },
       {
-        name: 'Holiday Calender',
-        url: '/master/calender',
+        name: 'Holiday Calendar',
+        url: '/master/calendar',
         icon: 'icon-calendar',
-        attributes: { "moduleName": "HOLIDAY CALENDER" }
+        attributes: { "moduleName": "HOLIDAY CALENDAR" }
       },
       {
         name: 'Distribution List',

@@ -13,6 +13,7 @@ public enum GenericErrorCode implements ErrorCode {
     UNAUTHORIZED("UNAUTHORIZED!"),
     FILE_READ_ISSUE("File read issue!"),
     DATA_NOT_FOUND("Data not found!"),
+    AGENT_NOT_AVAILABLE("Agent not available!"),
     JSON_PROCESS_EXCEPTION("Json process exception!"),
     SERIALIZATION_ISSUE("Serialization issue!"),
     DESERIALIZATION_ISSUE("Deserialization issue!"),

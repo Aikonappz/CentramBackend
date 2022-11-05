@@ -388,11 +388,13 @@
       <!-- <span class="chat-message-counter">3</span> -->
     </header>
     <div class="chat">
-      <div *ngIf="!chatSelection" class="chat-history" id="current-chat-window">
+      <div *ngIf="!chatSelection&&chatSessionActive" class="chat-history" id="current-chat-window">
       </div>
-      <form *ngIf="!chatSelection" [formGroup]="angChatForm" class="chat-form " (ngSubmit)="chatInteractation()"
-        novalidate method="post">
+      <form *ngIf="!chatSelection&&chatSessionActive" [formGroup]="angChatForm" class="chat-form "
+        (ngSubmit)="chatInteractation()" novalidate method="post">
         <fieldset class="fild-flex-control">
+          <!-- <input type="text" [readonly]="!canCommunate" autocomplete="off" placeholder="Aa" formControlName="chatMessage"
+            id="chatMessage" name="chatMessage"> -->
           <input type="text" autocomplete="off" placeholder="Aa" formControlName="chatMessage" id="chatMessage"
             name="chatMessage">
           <label class="after-chat-connect chat-icon ">
@@ -403,7 +405,8 @@
           <input type="hidden" formControlName="chatRoomId" id="chatRoomId" name="chatRoomId">
         </fieldset>
       </form>
-      <form *ngIf="chatSelection" [formGroup]="angFormAssign" (ngSubmit)="chatInitiate()" novalidate>
+      <form *ngIf="chatSelection&&!chatSessionActive" [formGroup]="angFormAssign" (ngSubmit)="chatInitiate()"
+        novalidate>
         <div class="row">
           <div class="col mb-3">
             <label class="form-col-form-label required-control-label" for="parentModule">Module</label>

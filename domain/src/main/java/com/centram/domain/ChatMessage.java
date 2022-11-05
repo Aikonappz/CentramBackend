@@ -2,6 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.domain.enumarator.MessageStatus;
+import com.centram.domain.enumarator.SenderType;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,15 +41,15 @@ public class ChatMessage implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @NotNull
-    @Column(name = "module_id", nullable = false)
+    @Column(name = "module_id")
     @JsonView(Views.BasicView.class)
     private BigInteger moduleId;
 
-    @ApiModelProperty(required = true, value = "")
+    @ApiModelProperty(required = false, value = "")
     @NotNull
-    @Column(name = "sub_module_id", nullable = false)
+    @Column(name = "sub_module_id")
     @JsonView(Views.BasicView.class)
     private BigInteger subModuleId;
 
@@ -112,4 +113,12 @@ public class ChatMessage implements Serializable {
     @Column(name = "room_closed", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean roomClosed = false;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "sender_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private SenderType senderType;
 }

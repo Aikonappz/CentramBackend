@@ -97,27 +97,27 @@ const routes: Routes = [
         }
       },
       {
-        path: 'calender',
+        path: 'calendar',
         component: HolidayCalenderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Holiday Calender'
+          title: 'Holiday Calendar'
         },
       },
       {
-        path: 'calender/add',
+        path: 'calendar/add',
         component: EditHolidayCalenderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Add Holiday Calender'
+          title: 'Add Holiday Calendar'
         }
       },
       {
-        path: 'calender/edit/:id',
+        path: 'calendar/edit/:id',
         component: EditHolidayCalenderComponent,
         pathMatch: 'full',
         data: {
-          title: 'Edit Holiday Calender'
+          title: 'Edit Holiday Calendar'
         }
       },
       {

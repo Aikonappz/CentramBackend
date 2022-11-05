@@ -179,7 +179,7 @@ public class SlaNotify extends RouteBuilder {
                         incident.setSlaBreached(true);
                         incident.setEscalation1At(LocalDateTime.now());
                         incident = incidentService.saveViaBatch(incident);
-                        miscService.notifySlaBreached(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
+                        miscService.notifySlaBreached(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" exceeds SLA. Please respond immediately!")));
                     }
                 })
                 .endChoice()
@@ -210,7 +210,7 @@ public class SlaNotify extends RouteBuilder {
                         log.info("[{}] notification triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
                         incident.setEscalation2At(LocalDateTime.now());
                         incident = incidentService.saveViaBatch(incident);
-                        miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" SLA exceeds. Please respond immediately!")));
+                        miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" exceeds SLA. Please respond immediately!")));
                     }
                 })
                 .endChoice()

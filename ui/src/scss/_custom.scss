@@ -463,11 +463,12 @@
   padding: 10px 10px;
 }
 .ui-accordion-content .card{
-  height: 300px;
-  max-width: 300px;
+  //height: 300px;
+  //max-width: 300px;
   border: none;
   border-radius: 0px;
   padding: 10px;
+  min-height: 125px;
 }
 .ui-accordion-content .card .card-body{
   display: flex;
@@ -482,13 +483,13 @@ width: 100%;
 
 }
 .ui-accordion-content .card .card-body div:last-child{
-  font-size: 14px;
+  font-size: 12px;
   //text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 1px;
 }
 .text-value {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 500;
 }
 .app-header .nav-item .nav-link > .img-avatar, .app-header .nav-item .avatar.nav-link > img {

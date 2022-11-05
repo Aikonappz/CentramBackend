@@ -27,6 +27,7 @@ import { ChatMessage } from '../../model/ChatMessage';
 import { EntityType } from '../../model/enumerator/EntityType';
 import { MediaService } from '../../service/MediaService';
 import { MediaType } from '../../model/enumerator/MediaType';
+import { HttpClient } from '@angular/common/http';
 declare var $: any;
 
 @Component({
@@ -54,6 +55,8 @@ export class DefaultLayoutComponent implements OnInit {
   chatTimerHandler: any;
   isProd: boolean = false;
   chatSelection: boolean = false;
+  chatSessionActive: boolean = false;
+  chatInitiator: number = null;
 
   /*Chat specific*/
   subscription: Subscription;
@@ -95,6 +98,7 @@ export class DefaultLayoutComponent implements OnInit {
     private chatService: ChatService,
     private miscService: MiscService,
     private mediaService: MediaService,
+    private http: HttpClient,
   ) {
     //console.log("default layout...");
     this.isProd = environment.production;
@@ -391,22 +395,51 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
 
-  closeChat() {
-    if (this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY) != null) {
-      this.service.closeChatService(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY), {})
-        .subscribe((data: any) => {
-          this.chatWSSocketService.disconnect();
-          this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY);
-          this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_ROOM_MSG_KEY_PREFIX);
-          this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_START_KEY);
-          this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_END_KEY);
-          this.clientStorageService.remove(AppUtility.APP_HAS_ACTIVE_CHAT_SESSION);
-          //alert("data");
+  closeChat(needConfirmation: boolean = true) {
+    if (needConfirmation) {
+      if (this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY) != null) {
+        let res = window.confirm("Do you really want to close the chat session?")
+        if (res) {
+          this.service.closeChatService(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY), {})
+            .subscribe((data: any) => {
+              this.chatWSSocketService.disconnect();
+              this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY);
+              this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_ROOM_MSG_KEY_PREFIX);
+              this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_START_KEY);
+              this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_END_KEY);
+              this.clientStorageService.remove(AppUtility.APP_HAS_ACTIVE_CHAT_SESSION);
+              //alert("data");
+              $(function () {
+                $('#live-chat').addClass('d-none');
+              });
+            });
+        }
+      } else {
+        $(function () {
+          $('#live-chat').addClass('d-none');
         });
+      }
+    } else {
+      if (this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY) != null) {
+        this.service.closeChatService(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY), {})
+          .subscribe((data: any) => {
+            this.chatWSSocketService.disconnect();
+            this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY);
+            this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_ROOM_MSG_KEY_PREFIX);
+            this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_START_KEY);
+            this.clientStorageService.remove(AppUtility.APP_LAST_CHAT_END_KEY);
+            this.clientStorageService.remove(AppUtility.APP_HAS_ACTIVE_CHAT_SESSION);
+            //alert("data");
+            $(function () {
+              $('#live-chat').addClass('d-none');
+            });
+          });
+      } else {
+        $(function () {
+          $('#live-chat').addClass('d-none');
+        });
+      }
     }
-    $(function () {
-      $('#live-chat').addClass('d-none');
-    });
   }
 
   // chatInteractation(content: string) {
@@ -431,7 +464,7 @@ export class DefaultLayoutComponent implements OnInit {
           //console.log("completed....", JSON.stringify(data));
           //this.bsModalRef.hide();
           //this.chatRoomService.setChatRoomId(data.roomId);
-          //this.angChatForm.reset();
+          this.angChatForm.reset();
         });
     } else {
       console.log("Invalid Form!");
@@ -498,6 +531,10 @@ export class DefaultLayoutComponent implements OnInit {
     //console.log("start chat");
   }
 
+  isAgent(senderId: number) {
+    return senderId != this.chatInitiator;
+  }
+
   ngOnInit(): void {
     this.connect();
     //console.log(this.clientStorageService.get(AppUtility.APP_LOGGEDIN_USR_ROLES));
@@ -507,12 +544,13 @@ export class DefaultLayoutComponent implements OnInit {
       if (!roles.includes('EMP') && roles.includes('AGENT')) {
         $('.nav-item').removeClass('highlighted-yellow');
       }
-      $('#live-chat header').on('click', function (e) {
-        if (!$(e.target).hasClass('chat-close')) {
-          $('.chat').slideToggle(300, 'swing');
-          $('.chat-message-counter').fadeToggle(300, 'swing');
-        }
-      });
+      // $('#live-chat header').on('click', function (e) {
+      //   if (!$(e.target).hasClass('chat-close')) {
+      //     alert("sdsadsad");
+      //     $('.chat').slideToggle(300, 'swing');
+      //     $('.chat-message-counter').fadeToggle(300, 'swing');
+      //   }
+      // });
       // $('.chat-close').on('click', function (e) {
       //   e.preventDefault();
       //   //$('#live-chat').fadeOut(300);
@@ -541,19 +579,33 @@ export class DefaultLayoutComponent implements OnInit {
         this.chatRoomId = chatRoomId;
         this.clientStorageService.set(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY, chatRoomId);
         this.chatSelection = false;
+        this.chatSessionActive = true;
         this.chatStart();
         //console.log(this.chatRoomId);
         this.chatWSSocketService.connect(this.chatRoomId);
         // subscribe receives the value.
         this.chatService.chatMessage
           .subscribe((data: any) => {
+            if (data && Object.keys(data).length === 0 && Object.getPrototypeOf(data) === Object.prototype) {
+              this.closeChat(false);
+              return;
+            }
+            if (data.recipientId == null) {
+              this.chatInitiator = data.senderId;
+            }
             //console.log('receive message', data);
             //console.log("here I am");
-
-            // if(this.canCommunate){
-
-            // }
-
+            $(function () {
+              if ($('#live-chat').hasClass('d-none')) {
+                $('#live-chat').removeClass('d-none');
+              }
+            });
+            if (data.recipientId != null) {
+              this.canCommunate = true;
+            } else {
+              this.canCommunate = false;
+            }
+            //console.log(this.canCommunate);
             var msgIdsKey = AppUtility.APP_LAST_CHAT_ROOM_MSG_KEY_PREFIX + "-" + this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY) + "-" + this.loggedInUser.userId;
             var chatIds = [];
             //console.log(this.clientStorageService.get(msgIdsKey));
@@ -569,7 +621,8 @@ export class DefaultLayoutComponent implements OnInit {
               this.clientStorageService.set(msgIdsKey, JSON.stringify(chatIds));
             }
             $(function () {
-              $('#current-chat-window').append("<div class=\"chat-message clearfix\">" +
+              let chatClass = data.senderType == 'AGENT' ? 'chat-feedback' : '';
+              $('#current-chat-window').append("<div class=\"chat-message" + chatClass + "clearfix\">" +
                 "          <img src=\"assets/img/avatars/user.jpg\" class=\"img-avatar\" width=\"32\" height=\"32\" alt=\"admin@bootstrapmaster.com\" />" +
                 "          <div class=\"chat-message-content clearfix\">" +
                 "            <div class=\"chat-message-color\">" +
@@ -579,7 +632,6 @@ export class DefaultLayoutComponent implements OnInit {
                 "            </div>" +
                 "          </div>" +
                 "        </div>");
-              //$('#live-chat').fadeIn(300);
             });
 
             // let n = new Notification();
@@ -622,37 +674,38 @@ export class DefaultLayoutComponent implements OnInit {
         //console.log(timeLeft);
         //console.log("getModalsCount -", " ", diff, this.modalService.getModalsCount());
         if (!isTimeout) {
-          //console.log("here I am");
           this.miscService.chatMassagesService(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY))
             .subscribe((data: any) => {
               //console.log("completed....", JSON.stringify(data));
-              //this.bsModalRef.hide();
-              //this.chatRoomService.setChatRoomId(data.roomId);
-              //this.angChatForm.reset();
-              for (let k = 0; k < data.length; k++) {
-                //console.log(data[k]);
-                $('#current-chat-window').append("<div class=\"chat-message clearfix\">" +
-                  "          <img src=\"assets/img/avatars/user.jpg\" class=\"img-avatar\" width=\"32\" height=\"32\" alt=\"admin@bootstrapmaster.com\" />" +
-                  "          <div class=\"chat-message-content clearfix\">" +
-                  "            <div class=\"chat-message-color\">" +
-                  "              <span class=\"chat-time\">" + moment.utc(data[k].conversationTime).tz(this.loggedInUserService.getLoggedInUser().timeZone).format("HH:mm") + "</span>" +
-                  "              <h5>" + data[k].senderName + "</h5>" +
-                  "              <p>" + data[k].content + "</p>" +
-                  "            </div>" +
-                  "          </div>" +
-                  "        </div>");
-              }
+              var self = this;
               $(function () {
-                $('#live-chat').removeClass("d-none");
-                $('#live-chat').fadeIn(300);
+                $('#live-chat').removeClass('d-none');
+                let user = self.getLoggedInUser();
+                //console.log(user);
+                for (let k = 0; k < data.length; k++) {
+                  let chatClass = data[k].senderType == 'AGENT' ? 'chat-feedback' : '';
+                  $('#current-chat-window').append("<div class=\"chat-message " + chatClass + " clearfix\">" +
+                    "          <img src=\"assets/img/avatars/user.jpg\" class=\"img-avatar\" width=\"32\" height=\"32\" alt=\"admin@bootstrapmaster.com\" />" +
+                    "          <div class=\"chat-message-content clearfix\">" +
+                    "            <div class=\"chat-message-color\">" +
+                    "              <span class=\"chat-time\">" + moment.utc(data[k].conversationTime).tz(user.timeZone).format("HH:mm") + "</span>" +
+                    "              <h5>" + data[k].senderName + "</h5>" +
+                    "              <p>" + data[k].content + "</p>" +
+                    "            </div>" +
+                    "          </div>" +
+                    "        </div>");
+                }
               });
               this.chatRoomService.setChatRoomId(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY));
-              //this.chatWSSocketService.connect(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY));
             });
         }
       }
     }
 
+  }
+
+  getLoggedInUser() {
+    return this.loggedInUser;
   }
 
   ngAfterViewInit() {
@@ -762,37 +815,21 @@ export class DefaultLayoutComponent implements OnInit {
   }
 
   selectAgent() {
-    this.chatSelection = true;
-    $(function () {
-      $('#live-chat').removeClass('d-none');
-      //$('.chat').slideToggle(300, 'swing');
-      //$('.chat-message-counter').fadeToggle(300, 'swing');
-
-      //$('.form-selection').removeClass("d-none");
-      //$('.chat-section').addClass("d-none");
-
-
-    });
-    // const config: ModalOptions = {
-    //   backdrop: 'static',
-    //   keyboard: false,
-    //   animated: true,
-    //   ignoreBackdropClick: true,
-    //   class: 'modal-bg',
-    // };
-    // const initialState = {
-
-    // };
-    // this.modalRef = this.modalService.show(SelectAgentForChat,
-    //   Object.assign({}, config, { initialState })
-    // );
+    if (this.chatSessionActive) {
+      this.chatSelection = false;
+      this.chatSessionActive = true;
+    } else {
+      this.chatSelection = true;
+      this.chatSessionActive = false;
+      $(function () {
+        $('#live-chat').removeClass('d-none');
+      });
+    }
   }
 
   chatAction(action: string) {
     alert(action);
   }
-
-
 
   @ViewChild("parentModule") parentModule;
   populateModule(parentModule) {
@@ -840,10 +877,16 @@ export class DefaultLayoutComponent implements OnInit {
 
   initiateChat(req: any) {
     this.miscService.startChatService(req)
-      .subscribe((data: any) => {
-        //console.log("completed....", JSON.stringify(data));
-        this.chatRoomService.setChatRoomId(data.roomId);
-      });
+      .subscribe(
+        (data: any) => {
+          //console.log("completed....", JSON.stringify(data));
+          this.chatRoomService.setChatRoomId(data.roomId);
+        },
+        // (error) => {
+        //   console.log("here I am"+error);
+        //   return false;
+        // }
+      );
   }
 
   chatInitiate() {
@@ -860,6 +903,7 @@ export class DefaultLayoutComponent implements OnInit {
       chatmessage.status = null;
       chatmessage.intiateChat = true;
       this.initiateChat(chatmessage);
+      this.angFormAssign.reset();
     } else {
       console.log("Invalid Form!");
     }

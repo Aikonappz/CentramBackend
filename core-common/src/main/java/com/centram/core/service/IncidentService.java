@@ -111,7 +111,13 @@ public class IncidentService {
         serialNo = (!serialNo.equals("")) ? "%" + serialNo.toUpperCase() + "%" : null;
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
-        return new PaginatedList<Incident>(incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable));
+        Page<Incident> incidentPage = incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
+        incidentPage.getContent().stream()
+                .forEach(i -> {
+                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+                });
+        return new PaginatedList<Incident>(incidentPage);
     }
 
     @Transactional(readOnly = true)

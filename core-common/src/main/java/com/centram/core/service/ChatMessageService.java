@@ -12,6 +12,7 @@ import com.centram.domain.Notification;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.MessageStatus;
 import com.centram.domain.enumarator.NotificationType;
+import com.centram.domain.enumarator.SenderType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatMessageService {
@@ -51,12 +53,30 @@ public class ChatMessageService {
     @Autowired
     private MiscService miscService;
 
+    @Autowired
+    private UserAuthService userAuthService;
+
     @Transactional
     public ChatMessage save(ChatMessage chatMessage) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         chatMessage.setConversationTime(LocalDateTime.now());
         UserVO sender = userService.getUserById(chatMessage.getSenderId());
         UserVO recipient = null;
         if (chatMessage.getRoomId() == null) {
+            chatMessage.setSenderType(SenderType.USER);
+            List<UserVO> userVOS = userService.getUsersByModuleAndAction(
+                    Arrays.asList(chatMessage.getModuleId(), chatMessage.getSubModuleId()),
+                    "SOLVE"
+            );
+            if (userAuthService.anyUserOnline(
+                    userVOS.stream()
+                            .filter(i -> {
+                                return i.getId().compareTo(loggedInUser.getUserId()) != 0;
+                            })
+                            .map(UserVO::getId).collect(Collectors.toList())
+            ) < 1) {
+                throw new AppException(GenericErrorCode.AGENT_NOT_AVAILABLE);
+            }
             chatMessage.setRoomId(UUID.randomUUID().toString());
         } else {
             Page<ChatMessage> chatMessages = chatMessageRepository.findAll(
@@ -70,8 +90,10 @@ public class ChatMessageService {
                     chatMessage.setSubModuleId(firstMessage.getSubModuleId());
                     if (chatMessage.getSenderId().compareTo(firstMessage.getSenderId()) == 0) {
                         chatMessage.setRecipientId(firstMessage.getRecipientId());
+                        chatMessage.setSenderType(SenderType.USER);
                     } else if (chatMessage.getSenderId().compareTo(firstMessage.getRecipientId()) == 0) {
                         chatMessage.setRecipientId(firstMessage.getSenderId());
+                        chatMessage.setSenderType(SenderType.AGENT);
                     }
                 } else {
                     throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
@@ -107,13 +129,18 @@ public class ChatMessageService {
 
     @Transactional
     public List<ChatMessage> chatClose(String chatRoomId) {
-        Page<ChatMessage> chatMessagePage = chatMessageRepository.findAll(chatRoomId, Pageable.unpaged());
-        chatMessagePage.getContent().stream()
-                .forEach(i -> {
-                            i.setRoomClosed(true);
-                        }
-                );
-        return chatMessageRepository.saveAll(chatMessagePage.getContent());
+        Page<ChatMessage> chatMessagePage = chatMessageRepository.findAllOpenChat(chatRoomId, Pageable.unpaged());
+        if (chatMessagePage.getContent().size() > 0) {
+            chatMessagePage.getContent().stream()
+                    .forEach(i -> {
+                                i.setRoomClosed(true);
+                            }
+                    );
+            miscService.sendChatInteractionEmail(chatMessagePage.getContent());
+            return chatMessageRepository.saveAll(chatMessagePage.getContent());
+        } else {
+            return new ArrayList<ChatMessage>();
+        }
     }
 
     @Transactional(readOnly = true)

@@ -16,7 +16,7 @@ import { MiscService } from '../../service/MiscService';
   styleUrls: ['./holidaycalender.component.scss']
 })
 export class HolidayCalenderComponent implements OnInit {
-  moduleName: string = "HOLIDAY CALENDER";
+  moduleName: string = "HOLIDAY CALENDAR";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['location', 'year', 'action'];
   private datasource: HolidayCalenderDataSource;
@@ -72,10 +72,10 @@ export class HolidayCalenderComponent implements OnInit {
   }
 
   edit(loc: LocationVO) {
-    this.router.navigate(['/master/calender/edit/' + loc.id]);
+    this.router.navigate(['/master/calendar/edit/' + loc.id]);
   }
   add() {
-    this.router.navigate(['/master/calender/add']);
+    this.router.navigate(['/master/calendar/add']);
   }
 
   updateStatus(hc: HolidayCalender) {

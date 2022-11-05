@@ -3,10 +3,10 @@
     <div class="col-sm-12">
       <div class="card">
         <div class="card-header" *ngIf="newEntity">
-          <strong>Add Holiday Calender</strong>
+          <strong>Add Holiday Calendar</strong>
         </div>
         <div class="card-header" *ngIf="!newEntity">
-          <strong>Edit Holiday Calender</strong>
+          <strong>Edit Holiday Calendar</strong>
         </div>
         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
           <div class="card-body">
@@ -22,12 +22,12 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label required-control-label" for="year">Calender Year</label>
+                <label class="form-col-form-label required-control-label" for="year">Calendar Year</label>
                 <ng-select [items]="yearList" placeholder="-- Select Location --" formControlName="year"
                   id="year" name="year" bindLabel="label" bindValue="id"></ng-select>
                 <div *ngIf="f.year.touched && f.year.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.year.errors?.required">
-                    Calender Year is required.
+                    Calendar Year is required.
                   </div>
                 </div>
               </div>
