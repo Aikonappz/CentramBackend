@@ -126,7 +126,7 @@
                   </ng-select>
                   <div *ngIf="f.licenseType.touched && f.licenseType.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseType.errors?.required">
-                      Licence Type is required.
+                      License Type is required.
                     </div>
                   </div>
                 </div>
@@ -138,7 +138,7 @@
                     name="licenseStart" class="form-control" placeholder="License Start" aria-label="License Start">
                   <div *ngIf="f.licenseStart.touched && f.licenseStart.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseStart.errors?.required">
-                      Licence Start Date is required.
+                      License Start Date is required.
                     </div>
                   </div>
                 </div>
@@ -148,7 +148,7 @@
                     class="form-control" placeholder="License End" aria-label="License End">
                   <div *ngIf="f.licenseEnd.touched && f.licenseEnd.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseEnd.errors?.required">
-                      Licence End Date is required.
+                      License End Date is required.
                     </div>
                     <div *ngIf="f.licenseEnd.errors?.mustGreaterThanStartDate">
                       End date should be greater than Start Date!

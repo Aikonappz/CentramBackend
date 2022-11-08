@@ -41,7 +41,6 @@ sudo unzip -o /tmp/ui.zip  -d /usr/share/nginx/html/
 nohup java -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
 sudo nohup java -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
 
-
 sudo systemctl stop nginx.service
 sudo systemctl status nginx.service
 sudo systemctl start nginx.service

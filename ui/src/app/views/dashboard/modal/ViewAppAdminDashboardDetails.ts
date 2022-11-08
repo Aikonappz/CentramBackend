@@ -39,7 +39,7 @@ import { OrganisationService } from "../../../service/OrganisationService";
                         </td>
                     </ng-container>
                     <ng-container matColumnDef="licence">
-                        <th mat-header-cell *matHeaderCellDef> Licence Dtl. </th>
+                        <th mat-header-cell *matHeaderCellDef> License Dtl. </th>
                         <td mat-cell *matCellDef="let element">
                             {{element.licenseType}}<br />
                             {{formatDate(element.licenseStart)}}<br />

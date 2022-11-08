@@ -288,9 +288,9 @@ export class DashboardComponent implements OnInit {
           //   "Incident License Type",
           // ];
           this.siteAdminChart2Labels = [
-            "Licence Type - All",
-            "Licence Type - Incident",
-            "Licence Type - Asset",
+            "License Type - All",
+            "License Type - Incident",
+            "License Type - Asset",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -858,9 +858,9 @@ export class DashboardComponent implements OnInit {
           //   "Incident License Type",
           // ];
           this.siteAdminChart2Labels = [
-            "Licence Type - All",
-            "Licence Type - Incident",
-            "Licence Type - Asset",
+            "License Type - All",
+            "License Type - Incident",
+            "License Type - Asset",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
