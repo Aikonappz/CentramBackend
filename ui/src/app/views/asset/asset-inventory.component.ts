@@ -25,7 +25,7 @@ declare var $: any;
 export class AssetInventoryComponent implements OnInit {
   moduleName: string = "MANAGE ASSET";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['productType', 'assetType', 'serialNo', 'available', 'action'];
+  displayedColumns = ['productType', 'assetType', 'warranty', 'serialNo', 'available', 'action'];
   private datasource: AssetDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   angForm: FormGroup;

@@ -4,6 +4,52 @@
 }
 /************VARIABLE CSS***********/
 
+
+
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url(file:assets/fonts/Montserrat-Regular.eot);
+    src: local('Montserrat Regular'), local('Montserrat-Regular'),
+        url(file:assets/fonts/Montserrat-Regular.eot?#iefix) format('embedded-opentype'),
+        url(file:assets/fonts/Montserrat-Regular.woff2) format('woff2'),
+        url(file:assets/fonts/Montserrat-Regular.woff) format('woff'),
+        url(file:assets/fonts/Montserrat-Regular.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+// @font-face {
+//     font-family: 'Montserrat';
+//     font-style: normal;
+//     font-weight: 400;
+//     src: url(file:assets/fonts/Montserrat-Regular.ttf) format('truetype');
+//   }
+
+@font-face {
+    font-family: 'Khand';
+    src: url(file:assets/fonts/Khand-Medium.eot);
+    src: local('Khand Medium'), local('Khand-Medium'),
+        url(file:assets/fonts/Khand-Medium.eot?#iefix) format('embedded-opentype'),
+        url(file:assets/fonts/Khand-Medium.woff2) format('woff2'),
+        url(file:assets/fonts/Khand-Medium.woff) format('woff'),
+        url(file:assets/fonts/Khand-Medium.ttf) format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+// @font-face {
+//     font-family: 'Khand';
+//     font-style: normal;
+//     font-weight: 500;
+//     src: url(file:assets/fonts/Khand-Medium.ttf) format('truetype');
+//   }
+
+
+
+
 :root {
     --main-bg-color: #fff;
     --main-text-color: #222830;

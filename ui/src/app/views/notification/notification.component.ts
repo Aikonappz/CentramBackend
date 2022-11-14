@@ -100,6 +100,7 @@ export class NotificationComponent implements OnInit {
         self.closeModal();
         //$('#live-chat').removeClass("d-none");
         //$('#live-chat').fadeIn(300);
+        $('#current-chat-window').html("");
         self.initateChat($('#accept').attr("data-com-id"));
       });
       $(document).delegate('#reject', 'click', function () {

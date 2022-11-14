@@ -85,7 +85,7 @@ public class ChatMessage implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "varchar(3000) default null")
     @JsonView(Views.BasicView.class)
     private String content;
 

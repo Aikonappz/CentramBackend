@@ -413,13 +413,19 @@ export class DefaultLayoutComponent implements OnInit {
                 $('#live-chat').addClass('d-none');
               });
             });
+          this.chatSessionActive = false;
+          this.chatSelection = false;
         }
       } else {
+        this.chatSessionActive = false;
+        this.chatSelection = false;
         $(function () {
           $('#live-chat').addClass('d-none');
         });
       }
     } else {
+      this.chatSessionActive = false;
+      this.chatSelection = false;
       if (this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY) != null) {
         this.service.closeChatService(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY), {})
           .subscribe((data: any) => {
@@ -622,7 +628,8 @@ export class DefaultLayoutComponent implements OnInit {
             }
             $(function () {
               let chatClass = data.senderType == 'AGENT' ? 'chat-feedback' : '';
-              $('#current-chat-window').append("<div class=\"chat-message" + chatClass + "clearfix\">" +
+              //console.log(chatClass);
+              $('#current-chat-window').append("<div class=\"chat-message " + chatClass + " clearfix\">" +
                 "          <img src=\"assets/img/avatars/user.jpg\" class=\"img-avatar\" width=\"32\" height=\"32\" alt=\"admin@bootstrapmaster.com\" />" +
                 "          <div class=\"chat-message-content clearfix\">" +
                 "            <div class=\"chat-message-color\">" +
@@ -632,6 +639,7 @@ export class DefaultLayoutComponent implements OnInit {
                 "            </div>" +
                 "          </div>" +
                 "        </div>");
+              $('#current-chat-window').scrollTop($('#current-chat-window')[0].scrollHeight);
             });
 
             // let n = new Notification();
@@ -694,6 +702,7 @@ export class DefaultLayoutComponent implements OnInit {
                     "            </div>" +
                     "          </div>" +
                     "        </div>");
+                  $('#current-chat-window').scrollTop($('#current-chat-window')[0].scrollHeight);
                 }
               });
               this.chatRoomService.setChatRoomId(this.clientStorageService.get(AppUtility.APP_LAST_CHAT_ROOM_ID_KEY));

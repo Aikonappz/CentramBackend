@@ -107,7 +107,9 @@ public class ChatMessageService {
         chatMessage.setSenderName(sender.getFullName());
         chatMessage.setStatus(MessageStatus.DELIVERED);
         ChatMessage message = chatMessageRepository.save(chatMessage);
-        this.notifyAgent(Arrays.asList(message.getModuleId(), message.getSubModuleId()), message.getRoomId());
+        if (chatMessage.getRecipientId() == null) {
+            this.notifyAgent(Arrays.asList(message.getModuleId(), message.getSubModuleId()), message.getRoomId());
+        }
         miscService.pushChats(Arrays.asList(message), recipient == null ? Boolean.TRUE : Boolean.FALSE);
         return message;
     }

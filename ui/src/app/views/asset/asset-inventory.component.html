@@ -109,6 +109,12 @@
                                 <span [ngClass]="{'badge':true}">{{element.serialNo}}</span>
                             </td>
                         </ng-container>
+                        <ng-container matColumnDef="warranty">
+                            <th mat-header-cell *matHeaderCellDef>Warranty Expired Date</th>
+                            <td mat-cell *matCellDef="let element">
+                                <span>{{formatDateTime(element.warrantyExpiredAt)}}</span>
+                            </td>
+                        </ng-container>
                         <ng-container matColumnDef="assetType">
                             <th mat-header-cell *matHeaderCellDef>Product Sub Category</th>
                             <td mat-cell *matCellDef="let element">

@@ -17,7 +17,7 @@ import { MiscService } from "../../../service/MiscService";
     <div class="row">
         <div class="col-sm-12">
             <div class="card ">
-                <div class="card-body">
+                <div class="card-body card-body-notification">
                     <div class="row">
                         <div class="col">
                             <div [innerHTML]="notification.notificationBody | safe: 'html'"></div>
