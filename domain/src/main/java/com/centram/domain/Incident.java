@@ -40,8 +40,8 @@ import java.util.Set;
                 " sum(case when date_differnce > 60 then 1 else 0 end) as aging60 " +
                 " from " +
                 " ( " +
-                "  select datediff(SYSDATE() ,i.created_date) as date_differnce from  incident i " +
-                "  join user u on (u.id = i.raised_user_id) " +
+                "  select datediff(SYSDATE() ,i.created_date) as date_differnce from incident i " +
+                "  join user u on (u.id = i.raised_user_id) and i.incident_type = 1 " +
                 "  where u.organisation_id = (:organisationId) and " +
                 "  ( " +
                 "    ((:roleFilter) = true and i.module_id in (:userModules) and i.sub_module_id in (:userSubModules)) " +

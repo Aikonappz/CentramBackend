@@ -398,7 +398,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-holiday-callender", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
     public ResponseEntity<PaginatedList<HolidayCalender>> getHolidayCalenders(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<HolidayCalender>>(holidayCalenderService.getHolidayCalenders(pageable), HttpStatus.OK);
     }
@@ -412,7 +412,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
     public ResponseEntity<HolidayCalender> getHolidayCalenderById(@ApiParam(value = "id of holiday-callender", required = true) @PathVariable("holidayCallenderId") BigInteger holidayCallenderId) {
         return new ResponseEntity<HolidayCalender>(holidayCalenderService.getById(holidayCallenderId), HttpStatus.OK);
     }
@@ -423,7 +423,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/upload-holiday-calender", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','WRITE',authentication.principal)")
     public ResponseEntity<HolidayCalender> uploadHolidayCalenderData(
             @ApiParam(value = "Holiday Calender CSV file", required = true) @RequestPart(name = "file", required = true) MultipartFile multipartFile,
             @ApiParam(value = "Holiday Calender object", required = true) @RequestPart("holidayCalender") HolidayCalender holidayCalender
@@ -439,7 +439,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}/download", method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDER','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
     public ResponseEntity<Resource> downloadHolidayCalender(
             @ApiParam(value = "id of holiday-callender", required = true) @PathVariable("holidayCallenderId") BigInteger holidayCallenderId
     ) {
