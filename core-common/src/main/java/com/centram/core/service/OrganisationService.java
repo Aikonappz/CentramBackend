@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,6 +90,9 @@ public class OrganisationService {
         Organisation newOrganisation = null;
         organisation.setLicenseEnd(organisation.getLicenseEnd().toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));
         organisation.setLicenseStart(organisation.getLicenseStart().toLocalDate().atStartOfDay().plusSeconds(1));
+        organisation.setTan(Base64.getEncoder().encodeToString(organisation.getTan().getBytes(StandardCharsets.UTF_8)));
+        organisation.setPan(Base64.getEncoder().encodeToString(organisation.getPan().getBytes(StandardCharsets.UTF_8)));
+        organisation.setGstin(Base64.getEncoder().encodeToString(organisation.getGstin().getBytes(StandardCharsets.UTF_8)));
         if (organisation.getId() == null) {
             organisation.setStatus(Status.ACTIVE);
             organisation.setSetting(new Setting(IncidentAllocationType.GENERIC));
@@ -113,6 +119,13 @@ public class OrganisationService {
         organisationRepository.updateStatus(status, LocalDateTime.now(), organisationIds);
     }
 
+    private Organisation prepareView(Organisation org) {
+        org.setGstin(new String(Base64.getDecoder().decode(org.getGstin())));
+        org.setPan(new String(Base64.getDecoder().decode(org.getPan())));
+        org.setTan(new String(Base64.getDecoder().decode(org.getTan())));
+        return org;
+    }
+
     /**
      * Get Organisation
      *
@@ -123,7 +136,7 @@ public class OrganisationService {
     public Organisation getOrganisationById(BigInteger organisationId) {
         Optional<Organisation> organisation = organisationRepository.findById(organisationId);
         if (organisation.isPresent()) {
-            return organisation.get();
+            return this.prepareView(organisation.get());
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -181,7 +194,12 @@ public class OrganisationService {
      */
     @Transactional(readOnly = true)
     public List<Organisation> getActiveOrganisations() {
-        return organisationRepository.findAll();
+        List<Organisation> organisations = organisationRepository.findAll();
+        organisations.stream()
+                .forEach(i -> {
+                    i = this.prepareView(i);
+                });
+        return organisations;
     }
 
     /**
@@ -194,7 +212,12 @@ public class OrganisationService {
     public PaginatedList<Organisation> getOrganisations(String name, Status status, LicenseType licenseType, Pageable pageable) {
         name = (!name.equals("")) ? "%" + name.toUpperCase() + "%" : null;
         log.info("Name => {}, Status => {}", name, status);
-        return new PaginatedList<Organisation>(organisationRepository.findAll(name, status.ordinal(), licenseType.ordinal(), pageable));
+        Page<Organisation> page = organisationRepository.findAll(name, status.ordinal(), licenseType.ordinal(), pageable);
+        page.getContent().stream()
+                .forEach(i -> {
+                    i = this.prepareView(i);
+                });
+        return new PaginatedList<Organisation>(page);
         /*CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Organisation> criteriaQuery = criteriaBuilder.createQuery(Organisation.class);
         Root<Organisation> root = criteriaQuery.from(Organisation.class);
@@ -265,6 +288,7 @@ public class OrganisationService {
         List<Organisation> organisations = organisationRepository.findAll();
         return organisations.stream()
                 .filter(i -> {
+                    i = this.prepareView(i);
                     return i.getSetting() != null && i.getSetting().getTicketAllocationType() == IncidentAllocationType.ROUND_ROBIN;
                 })
                 .collect(Collectors.toList());
