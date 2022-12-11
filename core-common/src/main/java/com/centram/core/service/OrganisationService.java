@@ -5,6 +5,7 @@ import com.centram.common.dto.OrganisationDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.utility.Utility;
 import com.centram.core.repository.OrganisationRepository;
 import com.centram.domain.MediaFile;
 import com.centram.domain.Organisation;
@@ -120,10 +121,17 @@ public class OrganisationService {
     }
 
     private Organisation prepareView(Organisation org) {
-        org.setGstin(new String(Base64.getDecoder().decode(org.getGstin())));
-        org.setPan(new String(Base64.getDecoder().decode(org.getPan())));
-        org.setTan(new String(Base64.getDecoder().decode(org.getTan())));
-        return org;
+        try {
+            if (Utility.isBase64(org.getGstin()))
+                org.setGstin(new String(Base64.getDecoder().decode(org.getGstin())));
+            if (Utility.isBase64(org.getPan()))
+                org.setPan(new String(Base64.getDecoder().decode(org.getPan())));
+            if (Utility.isBase64(org.getTan()))
+                org.setTan(new String(Base64.getDecoder().decode(org.getTan())));
+            return org;
+        } catch (IllegalArgumentException iae) {
+            return org;
+        }
     }
 
     /**

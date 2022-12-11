@@ -46,6 +46,7 @@ export class EditIncidentComponent implements OnInit {
   incidentCommunications: IncidentCommunication[] = [];
   statusList: any = [];
   selectedFiles?: FileList;
+  allSelectedFiles?: File[] = [];
   angForm: FormGroup;
   ckeditorToolbarConfig: any;
   readOnlyckeditorToolbarConfig: any;
@@ -375,6 +376,10 @@ export class EditIncidentComponent implements OnInit {
       } else {
         file.setErrors(null);
         this.selectedFiles = event.target.files;
+        for (var i = 0; i < this.selectedFiles.length; i++) {
+          this.allSelectedFiles.push(this.selectedFiles[i]);
+        }
+        //console.log(this.allSelectedFiles);
       }
       console.log('Name: ' + name + "\n" +
         'Type: ' + type + "\n" +
@@ -406,6 +411,15 @@ export class EditIncidentComponent implements OnInit {
     this._location.back();
   }
 
+  removeFile(indx) {
+    if (indx > -1) { // only splice array when item is found
+      this.allSelectedFiles.splice(indx, 1); // 2nd parameter means remove one item only
+      $(function () {
+        $('#attached-file-' + indx).remove();
+      });
+    }
+  }
+
   callSaveIncidentService() {
     let returnPath = '/incident/user/all';
     if (this.referer === 'agent-all') {
@@ -418,11 +432,11 @@ export class EditIncidentComponent implements OnInit {
       .subscribe((data: Incident) => {
         //console.log(data);
         this.handleDraftData();
-        if (typeof this.selectedFiles != "undefined") {
-          if (this.selectedFiles.length > 0) {
+        if (typeof this.allSelectedFiles != "undefined") {
+          if (this.allSelectedFiles.length > 0) {
             const formData: FormData = new FormData();
-            for (var i = 0; i < this.selectedFiles.length; i++) {
-              formData.append("file", this.selectedFiles[i]);
+            for (var i = 0; i < this.allSelectedFiles.length; i++) {
+              formData.append("file", this.allSelectedFiles[i]);
             }
             let headers = new Headers();
             headers.append('Content-Type', 'multipart/form-data');
@@ -439,6 +453,27 @@ export class EditIncidentComponent implements OnInit {
         } else {
           this.router.navigate([returnPath]);
         }
+        // if (typeof this.selectedFiles != "undefined") {
+        //   if (this.selectedFiles.length > 0) {
+        //     const formData: FormData = new FormData();
+        //     for (var i = 0; i < this.selectedFiles.length; i++) {
+        //       formData.append("file", this.selectedFiles[i]);
+        //     }
+        //     let headers = new Headers();
+        //     headers.append('Content-Type', 'multipart/form-data');
+        //     headers.set('Accept', 'application/json');
+        //     let commId = data.communications[0].id;
+        //     this.mediaService
+        //       .saveMediaService(commId, EntityType.INCIDENT, MediaType.INCIDENT_COMMUNICATION, "NA", formData, { 'headers': headers })
+        //       .subscribe((data: any) => {
+        //         this.router.navigate([returnPath]);
+        //       });
+        //   } else {
+        //     this.router.navigate([returnPath]);
+        //   }
+        // } else {
+        //   this.router.navigate([returnPath]);
+        // }
       });
   }
 

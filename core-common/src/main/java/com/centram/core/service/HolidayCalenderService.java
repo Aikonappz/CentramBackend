@@ -45,6 +45,9 @@ public class HolidayCalenderService {
     @Autowired
     private ProxyService proxyService;
 
+    @Autowired
+    private LocationService locationService;
+
     /**
      * get location
      *
@@ -115,6 +118,7 @@ public class HolidayCalenderService {
                         .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()));
                 holidays.add(new Holiday(LocalDate.parse(value.get("DATE"), DateTimeFormatter.ofPattern(dateFormat)), value.get("DESCRIPTION")));
             }
+            holidayCalender.setLocation(locationService.getById(holidayCalender.getLocation().getId()));
             holidayCalender.setHolidays(holidays);
             holidayCalender.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
             return proxyService.saveHolidayCalender(holidayCalender);

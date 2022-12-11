@@ -66,7 +66,7 @@ public class HolidayCalender extends BaseEntity implements Serializable {
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "location_id", nullable = false, updatable = false, insertable = false, referencedColumnName = "id")
+    @JoinColumn(name = "location_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Location location;
 }

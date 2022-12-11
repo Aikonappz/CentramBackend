@@ -249,9 +249,17 @@
                   <label class="form-col-form-label " for="fileInput">Attachments </label>
                   <i class="icon-info"
                     tooltip="Max file size can be 2 M.B and suported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png"></i>&nbsp;&nbsp;
-                  <input  #fileInput multiple="multiple" (change)="getFileDetails($event)" type="file" id="fileInput"
+                  <input #fileInput multiple="multiple" (change)="getFileDetails($event)" type="file" id="fileInput"
                     formControlName="fileInput" name="fileInput">
-                  <button (click)="resetFile(fileInput)" type="button" class="btn "><i class="fa fa-close"></i></button>
+                  <!-- <button (click)="resetFile(fileInput)" type="button" class="btn "><i class="fa fa-close"></i></button> -->
+                  <div class="file-selection-area" id="file-selection-area">
+                    <div *ngFor="let file of allSelectedFiles;let indexOfelement=index;">
+                      <div id="attached-file-indexOfelement">
+                        {{file.name}}&nbsp;&nbsp;<button (click)="removeFile(indexOfelement)" type="button"
+                          class="btn "><i class="fa fa-close"></i></button>
+                      </div>
+                    </div>
+                  </div>
                   <div *ngIf="f.fileInput.touched && f.fileInput.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.fileInput.errors?.validAttachments">
                       Supported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png.

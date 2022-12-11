@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * App utility
@@ -123,4 +125,10 @@ public class Utility {
         return new String(Base64.decodeBase64(encodedData), StandardCharsets.UTF_8);
     }
 
+    public static boolean isBase64(String s) {
+        String pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(s);
+        return m.find();
+    }
 }
