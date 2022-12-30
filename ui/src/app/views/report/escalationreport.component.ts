@@ -86,11 +86,13 @@ export class EscalationReportComponent implements OnInit {
           if (this.allModuleList[i].appModule == false && this.allModuleList[i].parentModuleId == null) {
             if (this.loggedInUserService.isAgentLead() || this.loggedInUserService.isOrgAdmin() || this.loggedInUserService.isAgentManager()) {
               m = this.allModuleList[i];
-              m.customerModuleName = AppUtility.toTitleCase(m.customerModuleName);
+              m.customerModuleName = m.customerModuleName;
+              //m.customerModuleName = AppUtility.toTitleCase(m.customerModuleName);
               this.moduleList.push(m);
             } else if (this.loggedInUserService.hasPermissionById(this.allModuleList[i].id, 'READ') || this.loggedInUserService.hasPermissionById(this.allModuleList[i].id, 'SOLVE')) {
               m = this.allModuleList[i];
-              m.customerModuleName = AppUtility.toTitleCase(m.customerModuleName);
+              m.customerModuleName = m.customerModuleName;
+              //m.customerModuleName = AppUtility.toTitleCase(m.customerModuleName);
               this.moduleList.push(m);
             }
           }
@@ -213,12 +215,14 @@ export class EscalationReportComponent implements OnInit {
         if (this.allModuleList[i].appModule == false && this.allModuleList[i].parentModuleId == moduleId.id) {
           if (this.loggedInUserService.isAgentLead() || this.loggedInUserService.isOrgAdmin() || this.loggedInUserService.isAgentManager()) {
             sm = this.allModuleList[i];
-            sm.customerModuleName = AppUtility.toTitleCase(sm.customerModuleName);
+            sm.customerModuleName = sm.customerModuleName;
+            //sm.customerModuleName = AppUtility.toTitleCase(sm.customerModuleName);
             this.subModuleList[c] = sm;
             c++;
           } else if (this.loggedInUserService.hasPermissionById(this.allModuleList[i].id, 'READ') || this.loggedInUserService.hasPermissionById(this.allModuleList[i].id, 'SOLVE')) {
             sm = this.allModuleList[i];
-            sm.customerModuleName = AppUtility.toTitleCase(sm.customerModuleName);
+            sm.customerModuleName = sm.customerModuleName;
+            //sm.customerModuleName = AppUtility.toTitleCase(sm.customerModuleName);
             this.subModuleList[c] = sm;
             c++;
           }

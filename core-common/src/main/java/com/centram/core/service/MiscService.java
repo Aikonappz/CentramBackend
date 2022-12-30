@@ -413,6 +413,8 @@ public class MiscService {
                     asset.setIsLocation(false);
                 }
                 asset.setIsUnderWarranty(data.get("UNDER_WARRANT") != null && data.get("UNDER_WARRANT").trim().equalsIgnoreCase("YES"));
+                //ZonedDateTime warrantyDateTime = ZonedDateTime.of(LocalDate.parse(data.get("WARRANTY_VALIDITY"), DateTimeFormatter.ofPattern(dtFormat)).plusDays(1).atStartOfDay().minusSeconds(1), ZoneId.of(loggedInUserDTO.getTimeZone()));
+                //asset.setWarrantyExpiredAt(warrantyDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
                 asset.setWarrantyExpiredAt(LocalDate.parse(data.get("WARRANTY_VALIDITY"), DateTimeFormatter.ofPattern(dtFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
                 if (data.get("PURCHASE_TYPE") == null || data.get("PURCHASE_TYPE").trim().equals("")) {
                     rowWiseIssues.put(rowNo++, "Purchase Type Required!");
@@ -425,12 +427,16 @@ public class MiscService {
                         rowWiseIssues.put(rowNo++, "Rental Start Required!");
                         continue;
                     } else {
+                        //ZonedDateTime rentalDateTime = ZonedDateTime.of(LocalDate.parse(data.get("RENTAL_START_ON"), DateTimeFormatter.ofPattern(dtFormat)).atStartOfDay(), ZoneId.of(loggedInUserDTO.getTimeZone()));
+                        //asset.setRentalStartAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
                         asset.setRentalStartAt(LocalDate.parse(data.get("RENTAL_START_ON"), DateTimeFormatter.ofPattern(dtFormat)).atStartOfDay());
                     }
                     if (data.get("RENTAL_ENDS_ON") == null || data.get("RENTAL_ENDS_ON").trim().equals("")) {
                         rowWiseIssues.put(rowNo++, "Rental End Required!");
                         continue;
                     } else {
+                        //ZonedDateTime rentalDateTime = ZonedDateTime.of(LocalDate.parse(data.get("RENTAL_ENDS_ON"), DateTimeFormatter.ofPattern(dtFormat)).plusDays(1).atStartOfDay().minusSeconds(1), ZoneId.of(loggedInUserDTO.getTimeZone()));
+                        //asset.setRentalEndAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
                         asset.setRentalEndAt(LocalDate.parse(data.get("RENTAL_ENDS_ON"), DateTimeFormatter.ofPattern(dtFormat)).plusDays(1).atStartOfDay().minusSeconds(1));
                     }
                 }
@@ -827,7 +833,7 @@ public class MiscService {
                 incidentEmailVO.setMailToType("EMP");
                 incidentEmailVO.setMailSubjectKey("incEmpAsgnSub");
                 incidentEmailVO.setMailBodyKey("incUpdtCnt");
-                incidentEmailVO.setDescription("Incident assigned to an agent. Please check below details.");
+                incidentEmailVO.setDescription("Incident has been assigned to an agent. Please check the below details.");
                 incidentEmailVO.setTo(new String[]{userVO.getEmail()});
                 incidentEmailVO.setCc(new String[]{});
                 incidentEmailVO.setBcc(new String[]{});
@@ -867,7 +873,7 @@ public class MiscService {
                 incidentEmailVO.setMailToType("EMP");
                 incidentEmailVO.setMailSubjectKey("astEmpAsgnSub");
                 incidentEmailVO.setMailBodyKey("astUpdtCnt");
-                incidentEmailVO.setDescription("Incident assigned to an agent. Please check below details.");
+                incidentEmailVO.setDescription("Incident has been assigned to an agent. Please check the below details.");
                 incidentEmailVO.setTo(new String[]{userVO.getEmail()});
                 incidentEmailVO.setCc(new String[]{});
                 incidentEmailVO.setBcc(new String[]{});
@@ -925,7 +931,7 @@ public class MiscService {
             incidentEmailVO.setMailToType("EMP");
             incidentEmailVO.setMailSubjectKey("incEmpAsgnSub");
             incidentEmailVO.setMailBodyKey("incUpdtCnt");
-            incidentEmailVO.setDescription("Incident assigned to an agent. Please check below details.");
+            incidentEmailVO.setDescription("Incident has been assigned to an agent. Please check the below details.");
             incidentEmailVO.setTo(new String[]{userVO.getEmail()});
             incidentEmailVO.setCc(new String[]{});
             incidentEmailVO.setBcc(new String[]{});
@@ -1407,7 +1413,7 @@ public class MiscService {
             mailValues.put("notification", new Notification(null, null, assetOrder.getApproverUser1(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetOrder.getApproverUser1().getFirstName() + " " + assetOrder.getApproverUser1().getLastName());
             mailValues.put("feedback", assetOrder.getApproverUser2Comment());
-            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Completed" : "Rejected");
+            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "completed" : "rejected");
             mailValues.put("subject", "approver2FeedbackMailSubject");
             mailValues.put("body", "approver2FeedbackMailBody");
             mailValues.put("to", assetOrder.getApproverUser1().getEmail());
@@ -1415,7 +1421,7 @@ public class MiscService {
             mailValues.put("notification", new Notification(null, null, assetOrder.getRaisedUser(), Status.PUSHED, NotificationType.INFO));
             mailValues.put("recipient_name", assetOrder.getRaisedUser().getFirstName() + " " + assetOrder.getRaisedUser().getLastName());
             mailValues.put("feedback", assetOrder.getApproverUser2Comment());
-            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "Completed" : "Rejected");
+            mailValues.put("ord_status", assetOrder.getApprovedUser2() ? "completed" : "rejected");
             mailValues.put("subject", "approver2FeedbackMailSubject");
             mailValues.put("body", "approver2FeedbackMailBody");
             mailValues.put("to", assetOrder.getRaisedUser().getEmail());
@@ -1494,7 +1500,7 @@ public class MiscService {
         }
         String chats = "";
         for (ChatMessage chatMessage : chatMessages) {
-            chats +=  sender.getFullName() + " : " + chatMessage.getContent() + "\n\r";
+            chats += sender.getFullName() + " : " + chatMessage.getContent() + "\n\r";
         }
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put("recipientName", recipient.getFullName());

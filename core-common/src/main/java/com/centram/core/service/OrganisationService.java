@@ -151,6 +151,19 @@ public class OrganisationService {
     }
 
     /**
+     * @param centramKey
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Organisation getOrganisationByApiUserAndPassword(String centramKey, String centramPass) {
+        Organisation organisation = organisationRepository.getOrganisationByApiUserKeyAndUserPassword(centramKey, centramPass);
+        if (organisation != null) {
+            return this.prepareView(organisation);
+        }
+        return null;
+    }
+
+    /**
      * Upload Organisation image
      *
      * @param request

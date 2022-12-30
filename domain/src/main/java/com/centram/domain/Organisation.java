@@ -3,6 +3,7 @@ package com.centram.domain;
 import com.centram.common.view.Views;
 import com.centram.domain.converter.ContactPersonConverter;
 import com.centram.domain.converter.SettingConverter;
+import com.centram.domain.enumarator.CommunicationType;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -126,6 +127,37 @@ public class Organisation extends BaseEntity implements Serializable {
     @Column(name = "contact_Persons", nullable = false, columnDefinition = "TEXT not null")
     @Convert(converter = ContactPersonConverter.class)
     private List<ContactPerson> contactPersons;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "centram_key", nullable = true)
+    private String centramKey;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "centram_pass", nullable = true)
+    private String centramPass;
+
+    @ApiModelProperty(value = "")
+    @NotNull
+    @Valid
+    @Column(name = "communication_type", nullable = true)
+    @Enumerated(EnumType.ORDINAL)
+    private CommunicationType communicationType;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "thired_party_key", nullable = true)
+    private String thiredPartyKey;
+
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Valid
+    @Column(name = "thired_party_pass", nullable = true)
+    private String thiredPartyPass;
 
     public Organisation(@NotNull BigInteger id) {
         this.id = id;

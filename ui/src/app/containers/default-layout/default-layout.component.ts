@@ -108,6 +108,7 @@ export class DefaultLayoutComponent implements OnInit {
     this.currentYear = moment().format('YYYY');
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
+    //console.log(this.loggedInUser);
     this.roles = this.loggedInUser.roles;
     if (this.hasUserRole()) {
       this.userRoles.push("EMP");
@@ -214,7 +215,7 @@ export class DefaultLayoutComponent implements OnInit {
     this.parentModuleList.push({ id: 'ASSET', label: 'Asset' });
     this.parentModuleList.push({ id: 'INCIDENT', label: 'Incident' });
     this.permissions = this.loggedInUserService.getModulePermissions();
-    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    //this.loggedInUser = this.loggedInUserService.getLoggedInUser();
 
   }
 

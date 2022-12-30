@@ -47,7 +47,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
               <td>
                 Under Warranty: {{element.isUnderWarranty==true? 'YES' : 'NO'}}<br />
                 Warranty Expired Date: {{formatDateTime(element.warrantyExpiredAt)}}<br />
-                Vendor Name: {{element.vendor.name}}<br />
+                <div *ngIf="element.vendor.name!='Others'">
+                  Vendor Name: {{element.vendor.name}}<br />
+                </div>
                 Purchase Type: {{element.purchaseType}}<br />
                 <div *ngIf="element.purchaseType=='RENTED'">
                   Rental Start Date: {{formatDateTime(element.rentalStartAt)}}<br />
@@ -89,7 +91,8 @@ export class ViewAssetDetail implements OnInit {
   }
   formatDateTime(d: string) {
     if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+      //return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+      return moment.utc(d).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
   }

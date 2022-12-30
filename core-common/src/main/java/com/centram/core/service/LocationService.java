@@ -5,6 +5,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.LocationVO;
 import com.centram.core.repository.LocationRepository;
 import com.centram.domain.Location;
 import com.centram.domain.enumarator.Status;
@@ -31,6 +32,8 @@ public class LocationService {
     @Autowired
     private OrganisationService organisationService;
 
+    @Autowired
+    private ProxyService proxyService;
 
     /**
      * get location
@@ -79,6 +82,15 @@ public class LocationService {
     }
 
     /**
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<LocationVO> getLocations(BigInteger id) {
+        return locationRepository.getLocationByOrganisation(id);
+    }
+
+    /**
      * save location
      *
      * @param location
@@ -104,4 +116,49 @@ public class LocationService {
         locationRepository.updateStatus(status, userIds);
 
     }
+
+    private Location convert(Location location, LocationVO locationVO) {
+        location.setCity(locationVO.getCity());
+        location.setName(locationVO.getName());
+        location.setCountry(locationVO.getCountry());
+        location.setStatus(Status.valueOf(locationVO.getStatus()));
+        location.setState(locationVO.getState());
+        location.setTimezone(locationVO.getTimezone());
+        location.setOfficeName(locationVO.getOfficeName());
+        location.setId(locationVO.getId());
+        location.setOpsEndTime(locationVO.getOpsEndTime());
+        location.setOpsStartTime(locationVO.getOpsStartTime());
+        return location;
+    }
+
+    public void saveAll(List<LocationVO> locations, BigInteger id) {
+        Optional<Location> optLocation = Optional.empty();
+        Location loc = null;
+        if (locations.size() > 0) {
+            for (LocationVO location : locations) {
+                try {
+                    if (location.getId() != null) {
+                        optLocation = proxyService.getLocation(location.getId());
+                        if (optLocation.isPresent()) {
+                            loc = this.convert(optLocation.get(), location);
+                            loc = proxyService.saveLocation(loc);
+                        } else {
+                            loc = this.convert(new Location(), location);
+                            loc.setOrganisation(organisationService.getOrganisationById(id));
+                            loc = proxyService.saveLocation(loc);
+                        }
+                    } else {
+                        loc = this.convert(new Location(), location);
+                        loc.setOrganisation(organisationService.getOrganisationById(id));
+                        loc = proxyService.saveLocation(loc);
+                    }
+                } catch (Exception e) {
+                    //log.error(e.getStackTrace().toString());
+                    //throw e;
+                    continue;
+                }
+            }
+        }
+    }
+
 }

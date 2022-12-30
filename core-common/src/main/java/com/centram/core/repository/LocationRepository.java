@@ -1,6 +1,7 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.vo.LocationVO;
 import com.centram.domain.Location;
 import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,9 @@ public interface LocationRepository extends PagingAndSortingRepository<Location,
 
     @Query("select l from Location l where l.organisation.id = (:organisationId)")
     Page getLocationByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+
+    @Query("select new com.centram.common.vo.LocationVO(l) from Location l where l.organisation.id = (:organisationId)")
+    List<LocationVO> getLocationByOrganisation(@Param("organisationId") BigInteger organisationId);
 
     @Modifying
     @Query("update Location set status = (:status) where id in (:locationIds)")

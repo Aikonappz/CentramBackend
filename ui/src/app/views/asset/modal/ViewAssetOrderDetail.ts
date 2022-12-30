@@ -53,7 +53,9 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
                     <tr>
                         <td><strong>Vendor Details</strong></td>
                         <td>
-                            Name: {{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}<br />
+                            <div *ngIf="assetOrder.vendor.name!='Others'">
+                                Name: {{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}
+                            </div>
                             Purchase Type: {{assetOrder.purchaseType}}{{assetOrder.rentDuration != null? '/'+assetOrder.rentDuration : ''}}
                             <div *ngIf="assetOrder.existingAgreement==true&&assetOrder.agreementEndAt!=null">
                                 Existing Agreement: Yes/{{formatDateTime(assetOrder.agreementEndAt)}}<br />

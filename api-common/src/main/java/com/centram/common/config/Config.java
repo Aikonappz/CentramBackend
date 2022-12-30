@@ -1,6 +1,7 @@
 package com.centram.common.config;
 
 import com.centram.common.dto.LoggedInUser;
+import com.centram.common.dto.ThirdPartyLoggedInUser;
 import com.centram.common.filter.RestFilter;
 import com.centram.common.interceptor.MdcInterceptor;
 import com.centram.common.interceptor.RestEndPointInterceptor;
@@ -383,15 +384,21 @@ public class Config implements AsyncConfigurer {
     public class AuditorAwareImpl implements AuditorAware<BigInteger> {
         @Override
         public Optional<BigInteger> getCurrentAuditor() {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            Object user = SecurityContextHolder.getContext().getAuthentication();
+            if (user == null) {
                 //TODO : for batch need to handle later on
                 return null;
-            } else {
+            } else if (user != null && user instanceof ThirdPartyLoggedInUser) {
+                //TODO : for batch need to handle later on
+                return null;
+            } else if (user != null && user instanceof LoggedInUser) {
                 LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 if (loggedInUser == null) {
                     return null;
                 }
                 return Optional.of(loggedInUser.getUserId());
+            } else {
+                return null;
             }
         }
     }

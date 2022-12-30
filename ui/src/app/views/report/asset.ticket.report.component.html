@@ -53,8 +53,7 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label"
-                                            for="subModuleId">Asset
+                                        <label class="form-col-form-label" for="subModuleId">Asset
                                             Category</label>
                                         <ng-select [items]="subModuleList" #subModuleId (change)="populateUser($event)"
                                             placeholder="-- Select Asset Category --" formControlName="subModuleId"
@@ -151,10 +150,23 @@
                         <ng-container matColumnDef="assetDtl">
                             <th mat-header-cell *matHeaderCellDef> Asset Details </th>
                             <td mat-cell *matCellDef="let element">
-                                <div *ngIf="element.asset!=null">{{element.asset?.serialNo}}/{{element.asset?.modelNo}}
+                                <div
+                                    *ngIf="element.asset!=null&&element.ticketType=='ALLOCATE'&&element.allocated&&!element.deallocated">
+                                    <div>{{element.asset?.serialNo}}/{{element.asset?.modelNo}}</div>
+                                    <div>Allocated</div>
                                 </div>
-                                <div *ngIf="element.asset!=null">{{element.allocated&&!element.deallocated? 'Allocated'
-                                    : 'Deallocated'}}</div>
+
+                                <div
+                                    *ngIf="element.asset==null&&element.ticketType=='ALLOCATE'&&element.allocated&&element.deallocated">
+                                    <div>{{element.oldAsset}}</div>
+                                    <div>Deallocated</div>
+                                </div>
+
+                                <div
+                                    *ngIf="element.asset!=null&&element.ticketType=='DEALLOCATE'&&element.allocated&&element.deallocated">
+                                    <div>{{element.asset?.serialNo}}/{{element.asset?.modelNo}}</div>
+                                    <div>Deallocated</div>
+                                </div>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="slaAt">

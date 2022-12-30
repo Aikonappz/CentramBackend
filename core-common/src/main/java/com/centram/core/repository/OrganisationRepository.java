@@ -25,8 +25,8 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
     @Query("update Organisation set setting = (:setting), modifiedDate = (:modifiedDate) where id = (:organisationId)")
     Integer updateSetting(@Param("setting") Setting setting, @Param("modifiedDate") LocalDateTime modifiedDate, @Param("organisationId") BigInteger organisationId);
 
-    //@Query("select o from Organisation o where o.status = (:status)")
-    //Page<Organisation> findByStatus(@Param("status") Status status, Pageable pageable);
+    @Query("select o from Organisation o where o.centramKey = (:centramKey) and o.centramPass = (:centramPass)")
+    Organisation getOrganisationByApiUserKeyAndUserPassword(@Param("centramKey") String centramKey, @Param("centramPass") String centramPass);
 
     //@Query("select o from Organisation o where upper(o.name) like %:name%")
     //Page<Organisation> findByName(@Param("name") String name, Pageable pageable);

@@ -1,6 +1,7 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.vo.DepartmentVO;
 import com.centram.domain.Department;
 import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,9 @@ public interface DepartmentRepository extends PagingAndSortingRepository<Departm
 
     @Query("select d from Department d where d.organisation.id = (:organisationId)")
     Page<Department> getDepartmentByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+
+    @Query("select new com.centram.common.vo.DepartmentVO(d) from Department d where d.organisation.id = (:organisationId)")
+    List<DepartmentVO> getDepartmentByOrganisation(@Param("organisationId") BigInteger organisationId);
 
     @Modifying
     @Query("update Department set status = (:status) where id in (:departmentIds)")

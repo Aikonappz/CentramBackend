@@ -301,7 +301,7 @@ export const navItems: INavData[] = [
         name: 'Asset Assignment Report',
         url: '/report/asset-assignment-report',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
       },
     ]
   },

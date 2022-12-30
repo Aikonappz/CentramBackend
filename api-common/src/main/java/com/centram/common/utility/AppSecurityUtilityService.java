@@ -1,6 +1,7 @@
 package com.centram.common.utility;
 
 import com.centram.common.dto.LoggedInUser;
+import com.centram.common.dto.ThirdPartyLoggedInUser;
 import com.centram.common.vo.PermissionVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,13 @@ import java.util.List;
 public class AppSecurityUtilityService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppSecurityUtilityService.class);
+
+    public Boolean hasThirdPartyUserAccess(ThirdPartyLoggedInUser thirdPartyLoggedInUser) {
+        return (thirdPartyLoggedInUser.getAuthorities()
+                .stream()
+                .filter(a -> {return (a.getAuthority().equals("THIRD_PARTY_USER")); })
+                .count() > 0);
+    }
 
     /**
      * check user is app_admin

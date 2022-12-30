@@ -5,9 +5,9 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.DepartmentVO;
 import com.centram.core.repository.DepartmentRepository;
 import com.centram.domain.Department;
-import com.centram.domain.enumarator.ActivityType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,8 @@ public class DepartmentService {
     @Autowired
     private OrganisationService organisationService;
 
+    @Autowired
+    private ProxyService proxyService;
 
 
     /**
@@ -74,6 +76,11 @@ public class DepartmentService {
         return new PaginatedList<Department>(departmentRepository.getDepartmentByOrganisation(loggedInUser.getOrganisationId(), pageable));
     }
 
+    @Transactional(readOnly = true)
+    public List<DepartmentVO> getDepartments(BigInteger id) {
+        return departmentRepository.getDepartmentByOrganisation(id);
+    }
+
     /**
      * save department
      *
@@ -84,8 +91,43 @@ public class DepartmentService {
     public Department save(Department department) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         department.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-
         return departmentRepository.save(department);
+    }
+
+    private Department convert(Department department, DepartmentVO departmentVO) {
+        department.setName(departmentVO.getName());
+        department.setStatus(Status.valueOf(departmentVO.getStatus()));
+        return department;
+    }
+
+    public void saveAll(List<DepartmentVO> departments, BigInteger id) {
+        Optional<Department> optDepartment = Optional.empty();
+        Department dept = null;
+        if (departments.size() > 0) {
+            for (DepartmentVO department : departments) {
+                try {
+                    if (department.getId() != null) {
+                        optDepartment = proxyService.getDepartment(department.getId());
+                        if (optDepartment.isPresent()) {
+                            dept = this.convert(optDepartment.get(), department);
+                            dept = proxyService.saveDepartment(dept);
+                        } else {
+                            dept = this.convert(new Department(), department);
+                            dept.setOrganisation(organisationService.getOrganisationById(id));
+                            dept = proxyService.saveDepartment(dept);
+                        }
+                    } else {
+                        dept = this.convert(new Department(), department);
+                        dept.setOrganisation(organisationService.getOrganisationById(id));
+                        dept = proxyService.saveDepartment(dept);
+                    }
+                } catch (Exception e) {
+                    //log.error(e.getStackTrace().toString());
+                    //throw e;
+                    continue;
+                }
+            }
+        }
     }
 
     /**

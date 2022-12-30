@@ -53,7 +53,10 @@
               </tr>
               <tr>
                 <td><strong>Vendor Name</strong></td>
-                <td>{{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}<br />
+                <td>
+                  <div *ngIf="assetOrder.vendor.name!='Others'">
+                    {{assetOrder.vendor == null? 'Others' : assetOrder.vendor.name}}
+                  </div>
                   <div *ngIf="assetOrder.otherDetails!=null">
                     Other Details: {{assetOrder.otherDetails}}
                   </div>

@@ -20,7 +20,7 @@ import { UserService } from '../../service/UserService';
   styleUrls: ['./asset.asignment.report.component.scss']
 })
 export class AssetAssignmentReportComponent implements OnInit {
-  moduleName: string = "ASSET ASIGNENT REPORT";
+  moduleName: string = "ASSET ASSIGNMENT REPORT";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['user', 'assetDtl', 'validity', 'allocation', 'deallocation', 'status',];
   datasource: AssetIncidentReportDataSource;

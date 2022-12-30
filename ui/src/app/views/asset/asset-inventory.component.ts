@@ -135,7 +135,8 @@ export class AssetInventoryComponent implements OnInit {
   }
   formatDateTime(d: string) {
     if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+      //return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
+      return moment.utc(d).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
   }

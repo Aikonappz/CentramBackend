@@ -576,8 +576,8 @@ export class AddAssetComponent implements OnInit {
       this.asset.isUnderWarranty = this.angForm.controls['isUnderWarranty'].value == 1 ? true : false;
       this.asset.purchaseType = PurchaseType[this.angForm.controls['purchaseType'].value];
       this.asset.warrantyExpiredAt = AppUtility.prepareDateToString(moment(this.angForm.controls['warrantyExpiredAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      this.asset.rentalStartAt = this.asset.purchaseType == 0 ? AppUtility.prepareDateToString(moment(this.angForm.controls['warrantyExpiredAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()) : null;
-      this.asset.rentalEndAt = this.asset.purchaseType == 0 ? AppUtility.prepareDateToString(moment(this.angForm.controls['warrantyExpiredAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()) : null;
+      this.asset.rentalStartAt = this.asset.purchaseType == 0 ? AppUtility.prepareDateToString(moment(this.angForm.controls['rentalStartAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()) : null;
+      this.asset.rentalEndAt = this.asset.purchaseType == 0 ? AppUtility.prepareDateToString(moment(this.angForm.controls['rentalEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()) : null;
       for (let k in this.vendorList) {
         if (this.angForm.controls['vendor'].value == this.vendorList[k].id) {
           this.asset.vendor = { id: this.vendorList[k].id, name: this.vendorList[k].name, version: this.vendorList[k].version };
@@ -736,7 +736,7 @@ export class AddAssetComponent implements OnInit {
   @ViewChild("orderRequestedUser") orderRequestedUser;
   requesterUserPopulate(orderRequestedUser) {
     if (typeof orderRequestedUser !== 'undefined') {
-      for (let i in this.approver1List) {
+      for (let i in this.requesterList) {
         if (orderRequestedUser.id == this.requesterList[i].id) {
           this.angForm.controls['orderRequestedName'].setValue(this.requesterList[i].fullName);
           this.angForm.controls['orderRequestedEmail'].setValue(this.requesterList[i].email);

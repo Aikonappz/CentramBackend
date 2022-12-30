@@ -162,6 +162,17 @@ export class AssetOrderComponent implements OnInit {
     return new Date().toISOString().split('T')[0]
   }
 
+  getSelectedLabel(id: number) {
+    if (id != null) {
+      for (let indx = 0; indx < this.vendorList.length; indx++) {
+        if (this.vendorList[indx].id == id) {
+          return this.vendorList[indx].name;
+        }
+      }
+    }
+    return null;
+  }
+
   customValidations() {
     return (formGroup: FormGroup) => {
       if (formGroup.controls['productCategory'].value == 158) {
@@ -189,7 +200,9 @@ export class AssetOrderComponent implements OnInit {
           formGroup.controls['existingAgreement'].setErrors(null);
         }
       }
-      if (formGroup.controls['vendor'].value > 0) {
+      //console.log(formGroup.controls['vendor']);
+      let selectedVendor = this.getSelectedLabel(formGroup.controls['vendor'].value);
+      if (selectedVendor != null && selectedVendor != 'Others') {
         $('.proxy-agreement-end-date-col').addClass("d-none");
         $('.agreement-end-date').removeClass("d-none");
         if (formGroup.controls['agreementEndAt'].value != null) {
@@ -362,8 +375,9 @@ export class AssetOrderComponent implements OnInit {
         .subscribe((data: any) => {
           let vendors = data.content;
           this.vendorList = [];
-          this.vendorList.push({ id: 0, name: "Others" });
-          let c = 1;
+          //this.vendorList.push({ id: 0, name: "Others" });
+          //let c = 1;
+          let c = 0;
           for (let indx = 0; indx < vendors.length; indx++) {
             if (String(vendors[indx].status) == 'ACTIVE') {
               this.vendorList[c++] = vendors[indx];
@@ -464,7 +478,8 @@ export class AssetOrderComponent implements OnInit {
       }
       this.assetOrder.purchaseType = PurchaseType[this.angForm.controls['purchaseType'].value];
       this.assetOrder.existingAgreement = this.angForm.controls['existingAgreement'].value == 1 ? true : false;
-      if (this.angForm.controls['vendor'].value > 0) {
+      let selectedVendor = this.getSelectedLabel(this.angForm.controls['vendor'].value);
+      if (selectedVendor != null && selectedVendor != 'Others') {
         if (!this.assetOrder.existingAgreement) {
           return;
         } else {

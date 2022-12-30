@@ -173,13 +173,16 @@ public class AssetService {
                     asset.setSerialNo(assetNo(prefix));
                 }
             }
-            ZonedDateTime warrantyDateTime = ZonedDateTime.of(asset.getWarrantyExpiredAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
-            asset.setWarrantyExpiredAt(warrantyDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+            //ZonedDateTime warrantyDateTime = ZonedDateTime.of(asset.getWarrantyExpiredAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
+            //asset.setWarrantyExpiredAt(warrantyDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+            asset.setWarrantyExpiredAt(asset.getWarrantyExpiredAt().plusHours(23).plusMinutes(59).plusSeconds(59));
             if (asset.getPurchaseType() == PurchaseType.RENTED) {
-                ZonedDateTime rentalDateTime = ZonedDateTime.of(asset.getRentalStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
+                /*ZonedDateTime rentalDateTime = ZonedDateTime.of(asset.getRentalStartAt(), ZoneId.of(loggedInUser.getTimeZone()));
                 asset.setRentalStartAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
                 rentalDateTime = ZonedDateTime.of(asset.getRentalEndAt().plusHours(23).plusMinutes(59).plusSeconds(59), ZoneId.of(loggedInUser.getTimeZone()));
-                asset.setRentalEndAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
+                asset.setRentalEndAt(rentalDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());*/
+                asset.setRentalStartAt(asset.getRentalStartAt().toLocalDate().atStartOfDay());
+                asset.setRentalEndAt(asset.getRentalEndAt().plusHours(23).plusMinutes(59).plusSeconds(59));
             }
             return proxyService.saveAsset(asset);
         } catch (DataIntegrityViolationException e) {

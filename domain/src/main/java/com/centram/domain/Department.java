@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.common.vo.DepartmentVO;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;

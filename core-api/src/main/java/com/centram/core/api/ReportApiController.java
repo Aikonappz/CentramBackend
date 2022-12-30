@@ -357,7 +357,7 @@ public class ReportApiController {
     })
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/asset", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET TICKET REPORT,ASSET ASIGNMENT REPORT','READ,READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET TICKET REPORT,ASSET ASSIGNMENT REPORT','READ,READ',authentication.principal)")
     public ResponseEntity<PaginatedList<Incident>> assetTicketReport(
             @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Asset Assigned", defaultValue = "-1", required = false) @RequestParam(value = "assigned", defaultValue = "-1", required = false) Integer assigned,
@@ -421,7 +421,7 @@ public class ReportApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/asset/assignment/download", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASIGNMENT REPORT','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASSIGNMENT REPORT','READ',authentication.principal)")
     public ResponseEntity<Resource> assetAssignmentReportDownload(
             @ApiParam(value = "Incident Type", defaultValue = "INCIDENT", required = false) @RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType,
             @ApiParam(value = "Asset Assigned", defaultValue = "-1", required = false) @RequestParam(value = "assigned", defaultValue = "-1", required = false) Integer assigned,
