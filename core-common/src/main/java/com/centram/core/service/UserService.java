@@ -103,6 +103,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserAuthService userAuthService;
 
+    @Autowired
+    private ProxyService proxyService;
+
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
@@ -313,6 +316,52 @@ public class UserService implements UserDetailsService {
         return new PaginatedList<UserVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), userVOS);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserVO> getUsers(BigInteger id) {
+        Page<User> page = userRepository.getUsers(id, null, null, Status.ALL.ordinal(), null, null, Pageable.unpaged());
+        List<UserVO> userVOS = new ArrayList<UserVO>();
+        UserVO userVO = null;
+        List<String> roleNames = null;
+        List<String> roleViewNames = null;
+        List<Permission> permissions = null;
+        List<Module> modules = null;
+        List<Module> subModules = null;
+        for (User user : page.getContent()) {
+            userVO = new UserVO(user);
+            roleNames = new ArrayList<>();
+            roleViewNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+                roleViewNames.add(roleService.getById(roleId).getDisplayName());
+            }
+            userVO.setRoleNames(roleNames);
+            userVO.setRoleViewNames(roleViewNames);
+            // prepare category & subcategory access list
+            permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
+            modules = permissions.stream()
+                    .filter(i -> {
+                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() == null;
+                    })
+                    .map(Permission::getModule)
+                    .collect(Collectors.toList());
+            subModules = permissions.stream()
+                    .filter(i -> {
+                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() != null;
+                    })
+                    .map(Permission::getModule)
+                    .collect(Collectors.toList());
+            userVO.setCategories(modules.stream().map(Module::getCustomerModuleName).map(i -> {
+                return WordUtils.capitalizeFully(i);
+            }).collect(Collectors.toSet()));
+            userVO.setSubCategories(subModules.stream().map(Module::getCustomerModuleName).map(i -> {
+                return WordUtils.capitalizeFully(i);
+            }).collect(Collectors.toSet()));
+            userVOS.add(userVO);
+        }
+        return userVOS;
+    }
+
+
     /**
      * Create or update user
      *
@@ -447,7 +496,7 @@ public class UserService implements UserDetailsService {
                         uv.getLocation(),
                         uv.getDepartment(),
                         uv.getVendor(),
-                        uv.getStatus().toString()
+                        uv.getStatus()
                 );
                 csvPrinter.printRecord(data);
             }
@@ -780,4 +829,64 @@ public class UserService implements UserDetailsService {
         return userVO;
     }
      */
+
+    private User convert(User user, UserVO userVO) {
+        UserVO manager = null;
+        if (userVO.getManagerId() != null) {
+            manager = this.getUserById(userVO.getManagerId());
+        } else if (userVO.getMngrId() != null) {
+            User mngr = this.getUserByEmployeeId(userVO.getMngrId());
+            if (mngr != null) {
+                manager = new UserVO(mngr);
+            }
+        }
+        List<Role> roles = roleService.getByNames(userVO.getRoleNames());
+        user.setId(userVO.getId());
+        user.setFirstName(userVO.getFirstName());
+        user.setLastName(userVO.getLastName());
+        user.setEmail(userVO.getEmail());
+        if (userVO.getPassword() != null)
+            user.setPassword(passwordEncoder.encode(userVO.getPassword()));
+        user.setEmployeeId(userVO.getEmployeeId());
+        user.setManagerId(manager.getId());
+        user.setContactNo(userVO.getContactNo());
+        user.setSecContactNo(userVO.getSecContactNo());
+        user.setProjectCode(userVO.getProjectCode());
+        user.setStatus(Status.valueOf(userVO.getStatus()));
+        user.setDepartment(departmentService.getById(userVO.getDepartmentId()));
+        user.setLocation(locationService.getById(userVO.getLocationId()));
+        user.setRoles(roles.stream().map(Role::getId).collect(Collectors.toList()));
+        return user;
+    }
+
+    public void saveAll(List<UserVO> users, BigInteger id) {
+        Optional<User> optDepartment = Optional.empty();
+        User user = null;
+        if (users.size() > 0) {
+            for (UserVO userVO : users) {
+                try {
+                    if (userVO.getId() != null) {
+                        optDepartment = proxyService.getUser(userVO.getId());
+                        if (optDepartment.isPresent()) {
+                            user = this.convert(optDepartment.get(), userVO);
+                            user = proxyService.saveUser(user);
+                        } else {
+                            user = this.convert(new User(), userVO);
+                            user.setOrganisation(organisationService.getOrganisationById(id));
+                            user = proxyService.saveUser(user);
+                        }
+                    } else {
+                        user = this.convert(new User(), userVO);
+                        user.setOrganisation(organisationService.getOrganisationById(id));
+                        user = proxyService.saveUser(user);
+                    }
+                } catch (Exception e) {
+                    //log.error(e.getStackTrace().toString());
+                    //throw e;
+                    continue;
+                }
+            }
+        }
+    }
+
 }

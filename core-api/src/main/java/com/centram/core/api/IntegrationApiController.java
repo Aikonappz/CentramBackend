@@ -3,11 +3,15 @@ package com.centram.core.api;
 
 import com.centram.common.dto.ThirdPartyLoggedInUser;
 import com.centram.common.utility.AppSecurityUtilityService;
+import com.centram.common.view.Views;
 import com.centram.common.vo.DepartmentVO;
 import com.centram.common.vo.LocationVO;
+import com.centram.common.vo.UserVO;
 import com.centram.core.service.AssetService;
 import com.centram.core.service.DepartmentService;
 import com.centram.core.service.LocationService;
+import com.centram.core.service.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,9 @@ public class IntegrationApiController {
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(value = "/location", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("@appSecurityUtilityService.hasThirdPartyUserAccess(authentication)")
     public ResponseEntity<List<LocationVO>> getLocation() {
@@ -72,4 +79,19 @@ public class IntegrationApiController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/user", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@appSecurityUtilityService.hasThirdPartyUserAccess(authentication)")
+    @JsonView(Views.ThirdPartyView.class)
+    public ResponseEntity<List<UserVO>> getUser() {
+        ThirdPartyLoggedInUser thirdPartyLoggedInUser = (ThirdPartyLoggedInUser) SecurityContextHolder.getContext().getAuthentication();
+        return new ResponseEntity<List<UserVO>>(userService.getUsers(thirdPartyLoggedInUser.getId()), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@appSecurityUtilityService.hasThirdPartyUserAccess(authentication)")
+    public ResponseEntity saveUser(@Valid @RequestBody List<UserVO> body) {
+        ThirdPartyLoggedInUser thirdPartyLoggedInUser = (ThirdPartyLoggedInUser) SecurityContextHolder.getContext().getAuthentication();
+        userService.saveAll(body, thirdPartyLoggedInUser.getId());
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

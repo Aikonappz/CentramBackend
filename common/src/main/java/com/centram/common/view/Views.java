@@ -12,4 +12,7 @@ public class Views {
 
     public static class InternalView extends DetailView {
     }
+
+    public static class ThirdPartyView {
+    }
 }

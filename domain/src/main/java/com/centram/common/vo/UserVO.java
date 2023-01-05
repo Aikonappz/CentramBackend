@@ -1,10 +1,13 @@
 package com.centram.common.vo;
 
 
+import com.centram.common.view.Views;
 import com.centram.domain.BaseEntity;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +16,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,32 +24,50 @@ import java.util.Set;
 @EqualsAndHashCode
 public class UserVO extends BaseEntity implements Serializable, Comparable<UserVO> {
     private static final long serialVersionUID = 9194601811170425900L;
+    @JsonView(Views.ThirdPartyView.class)
     private BigInteger id;
+    @JsonView(Views.ThirdPartyView.class)
     private String firstName;
+    @JsonView(Views.ThirdPartyView.class)
     private String lastName;
     private String fullName;
+    @JsonView(Views.ThirdPartyView.class)
     private String email;
     private String password;
+    @JsonView(Views.ThirdPartyView.class)
     private String contactNo;
+    @JsonView(Views.ThirdPartyView.class)
     private String secContactNo;
+    @JsonView(Views.ThirdPartyView.class)
     private String employeeId;
+    @JsonView(Views.ThirdPartyView.class)
     private String timeZone;
+    @JsonView(Views.ThirdPartyView.class)
+    private String mngrId;
+    @JsonView(Views.ThirdPartyView.class)
     private BigInteger managerId;
+    @JsonView(Views.ThirdPartyView.class)
     private String projectCode;
     private List<BigInteger> roles;
+    @JsonView(Views.ThirdPartyView.class)
     private List<String> roleNames;
     private List<String> roleViewNames;
     private Set<String> categories;
     private Set<String> subCategories;
-    private Status status;
+    @JsonView(Views.ThirdPartyView.class)
+    private String status;
     private BigInteger organisationId;
     private String organisation;
+    @JsonView(Views.ThirdPartyView.class)
     private BigInteger locationId;
+    @JsonView(Views.ThirdPartyView.class)
     private String location;
     private String locationOfficeName;
+    @JsonView(Views.ThirdPartyView.class)
     private BigInteger departmentId;
     private BigInteger vendorId;
     private String vendor;
+    @JsonView(Views.ThirdPartyView.class)
     private String department;
     private LicenseType licenseType;
 
@@ -66,7 +88,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.departmentId = (user.getDepartment() != null) ? user.getDepartment().getId() : null;
         this.roles = user.getRoles();
         this.organisationId = (user.getOrganisation() != null) ? user.getOrganisation().getId() : null;
-        this.status = user.getStatus();
+        this.status = user.getStatus().toString();
         this.location = (user.getLocation() != null) ? user.getLocation().getName() : null;
         this.locationOfficeName = (user.getLocation() != null) ? user.getLocation().getOfficeName() : null;
         this.organisation = (user.getOrganisation() != null) ? user.getOrganisation().getName() : null;

@@ -44,7 +44,6 @@ public class LocationService {
     @Transactional(readOnly = true)
     //@Cacheable(value = "locations", key = "#locationId")
     public Location getById(BigInteger locationId) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Location> location = locationRepository.findById(locationId);
         if (!location.isPresent()) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);

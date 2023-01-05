@@ -45,7 +45,6 @@ public class DepartmentService {
     @Transactional(readOnly = true)
     //@Cacheable(value = "departments", key = "#departmentId")
     public Department getById(BigInteger departmentId) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Department> department = departmentRepository.findById(departmentId);
         if (!department.isPresent()) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);

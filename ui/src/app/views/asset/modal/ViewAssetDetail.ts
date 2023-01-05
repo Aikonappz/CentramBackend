@@ -46,7 +46,7 @@ import { LoggedInUserService } from "../../../service/LoggedInUserService";
               <td><strong>Purchase Details</strong></td>
               <td>
                 Under Warranty: {{element.isUnderWarranty==true? 'YES' : 'NO'}}<br />
-                Warranty Expired Date: {{formatDateTime(element.warrantyExpiredAt)}}<br />
+                Warranty Expiry Date: {{formatDateTime(element.warrantyExpiredAt)}}<br />
                 <div *ngIf="element.vendor.name!='Others'">
                   Vendor Name: {{element.vendor.name}}<br />
                 </div>

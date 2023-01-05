@@ -32,6 +32,9 @@ public class ProxyService {
     @Autowired
     private HolidayCalenderRepository holidayCalenderRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Transactional(readOnly = false)
     public Asset saveAsset(Asset asset) {
         return assetRepository.save(asset);
@@ -65,5 +68,15 @@ public class ProxyService {
     @Transactional(readOnly = true)
     public Optional<Location> getLocation(BigInteger id) {
         return locationRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> getUser(BigInteger id) {
+        return userRepository.findById(id);
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 }
