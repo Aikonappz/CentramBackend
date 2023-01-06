@@ -14,11 +14,11 @@
                                 <ul *dropdownMenu class="dropdown-menu" role="menu">
                                     <li role="menuitem">
                                         <a *ngIf="hasPermission('WRITE')&&!roles.includes('APP_ADMIN')"
-                                            class="dropdown-item" href="assets/downloads/users.csv"><i
+                                            class="dropdown-item" href="assets/downloads/users.xls"><i
                                                 class="icon-arrow-up-circle"></i>
                                             Upload(Template)</a>
                                         <a *ngIf="hasPermission('WRITE')&&roles.includes('APP_ADMIN')"
-                                            class="dropdown-item" href="assets/downloads/admin/users.csv"><i
+                                            class="dropdown-item" href="assets/downloads/admin/users.xls"><i
                                                 class="icon-arrow-up-circle"></i>
                                             Upload(Template)</a>
                                     </li>
