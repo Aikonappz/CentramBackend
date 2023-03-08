@@ -86,6 +86,7 @@ public class LocationService {
      */
     @Transactional(readOnly = true)
     public List<LocationVO> getLocations(BigInteger id) {
+        log.info("Puling location data for {}.",id);
         return locationRepository.getLocationByOrganisation(id);
     }
 
@@ -131,6 +132,7 @@ public class LocationService {
     }
 
     public void saveAll(List<LocationVO> locations, BigInteger id) {
+        log.info("Saving location data for {}.",id);
         Optional<Location> optLocation = Optional.empty();
         Location loc = null;
         if (locations.size() > 0) {
@@ -140,15 +142,18 @@ public class LocationService {
                         optLocation = proxyService.getLocation(location.getId());
                         if (optLocation.isPresent()) {
                             loc = this.convert(optLocation.get(), location);
+                            log.info("Saving location data {}.",loc);
                             loc = proxyService.saveLocation(loc);
                         } else {
                             loc = this.convert(new Location(), location);
                             loc.setOrganisation(organisationService.getOrganisationById(id));
+                            log.info("Saving location data {}.",loc);
                             loc = proxyService.saveLocation(loc);
                         }
                     } else {
                         loc = this.convert(new Location(), location);
                         loc.setOrganisation(organisationService.getOrganisationById(id));
+                        log.info("Saving location data {}.",loc);
                         loc = proxyService.saveLocation(loc);
                     }
                 } catch (Exception e) {

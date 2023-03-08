@@ -77,6 +77,7 @@ public class DepartmentService {
 
     @Transactional(readOnly = true)
     public List<DepartmentVO> getDepartments(BigInteger id) {
+        log.info("Puling department data for {}.",id);
         return departmentRepository.getDepartmentByOrganisation(id);
     }
 
@@ -100,6 +101,7 @@ public class DepartmentService {
     }
 
     public void saveAll(List<DepartmentVO> departments, BigInteger id) {
+        log.info("Saving department data for {}.",id);
         Optional<Department> optDepartment = Optional.empty();
         Department dept = null;
         if (departments.size() > 0) {
@@ -109,15 +111,18 @@ public class DepartmentService {
                         optDepartment = proxyService.getDepartment(department.getId());
                         if (optDepartment.isPresent()) {
                             dept = this.convert(optDepartment.get(), department);
+                            log.info("Saving department data {}.",dept);
                             dept = proxyService.saveDepartment(dept);
                         } else {
                             dept = this.convert(new Department(), department);
                             dept.setOrganisation(organisationService.getOrganisationById(id));
+                            log.info("Saving department data {}.",dept);
                             dept = proxyService.saveDepartment(dept);
                         }
                     } else {
                         dept = this.convert(new Department(), department);
                         dept.setOrganisation(organisationService.getOrganisationById(id));
+                        log.info("Saving department data {}.",dept);
                         dept = proxyService.saveDepartment(dept);
                     }
                 } catch (Exception e) {

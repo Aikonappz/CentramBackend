@@ -318,6 +318,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public List<UserVO> getUsers(BigInteger id) {
+        log.info("Pulling user data for {}.", id);
         Page<User> page = userRepository.getUsers(id, null, null, Status.ALL.ordinal(), null, null, Pageable.unpaged());
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
@@ -860,6 +861,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveAll(List<UserVO> users, BigInteger id) {
+        log.info("Pulling user data for {}.", id);
         Optional<User> optDepartment = Optional.empty();
         User user = null;
         if (users.size() > 0) {
@@ -869,15 +871,18 @@ public class UserService implements UserDetailsService {
                         optDepartment = proxyService.getUser(userVO.getId());
                         if (optDepartment.isPresent()) {
                             user = this.convert(optDepartment.get(), userVO);
+                            log.info("Saving user data {}.", user);
                             user = proxyService.saveUser(user);
                         } else {
                             user = this.convert(new User(), userVO);
                             user.setOrganisation(organisationService.getOrganisationById(id));
+                            log.info("Saving user data {}.", user);
                             user = proxyService.saveUser(user);
                         }
                     } else {
                         user = this.convert(new User(), userVO);
                         user.setOrganisation(organisationService.getOrganisationById(id));
+                        log.info("Saving user data {}.", user);
                         user = proxyService.saveUser(user);
                     }
                 } catch (Exception e) {

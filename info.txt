@@ -46,3 +46,5 @@ sudo nohup java -Dspring.config.location=/home/ec2-user/application-stag.propert
 sudo systemctl stop nginx.service
 sudo systemctl status nginx.service
 sudo systemctl start nginx.service
+
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/source.sh /Documents/besu/hyperledger-besu/local-besu/truffle
