@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://salesdemo.successfactors.eu/sf/idp/SAML2/company/SFPART067044">
+    <IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIICDTCCAXagAwIBAgIETJj9LjANBgkqhkiG9w0BAQUFADBLMQswCQYDVQQGEwJVUzEbMBkGA1UE
+                        ChMSU3VjY2Vzc2ZhY3RvcnMuY29tMQwwCgYDVQQLEwNPcHMxETAPBgNVBAMTCFNGIEFkbWluMB4X
+                        DTEwMDkyMTE4NDUwMloXDTI1MDkxOTE4NDUwMlowSzELMAkGA1UEBhMCVVMxGzAZBgNVBAoTElN1
+                        Y2Nlc3NmYWN0b3JzLmNvbTEMMAoGA1UECxMDT3BzMREwDwYDVQQDEwhTRiBBZG1pbjCBnzANBgkq
+                        hkiG9w0BAQEFAAOBjQAwgYkCgYEArA9RLNnL9Pt6xynFfYfa8VXAXFDG9Y8xkgs3lhIOlsjqEYwb
+                        SoghiqJIJvfYM45kx3aB7ZrN96tAR5uUupEsu/GcS6ACxhfruW+BY6uw8v6/w2vXhBdfFjBoO+Ke
+                        Lx4k3llleVgKsmNlf81okOXv1ree8wErfZ3ssnNxkuQgGB0CAwEAATANBgkqhkiG9w0BAQUFAAOB
+                        gQBeBCSMFnY8TB6jtWoSP/lorBudhptgvO7/3r+l/QK0hdk6CVv+VQmSilNPgWVgU9ktZGbNkZhw
+                        IgwnqIQHAi6631ufkYQJB+48YUe1q/pv6EWaeIwGvcGYSXZp/E/aGZPtceTIXFPfqOyHQoFtb0nq
+                        MMFWoDhpXUHmlroyTc9sJg==
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://salesdemo.successfactors.eu/sf/idp/SAML2/SSO/POST/company/SFPART067044"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://salesdemo.successfactors.eu/sf/idp/SAML2/SSO/Redirect/company/SFPART067044"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://salesdemo.successfactors.eu/sf/idp/SAML2/slo/POST"/>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</NameIDFormat>
+    </IDPSSODescriptor>
+</EntityDescriptor>

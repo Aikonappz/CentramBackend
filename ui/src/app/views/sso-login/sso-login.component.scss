@@ -1,0 +1,17 @@
+/* 
+is there a better way than the absolute positioning and negative margin to center the div .content: div with background color a width and a hight?: 
+*/ 
+
+
+.content {
+    width: 200px;
+    height: auto;
+    text-align: center !important;
+    border: 3px dotted gray;
+    padding: 10px;
+    position:absolute;
+    top:50%;
+    left:50%;
+    margin-left:-100px;/* half width*/
+    margin-top:-300px;/* half height*/
+}

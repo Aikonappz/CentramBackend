@@ -1,0 +1,6 @@
+<div *ngIf="!hasError" class="background">
+  <div class="content">Authenicating...</div>
+</div>
+<div *ngIf="hasError" class="background">
+  <div class="content">SSO Auth Failed! Redirecting...</div>
+</div>

@@ -4,6 +4,7 @@ package com.centram.core.api;
 import com.centram.common.dto.AuthRequestDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.UserDTO;
+import com.centram.common.service.JasyptService;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.JwtTokenUtil;
 import com.centram.common.utility.PaginatedList;
@@ -62,6 +63,9 @@ public class UserApiController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JasyptService jasyptService;
+
     /**
      * user signin
      *
@@ -78,6 +82,36 @@ public class UserApiController {
         try {
             LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), Utility.decode(body.getPassword()))).getPrincipal();
             loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
+            LoggedInUserVO loggedInUserVO = new LoggedInUserVO(loggedInUser);
+            return ResponseEntity.ok().headers(new HttpHeaders() {{
+                set("Authorization", loggedInUser.getAuthToken());
+            }}).body(loggedInUserVO);
+        } catch (DisabledException e) {
+            throw new DisabledException("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("INVALID_CREDENTIALS", e);
+        }
+    }
+
+    /**
+     * user SSO signin
+     *
+     * @param body
+     * @return
+     */
+    @ApiOperation(value = "SSO SignIn Api", nickname = "SSOSignIn", notes = "SSO SignIn user", tags = {"User",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/sso-sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    public ResponseEntity<LoggedInUserVO> SSOlogin(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
+        try {
+            String email = jasyptService.decrypt(body.getUsername());
+            log.info("SSO principal => {} ", email);
+            //LoggedInUser loggedInUser = userService.getUserByPrincipal("centramsuperadm@gmail.com");
+            LoggedInUser loggedInUser = userService.getUserByPrincipal(email);
+            loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, true));
             LoggedInUserVO loggedInUserVO = new LoggedInUserVO(loggedInUser);
             return ResponseEntity.ok().headers(new HttpHeaders() {{
                 set("Authorization", loggedInUser.getAuthToken());

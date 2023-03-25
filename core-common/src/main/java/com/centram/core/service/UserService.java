@@ -160,6 +160,53 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     *
+     * @param email
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public LoggedInUser getUserByPrincipal(String email){
+        User user = userRepository.getUserByEmail(email);
+        if (user != null) {
+            if (user.getStatus() != Status.ACTIVE) {
+                throw new RuntimeException(GenericErrorCode.PROFILE_INACTIVE.getCode());
+            }
+            if (user.getOrganisation() != null && user.getOrganisation().getStatus() != Status.ACTIVE) {
+                throw new RuntimeException(GenericErrorCode.PROFILE_INACTIVE.getCode());
+            }
+            UserVO userVO = new UserVO(user);
+            userVO.setRoleNames(roleService.getByIds(userVO.getRoles()));
+            List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
+            List<PermissionVO> modulePermissions = new ArrayList<PermissionVO>();
+            for (Permission permission : permissions) {
+                Boolean alreadyExist = modulePermissions.stream()
+                        .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
+                        .findFirst().isPresent();
+                if (alreadyExist) {
+                    modulePermissions.stream()
+                            .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
+                            .findFirst()
+                            .ifPresent(i -> {
+                                String actionNames = i.getActionName().concat(",").concat(permission.getAction().getName());
+                                actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
+                                i.setActionName(actionNames);
+                            });
+                } else {
+                    modulePermissions.add(new PermissionVO(permission));
+                }
+            }
+            LoggedInUser loggedInUser = new LoggedInUser(userVO, modulePermissions);
+            UserAuth userAuth = userAuthService.save(new UserAuth(userVO.getId(), LocalDateTime.now(), null));
+            loggedInUser.setUserAuthId(userAuth.getId());
+            //save data in redis
+            redisTemplate.opsForValue().set(email, loggedInUser);
+            return loggedInUser;
+        } else {
+            throw new UsernameNotFoundException("User not found with username: " + email);
+        }
+    }
+
+    /**
      * Sign Out
      *
      * @return

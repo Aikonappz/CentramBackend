@@ -69,6 +69,7 @@ import { ChatComponent } from './views/chat/chat.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { LandingComponent } from './views/landing/landing.component';
 import { CommonAlert } from './containers/default-layout/modal/CommonAlert';
+import { SSOLoginComponent } from './views/sso-login/sso-login.component';
 
 @NgModule({
   imports: [
@@ -106,6 +107,7 @@ import { CommonAlert } from './containers/default-layout/modal/CommonAlert';
     P500Component,
     RegisterComponent,
     LandingComponent,
+    SSOLoginComponent,
     LoginComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,

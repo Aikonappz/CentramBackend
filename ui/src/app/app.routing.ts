@@ -14,6 +14,7 @@ import { CheckLoggedIn } from './service/CheckLoggedIn';
 import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { environment } from '../environments/environment';
 import { LandingComponent } from './views/landing/landing.component';
+import { SSOLoginComponent } from './views/sso-login/sso-login.component';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,14 @@ export const routes: Routes = [
     resolve: { myData: CheckLoggedInOuter },
     data: {
       title: environment.appName + ' - ' + 'Sign In'
+    }
+  },
+  {
+    path: 'sso/sign-in/:principal',
+    component: SSOLoginComponent,
+    resolve: { myData: CheckLoggedInOuter },
+    data: {
+      title: environment.appName + ' - ' + 'SSO Sign In'
     }
   },
   {
