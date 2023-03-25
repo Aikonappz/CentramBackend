@@ -160,12 +160,11 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     *
      * @param email
      * @return
      */
     @Transactional(readOnly = true)
-    public LoggedInUser getUserByPrincipal(String email){
+    public LoggedInUser getUserByPrincipal(String email) {
         User user = userRepository.getUserByEmail(email);
         if (user != null) {
             if (user.getStatus() != Status.ACTIVE) {
@@ -221,6 +220,7 @@ public class UserService implements UserDetailsService {
             userAuth.setSignOutAt(LocalDateTime.now());
             userAuthService.save(userAuth);
             commonResponse = new CommonResponse(Boolean.TRUE, "LOGGED_OUT_SUCCESS");
+            SecurityContextHolder.clearContext();
         } else {
             commonResponse = new CommonResponse(Boolean.FALSE, "LOGGED_OUT_FAILED");
         }

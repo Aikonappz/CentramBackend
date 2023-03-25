@@ -18,6 +18,9 @@ export class UserService {
     signInService(authRequest: AuthRequest): Observable<any> {
         return this.http.post('/v1/user/sign-in', authRequest);
     }
+    ssoSignInService(authRequest: AuthRequest): Observable<any> {
+        return this.http.post('/v1/user/sso-sign-in', authRequest);
+    }
     signOutService(): Observable<any> {
         return this.http.get('/v1/user/sign-out');
     }

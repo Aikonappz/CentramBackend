@@ -1,14 +1,12 @@
 package com.centram.core.config;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
-import com.centram.core.authentication.CustomSAMLAuthenticationProvider;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
+import com.centram.core.authentication.SAML2SSOAuthenticationProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider;
@@ -60,7 +58,7 @@ public class SamlSecurityConfig {
 
     @Bean
     public SAMLAuthenticationProvider samlAuthenticationProvider() {
-        return new CustomSAMLAuthenticationProvider();
+        return new SAML2SSOAuthenticationProvider();
     }
 
     @Bean

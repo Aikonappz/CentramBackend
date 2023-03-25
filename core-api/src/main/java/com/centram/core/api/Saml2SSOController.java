@@ -14,7 +14,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @RestController
-public class SamlController {
+public class Saml2SSOController {
 
     private final String uiSsoPath = "/sso/sign-in/";
     @Value("${app.base.url}")

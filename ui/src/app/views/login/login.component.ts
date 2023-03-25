@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { AppUtility } from '../../config/AppUtility';
 import { AuthRequest } from '../../model/AuthRequest';
 import { LoggedInUser } from '../../model/LoggedInUser';
@@ -18,6 +19,7 @@ import { UserService } from '../../service/UserService';
 export class LoginComponent implements OnInit {
   sessionTimeOut: boolean = false;
   authRequest: AuthRequest;
+  ssoLink: string = environment.appSSOEndpoint;
   angForm = new FormGroup({
     email: new FormControl('', [
       Validators.required,
