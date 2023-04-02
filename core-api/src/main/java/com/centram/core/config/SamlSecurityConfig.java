@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.saml.*;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
@@ -110,7 +111,8 @@ public class SamlSecurityConfig {
     @Bean
     public KeyManager keyManager() {
         DefaultResourceLoader loader = new DefaultResourceLoader();
-        Resource storeFile = loader.getResource(samlKeystoreLocation);
+        //Resource storeFile = loader.getResource(samlKeystoreLocation);
+        Resource storeFile = new FileSystemResource(samlKeystoreLocation);
         Map<String, String> passwords = new HashMap<>();
         passwords.put(samlKeystoreAlias, samlKeystorePassword);
         return new JKSKeyManager(storeFile, samlKeystorePassword, passwords, samlKeystoreAlias);
@@ -145,13 +147,11 @@ public class SamlSecurityConfig {
         // metadata from the Java classpath.  This works from Spring Boot
         // self contained JAR file.
         org.opensaml.util.resource.Resource resource = null;
-
         try {
             resource = new ClasspathResource("/saml/metadata/sso.xml");
         } catch (ResourceException e) {
             e.printStackTrace();
         }
-
         Timer timer = new Timer("saml-metadata");
         ResourceBackedMetadataProvider provider = new ResourceBackedMetadataProvider(timer,resource);
         provider.setParserPool(parserPool());
@@ -229,4 +229,5 @@ public class SamlSecurityConfig {
         bindings.add(httpPostBinding());
         return new SAMLProcessorImpl(bindings);
     }
+
 }

@@ -1,7 +1,7 @@
 package com.centram.core.config;
 
 import com.centram.core.filter.RequestFilter;
-import com.centram.core.service.ThirdPartyUserService;
+import com.centram.core.service.ThirdPartyAuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +68,7 @@ public class SecurityConfig {
         }*/
 
         @Bean
+        @Override
         public AuthenticationManager authenticationManagerBean() throws Exception {
             return super.authenticationManagerBean();
         }
@@ -81,7 +82,6 @@ public class SecurityConfig {
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .antMatchers("/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/sso-sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
-                    //.antMatchers("/**").permitAll()
                     .anyRequest().authenticated()
                     .and()
                     .exceptionHandling()
@@ -90,6 +90,7 @@ public class SecurityConfig {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
             httpSecurity.addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
         }
+
     }
 
     @Configuration
@@ -123,38 +124,10 @@ public class SecurityConfig {
     public static class ThirdPartyIntegrationSecurity extends WebSecurityConfigurerAdapter {
 
         @Autowired
-        private ThirdPartyUserService thirdPartyUserService;
+        private ThirdPartyAuthProvider thirdPartyAuthProvider;
 
         @Autowired
         private PasswordEncoder passwordEncoder;
-
-        /*@Autowired
-        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-            //System.out.println("demoCentramPass => " + passwordEncoder.encode("demoCentramPass"));
-            auth.userDetailsService(thirdPartyUserService).passwordEncoder(passwordEncoder);
-        }*/
-
-        /*@Bean
-        public AuthenticationFailureHandler authenticationFailureHandler() {
-            return new CustomAuthenticationFailureHandler();
-        }*/
-
-        /*@Bean
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Override
-        protected void configure(HttpSecurity httpSecurity) throws Exception {
-            httpSecurity
-                    .antMatcher("/api/integration/**")
-                    .cors().and().csrf().disable()
-                    .httpBasic()
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .anyRequest().authenticated();
-        }*/
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -170,20 +143,11 @@ public class SecurityConfig {
                     .httpBasic();
         }
 
-        /*@Autowired
-        public void configureGlobal(AuthenticationManagerBuilder auth)
-                throws Exception
-        {
-            auth.inMemoryAuthentication()
-                    .withUser("admin")
-                    .password(passwordEncoder().encode("password"))
-                    .roles("USER");
-        }*/
-
         @Autowired
         public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-            auth.authenticationProvider(thirdPartyUserService);
+            auth.authenticationProvider(thirdPartyAuthProvider);
         }
+
     }
 
     @Configuration
@@ -259,12 +223,6 @@ public class SecurityConfig {
         }
 
         @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            return super.authenticationManagerBean();
-        }
-
-        @Bean
         public MetadataGeneratorFilter metadataGeneratorFilter() {
             return new MetadataGeneratorFilter(metadataGenerator());
         }
@@ -272,24 +230,20 @@ public class SecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
-                    .csrf()
-                    .disable();
-
-            http
+                    .antMatcher("/**")
+                    .csrf().disable()
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .antMatchers("/integration/api/**", "/actuator/**", "/api/**", "/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
+                    //.antMatchers("/").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
                     .httpBasic()
-                    .authenticationEntryPoint(samlEntryPoint);
-
-            http
+                    .authenticationEntryPoint(samlEntryPoint).and()
                     .addFilterBefore(metadataGeneratorFilter(), ChannelProcessingFilter.class)
                     .addFilterAfter(samlFilter(), BasicAuthenticationFilter.class)
-                    .addFilterBefore(samlFilter(), CsrfFilter.class);
-
-            http
-                    .authorizeRequests()
-                    .antMatchers("/").permitAll()
-                    .anyRequest().authenticated();
-
-            http
+                    .addFilterBefore(samlFilter(), CsrfFilter.class)
                     .logout()
                     .addLogoutHandler((request, response, authentication) -> {
                         try {
@@ -304,5 +258,14 @@ public class SecurityConfig {
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
             auth.authenticationProvider(samlAuthenticationProvider);
         }
+
+        /*
+        Commented due to REST API ISSUE
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }*/
+
     }
 }

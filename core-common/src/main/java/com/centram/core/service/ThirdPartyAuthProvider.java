@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class ThirdPartyUserService implements AuthenticationProvider {
+public class ThirdPartyAuthProvider implements AuthenticationProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(ThirdPartyUserService.class);
+    private static final Logger log = LoggerFactory.getLogger(ThirdPartyAuthProvider.class);
 
     @Autowired
     private OrganisationService organisationService;
