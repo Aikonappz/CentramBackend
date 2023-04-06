@@ -80,7 +80,7 @@ public class SecurityConfig {
                     .cors().and().csrf().disable()
                     .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .antMatchers("/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
+                    .antMatchers("/integration/api/**", "/actuator/**", "/api/**", "/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/api-docs", "/api-docs/**").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/sso-sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
                     .anyRequest().authenticated()
                     .and()
@@ -182,7 +182,7 @@ public class SecurityConfig {
         @Autowired
         private KeyManager keyManager;
 
-        @Bean
+        //@Bean
         public SAMLDiscovery samlDiscovery() {
             SAMLDiscovery idpDiscovery = new SAMLDiscovery();
             return idpDiscovery;
@@ -197,7 +197,7 @@ public class SecurityConfig {
             return metadataGenerator;
         }
 
-        @Bean
+        //@Bean
         public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
             SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
             samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
@@ -206,7 +206,7 @@ public class SecurityConfig {
             return samlWebSSOProcessingFilter;
         }
 
-        @Bean
+        //@Bean
         public FilterChainProxy samlFilter() throws Exception {
             List<SecurityFilterChain> chains = new ArrayList<>();
             chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"),
@@ -234,7 +234,7 @@ public class SecurityConfig {
                     .csrf().disable()
                     .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .antMatchers("/integration/api/**", "/actuator/**", "/api/**", "/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/configuration/**", "/swagger*/**", "/webjars/**").permitAll()
+                    .antMatchers("/integration/api/**", "/actuator/**", "/api/**", "/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/api-docs", "/api-docs/**").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
                     //.antMatchers("/").permitAll()
                     .anyRequest().authenticated()

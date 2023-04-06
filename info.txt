@@ -31,8 +31,8 @@ drop database centram;
 CREATE DATABASE centram CHARACTER SET utf8 COLLATE utf8_general_ci;
 mysql -u root -p centram < /tmp/centram.sql
 
-scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/centram.sql /home/sumit/Documents/ramesh/app/centram/db/centram.sql
-
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/sso.xml /home/sumit/Documents/ramesh/app/centram/core-api/src/main/resources/saml/metadata/sso.xml
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/saml-keystore.jks /home/sumit/Documents/ramesh/app/centram/core-api/src/main/resources/saml/saml-keystore.jks
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/core-api/target/core-service-api.jar  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
@@ -48,3 +48,18 @@ sudo systemctl status nginx.service
 sudo systemctl start nginx.service
 
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/source.sh /Documents/besu/hyperledger-besu/local-besu/truffle
+
+
+http://centram-ui.s3-website.ap-south-1.amazonaws.com/sign-in/logOut
+
+CentramAPIBackEnd
+
+openssl req -new -newkey rsa:2048 -nodes -keyout api.centram.live.key -out api.centram.live.csr
+
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/home/ec2-user/api.centram.live.csr /home/sumit/Documents/ramesh/api.centram.live.csr
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/home/ec2-user/api.centram.live.key /home/sumit/Documents/ramesh/api.centram.live.key
+
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/CA_emSign_SSL_CA_G1.cer  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/EndEntity_api.centram.live.cer  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/RootCA_emSign_Root_CA_G1.cer  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/server.crt  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
