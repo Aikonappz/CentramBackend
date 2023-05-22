@@ -40,6 +40,9 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 @Configuration
 public class SamlSecurityConfig {
 
+    @Value("${saml.config.path}")
+    private String samlConfigPath;
+
     @Value("${saml.keystore.location}")
     private String samlKeystoreLocation;
 
@@ -141,14 +144,14 @@ public class SamlSecurityConfig {
     }
 
     @Bean
-    @Qualifier("okta")
+    //@Qualifier("okta")
     public ExtendedMetadataDelegate oktaExtendedMetadataProvider() throws MetadataProviderException {
         // Use the Spring Security SAML resource mechanism to load
         // metadata from the Java classpath.  This works from Spring Boot
         // self contained JAR file.
         org.opensaml.util.resource.Resource resource = null;
         try {
-            resource = new ClasspathResource("/saml/metadata/sso.xml");
+            resource = new ClasspathResource(samlConfigPath);
         } catch (ResourceException e) {
             e.printStackTrace();
         }
@@ -170,7 +173,7 @@ public class SamlSecurityConfig {
 
     @Bean
     @Qualifier("saml")
-    public SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler() {
+    public SavedRequestAwareAuthenticationSuccessHandler savedRequestAwareAuthenticationSuccessHandler() {
         SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         successRedirectHandler.setDefaultTargetUrl("/home");
         return successRedirectHandler;
@@ -178,7 +181,7 @@ public class SamlSecurityConfig {
 
     @Bean
     @Qualifier("saml")
-    public SimpleUrlAuthenticationFailureHandler authenticationFailureHandler() {
+    public SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler() {
         SimpleUrlAuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
         failureHandler.setUseForward(true);
         failureHandler.setDefaultFailureUrl("/error");

@@ -1,6 +1,6 @@
 package com.centram.domain;
 
-import com.centram.domain.converter.WatchListConverter;
+import com.centram.domain.converter.StringCommaSeparetedToListConverter;
 import com.centram.domain.enumarator.Status;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -61,7 +61,7 @@ public class FormTemplate extends BaseEntity implements Serializable {
     @NotNull
     @Valid
     @Column(name = "group_ignore_fields", nullable = false)
-    @Convert(converter = WatchListConverter.class)
+    @Convert(converter = StringCommaSeparetedToListConverter.class)
     private List<String> groupIgnoreFields;
 
 

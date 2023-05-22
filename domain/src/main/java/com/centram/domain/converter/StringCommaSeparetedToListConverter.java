@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Converter(autoApply = true)
-public class ModelConverter implements AttributeConverter<List<String>, String> {
+public class StringCommaSeparetedToListConverter implements AttributeConverter<List<String>, String> {
 
     @Override
     public String convertToDatabaseColumn(List<String> categoryIds) {

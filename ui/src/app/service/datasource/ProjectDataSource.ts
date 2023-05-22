@@ -8,18 +8,19 @@ import { Observable, BehaviorSubject, of } from "rxjs";
 import { catchError, finalize } from "rxjs/operators";
 import { MiscService } from '../MiscService';
 import { Vendor, VendorList } from '../../model/Vendor';
+import { Project, ProjectList } from '../../model/Project';
 
 
-export class VendorDataSource implements DataSource<Vendor>{
+export class ProjectDataSource implements DataSource<Project>{
 
-    private objSubject = new BehaviorSubject<Vendor[]>([]);
+    private objSubject = new BehaviorSubject<Project[]>([]);
     private loadingSubject = new BehaviorSubject<boolean>(false);
     private countSubject = new BehaviorSubject<number>(0);
     public counter$ = this.countSubject.asObservable();
 
     constructor(private service: MiscService) { }
 
-    connect(collectionViewer: CollectionViewer): Observable<Vendor[]> {
+    connect(collectionViewer: CollectionViewer): Observable<Project[]> {
         return this.objSubject.asObservable();
     }
 
@@ -36,12 +37,12 @@ export class VendorDataSource implements DataSource<Vendor>{
             req,
             defaultParam
         );
-        this.service.vendorsService(params)
+        this.service.projectsService(params)
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))
             )
-            .subscribe((result: VendorList) => {
+            .subscribe((result: ProjectList) => {
                 this.objSubject.next(result.content);
                 this.countSubject.next(result.totalElements);
             });

@@ -153,16 +153,20 @@ public class SecurityConfig {
     @Configuration
     @Order(4)
     public static class Saml2Security extends WebSecurityConfigurerAdapter {
+
+        @Value("${service.url}")
+        private String serviceUrl;
+
         @Value("${saml.sp}")
         private String samlAudience;
 
         @Autowired
-        @Qualifier("saml")
-        private SavedRequestAwareAuthenticationSuccessHandler samlAuthSuccessHandler;
+        //@Qualifier("saml")
+        private SavedRequestAwareAuthenticationSuccessHandler savedRequestAwareAuthenticationSuccessHandler;
 
         @Autowired
-        @Qualifier("saml")
-        private SimpleUrlAuthenticationFailureHandler samlAuthFailureHandler;
+        //@Qualifier("saml")
+        private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler;
 
         @Autowired
         private SAMLEntryPoint samlEntryPoint;
@@ -190,6 +194,8 @@ public class SecurityConfig {
 
         public MetadataGenerator metadataGenerator() {
             MetadataGenerator metadataGenerator = new MetadataGenerator();
+            // TODO : setting for success factor
+            metadataGenerator.setEntityBaseURL(serviceUrl);
             metadataGenerator.setEntityId(samlAudience);
             metadataGenerator.setExtendedMetadata(extendedMetadata);
             metadataGenerator.setIncludeDiscoveryExtension(false);
@@ -197,16 +203,18 @@ public class SecurityConfig {
             return metadataGenerator;
         }
 
-        //@Bean
+        @Bean
         public SAMLProcessingFilter samlWebSSOProcessingFilter() throws Exception {
             SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
+            // TODO : setting for null handling
+            //samlWebSSOProcessingFilter.setDefaultTargetUrl("/");
             samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManager());
-            samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(samlAuthSuccessHandler);
-            samlWebSSOProcessingFilter.setAuthenticationFailureHandler(samlAuthFailureHandler);
+            samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(savedRequestAwareAuthenticationSuccessHandler);
+            samlWebSSOProcessingFilter.setAuthenticationFailureHandler(simpleUrlAuthenticationFailureHandler);
             return samlWebSSOProcessingFilter;
         }
 
-        //@Bean
+        @Bean
         public FilterChainProxy samlFilter() throws Exception {
             List<SecurityFilterChain> chains = new ArrayList<>();
             chains.add(new DefaultSecurityFilterChain(new AntPathRequestMatcher("/saml/SSO/**"),
@@ -234,7 +242,7 @@ public class SecurityConfig {
                     .csrf().disable()
                     .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .antMatchers("/integration/api/**", "/actuator/**", "/api/**", "/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/api-docs", "/api-docs/**").permitAll()
+                    .antMatchers("/integration/api/**", "/actuator/**", "/api/**", "/api/integration", "/api/integration/**", "/app-ws-notification", "/app-ws-notification/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/api-docs", "/api-docs/**", "/saml/**").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/v1/user/sign-in", "/api/v1/user/forgot-password", "/api/v1/user/reset-password", "/api/v1/misc/request-demo").permitAll()
                     //.antMatchers("/").permitAll()
                     .anyRequest().authenticated()

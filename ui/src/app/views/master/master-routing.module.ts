@@ -7,10 +7,12 @@ import { EditDlComponent } from './editdl.component';
 import { EditHolidayCalenderComponent } from './editholidaycalender.component';
 import { EditLocationComponent } from './editlocation.component';
 import { EditPriorityComponent } from './editpriority.component';
+import { EditProjectComponent } from './editproject.component';
 import { EditVendorComponent } from './editvendor.component';
 import { HolidayCalenderComponent } from './holidaycalender.component';
 import { LocationComponent } from './location.component';
 import { PriorityComponent } from './priority.component';
+import { ProjectComponent } from './project.component';
 import { VendorComponent } from './vendor.component';
 
 const routes: Routes = [
@@ -166,6 +168,30 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Edit Vendor'
+        }
+      },
+      {
+        path: 'project',
+        component: ProjectComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Project'
+        },
+      },
+      {
+        path: 'project/add',
+        component: EditProjectComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Project'
+        }
+      },
+      {
+        path: 'project/edit/:id',
+        component: EditProjectComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Project'
         }
       },
     ]

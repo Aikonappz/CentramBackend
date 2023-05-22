@@ -1,7 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
-import com.centram.domain.converter.ModelConverter;
+import com.centram.domain.converter.StringCommaSeparetedToListConverter;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -98,7 +98,7 @@ public class Module implements Serializable {
     @NotNull
     @Lob
     @Column(name = "models", nullable = false, columnDefinition = "TEXT")
-    @Convert(converter = ModelConverter.class)
+    @Convert(converter = StringCommaSeparetedToListConverter.class)
     @JsonView(Views.BasicView.class)
     private List<BigInteger> models;
 

@@ -16,6 +16,7 @@ import { Vendor, VendorList } from '../model/Vendor';
 import { AssetModel } from '../model/AssetModel';
 import { PermissionDTO } from '../model/PermissionDTO';
 import { ChatMessage } from '../model/ChatMessage';
+import { Project, ProjectList } from '../model/Project';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -123,6 +124,15 @@ export class MiscService {
     }
     vendorService(id: number, request?: any): Observable<Vendor> {
         return this.http.get('/v1/misc/vendor/' + id, { "params": request });
+    }
+    saveProjectService(project: Project): Observable<Vendor> {
+        return this.http.post('/v1/misc/project', project);
+    }
+    projectsService(request?: any): Observable<ProjectList> {
+        return this.http.get('/v1/misc/all-project', { "params": request });
+    }
+    projectService(id: number, request?: any): Observable<Project> {
+        return this.http.get('/v1/misc/project/' + id, { "params": request });
     }
     permissionService(permissionDTO: PermissionDTO): Observable<any> {
         return this.http.post('/v1/misc/permission', permissionDTO,);

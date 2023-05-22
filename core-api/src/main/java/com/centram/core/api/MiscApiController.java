@@ -10,6 +10,7 @@ import com.centram.common.vo.CommonResponse;
 import com.centram.core.service.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
+import com.centram.domain.enumarator.ProjectType;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -89,6 +90,9 @@ public class MiscApiController {
 
     @Autowired
     private VendorService vendorService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @Autowired
     private AssetModelService assetModelService;
@@ -658,5 +662,50 @@ public class MiscApiController {
     ) {
         return new ResponseEntity<PaginatedList<ChatMessage>>(chatMessageService.findAll(chatRoomId, pageable), HttpStatus.OK);
     }*/
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find project by id", nickname = "getProjectById", notes = "Find project by id", response = Department.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "successful operation", response = Department.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "MapDl not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/project/{projectId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT','READ',authentication.principal)")
+    @JsonView({Views.DetailView.class,})
+    public ResponseEntity<Project> getProjectById(@ApiParam(value = "id of project", required = true) @PathVariable("projectId") BigInteger projectId) {
+        return new ResponseEntity<Project>(projectService.getById(projectId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all project", nickname = "getProjects", notes = "Get all project", response = PaginatedList.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT','READ,WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<PaginatedList<Project>> getProjects(
+            @ApiParam(value = "Project Type", defaultValue = "", required = false) @RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType,
+            @ApiParam(value = "In House Project", defaultValue = "", required = false) @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(inHouse, ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a project", nickname = "saveProject", notes = "Save a project", tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT','WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<Project> saveProject(@ApiParam(value = "Project object", required = true) @Valid @RequestBody Project body) {
+        return new ResponseEntity<Project>(projectService.save(body), HttpStatus.OK);
+    }
 
 }

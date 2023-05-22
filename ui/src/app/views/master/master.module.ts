@@ -19,6 +19,8 @@ import { EditDlComponent } from './editdl.component';
 import { EditVendorComponent } from './editvendor.component';
 import { VendorComponent } from './vendor.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ProjectComponent } from './project.component';
+import { EditProjectComponent } from './editproject.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     EditDlComponent,
     VendorComponent,
     EditVendorComponent,
+    ProjectComponent,
+    EditProjectComponent,
   ],
   imports: [
     CommonModule,

@@ -69,6 +69,12 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "DISTRIBUTION LIST" }
       },
       {
+        name: 'Project',
+        url: '/master/project',
+        icon: 'cil-line-style',
+        attributes: { "moduleName": "PROJECT" }
+      },
+      {
         name: 'Vendor -Incident',
         url: '/master/vendor/incident',
         icon: 'icon-people',
