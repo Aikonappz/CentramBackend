@@ -131,4 +131,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             " where " +
             " u.organisation_id =  (:organisationId) and u.status = 1", nativeQuery = true)
     long orgAdminUserDashboardData(@Param("organisationId") BigInteger organisationId);
+
+    @Modifying
+    @Query("update User set projectCode = (:projects) where id = (:userId)")
+    Integer updateProjects(@Param("projects") String projects, @Param("userId") BigInteger userId);
 }

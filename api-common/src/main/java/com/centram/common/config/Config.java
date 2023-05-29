@@ -73,8 +73,6 @@ import java.util.concurrent.Executor;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
-@EnableAsync
-@EnableCaching
 @Configuration
 public class Config implements AsyncConfigurer {
 
@@ -345,10 +343,25 @@ public class Config implements AsyncConfigurer {
     @Bean(name = "asyncExecutor")
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(3);
-        executor.setMaxPoolSize(3);
+        executor.setCorePoolSize(30);
+        executor.setMaxPoolSize(90);
         executor.setQueueCapacity(600);
-        executor.setThreadNamePrefix("AsynchThread-");
+        executor.setThreadNamePrefix("AsynchThread-asyncExecutor-");
+        executor.initialize();
+        return new DelegatingSecurityContextAsyncTaskExecutor(executor);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Bean(name = "delayedExecutor")
+    public Executor delayedExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(30);
+        executor.setMaxPoolSize(90);
+        executor.setQueueCapacity(600);
+        executor.setThreadNamePrefix("AsynchThread-delayedExecutor-");
         executor.initialize();
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
     }

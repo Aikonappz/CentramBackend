@@ -2,6 +2,7 @@ package com.centram.core.api;
 
 
 import com.centram.common.dto.PermissionDTO;
+import com.centram.common.dto.ProjectDeallocateDTO;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
@@ -40,6 +41,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Api(value = "Misc", description = "Misc API")
@@ -105,6 +107,9 @@ public class MiscApiController {
 
     @Autowired
     private ChatMessageService chatMessageService;
+
+    @Autowired
+    private ProjectAllocationDetailService projectAllocationDetailService;
 
     @ApiOperation(value = "Request a demo", nickname = "requestADemo", notes = "Request a demo", tags = {"Misc",})
     @ApiResponses(value = {
@@ -672,7 +677,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/project/{projectId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT','READ',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','READ',authentication.principal)")
     @JsonView({Views.DetailView.class,})
     public ResponseEntity<Project> getProjectById(@ApiParam(value = "id of project", required = true) @PathVariable("projectId") BigInteger projectId) {
         return new ResponseEntity<Project>(projectService.getById(projectId), HttpStatus.OK);
@@ -686,7 +691,7 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT','READ,WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT','READ,WRITE,ASSIGN,DEALLOCATE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<PaginatedList<Project>> getProjects(
             @ApiParam(value = "Project Type", defaultValue = "", required = false) @RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType,
@@ -702,10 +707,38 @@ public class MiscApiController {
             @ApiResponse(code = 400, message = "Bad Request")
     })
     @RequestMapping(value = "/project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT','WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<Project> saveProject(@ApiParam(value = "Project object", required = true) @Valid @RequestBody Project body) {
         return new ResponseEntity<Project>(projectService.save(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Allocate projects", nickname = "allocateProjects", notes = "Allocate projects", tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/allocate-project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ALLOCATE PROJECT','WRITE|ASSIGN',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity allocateProjects(@ApiParam(value = "list of ProjectAllocationDetail object", required = true) @Valid @RequestBody List<ProjectAllocationDetail> projectAllocationDetailList) {
+        Map<BigInteger, String> allocateProjectDTOS = projectAllocationDetailService.allocation(projectAllocationDetailList);
+        miscService.allocateUserProjects(allocateProjectDTOS);
+        return ResponseEntity.ok().body(null);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Deallocate projects", nickname = "deallocateProjects", notes = "Deallocate projects", tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/deallocate-project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|ASSIGN',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity deallocateProjects(@ApiParam(value = "ProjectDeallocateDTO object", required = true) @Valid @RequestBody ProjectDeallocateDTO projectDeallocateDTO) {
+        Map<BigInteger, String> deallocateProjectDTOS = projectAllocationDetailService.deallocation(projectDeallocateDTO);
+        miscService.deallocateUserProjects(deallocateProjectDTOS);
+        return ResponseEntity.ok().body(null);
     }
 
 }

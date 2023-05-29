@@ -83,7 +83,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.secContactNo = user.getSecContactNo();
         this.employeeId = user.getEmployeeId();
         this.password = user.getPassword();
-        this.projectCode = user.getProjectCode();
+        //this.projectCode = user.getProjectCode();
         this.locationId = (user.getLocation() != null) ? user.getLocation().getId() : null;
         this.departmentId = (user.getDepartment() != null) ? user.getDepartment().getId() : null;
         this.roles = user.getRoles();

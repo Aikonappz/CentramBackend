@@ -1,0 +1,109 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Allocate Projects</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="projectType">Project Type</label>
+                <ng-select [items]="projectTypes" (change)="maxAllocationDecision($event)"
+                  placeholder="-- Select Project Type --" formControlName="projectType" id="projectType"
+                  name="projectType" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.projectType.touched && f.projectType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projectType.errors?.required">
+                    Project Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" *ngIf="!isHourly"
+                  for="maxAllocation">Percentage</label>
+                <label class="form-col-form-label required-control-label" *ngIf="isHourly"
+                  for="maxAllocation">Hour</label>
+                <input type="text" formControlName="maxAllocation" id="maxAllocation" name="maxAllocation"
+                  class="form-control">
+                <div *ngIf="f.maxAllocation.touched && f.maxAllocation.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.maxAllocation.errors?.required">
+                    Required field!
+                  </div>
+                  <div *ngIf="f.maxAllocation.errors?.pattern">
+                    Invalid value!
+                  </div>
+                  <div *ngIf="f.maxAllocation.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="projects">Projects</label>
+                <ng-select [multiple]="true" [items]="projectList" placeholder="-- Select projects --"
+                  formControlName="projects" id="projects" name="projects" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.projects.touched && f.projects.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projects.errors?.required">
+                    Project is required.
+                  </div>
+                  <div *ngIf="f.projects.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="users">Users</label>
+                <ng-select [multiple]="true" [items]="userList" placeholder="-- Select Employee --"
+                  formControlName="users" id="users" name="users" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.users.touched && f.users.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.users.errors?.required">
+                    Users is required.
+                  </div>
+                  <div *ngIf="f.users.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="start">Start Date</label>
+                <input type="date" format="DD-MM-YYYY" formControlName="start" ngModel id="start" name="start"
+                  class="form-control" placeholder="Incident Start" aria-label="Incident Start">
+                <div *ngIf="f.start.touched && f.start.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.start.errors?.required">
+                    Start Date is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="end">End Date</label>
+                <input type="date" formControlName="end" ngModel id="end" name="end" class="form-control"
+                  placeholder="Incident End" aria-label="Incident End">
+                <div *ngIf="f.end.touched && f.end.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.end.errors?.required">
+                    End Date is required.
+                  </div>
+                  <div *ngIf="f.end.errors?.mustGreaterThanStartDate">
+                    End date should be greater than Start Date!
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE,ASSIGN')" [disabled]="!angForm.valid" type="button"
+              (click)="formSubmit()" class="btn btn-primary">Allocate</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

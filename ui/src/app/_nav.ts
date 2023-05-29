@@ -69,10 +69,10 @@ export const navItems: INavData[] = [
         attributes: { "moduleName": "DISTRIBUTION LIST" }
       },
       {
-        name: 'Project',
+        name: 'Project Master',
         url: '/master/project',
-        icon: 'cil-line-style',
-        attributes: { "moduleName": "PROJECT" }
+        icon: 'cil-blur-linear',
+        attributes: { "moduleName": "PROJECT_MASTER" }
       },
       {
         name: 'Vendor -Incident',
@@ -311,6 +311,26 @@ export const navItems: INavData[] = [
       },
     ]
   },
+  {
+    name: 'Project',
+    url: '/project',
+    icon: 'fa fa-list-alt',
+    attributes: { "moduleName": "PROJECT" },
+    children: [
+      {
+        name: 'Allocate Project',
+        url: '/project/allocate',
+        icon: 'cil-grain',
+        attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+      {
+        name: 'Deallocate Project',
+        url: '/project/deallocate',
+        icon: 'cil-gradient',
+        attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+    ]
+  }
 ];
 
 //attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }

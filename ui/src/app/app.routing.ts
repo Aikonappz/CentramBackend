@@ -143,6 +143,11 @@ export const routes: Routes = [
         loadChildren: () => import('./views/asset/asset.module').then(m => m.AssetModule),
       },
       {
+        path: 'project',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/project/project.module').then(m => m.ProjectModule),
+      },
+      {
         path: 'report',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/report/report.module').then(m => m.ReportModule),

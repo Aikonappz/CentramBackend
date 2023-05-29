@@ -17,6 +17,8 @@ import { AssetModel } from '../model/AssetModel';
 import { PermissionDTO } from '../model/PermissionDTO';
 import { ChatMessage } from '../model/ChatMessage';
 import { Project, ProjectList } from '../model/Project';
+import { ProjectAllocationDetail } from '../model/ProjectAllocationDetail';
+import { ProjectDeallocateDTO } from '../model/ProjectDeallocateDTO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -151,5 +153,11 @@ export class MiscService {
     }
     chatMassagesService(chatRoomId: string, request?: any): Observable<any> {
         return this.http.get('/v1/misc/chat-message/' + chatRoomId, { "params": request });
+    }
+    allocateProjects(projectAllocationDetailList: ProjectAllocationDetail[]): Observable<any> {
+        return this.http.post('/v1/misc/allocate-project', projectAllocationDetailList,);
+    }
+    deallocateProjects(projectDeallocateDTO: ProjectDeallocateDTO): Observable<any> {
+        return this.http.post('/v1/misc/deallocate-project', projectDeallocateDTO,);
     }
 }

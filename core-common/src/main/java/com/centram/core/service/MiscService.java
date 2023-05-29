@@ -9,6 +9,8 @@ import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.IncidentEmailVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.AppConfigRepository;
+import com.centram.core.repository.ProjectAllocationDetailRepository;
+import com.centram.core.repository.UserRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
@@ -29,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +43,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.centram.common.utility.Utility.assetNo;
 
@@ -74,6 +78,12 @@ public class MiscService {
     private UserService userService;
     @Autowired
     private ModuleService moduleService;
+
+    @Autowired
+    private ProjectAllocationDetailRepository projectAllocationDetailRepository;
+
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private AppConfigRepository appConfigRepository;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
@@ -1512,5 +1522,40 @@ public class MiscService {
         attributes.put("cc", recipient != null ? new String[]{recipient.getEmail()} : new String[]{});
         attributes.put("bcc", new String[]{});
         appEmailService.sendChatInteractionEmail(attributes);
+    }
+
+    @Transactional(readOnly = false)
+    @Async("delayedExecutor")
+    public void allocateUserProjects(Map<BigInteger, String> allocateProjectDTOS) {
+        User user = new User();
+        String projects = null;
+        for (Map.Entry<BigInteger, String> entry : allocateProjectDTOS.entrySet()) {
+            user = userRepository.getUserById(entry.getKey());
+            if (!StringUtils.isEmpty(user.getProjectCode())) {
+                projects = user.getProjectCode().concat(",").concat(entry.getValue());
+            }
+            user.setProjectCode(projects);
+            userRepository.save(user);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    @Async("delayedExecutor")
+    public void deallocateUserProjects(Map<BigInteger, String> deallocateProjectDTOS) {
+        User user = new User();
+        List<String> projectList = new ArrayList<String>();
+        String projects = null;
+        for (Map.Entry<BigInteger, String> entry : deallocateProjectDTOS.entrySet()) {
+            user = userRepository.getUserById(entry.getKey());
+            if (!StringUtils.isEmpty(user.getProjectCode())) {
+                projects = user.getProjectCode();
+                projectList = Stream.of(projects.split(","))
+                        .map(String::trim)
+                        .collect(Collectors.toList());
+                projectList.remove(entry.getValue());
+                user.setProjectCode(String.join(",", projectList));
+                userRepository.save(user);
+            }
+        }
     }
 }

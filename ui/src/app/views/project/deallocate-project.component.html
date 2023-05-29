@@ -1,0 +1,63 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Allocate Projects</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="projectType">Project Type</label>
+                <ng-select [items]="projectTypes" (change)="maxAllocationDecision($event)"
+                  placeholder="-- Select Project Type --" formControlName="projectType" id="projectType"
+                  name="projectType" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.projectType.touched && f.projectType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projectType.errors?.required">
+                    Project Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="projectId">Projects</label>
+                <ng-select [multiple]="false" [items]="projectList" placeholder="-- Select project --"
+                  formControlName="projectId" id="projectId" name="projectId" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.projectId.touched && f.projectId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projectId.errors?.required">
+                    Project is required.
+                  </div>
+                  <div *ngIf="f.projectId.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="users">Users</label>
+                <ng-select [multiple]="true" [items]="userList" placeholder="-- Select Employee --"
+                  formControlName="users" id="users" name="users" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.users.touched && f.users.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.users.errors?.required">
+                    Users is required.
+                  </div>
+                  <div *ngIf="f.users.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE,ASSIGN')" [disabled]="!angForm.valid" type="button"
+              (click)="formSubmit()" class="btn btn-primary">Deallocate</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>
