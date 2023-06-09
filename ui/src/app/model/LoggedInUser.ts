@@ -10,6 +10,8 @@ export class LoggedInUser {
     jwtToken: string;
     timeZone: string;
     location: string;
+    locationId: number;
+    locationOpsTime: string;
     department: string;
     organisationLogo: MediaFile;
     profileImage: MediaFile;

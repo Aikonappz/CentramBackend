@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AllocateProjectComponent } from './allocate-project.component';
 import { DeallocateProjectComponent } from './deallocate-project.component';
+import { ManageTimeSheetComponent } from './manage-timesheet.component';
 
 const routes: Routes = [
   {
@@ -12,7 +13,15 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'allocate'
+        redirectTo: 'manage-timesheet'
+      },
+      {
+        path: 'manage-timesheet',
+        component: ManageTimeSheetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Manage Timesheet'
+        },
       },
       {
         path: 'allocate',

@@ -65,6 +65,18 @@ public class HolidayCalenderService {
         return holidayCalender.get();
     }
 
+    @Transactional(readOnly = true)
+    public List<Holiday> getHolidaysByYearAndLocation(BigInteger location, String year) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(
+                year, location, loggedInUser.getOrganisationId()
+        );
+        if (holidayCalender == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        return holidayCalender.getHolidays();
+    }
+
     /**
      * get all locations
      *

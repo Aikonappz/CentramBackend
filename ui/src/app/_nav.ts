@@ -318,6 +318,12 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "PROJECT" },
     children: [
       {
+        name: 'Manage Timesheet',
+        url: '/project/manage-timesheet',
+        icon: 'cil-clock',
+        attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
+      },
+      {
         name: 'Allocate Project',
         url: '/project/allocate',
         icon: 'cil-grain',

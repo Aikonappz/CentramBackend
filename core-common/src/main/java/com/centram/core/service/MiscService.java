@@ -1533,9 +1533,11 @@ public class MiscService {
             user = userRepository.getUserById(entry.getKey());
             if (!StringUtils.isEmpty(user.getProjectCode())) {
                 projects = user.getProjectCode().concat(",").concat(entry.getValue());
+            } else {
+                projects = entry.getValue();
             }
             user.setProjectCode(projects);
-            userRepository.save(user);
+            user = userRepository.save(user);
         }
     }
 

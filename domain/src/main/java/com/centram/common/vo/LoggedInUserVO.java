@@ -28,6 +28,8 @@ public class LoggedInUserVO implements Serializable {
     private String email;
     private String timeZone;
     private String location;
+    private BigInteger locationId;
+    private String locationOpsTime;
     private String department;
     private LicenseType licenseType;
     private MediaFile profileImage;
@@ -47,11 +49,13 @@ public class LoggedInUserVO implements Serializable {
         this.jwtToken = loggedInUser.getAuthToken();
         this.department = loggedInUser.getDepartment();
         this.location = loggedInUser.getLocation();
+        this.locationOpsTime = loggedInUser.getLocationOpsTime();
         this.timeZone = loggedInUser.getTimeZone();
         this.roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
                 .collect(Collectors.toList());
         this.licenseType = loggedInUser.getLicenseType();
+        this.locationId = loggedInUser.getLocationId();
     }
 
     public LoggedInUserVO(MediaFile profileImage, LoggedInUser loggedInUser) {

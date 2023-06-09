@@ -426,6 +426,23 @@ public class MiscApiController {
         return new ResponseEntity<HolidayCalender>(holidayCalenderService.getById(holidayCallenderId), HttpStatus.OK);
     }
 
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find holiday by location, year", nickname = "getHolidayCalenderById", notes = "Find holiday by location, year", response = Holiday.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "Holiday calender not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/holiday-callender/{locationId}/{year}", produces = {"application/json"}, method = RequestMethod.GET)
+    //@PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR|MANAGE TIMESHEET','READ,READ',authentication.principal)")
+    public ResponseEntity<List<Holiday>> getHolidayCalenderByLocation(
+            @ApiParam(value = "id of locationId", required = true) @PathVariable("locationId") BigInteger locationId,
+            @ApiParam(value = "year", required = true) @PathVariable("year") String year
+    ) {
+        return new ResponseEntity<List<Holiday>>(holidayCalenderService.getHolidaysByYearAndLocation(locationId, year), HttpStatus.OK);
+    }
+
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload holiday calender data csv", nickname = "uploadHolidayCalenderData", notes = "Upload holiday calender data", tags = {"Misc",})
     @ApiResponses(value = {
             @ApiResponse(code = 405, message = "Method Not Allowed"),

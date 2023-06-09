@@ -3,6 +3,7 @@ package com.centram.common.vo;
 
 import com.centram.common.view.Views;
 import com.centram.domain.BaseEntity;
+import com.centram.domain.Location;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
@@ -64,6 +66,8 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     private String location;
     private String locationOfficeName;
     @JsonView(Views.ThirdPartyView.class)
+    private String locationOpsTime;
+    @JsonView(Views.ThirdPartyView.class)
     private BigInteger departmentId;
     private BigInteger vendorId;
     private String vendor;
@@ -98,6 +102,11 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.licenseType = (user.getOrganisation() != null) ? user.getOrganisation().getLicenseType() : null;
         this.vendorId = (user.getVendor() != null) ? user.getVendor().getId() : null;
         this.vendor = (user.getVendor() != null) ? user.getVendor().getName() : null;
+        if(user.getLocation() != null){
+            Location loc = user.getLocation();
+            Duration duration = Duration.between(loc.getOpsStartTime(), loc.getOpsEndTime());
+            this.locationOpsTime = String.valueOf(duration.toHours());
+        }
     }
 
     @Override

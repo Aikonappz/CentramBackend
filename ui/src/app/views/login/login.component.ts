@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
         //console.log(this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT));
         let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
         if (lastVisitedPage != null) {
-          console.log(lastVisitedPage);
+          //console.log(lastVisitedPage);
           this.router.navigate([lastVisitedPage]);
         } else {
           this.router.navigate(['/dashboard']);

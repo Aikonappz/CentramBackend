@@ -1,0 +1,40 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Manage Time Sheet</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <div class="table-responsive-lg">
+              <table class="table table-striped">
+                <tbody>
+                  <tr *ngFor="let dateRange of dateRangesGroup | keyvalue">
+                    <td>
+                      <div>
+                        <a href="javascript:void(0);" (click)="viewEdit(dateRange.value)">{{dateRange.key}}</a>
+                      </div>
+                      <div>{{dateRange.value.inlineMessage}}</div>
+                    </td>
+                    <td>{{dateRange.value.offHours}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE,ASSIGN')" [disabled]="!angForm.valid" type="button"
+              (click)="formSubmit()" class="btn btn-primary">Allocate</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+
+
+
+
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

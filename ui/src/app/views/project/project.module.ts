@@ -11,6 +11,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { AllocateProjectComponent } from './allocate-project.component';
 import { ProjectRoutingModule } from './asset-routing.module';
 import { DeallocateProjectComponent } from './deallocate-project.component';
+import { ManageTimeSheetComponent } from './manage-timesheet.component';
+import { ChartsModule } from 'ng2-charts';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { WeeklyIndividualTimeSheet } from './modal/WeeklyIndividualTimeSheet';
 
 
 
@@ -18,6 +22,8 @@ import { DeallocateProjectComponent } from './deallocate-project.component';
   declarations: [
     AllocateProjectComponent,
     DeallocateProjectComponent,
+    ManageTimeSheetComponent,
+    WeeklyIndividualTimeSheet,
   ],
   imports: [
     CommonModule,
@@ -31,6 +37,14 @@ import { DeallocateProjectComponent } from './deallocate-project.component';
     TooltipModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgSelectModule,
+    CommonModule,
+    FormsModule,
+    ChartsModule,
+    ButtonsModule.forRoot(),
+    MatTableModule,
+    MatPaginatorModule,
+    BsDropdownModule.forRoot(),
+    TabsModule,
   ]
 })
 export class ProjectModule { }

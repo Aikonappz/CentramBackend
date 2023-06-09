@@ -19,6 +19,7 @@ import { ChatMessage } from '../model/ChatMessage';
 import { Project, ProjectList } from '../model/Project';
 import { ProjectAllocationDetail } from '../model/ProjectAllocationDetail';
 import { ProjectDeallocateDTO } from '../model/ProjectDeallocateDTO';
+import { Holiday } from '../model/Holiday';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -75,6 +76,9 @@ export class MiscService {
     }
     holidayCalenderService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/holiday-callender/' + id, { "params": request });
+    }
+    holidayCalenderHolidaysService(locationId: number, year: string, request?: any): Observable<Holiday[]> {
+        return this.http.get('/v1/misc/holiday-callender/' + locationId + '/' + year, { "params": request });
     }
     saveHolidayCalenderService(formData: FormData, request?: any): Observable<Department> {
         return this.http.post('/v1/misc/upload-holiday-calender', formData, request);

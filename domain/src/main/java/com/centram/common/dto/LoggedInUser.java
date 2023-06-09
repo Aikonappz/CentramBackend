@@ -44,6 +44,7 @@ public class LoggedInUser implements UserDetails, Serializable {
     private LicenseType licenseType;
     @JsonProperty("authId")
     private BigInteger userAuthId;
+    private String locationOpsTime;
 
 
     public LoggedInUser() {
@@ -70,6 +71,11 @@ public class LoggedInUser implements UserDetails, Serializable {
                 .collect(Collectors.toList());
         this.appManager = userVO.getOrganisationId() == null;
         this.licenseType = (userVO.getDepartmentId() == null) ? null : userVO.getLicenseType();
+        this.locationOpsTime = userVO.getLocationOpsTime();
+    }
+
+    public String getLocationOpsTime() {
+        return locationOpsTime;
     }
 
     public BigInteger getUserAuthId() {
