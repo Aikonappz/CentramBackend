@@ -142,7 +142,16 @@
                   <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
                     class="form-control">
                 </div>
-                <div class="col"></div>
+                <div class="col" *ngIf="!(hasAgentPermission&&canEdit)">
+                  <label class="form-col-form-label" for="subModuleName">Expected Time Required</label>
+                  <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}}" class="form-control">
+                </div>
+                <div class="col" *ngIf="(hasAgentPermission&&canEdit&&incident.expectedTime==null)">
+                  <label class="form-col-form-label" for="expectedTime">Expected Time Required</label>
+                  <ng-select [items]="timeList" placeholder="-- Select Expected Time --" formControlName="expectedTime"
+                    id="expectedTime" name="expectedTime" bindLabel="label" bindValue="id"></ng-select>
+
+                </div>
               </div>
               <div class="row row-margin-05">
                 <div class="col">

@@ -330,6 +330,12 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Boolean validityExpiredMessageSent = false;
 
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+    @Column(name = "expected_time", nullable = false, columnDefinition = "varchar(5) not null")
+    @JsonView(Views.BasicView.class)
+    private String expectedTime;
+
     public Incident(@NotNull BigInteger id) {
         this.id = id;
     }

@@ -36,6 +36,7 @@ export class Incident extends Base {
     assetValidity: any;
     allocationDateTime: any;
     deallocationDateTime: any;
+    expectedTime: string;
     constructor() {
         super();
         this.id = null;
@@ -60,6 +61,7 @@ export class Incident extends Base {
         this.assetValidity = null;
         this.allocationDateTime = null;
         this.deallocationDateTime = null;
+        this.expectedTime = null;
     }
 }
 export interface IncidentList {

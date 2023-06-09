@@ -21,6 +21,7 @@ import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { Status } from '../../model/enumerator/Status';
 import { ClientStorageService } from '../../service/ClientStorageService';
+import { environment } from '../../../environments/environment';
 declare var $: any;
 
 @Component({
@@ -56,6 +57,7 @@ export class EditIncidentComponent implements OnInit {
   referer: string;
   mode: string;
   canEdit: boolean = true;
+  timeList: any[] = [];
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -95,6 +97,23 @@ export class EditIncidentComponent implements OnInit {
       if (a.key > b.key) return 1;
       return 0;
     });
+
+    if (environment.production == false) {
+      this.timeList.push({ id: "00:05", label: "00:05 hrs" });
+      this.timeList.push({ id: "00:07", label: "00:07 hrs" });
+      this.timeList.push({ id: "00:10", label: "00:10 hrs" });
+      this.timeList.push({ id: "00:15", label: "00:15 hrs" });
+      this.timeList.push({ id: "00:20", label: "00:20 hrs" });
+      this.timeList.push({ id: "00:25", label: "00:25 hrs" });
+      this.timeList.push({ id: "00:30", label: "00:30 hrs" });
+    }
+    let tmList = AppUtility.getSlaList(500);
+    for (let k = 0; k < tmList.length; k++) {
+      if (k != 0) {
+        this.timeList.push({ id: tmList[k], label: tmList[k] + " hrs" });
+      }
+    }
+
     this.permissions = this.loggedInUserService.getModulePermissions();
     let p;
     for (let i in this.permissions) {
@@ -163,6 +182,8 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
         newStatus: new FormControl(null, [
+        ]),
+        expectedTime: new FormControl(null, [
         ]),
         fileInput: new FormControl('', [
         ]),
