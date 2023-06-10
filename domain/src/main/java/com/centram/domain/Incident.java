@@ -332,7 +332,7 @@ public class Incident extends BaseEntity implements Serializable {
 
     @ApiModelProperty(required = true, value = "")
     @NotNull
-    @Column(name = "expected_time", nullable = false, columnDefinition = "varchar(5) not null")
+    @Column(name = "expected_time", nullable = true, columnDefinition = "varchar(5)")
     @JsonView(Views.BasicView.class)
     private String expectedTime;
 

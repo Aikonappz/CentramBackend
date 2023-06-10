@@ -48,6 +48,7 @@ export class EditIncidentComponent implements OnInit {
   statusList: any = [];
   selectedFiles?: FileList;
   allSelectedFiles?: File[] = [];
+  allSelectedSolutionDocumentFiles?: File[] = [];
   angForm: FormGroup;
   ckeditorToolbarConfig: any;
   readOnlyckeditorToolbarConfig: any;
@@ -58,6 +59,7 @@ export class EditIncidentComponent implements OnInit {
   mode: string;
   canEdit: boolean = true;
   timeList: any[] = [];
+  solutionDocumentEnabled: boolean = false;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -98,15 +100,6 @@ export class EditIncidentComponent implements OnInit {
       return 0;
     });
 
-    if (environment.production == false) {
-      this.timeList.push({ id: "00:05", label: "00:05 hrs" });
-      this.timeList.push({ id: "00:07", label: "00:07 hrs" });
-      this.timeList.push({ id: "00:10", label: "00:10 hrs" });
-      this.timeList.push({ id: "00:15", label: "00:15 hrs" });
-      this.timeList.push({ id: "00:20", label: "00:20 hrs" });
-      this.timeList.push({ id: "00:25", label: "00:25 hrs" });
-      this.timeList.push({ id: "00:30", label: "00:30 hrs" });
-    }
     let tmList = AppUtility.getSlaList(500);
     for (let k = 0; k < tmList.length; k++) {
       if (k != 0) {
@@ -142,6 +135,8 @@ export class EditIncidentComponent implements OnInit {
         watchList: new FormControl(null, [
         ]),
         fileInput: new FormControl('', [
+        ]),
+        solutionDocument: new FormControl('', [
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -184,8 +179,11 @@ export class EditIncidentComponent implements OnInit {
         newStatus: new FormControl(null, [
         ]),
         expectedTime: new FormControl(null, [
+          Validators.required,
         ]),
         fileInput: new FormControl('', [
+        ]),
+        solutionDocument: new FormControl('', [
         ]),
         message: new FormControl('', [
           Validators.required,
@@ -316,6 +314,7 @@ export class EditIncidentComponent implements OnInit {
           }
           inc.communications.push(ic);
           inc.id = this.incident.id;
+          inc.expectedTime = this.angForm.controls['expectedTime'].value;
           if (this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY)) {
             this.draftData = JSON.parse(this.clientStorageService.get(AppUtility.APP_INCIDENT_DRAFT_KEY));
             let hasDraftData = false;
@@ -359,6 +358,7 @@ export class EditIncidentComponent implements OnInit {
           this.incident.status = this.defaultStatus;
         } else {
           this.incident.priority = priority;
+          this.incident.expectedTime = this.angForm.controls['expectedTime'].value;
           if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
             this.incident.status = this.angForm.controls['newStatus'].value;
           }
@@ -380,6 +380,7 @@ export class EditIncidentComponent implements OnInit {
 
   getFileDetails(event) {
     for (var i = 0; i < event.target.files.length; i++) {
+      this.selectedFiles = null;
       var name = event.target.files[i].name;
       var type = event.target.files[i].type;
       var size = event.target.files[i].size;
@@ -399,6 +400,38 @@ export class EditIncidentComponent implements OnInit {
         this.selectedFiles = event.target.files;
         for (var i = 0; i < this.selectedFiles.length; i++) {
           this.allSelectedFiles.push(this.selectedFiles[i]);
+        }
+        //console.log(this.allSelectedFiles);
+      }
+      console.log('Name: ' + name + "\n" +
+        'Type: ' + type + "\n" +
+        'Last-Modified-Date: ' + modifiedDate + "\n" +
+        'Size: ' + Math.round(size / 1024) + " KB");
+    }
+  }
+
+  getSolutionDocumentFileDetails(event) {
+    for (var i = 0; i < event.target.files.length; i++) {
+      this.selectedFiles = null;
+      var name = event.target.files[i].name;
+      var type = event.target.files[i].type;
+      var size = event.target.files[i].size;
+      var modifiedDate = event.target.files[i].lastModifiedDate;
+      const file = this.angForm.controls['solutionDocument'];
+      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan2MB) {
+        return;
+      }
+      let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain", "application/x-msexcel", "application/x-excel", "application/vnd.ms-excel", "application/excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingm", "image/jpeg", "image/pjpeg", "image/png"];
+      if (!validMimeTpes.includes(type)) {
+        file.setErrors({ validAttachments: true, mustBeLessThan2MB: false });
+      } else if (size > (3145728)) {
+        file.setErrors({ validAttachments: false, mustBeLessThan2MB: true });
+      } else {
+        file.setErrors(null);
+        this.selectedFiles = event.target.files;
+        for (var i = 0; i < this.selectedFiles.length; i++) {
+          this.allSelectedSolutionDocumentFiles.push(this.selectedFiles[i]);
         }
         //console.log(this.allSelectedFiles);
       }
@@ -441,6 +474,15 @@ export class EditIncidentComponent implements OnInit {
     }
   }
 
+  removeSolutionDocumentFile(indx) {
+    if (indx > -1) { // only splice array when item is found
+      this.allSelectedSolutionDocumentFiles.splice(indx, 1); // 2nd parameter means remove one item only
+      $(function () {
+        $('#attached-sol-file-' + indx).remove();
+      });
+    }
+  }
+
   callSaveIncidentService() {
     let returnPath = '/incident/user/all';
     if (this.referer === 'agent-all') {
@@ -471,9 +513,27 @@ export class EditIncidentComponent implements OnInit {
           } else {
             this.router.navigate([returnPath]);
           }
-        } else {
-          this.router.navigate([returnPath]);
         }
+        if (typeof this.allSelectedSolutionDocumentFiles != "undefined") {
+          if (this.allSelectedSolutionDocumentFiles.length > 0) {
+            const formData: FormData = new FormData();
+            for (var i = 0; i < this.allSelectedSolutionDocumentFiles.length; i++) {
+              formData.append("file", this.allSelectedSolutionDocumentFiles[i]);
+            }
+            let headers = new Headers();
+            headers.append('Content-Type', 'multipart/form-data');
+            headers.set('Accept', 'application/json');
+            let incidentId = data.id;
+            this.mediaService
+              .saveMediaService(incidentId, EntityType.INCIDENT, MediaType.INCIDENT_SOLUTION_DOCUMENT, "NA", formData, { 'headers': headers })
+              .subscribe((data: any) => {
+                this.router.navigate([returnPath]);
+              });
+          } else {
+            this.router.navigate([returnPath]);
+          }
+        }
+        this.router.navigate([returnPath]);
         // if (typeof this.selectedFiles != "undefined") {
         //   if (this.selectedFiles.length > 0) {
         //     const formData: FormData = new FormData();
@@ -517,6 +577,7 @@ export class EditIncidentComponent implements OnInit {
         this.incident.raisedAt = data.raisedAt;
         this.incident.status = data.status;
         this.incident.holdAt = data.holdAt;
+        this.incident.expectedTime = data.expectedTime;
         this.incident.moduleName = data.moduleName;
         this.incident.subModuleName = data.subModuleName;
         this.incident.communications = data.communications;
@@ -576,6 +637,7 @@ export class EditIncidentComponent implements OnInit {
           this.router.navigate(['/no-access']);
         }
         this.angForm.get('priorityId').setValue(this.incident.priority.id);
+        this.angForm.get('expectedTime').setValue(this.incident.expectedTime);
         /*this.angForm.get('status').setValue(this.incident.status);
         console.log(JSON.stringify(this.incident));
         this.angForm.markAllAsTouched();*/
@@ -594,6 +656,7 @@ export class EditIncidentComponent implements OnInit {
                 if (this.hasAgentPermission) {
                   this.angForm.get('priorityId').setValue(this.draftData.existing[k].priority.id);
                   this.angForm.get('newStatus').setValue(this.draftData.existing[k].status);
+                  this.angForm.get('expectedTime').setValue(this.draftData.existing[k].expectedTime);
                 }
                 this.angForm.get('message').setValue(this.draftData.existing[k].communications[0].message);
                 break;
@@ -658,6 +721,17 @@ export class EditIncidentComponent implements OnInit {
 
   resetFile(element) {
     element.value = "";
+  }
+
+  @ViewChild("newStatus") newStatus;
+  triggerSolutionDocumentAttachment(newStatus) {
+    if (typeof newStatus !== 'undefined') {
+      if (this.canEdit && this.hasAgentPermission && newStatus.key == 'CLOSED') {
+        this.solutionDocumentEnabled = true;
+      } else {
+        this.solutionDocumentEnabled = false;
+      }
+    }
   }
 
 }

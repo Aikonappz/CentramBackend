@@ -109,7 +109,7 @@
                 </div>
                 <div class="col" *ngIf="hasAgentPermission&&canEdit">
                   <label class="form-col-form-label" for="newStatus">New Status</label>
-                  <ng-select [items]="statusList" placeholder="-- Change Status --" formControlName="newStatus"
+                  <ng-select [items]="statusList" #newStatus (change)="triggerSolutionDocumentAttachment($event)" placeholder="-- Change Status --" formControlName="newStatus"
                     id="newStatus" name="newStatus" bindLabel="value" bindValue="key"></ng-select>
                   <div *ngIf="f.newStatus.touched && f.newStatus.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.newStatus.errors?.required">
@@ -142,15 +142,20 @@
                   <input type="text" id="subModuleName" readonly value="{{makeTitleCase(incident.subModuleName)}}"
                     class="form-control">
                 </div>
-                <div class="col" *ngIf="!(hasAgentPermission&&canEdit)">
+                <div class="col" [ngClass]="{'d-none': (hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="subModuleName">Expected Time Required</label>
-                  <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}}" class="form-control">
+                  <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}} hrs"
+                    class="form-control">
                 </div>
-                <div class="col" *ngIf="(hasAgentPermission&&canEdit&&incident.expectedTime==null)">
+                <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="expectedTime">Expected Time Required</label>
                   <ng-select [items]="timeList" placeholder="-- Select Expected Time --" formControlName="expectedTime"
                     id="expectedTime" name="expectedTime" bindLabel="label" bindValue="id"></ng-select>
-
+                  <div *ngIf="f.expectedTime.touched && f.expectedTime.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.expectedTime.errors?.required">
+                      Expected Time is required.
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="row row-margin-05">
@@ -274,6 +279,34 @@
                       Supported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png.
                     </div>
                     <div *ngIf="f.fileInput.errors?.mustBeLessThan2MB">
+                      File size should be less than 3 MB.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+              </div>
+              <div *ngIf="solutionDocumentEnabled" class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label " for="fileInput">Solution Document </label>
+                  <i class="icon-info"
+                    tooltip="Max file size can be 2 M.B and suported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png"></i>&nbsp;&nbsp;
+                  <input #solutionDocument multiple="multiple" (change)="getSolutionDocumentFileDetails($event)"
+                    type="file" id="solutionDocument" formControlName="solutionDocument" name="solutionDocument">
+                  <!-- <button (click)="resetFile(fileInput)" type="button" class="btn "><i class="fa fa-close"></i></button> -->
+                  <div class="file-selection-area" id="sol-file-selection-area">
+                    <div *ngFor="let file of allSelectedSolutionDocumentFiles;let indexOfelement=index;">
+                      <div id="attached-sol-file-indexOfelement">
+                        {{file.name}}&nbsp;&nbsp;<button (click)="removeSolutionDocumentFile(indexOfelement)"
+                          type="button" class="btn "><i class="fa fa-close"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="f.solutionDocument.touched && f.solutionDocument.invalid"
+                    class="alert alert-danger-custom">
+                    <div *ngIf="f.solutionDocument.errors?.validAttachments">
+                      Supported file types are txt/xls/xslx/csv/pdf/doc/docx/msg/jpeg/jpg/png.
+                    </div>
+                    <div *ngIf="f.solutionDocument.errors?.mustBeLessThan2MB">
                       File size should be less than 3 MB.
                     </div>
                   </div>
