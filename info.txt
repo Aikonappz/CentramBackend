@@ -20,6 +20,9 @@ truncate table vendor_aud;
 truncate table vendor_module_aud;
 
 
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'sam_coder';
+
 SET GLOBAL validate_password_length = 4;
 SET GLOBAL validate_password_policy=LOW;
 CREATE USER 'redonlyusr'@'%' IDENTIFIED BY 'sam_coder';
@@ -63,3 +66,8 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/EndEntity_api.centram.live.cer  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/RootCA_emSign_Root_CA_G1.cer  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/server.crt  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+
+
+
+https://www.appsdeveloperblog.com/spring-boot-password-encryption-using-jasypt/
+

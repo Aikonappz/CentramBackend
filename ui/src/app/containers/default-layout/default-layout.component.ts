@@ -120,7 +120,7 @@ export class DefaultLayoutComponent implements OnInit {
       this.userRoles.push("CATEGORY_ADMIN");
     }
     this.clientStorageService.set(AppUtility.APP_LOGGEDIN_USR_ROLES, this.userRoles);
-    //console.log(JSON.stringify(this.loggedInUser));
+    //console.log(JSON.stringify(this.loggedInUser.modulePermissions));
     this.permissions = this.loggedInUser.modulePermissions;
     // this.permissions.forEach(function (itm) {
     //   itm.actions = itm.actionName.split(',');

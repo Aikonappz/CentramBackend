@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,19 +157,6 @@ public class Config implements AsyncConfigurer {
                         //.serializeValuesWith(jsonSerializer)
                 )
                 .build();
-    }
-
-    /**
-     * jasypt config
-     *
-     * @return
-     */
-    @Bean
-    public StandardPBEStringEncryptor standardPBEStringEncryptor() {
-        StandardPBEStringEncryptor standardPBEStringEncryptor = new StandardPBEStringEncryptor();
-        standardPBEStringEncryptor.setAlgorithm(jasyptEncryptorAlgorithm);
-        standardPBEStringEncryptor.setPassword(jasyptEncryptorPassword);
-        return standardPBEStringEncryptor;
     }
 
     /**

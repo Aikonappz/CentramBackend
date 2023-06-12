@@ -667,6 +667,12 @@ public class IncidentService {
                     incident.setAsset(assetService.getAssetById(incident.getOldAssetId()));
                 }
             }
+        }else{
+            // if any update happened in background job
+            Long version = incidentRepository.getCurrentVersion(incident.getId());
+            if(!incident.getVersion().equals(version)){
+                incident.setVersion(version);
+            }
         }
         if (incident.getAssetValidity() != null) {
             incident.setAssetValidity(incident.getAssetValidity().toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));

@@ -132,6 +132,13 @@
                                                     class="fa fa-comments-o"></i> View/Update
                                             </a>
                                         </li>
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                *ngIf="hasPermission('WRITE')" id="id-view-{{element.id}}" type="button"
+                                                [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
+                                 'btn btn-sm btn-primary':true}" (click)="edit(element)"><i class="icon-eye"></i> View
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </td>

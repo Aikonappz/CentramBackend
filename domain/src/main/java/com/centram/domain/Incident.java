@@ -2,6 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.common.vo.CategoryAdminDashboardVO;
+import com.centram.domain.converter.TimeEntryConverter;
 import com.centram.domain.converter.WatchListConverter;
 import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
@@ -335,6 +336,14 @@ public class Incident extends BaseEntity implements Serializable {
     @Column(name = "expected_time", nullable = true, columnDefinition = "varchar(5)")
     @JsonView(Views.BasicView.class)
     private String expectedTime;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @Lob
+    @Column(name = "time_entries", nullable = true, columnDefinition = "TEXT")
+    @Convert(converter = TimeEntryConverter.class)
+    @JsonView(Views.BasicView.class)
+    private List<TimeEntry> timeEntries;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

@@ -4,7 +4,6 @@ package com.centram.core.api;
 import com.centram.common.dto.AuthRequestDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.UserDTO;
-import com.centram.common.service.JasyptService;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.JwtTokenUtil;
 import com.centram.common.utility.PaginatedList;
@@ -63,9 +62,6 @@ public class UserApiController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JasyptService jasyptService;
-
     /**
      * user signin
      *
@@ -107,7 +103,7 @@ public class UserApiController {
     @RequestMapping(value = "/sso-sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<LoggedInUserVO> SSOlogin(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
         try {
-            String email = jasyptService.decrypt(body.getUsername());
+            String email = body.getUsername();
             log.info("SSO principal => {} ", email);
             //LoggedInUser loggedInUser = userService.getUserByPrincipal("centramsuperadm@gmail.com");
             LoggedInUser loggedInUser = userService.getUserByPrincipal(email);

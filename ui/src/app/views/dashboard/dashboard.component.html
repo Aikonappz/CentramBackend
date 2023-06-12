@@ -9,7 +9,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #437FF7">
+                  <div class="card text-black " style="background-color: #437ff7a8">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL"})'
                         class="btn btn-transparent p-0 float-right">
@@ -22,7 +22,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #08D621">
+                  <div class="card text-black " style="background-color: #08d620a9">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ACTIVE"})'
                         class="btn btn-transparent p-0 float-right">
@@ -35,7 +35,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #F63C6D">
+                  <div class="card text-black " style="background-color: #f63c6e83">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "INACTIVE"})'
                         class="btn btn-transparent p-0 float-right">
@@ -60,7 +60,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-2">
-                  <div class="card text-white" style="background-color: #437FF7">
+                  <div class="card text-black" style="background-color: #437ff7a8">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ALL"})'
                         class="btn btn-transparent p-0 float-right">
@@ -73,7 +73,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color:  #08D621">
+                  <div class="card text-black " style="background-color:  #08d620a9">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "INCIDENT"})'
                         class="btn btn-transparent p-0 float-right">
@@ -87,7 +87,7 @@
                 <!--/.col-->
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #F63C6D">
+                  <div class="card text-black " style="background-color: #f63c6e83">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewSiteAdmin({"status": "ALL", "licenseType": "ASSET"})'
                         class="btn btn-transparent p-0 float-right">
@@ -120,7 +120,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #18CB0F">
+                  <div class="card text-black " style="background-color: #18cb0f96">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminUserDetail({})'
                         class="btn btn-transparent p-0 float-right">
@@ -133,7 +133,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #6F5EEC">
+                  <div class="card text-black " style="background-color: #6e5eeca9">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
                         class="btn btn-transparent p-0 float-right">
@@ -146,7 +146,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #B652DA">
+                  <div class="card text-black " style="background-color: #b652daa2">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
                         class="btn btn-transparent p-0 float-right">
@@ -165,7 +165,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdminChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -194,7 +194,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of orgAdmin2ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -223,7 +223,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of orgAdmin1ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -252,7 +252,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of orgAdmin3ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -289,7 +289,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of userChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -318,7 +318,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of user2ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -347,7 +347,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of user1ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -376,7 +376,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of user3ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -412,7 +412,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agent1ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
                         class="btn btn-transparent p-0 float-right">
@@ -440,7 +440,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent4ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -468,7 +468,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agentChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
                         class="btn btn-transparent p-0 float-right">
@@ -496,7 +496,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent3ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -524,7 +524,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of agent2ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent")'
                         class="btn btn-transparent p-0 float-right">
@@ -552,7 +552,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of agent5ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"agent","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -587,7 +587,7 @@
             <div>
               <div class="row">
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #F46E3E;">
+                  <div class="card text-black " style="background-color: #f46f3e93;">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=5"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -600,7 +600,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #19E1B6">
+                  <div class="card text-black " style="background-color: #19e1b69d">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=10"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -613,7 +613,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #6F5EEC">
+                  <div class="card text-black " style="background-color: #6e5eeca1">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=20"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -626,7 +626,7 @@
                 </div>
                 <!--/.col-->
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #18CB0F;">
+                  <div class="card text-black " style="background-color: #18cb0f96;">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">=30"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -638,7 +638,7 @@
                   </div>
                 </div>
                 <div class="col-sm-2">
-                  <div class="card text-white " style="background-color: #B652DA">
+                  <div class="card text-black " style="background-color: #b652daa2">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident({agingFilter:">60"},"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -664,7 +664,7 @@
             <div>
               <div class="row" *ngFor="let rows of ca1ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -691,7 +691,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of caChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
@@ -720,7 +720,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'ASSET')">
               <div class="row" *ngFor="let rows of ca4ChunkedTilesData">
                 <div class="col-sm-6 col-lg-4" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user","ASSET")'
                         class="btn btn-transparent p-0 float-right">
@@ -749,7 +749,7 @@
             <div *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')">
               <div class="row" *ngFor="let rows of ca3ChunkedTilesData">
                 <div class="col-sm-2" *ngFor="let item of rows">
-                  <div class="card text-white" [ngStyle]="{'background-color':item.backgroundColour}">
+                  <div class="card text-black" [ngStyle]="{'background-color':item.backgroundColour}">
                     <div class="card-body pb-0">
                       <button type="button" (click)='viewIncident(item.detailDataParams,"user")'
                         class="btn btn-transparent p-0 float-right">
