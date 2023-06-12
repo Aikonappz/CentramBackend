@@ -149,7 +149,7 @@
                     class="form-control">
                 </div>
                 <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">
-                  <label class="form-col-form-label" for="expectedTime">Expected Time Required</label>
+                  <label class="form-col-form-label" for="expectedTime">Hours Estimated</label>
                   <ng-select [items]="timeList" placeholder="-- Select Expected Time --" formControlName="expectedTime"
                     id="expectedTime" name="expectedTime" bindLabel="label" bindValue="id"></ng-select>
                   <div *ngIf="f.expectedTime.touched && f.expectedTime.invalid" class="alert alert-danger-custom">
@@ -158,7 +158,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">
+                <div class="col" [ngClass]="{'d-none': (!(hasAgentPermission&&canEdit)||(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED'))}">
                   <label class="form-col-form-label" for="addTimeEntry">&nbsp;</label>
                   <div>
                     <button (click)="addTimeEntry()" id="addTimeEntry" type="button" class="btn btn-secondary">Add Time
