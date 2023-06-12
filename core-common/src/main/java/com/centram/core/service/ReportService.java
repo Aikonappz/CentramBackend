@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,9 +209,15 @@ public class ReportService {
                     "Vendor Name",
                     "SLA Overdue?",
                     "Resolve by Date",
-                    "Current Status"
+                    "Current Status",
+                    "Hours Estimated",
+                    "Actual Time Taken",
+                    "Time Entries"
             );
             csvPrinter.printRecord(data);
+            String actualTimeTaken = "";
+            Long seconds = null;
+            Long day = null;
             for (Incident incident : incidents) {
                 TreeSet<IncidentCommunication> ascSortedCommunicationSet = new TreeSet<IncidentCommunication>(new Comparator<IncidentCommunication>() {
                     @Override
@@ -222,6 +229,12 @@ public class ReportService {
                     ascSortedCommunicationSet.add(incidentCommunication);
                 }
                 incident.setCommunications(ascSortedCommunicationSet);
+                seconds = Duration.between(incident.getCreatedDate(), incident.getModifiedDate()).toSeconds();
+                day = TimeUnit.SECONDS.toDays(seconds);
+                actualTimeTaken = "";
+                actualTimeTaken += ( day > 0) ? String.valueOf(day) + ":" : "00:";
+                actualTimeTaken += (TimeUnit.SECONDS.toHours(seconds) - (day * 24) > 0) ? String.valueOf(TimeUnit.SECONDS.toHours(seconds) - (day * 24)) + ":" : "00:";
+                actualTimeTaken += (TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60) > 0) ? String.valueOf(TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60))  : "00";
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
@@ -235,7 +248,10 @@ public class ReportService {
                         (incident.getAssignedUser() != null && incident.getAssignedUser().getVendor() != null) ? incident.getAssignedUser().getVendor().getName() : "",
                         incident.getSlaBreached() ? "YES" : "NO",
                         incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateFormat)),
-                        incident.getStatus().name()
+                        incident.getStatus().name(),
+                        incident.getExpectedTime() + " HRS",
+                        actualTimeTaken,
+                        this.getTimeEntriesAsText(incident.getTimeEntries())
                 );
                 csvPrinter.printRecord(data);
             }
@@ -244,6 +260,17 @@ public class ReportService {
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
+    }
+
+    private String getTimeEntriesAsText(List<TimeEntry> timeEntries) {
+        String s = "";
+        for (int k = 0; k < timeEntries.size(); k++) {
+            s += timeEntries.get(k).getPurpose() + " - " + timeEntries.get(k).getTime() + " HRS";
+            if (k != (timeEntries.size() - 1)) {
+                s += "\n";
+            }
+        }
+        return s;
     }
 
     @Transactional(readOnly = true)
