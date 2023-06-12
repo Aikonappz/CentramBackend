@@ -3,6 +3,7 @@ import { IncidentStatus } from "./enumerator/IncidentStatus";
 import { Status } from "./enumerator/Status";
 import { IncidentCommunication } from "./IncidentCommunication";
 import { Priority } from "./Priority";
+import { TimeEntry } from "./TimeEntry";
 import { User } from "./User";
 
 export class Incident extends Base {
@@ -37,6 +38,7 @@ export class Incident extends Base {
     allocationDateTime: any;
     deallocationDateTime: any;
     expectedTime: string;
+    timeEntries: TimeEntry[];
     constructor() {
         super();
         this.id = null;
@@ -62,6 +64,7 @@ export class Incident extends Base {
         this.allocationDateTime = null;
         this.deallocationDateTime = null;
         this.expectedTime = null;
+        this.timeEntries = [];
     }
 }
 export interface IncidentList {

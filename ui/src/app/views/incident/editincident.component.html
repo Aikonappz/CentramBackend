@@ -109,8 +109,9 @@
                 </div>
                 <div class="col" *ngIf="hasAgentPermission&&canEdit">
                   <label class="form-col-form-label" for="newStatus">New Status</label>
-                  <ng-select [items]="statusList" #newStatus (change)="triggerSolutionDocumentAttachment($event)" placeholder="-- Change Status --" formControlName="newStatus"
-                    id="newStatus" name="newStatus" bindLabel="value" bindValue="key"></ng-select>
+                  <ng-select [items]="statusList" #newStatus (change)="triggerSolutionDocumentAttachment($event)"
+                    placeholder="-- Change Status --" formControlName="newStatus" id="newStatus" name="newStatus"
+                    bindLabel="value" bindValue="key"></ng-select>
                   <div *ngIf="f.newStatus.touched && f.newStatus.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.newStatus.errors?.required">
                       Status is required.
@@ -143,7 +144,7 @@
                     class="form-control">
                 </div>
                 <div class="col" [ngClass]="{'d-none': (hasAgentPermission&&canEdit)}">
-                  <label class="form-col-form-label" for="subModuleName">Expected Time Required</label>
+                  <label class="form-col-form-label" for="subModuleName">Hours Estimated</label>
                   <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}} hrs"
                     class="form-control">
                 </div>
@@ -155,6 +156,13 @@
                     <div *ngIf="f.expectedTime.errors?.required">
                       Expected Time is required.
                     </div>
+                  </div>
+                </div>
+                <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">
+                  <label class="form-col-form-label" for="addTimeEntry">&nbsp;</label>
+                  <div>
+                    <button (click)="addTimeEntry()" id="addTimeEntry" type="button" class="btn btn-secondary">Add Time
+                      Entry</button>
                   </div>
                 </div>
               </div>
