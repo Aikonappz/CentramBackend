@@ -41,10 +41,12 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProje
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/db/centram.sql  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 
+BACKEND--
+---------
 ssh -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com
 
-
-zip -r /home/sumit/Desktop/ui.zip /home/sumit/IdeaProjects/centram/ui/dist/centram-ui
+UI--
+----
 ssh -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp
 

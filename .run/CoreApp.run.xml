@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="com.centram.core.CoreApp" />
     <module name="core-api" />
-    <option name="PROGRAM_PARAMETERS" value="--spring.config.location=$PROJECT_DIR$/properties/application-local.properties --illegal-access=warn --send.email=true" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.config.location=$PROJECT_DIR$/properties/application-local.properties --illegal-access=warn --send.email=true --logging.config=$PROJECT_DIR$/properties/logback-local.xml" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.centram.core.*" />

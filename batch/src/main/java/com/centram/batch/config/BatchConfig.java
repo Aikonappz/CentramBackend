@@ -134,12 +134,10 @@ public class BatchConfig {
         return new BatchReport();
     }
 
-    @Bean
+    /*@Bean
     JunkCleaner junkCleaner() {
         return new JunkCleaner();
-    }
-
-
+    }*/
 
     /*@Bean
     public ServletRegistrationBean camelServletRegistrationBean() {

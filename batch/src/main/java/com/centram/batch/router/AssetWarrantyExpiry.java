@@ -47,6 +47,7 @@ public class AssetWarrantyExpiry extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://organisation/assetWarrantyExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== asset-warranty-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("asset-warranty-expiry")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
@@ -56,10 +57,11 @@ public class AssetWarrantyExpiry extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "asset-warranty-expiry -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "asset-warranty-expiry -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processAssetWarrantyExpiryNotifications");
 
         from("direct:processAssetWarrantyExpiryNotifications")
+                .log(LoggingLevel.INFO, "=================== process-asset-warranty-expiry-notifications ===================")
                 .routeId("process-asset-warranty-expiry-notifications")
                 .loop(simple("${body.size}"))
                 .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
@@ -97,7 +99,8 @@ public class AssetWarrantyExpiry extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "asset-warranty-expiry completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "asset-warranty-expiry completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "=================== asset-warranty-expiry job completed ===================")
                 .end();
     }
 

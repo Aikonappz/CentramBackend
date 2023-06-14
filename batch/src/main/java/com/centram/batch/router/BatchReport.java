@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 public class BatchReport extends RouteBuilder {
-
     private static final Logger log = LoggerFactory.getLogger(BatchReport.class);
     @Value("${app.incident.report.cron}")
     private String interval;
@@ -50,19 +49,21 @@ public class BatchReport extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://report/incident?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== batch-report job started ===================")
                 .autoStartup(true)
-                .routeId("incident-report")
+                .routeId("batch-report")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "incident-report started -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processIncidentReport")
                 .end();
 
         from("direct:processIncidentReport")
+                .log(LoggingLevel.INFO, "=================== process-incident-report ===================")
                 .routeId("process-incident-report")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .loop(simple("${body.size}"))
@@ -75,7 +76,7 @@ public class BatchReport extends RouteBuilder {
                         LocalDateTime currentDateTime = LocalDateTime.now();
                         LocalDateTime start = currentDateTime.minusDays(7).toLocalDate().atStartOfDay();
                         LocalDateTime end = currentDateTime.minusDays(1).toLocalDate().atTime(LocalTime.MAX);
-                        log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
+                        //log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
                         List<UserVO> userVOS = userService.getUsersByRoleNames(Arrays.asList("ORG_ADMIN", "ORG_INCIDENT_AGENT_MANAGER", "ORG_INCIDENT_AGENT_LEAD", "_CATEGORY_ADMIN"), organisation.getId());
                         Map<String, Object> mailData = new HashMap<String, Object>();
                         for (UserVO userVO : userVOS) {
@@ -99,10 +100,11 @@ public class BatchReport extends RouteBuilder {
                 })
                 //.toD("direct:${header.next-route}")
                 .end()
-                .log(LoggingLevel.INFO, "incident-report completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "incident-report completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
 
         from("quartzComponent://report/escalatedIncident?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== escalated-incident-report ===================")
                 .autoStartup(true)
                 .routeId("escalated-incident-report")
                 .process(new Processor() {
@@ -111,15 +113,16 @@ public class BatchReport extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "escalated-incident-report started -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "escalated-incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processEscalatedIncidentReport")
                 .end();
 
         from("direct:processEscalatedIncidentReport")
+                .log(LoggingLevel.INFO, "=================== process-escalated-incident-report ===================")
                 .routeId("process-escalated-incident-report")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -128,7 +131,7 @@ public class BatchReport extends RouteBuilder {
                         LocalDateTime currentDateTime = LocalDateTime.now();
                         LocalDateTime start = currentDateTime.minusDays(7).toLocalDate().atStartOfDay();
                         LocalDateTime end = currentDateTime.minusDays(1).toLocalDate().atTime(LocalTime.MAX);
-                        log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
+                        //log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
                         List<UserVO> userVOS = userService.getUsersByRoleNames(Arrays.asList("ORG_ADMIN", "ORG_INCIDENT_AGENT_MANAGER", "ORG_INCIDENT_AGENT_LEAD", "_CATEGORY_ADMIN"), organisation.getId());
                         Map<String, Object> mailData = new HashMap<String, Object>();
                         for (UserVO userVO : userVOS) {
@@ -152,10 +155,11 @@ public class BatchReport extends RouteBuilder {
                 })
                 //.toD("direct:${header.next-route}")
                 .end()
-                .log(LoggingLevel.INFO, "escalated-incident-report completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "escalated-incident-report completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
 
         from("quartzComponent://report/reOpenedIncident?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== reopened-incident-report ===================")
                 .autoStartup(true)
                 .routeId("reopened-incident-report")
                 .process(new Processor() {
@@ -164,15 +168,16 @@ public class BatchReport extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "reopened-incident-report started -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "reopened-incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processReopenedIncidentReport")
                 .end();
 
         from("direct:processReopenedIncidentReport")
+                .log(LoggingLevel.INFO, "=================== process-reopened-incident-report ===================")
                 .routeId("process-reopened-incident-report")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -181,7 +186,7 @@ public class BatchReport extends RouteBuilder {
                         LocalDateTime currentDateTime = LocalDateTime.now();
                         LocalDateTime start = currentDateTime.minusDays(7).toLocalDate().atStartOfDay();
                         LocalDateTime end = currentDateTime.minusDays(1).toLocalDate().atTime(LocalTime.MAX);
-                        log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
+                        //log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
                         List<UserVO> userVOS = userService.getUsersByRoleNames(Arrays.asList("ORG_ADMIN", "ORG_INCIDENT_AGENT_MANAGER", "ORG_INCIDENT_AGENT_LEAD", "_CATEGORY_ADMIN"), organisation.getId());
                         Map<String, Object> mailData = new HashMap<String, Object>();
                         for (UserVO userVO : userVOS) {
@@ -205,10 +210,11 @@ public class BatchReport extends RouteBuilder {
                 })
                 //.toD("direct:${header.next-route}")
                 .end()
-                .log(LoggingLevel.INFO, "reopened-incident-report completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "reopened-incident-report completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
 
         from("quartzComponent://report/agingIncident?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== aging-incident-report started ===================")
                 .autoStartup(true)
                 .routeId("aging-incident-report")
                 .process(new Processor() {
@@ -217,15 +223,16 @@ public class BatchReport extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "aging-incident-report started -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "aging-incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processAgingIncidentReport")
                 .end();
 
         from("direct:processAgingIncidentReport")
+                .log(LoggingLevel.INFO, "=================== process-aging-incident-report ===================")
                 .routeId("process-aging-incident-report")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -234,7 +241,7 @@ public class BatchReport extends RouteBuilder {
                         LocalDateTime currentDateTime = LocalDateTime.now();
                         LocalDateTime start = currentDateTime.minusDays(7).toLocalDate().atStartOfDay();
                         LocalDateTime end = currentDateTime.minusDays(1).toLocalDate().atTime(LocalTime.MAX);
-                        log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
+                        //log.info(" current date time {}, start {}, end {}", currentDateTime, start, end);
                         List<UserVO> userVOS = userService.getUsersByRoleNames(Arrays.asList("ORG_ADMIN", "ORG_INCIDENT_AGENT_MANAGER", "ORG_INCIDENT_AGENT_LEAD", "_CATEGORY_ADMIN"), organisation.getId());
                         Map<String, Object> mailData = new HashMap<String, Object>();
                         for (UserVO userVO : userVOS) {
@@ -258,7 +265,7 @@ public class BatchReport extends RouteBuilder {
                 })
                 //.toD("direct:${header.next-route}")
                 .end()
-                .log(LoggingLevel.INFO, "reopened-incident-report completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "reopened-incident-report completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
     }
 

@@ -44,6 +44,7 @@ public class SlaNotify extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://incident/slaNotify?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== sla-notify job started ===================")
                 .autoStartup(true)
                 .routeId("sla-notify")
                 .process(new Processor() {
@@ -52,14 +53,15 @@ public class SlaNotify extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "sla-notify started -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "sla-notify started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:getNonBlockedIncidents");
 
         from("direct:getNonBlockedIncidents")
+                .log(LoggingLevel.INFO, "=================== get-non-blocked-incidents ===================")
                 .routeId("get-non-blocked-incidents")
                 .enrich("bean:incidentService?method=getNonBlockedIncidents()", new IncidentAggregator())
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -101,6 +103,7 @@ public class SlaNotify extends RouteBuilder {
                 .end();
 
         from("direct:wip50PercentTimePassed")
+                .log(LoggingLevel.INFO, "=================== wip-50-percent-time-passed ===================")
                 .routeId("wip-50-percent-time-passed")
                 .choice()
                 .when(exchange -> {
@@ -123,7 +126,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification already triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
+                        //log.info("[{}] notification already triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
                     }
                 })
                 .endChoice()
@@ -132,6 +135,7 @@ public class SlaNotify extends RouteBuilder {
                 .end();
 
         from("direct:wip75PercentTimePassed")
+                .log(LoggingLevel.INFO, "=================== wip-75-percent-time-passed ===================")
                 .routeId("wip-75-percent-time-passed")
                 .choice()
                 .when(exchange -> {
@@ -155,7 +159,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification already triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
+                        //log.info("[{}] notification already triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
                     }
                 })
                 .endChoice()
@@ -164,6 +168,7 @@ public class SlaNotify extends RouteBuilder {
                 .end();
 
         from("direct:slaJustBreached")
+                .log(LoggingLevel.INFO, "=================== sla-just-breached ===================")
                 .routeId("sla-just-breached")
                 .choice()
                 .when(exchange -> {
@@ -188,7 +193,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification already triggered for sla-just-breached!", incident.getIncidentNo());
+                        //log.info("[{}] notification already triggered for sla-just-breached!", incident.getIncidentNo());
                     }
                 })
                 .endChoice()
@@ -197,6 +202,7 @@ public class SlaNotify extends RouteBuilder {
                 .end();
 
         from("direct:slaBreached60MinutesPassed")
+                .log(LoggingLevel.INFO, "=================== sla-breached-60-minutes-passed ===================")
                 .routeId("sla-breached-60-minutes-passed")
                 .choice()
                 .when(exchange -> {
@@ -219,7 +225,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification already triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
+                        //log.info("[{}] notification already triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
                     }
                 })
                 .endChoice()
@@ -233,7 +239,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] skipped!", incident.getIncidentNo());
+                        //log.info("[{}] skipped!", incident.getIncidentNo());
                     }
                 })
                 .to("direct:completeIncidentSlaNotification")
@@ -247,7 +253,8 @@ public class SlaNotify extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "sla-notify completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "sla-notify completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "=================== sla-notify job completed ===================")
                 .end();
 
     }

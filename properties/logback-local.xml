@@ -3,7 +3,8 @@
     <include resource="org/springframework/boot/logging/logback/default.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
-    <property name="HOME_LOG" value="/var/log/centram/centram-core.log"/>
+    <property name="LOG_PATH" value="/var/log/centram"/>
+    <property name="LOG_FILE" value="/var/log/centram/centram-core.log"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
@@ -12,15 +13,12 @@
         </layout>
     </appender>
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${HOME_LOG}</file>
+        <file>${LOG_FILE}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>log/archived/centram-core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <!-- each archived file, size max 10MB -->
-            <maxFileSize>1MB</maxFileSize>
-            <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
-            <totalSizeCap>20MB</totalSizeCap>
-            <!-- 60 days to keep -->
-            <maxHistory>3</maxHistory>
+            <fileNamePattern>${LOG_PATH}/centram-core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <totalSizeCap>100MB</totalSizeCap>
+            <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yy-MM-dd E HH:mm:ss.SSS} %-5p [%thread] %logger %X{CorrelationId:-NA} %m%n</pattern>
