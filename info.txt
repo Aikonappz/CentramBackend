@@ -28,7 +28,7 @@ SET GLOBAL validate_password_policy=LOW;
 CREATE USER 'redonlyusr'@'%' IDENTIFIED BY 'sam_coder';
 GRANT SELECT, SHOW VIEW ON centram.* TO 'redonlyusr'@'%' IDENTIFIED BY 'sam_coder';
 FLUSH PRIVILEGES;
-mysqldump -u root -p centram > /home/sumit/Documents/ramesh/app/centram/db/centram.sql
+mysqldump -u root -p centram > /home/sumit/IdeaProjects/centram/db/centram.sql
 mysql -u root -p centram
 drop database centram;
 CREATE DATABASE centram CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -36,11 +36,19 @@ mysql -u root -p centram < /tmp/centram.sql
 
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/sso.xml /home/sumit/Documents/ramesh/app/centram/core-api/src/main/resources/saml/metadata/sso.xml
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/saml-keystore.jks /home/sumit/Documents/ramesh/app/centram/core-api/src/main/resources/saml/saml-keystore.jks
-scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
-scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/core-api/target/core-service-api.jar  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
-scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
-scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Documents/ramesh/app/centram/db/centram.sql  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/core-api/target/core-service-api.jar  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/db/centram.sql  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+
 ssh -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com
+
+
+zip -r /home/sumit/Desktop/ui.zip /home/sumit/IdeaProjects/centram/ui/dist/centram-ui
+ssh -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp
+
+
 sudo unzip -o /tmp/ui.zip  -d /usr/share/nginx/html/
 
 nohup java -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
