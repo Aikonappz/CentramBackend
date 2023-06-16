@@ -36,9 +36,11 @@ mysql -u root -p centram < /tmp/centram.sql
 
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/sso.xml /home/sumit/Documents/ramesh/app/centram/core-api/src/main/resources/saml/metadata/sso.xml
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/saml-keystore.jks /home/sumit/Documents/ramesh/app/centram/core-api/src/main/resources/saml/saml-keystore.jks
+
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/core-api/target/core-service-api.jar  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/properties/application-stag.properties  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/properties/logback-stag.xml  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/db/centram.sql  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 
 BACKEND--
@@ -53,8 +55,8 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProje
 
 sudo unzip -o /tmp/ui.zip  -d /usr/share/nginx/html/
 
-nohup java -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
-sudo nohup java -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
+nohup java -Dlogging.config=/home/ec2-user/logback-stag.xml -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
+sudo nohup java -Dlogging.config=/home/ec2-user/logback-stag.xml -Dspring.config.location=/home/ec2-user/application-stag.properties -jar /home/ec2-user/core-service-api.jar  >/dev/null 2>&1&
 
 sudo systemctl stop nginx.service
 sudo systemctl status nginx.service
