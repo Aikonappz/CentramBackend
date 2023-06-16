@@ -36,7 +36,7 @@ import { ClientStorageService } from "../../../service/ClientStorageService";
                                 <ng-container *ngFor="let timeEntry of timeEntries;let i=index;">
                                     <tr>
                                         <td>{{timeEntry.purpose}}</td>
-                                        <td>{{timeEntry.time}}</td>
+                                        <td>{{timeEntry.time}} min</td>
                                         <td>
                                             <div *ngIf="timeEntry.newEntry==true">
                                                 <button (click)="remove(i)" type="button"
@@ -107,12 +107,18 @@ export class AddTimeEntryComponent implements OnInit {
         public options: ModalOptions,
         private clientStorageService: ClientStorageService,
     ) {
-        let tmList = AppUtility.getSlaList(79);
-        for (let k = 0; k < tmList.length; k++) {
-            if (k != 0) {
-                this.timeList.push({ id: tmList[k], label: tmList[k] + " hrs" });
-            }
-        }
+        //let tmList = AppUtility.getSlaList(79);
+        // for (let k = 0; k < tmList.length; k++) {
+        //     if (k != 0) {
+        //         this.timeList.push({ id: tmList[k], label: tmList[k] + " hrs" });
+        //     }
+        // }
+        this.timeList.push({ id: "10:00", label:  "10.00 min" });
+        this.timeList.push({ id: "15:00", label:  "15.00 min" });
+        this.timeList.push({ id: "20:00", label:  "20.00 min" });        
+        this.timeList.push({ id: "30:00", label:  "30.00 min" });
+        this.timeList.push({ id: "45:00", label:  "45.00 min" });
+        this.timeList.push({ id: "60:00", label:  "60.00 min" });
         this.angForm = this.fb.group({
             purpose: new FormControl(null, [
                 Validators.required,

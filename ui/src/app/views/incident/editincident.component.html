@@ -145,7 +145,7 @@
                 </div>
                 <div class="col" [ngClass]="{'d-none': (hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="subModuleName">Hours Estimated</label>
-                  <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}} hrs"
+                  <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}} min"
                     class="form-control">
                 </div>
                 <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">

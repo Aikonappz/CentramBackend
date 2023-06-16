@@ -238,7 +238,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),
@@ -265,7 +265,7 @@ public class ReportService {
     private String getTimeEntriesAsText(List<TimeEntry> timeEntries) {
         String s = "";
         for (int k = 0; k < timeEntries.size(); k++) {
-            s += timeEntries.get(k).getPurpose() + " - " + timeEntries.get(k).getTime() + " HRS";
+            s += timeEntries.get(k).getPurpose() + " - " + timeEntries.get(k).getTime() + " MIN";
             if (k != (timeEntries.size() - 1)) {
                 s += "\n";
             }
@@ -323,7 +323,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),
@@ -395,7 +395,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),
@@ -465,7 +465,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),

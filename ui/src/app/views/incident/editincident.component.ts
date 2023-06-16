@@ -367,6 +367,14 @@ export class EditIncidentComponent implements OnInit {
           if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
             this.incident.status = this.angForm.controls['newStatus'].value;
           }
+          let savedTimeEntries: TimeEntry[] = JSON.parse(this.clientStorageService.get(this.incident.id.toString()));
+          if (savedTimeEntries != null) {
+            for (let i = 0; i < savedTimeEntries.length; i++) {
+              savedTimeEntries[i].newEntry = false;
+            }
+          }
+          this.incident.timeEntries = savedTimeEntries == null ? [] : (savedTimeEntries.length == 0) ? [] : savedTimeEntries;
+          this.clientStorageService.remove(this.incident.id.toString());
         }
         // prepare incidentCommunication object
         this.incidentCommunication = new IncidentCommunication();
@@ -374,15 +382,7 @@ export class EditIncidentComponent implements OnInit {
         this.incidentCommunication.communicatedBy = null;
         this.incidentCommunication.incident = null;
         this.incident.communications.push(this.incidentCommunication);
-        this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };
-        let savedTimeEntries: TimeEntry[] = JSON.parse(this.clientStorageService.get(this.incident.id.toString()));
-        if (savedTimeEntries != null) {
-          for (let i = 0; i < savedTimeEntries.length; i++) {
-            savedTimeEntries[i].newEntry = false;
-          }
-        }
-        this.incident.timeEntries = savedTimeEntries == null ? [] : (savedTimeEntries.length == 0) ? [] : savedTimeEntries;
-        this.clientStorageService.remove(this.incident.id.toString());
+        this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };        
         //console.log(this.incident);
         this.callSaveIncidentService();
       }

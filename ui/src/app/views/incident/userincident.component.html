@@ -118,6 +118,13 @@
                                     <ul *dropdownMenu class="dropdown-menu" role="menu">
                                         <li role="menuitem">
                                             <a class="dropdown-item" href="javascript:void(0);"
+                                                *ngIf="hasPermission('WRITE')" id="id-view-{{element.id}}" type="button"
+                                                [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
+                                 'btn btn-sm btn-primary':true}" (click)="edit(element)"><i class="icon-eye"></i> View
+                                            </a>
+                                        </li>
+                                        <li role="menuitem">
+                                            <a class="dropdown-item" href="javascript:void(0);"
                                                 *ngIf="canReopen(element.modifiedDate)&&hasPermission('WRITE')"
                                                 id="id-reopen-{{element.id}}" [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
                                  'btn btn-sm btn-warning':true}" (click)="reopen(element)"><i class="fa fa-folder-open-o
@@ -130,13 +137,6 @@
                                                 [ngClass]="{'d-none': element.status=='SOLUTION_PROVIDED'||element.status=='CLOSED',
                                  'btn btn-sm btn-primary':true}" (click)="edit(element)"><i
                                                     class="fa fa-comments-o"></i> View/Update
-                                            </a>
-                                        </li>
-                                        <li role="menuitem">
-                                            <a class="dropdown-item" href="javascript:void(0);"
-                                                *ngIf="hasPermission('WRITE')" id="id-view-{{element.id}}" type="button"
-                                                [ngClass]="{'d-none': element.status!='SOLUTION_PROVIDED'&&element.status!='CLOSED',
-                                 'btn btn-sm btn-primary':true}" (click)="edit(element)"><i class="icon-eye"></i> View
                                             </a>
                                         </li>
                                     </ul>
