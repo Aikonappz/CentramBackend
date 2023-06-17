@@ -33,6 +33,12 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "MASTERS" },
     children: [
       {
+        name: 'Account',
+        url: '/master/account',
+        icon: 'cil-object-group',
+        attributes: { "moduleName": "ACCOUNT" }
+      },
+      {
         name: 'Department',
         url: '/master/department',
         icon: 'icon-puzzle',
