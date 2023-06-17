@@ -23,11 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -211,13 +212,12 @@ public class ReportService {
                     "Resolve by Date",
                     "Current Status",
                     "Hours Estimated",
-                    "Actual Time Taken",
-                    "Time Entries"
+                    "Actual Time Taken"
             );
             csvPrinter.printRecord(data);
-            String actualTimeTaken = "";
-            Long seconds = null;
-            Long day = null;
+            //String actualTimeTaken = "";
+            //Long seconds = null;
+            //Long day = null;
             for (Incident incident : incidents) {
                 TreeSet<IncidentCommunication> ascSortedCommunicationSet = new TreeSet<IncidentCommunication>(new Comparator<IncidentCommunication>() {
                     @Override
@@ -229,12 +229,12 @@ public class ReportService {
                     ascSortedCommunicationSet.add(incidentCommunication);
                 }
                 incident.setCommunications(ascSortedCommunicationSet);
-                seconds = Duration.between(incident.getCreatedDate(), incident.getModifiedDate()).toSeconds();
-                day = TimeUnit.SECONDS.toDays(seconds);
-                actualTimeTaken = "";
-                actualTimeTaken += ( day > 0) ? String.valueOf(day) + ":" : "00:";
-                actualTimeTaken += (TimeUnit.SECONDS.toHours(seconds) - (day * 24) > 0) ? String.valueOf(TimeUnit.SECONDS.toHours(seconds) - (day * 24)) + ":" : "00:";
-                actualTimeTaken += (TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60) > 0) ? String.valueOf(TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60))  : "00";
+                //seconds = Duration.between(incident.getCreatedDate(), incident.getModifiedDate()).toSeconds();
+                //day = TimeUnit.SECONDS.toDays(seconds);
+                //actualTimeTaken = "";
+                //actualTimeTaken += ( day > 0) ? String.valueOf(day) + ":" : "00:";
+                //actualTimeTaken += (TimeUnit.SECONDS.toHours(seconds) - (day * 24) > 0) ? String.valueOf(TimeUnit.SECONDS.toHours(seconds) - (day * 24)) + ":" : "00:";
+                //actualTimeTaken += (TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60) > 0) ? String.valueOf(TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60))  : "00";
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
@@ -250,26 +250,37 @@ public class ReportService {
                         incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getStatus().name(),
                         incident.getExpectedTime() + " HRS",
-                        actualTimeTaken,
-                        this.getTimeEntriesAsText(incident.getTimeEntries())
+                        incident.getTimeEntries().size() > 0 ? this.getActualTimeSpentAccordingTimeEntries(incident.getTimeEntries()) : ""
                 );
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
             return new ByteArrayInputStream(out.toByteArray());
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
     }
 
-    private String getTimeEntriesAsText(List<TimeEntry> timeEntries) {
+    private String getActualTimeSpentAccordingTimeEntries(List<TimeEntry> timeEntries) throws ParseException {
         String s = "";
+        Integer minute = 0;
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        Date date = null;
         for (int k = 0; k < timeEntries.size(); k++) {
-            s += timeEntries.get(k).getPurpose() + " - " + timeEntries.get(k).getTime() + " MIN";
-            if (k != (timeEntries.size() - 1)) {
-                s += "\n";
-            }
+            date = format.parse(timeEntries.get(k).getTime());
+            minute += date.getHours();
         }
+        Integer seconds = minute * 60;
+        Integer day = seconds / (24 * 3600);
+        seconds = seconds % (24 * 3600);
+        Integer hour = seconds / 3600;
+        seconds %= 3600;
+        Integer minutes = seconds / 60;
+        seconds %= 60;
+        Integer sec = seconds;
+        s = day > 1 ? day + " days " : day == 1 ? day + " day " : "";
+        s = hour > 1 ? hour + " hours " : hour == 1 ? hour + " hour " : "";
+        s = minutes > 1 ? minutes + " minutes " : minutes == 1 ? minutes + " minute " : "";
         return s;
     }
 
