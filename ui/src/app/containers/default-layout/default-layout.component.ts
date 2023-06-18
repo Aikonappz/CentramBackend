@@ -548,6 +548,31 @@ export class DefaultLayoutComponent implements OnInit {
     var roles = this.clientStorageService.get(AppUtility.APP_LOGGEDIN_USR_ROLES);
     var self = this;
     $(function () {
+      // min max chat box
+      $(document).on('click', '.panel-heading i.icon_minim', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+          $this.parents('.panel').find('.panel-body').slideUp();
+          $this.addClass('panel-collapsed');
+          $this.removeClass('fa-minus').addClass('fa-plus');
+        } else {
+          $this.parents('.panel').find('.panel-body').slideDown();
+          $this.removeClass('panel-collapsed');
+          $this.removeClass('fa-plus').addClass('fa-minus');
+        }
+      });
+      // $(document).on('focus', '.panel-footer input.chat_input', function (e) {
+      //   var $this = $(this);
+      //   if ($('#minim_chat_window').hasClass('panel-collapsed')) {
+      //     $this.parents('.panel').find('.panel-body').slideDown();
+      //     $('#minim_chat_window').removeClass('panel-collapsed');
+      //     $('#minim_chat_window').removeClass('fa-plus-circle').addClass('fa-minus-circle');
+      //   }
+      // });
+      // min max chat box
+
+
+
       if (!roles.includes('EMP') && roles.includes('AGENT')) {
         $('.nav-item').removeClass('highlighted-yellow');
       }
@@ -917,6 +942,10 @@ export class DefaultLayoutComponent implements OnInit {
     } else {
       console.log("Invalid Form!");
     }
+  }
+
+  chatMinMax() {
+
   }
 
 }
