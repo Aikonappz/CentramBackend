@@ -593,7 +593,7 @@ public class MiscService {
                         incidentEmailVO.setCategory(category);
                         incidentEmailVO.setSubCategory(subCategory);
                         incidentEmailVO.setUserVOS(userVOS);
-                        incidentEmailVO.setRecipientName("DL");
+                        incidentEmailVO.setRecipientName("Supportdesk");
                         incidentEmailVO.populateEscalationMatrices();
                         appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
                     }
@@ -694,7 +694,7 @@ public class MiscService {
                             incidentEmailVO.setCategory(category);
                             incidentEmailVO.setSubCategory(subCategory);
                             incidentEmailVO.setUserVOS(userVOS);
-                            incidentEmailVO.setRecipientName("DL");
+                            incidentEmailVO.setRecipientName("Supportdesk");
                             incidentEmailVO.populateEscalationMatrices();
                             appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
                         }
@@ -993,7 +993,7 @@ public class MiscService {
                 incidentEmailVO.setCategory(category);
                 incidentEmailVO.setSubCategory(subCategory);
                 incidentEmailVO.setUserVOS(userVOS);
-                incidentEmailVO.setRecipientName("DL");
+                incidentEmailVO.setRecipientName("Supportdesk");
                 incidentEmailVO.populateEscalationMatrices();
                 appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
             }
@@ -1046,7 +1046,7 @@ public class MiscService {
                 incidentEmailVO.setCategory(category);
                 incidentEmailVO.setSubCategory(subCategory);
                 incidentEmailVO.setUserVOS(userVOS);
-                incidentEmailVO.setRecipientName("DL");
+                incidentEmailVO.setRecipientName("Supportdesk");
                 incidentEmailVO.populateEscalationMatrices();
                 appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
             }
@@ -1124,7 +1124,7 @@ public class MiscService {
                 incidentEmailVO.setCategory(category);
                 incidentEmailVO.setSubCategory(subCategory);
                 incidentEmailVO.setUserVOS(userVOS);
-                incidentEmailVO.setRecipientName("DL");
+                incidentEmailVO.setRecipientName("Supportdesk");
                 incidentEmailVO.populateEscalationMatrices();
                 for (UserVO userVO : userVOSet) {
                     userNotifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
@@ -1205,7 +1205,7 @@ public class MiscService {
                 incidentEmailVO.setCategory(category);
                 incidentEmailVO.setSubCategory(subCategory);
                 incidentEmailVO.setUserVOS(userVOS);
-                incidentEmailVO.setRecipientName("DL");
+                incidentEmailVO.setRecipientName("Supportdesk");
                 incidentEmailVO.populateEscalationMatrices();
                 for (UserVO userVO : userVOSet) {
                     userNotifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
@@ -1460,7 +1460,7 @@ public class MiscService {
                 incidentEmailVO.setCategory(category);
                 incidentEmailVO.setSubCategory(subCategory);
                 incidentEmailVO.setUserVOS(userVOS);
-                incidentEmailVO.setRecipientName("DL");
+                incidentEmailVO.setRecipientName("Supportdesk");
                 incidentEmailVO.populateEscalationMatrices();
                 appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
             }

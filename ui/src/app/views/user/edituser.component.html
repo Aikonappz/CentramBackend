@@ -116,6 +116,17 @@
             </div>
             <div [ngClass]="{'d-none': rolesList.includes('APP_ADMIN'),'row row-margin-05':true}">
               <div class="col">
+                <label class="form-col-form-label required-control-label" for="account">Account</label>
+                <ng-select [items]="accounts" placeholder="-- Select Account --" formControlName="account" id="account"
+                  account name="account" bindLabel="name" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.account.touched && f.account.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.account.errors?.required">
+                    account is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
                 <label class="form-col-form-label required-control-label" for="location">Location</label>
                 <ng-select [items]="locations" placeholder="-- Select Location --" formControlName="location"
                   id="location" location name="location" bindLabel="name" bindValue="id">
@@ -136,8 +147,6 @@
                     Department is required.
                   </div>
                 </div>
-              </div>
-              <div class="col">
               </div>
             </div>
             <div [ngClass]="{'d-none': rolesList.includes('APP_ADMIN'),'row row-margin-05':true}">

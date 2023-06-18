@@ -145,8 +145,8 @@
                 </div>
                 <div class="col" [ngClass]="{'d-none': (hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="subModuleName">Hours Estimated</label>
-                  <input type="text" id="subModuleName" readonly value="{{incident.expectedTime}} min"
-                    class="form-control">
+                  <input type="text" id="subModuleName" readonly
+                    [value]="incident.expectedTime==null? '' : incident.expectedTime+' hr'" class="form-control">
                 </div>
                 <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="expectedTime">Hours Estimated</label>
@@ -158,10 +158,14 @@
                     </div>
                   </div>
                 </div>
-                <div class="col" [ngClass]="{'d-none': (!(hasAgentPermission&&canEdit)||(incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED'))}">
+                <div class="col" [ngClass]="{'d-none': (!(hasAgentPermission&&canEdit))}">
                   <label class="form-col-form-label" for="addTimeEntry">&nbsp;</label>
-                  <div>
+                  <div *ngIf="incident.status!='SOLUTION_PROVIDED'&&incident.status!='CLOSED'">
                     <button (click)="addTimeEntry()" id="addTimeEntry" type="button" class="btn btn-secondary">Add Time
+                      Entry</button>
+                  </div>
+                  <div *ngIf="incident.status=='SOLUTION_PROVIDED'||incident.status=='CLOSED'">
+                    <button (click)="viewTimeEntry()" id="viewTimeEntry" type="button" class="btn btn-info">View Time
                       Entry</button>
                   </div>
                 </div>

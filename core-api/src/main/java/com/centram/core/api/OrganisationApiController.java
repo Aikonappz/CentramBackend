@@ -87,7 +87,7 @@ public class OrganisationApiController {
     public ResponseEntity<PaginatedList<Organisation>> getOrganisations(
             @ApiParam(value = "Organisation Name", defaultValue = "", required = false) @RequestParam(value = "name", defaultValue = "", required = false) String name,
             @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
-            @ApiParam(value = "License Type", defaultValue = "ALL_TYPE", required = false) @RequestParam(value = "licenseType", defaultValue = "ALL_TYPE", required = false) String licenseType,
+            @ApiParam(value = "License Type", defaultValue = "ALL", required = false) @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(name, Status.valueOf(status), LicenseType.valueOf(licenseType), pageable), HttpStatus.OK);

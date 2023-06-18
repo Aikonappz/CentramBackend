@@ -51,6 +51,9 @@ UI--
 ----
 ssh -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/IdeaProjects/centram/ui/dist/centram-ui/ui.zip  ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" "/home/sumit/Downloads/1585886414/CA_emSign SSL CA - G1.cer"  ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" "/home/sumit/Downloads/1585886414/EndEntity_centram.live.cer"  ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" "/home/sumit/Downloads/1585886414/RootCA_emSign Root CA - G1.cer"  ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp
 
 
 sudo unzip -o /tmp/ui.zip  -d /usr/share/nginx/html/

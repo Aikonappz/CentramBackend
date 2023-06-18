@@ -25,6 +25,7 @@ import { environment } from '../../../environments/environment';
 import { TimeEntry } from '../../model/TimeEntry';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { AddTimeEntryComponent } from './modal/AddTimeEntryComponent';
+import { ViewTimeEntryComponent } from './modal/ViewTimeEntryComponent';
 declare var $: any;
 
 @Component({
@@ -367,14 +368,16 @@ export class EditIncidentComponent implements OnInit {
           if (this.angForm.controls['newStatus'].value != null && this.angForm.controls['newStatus'].value != '') {
             this.incident.status = this.angForm.controls['newStatus'].value;
           }
-          let savedTimeEntries: TimeEntry[] = JSON.parse(this.clientStorageService.get(this.incident.id.toString()));
-          if (savedTimeEntries != null) {
-            for (let i = 0; i < savedTimeEntries.length; i++) {
-              savedTimeEntries[i].newEntry = false;
+          if (this.hasAgentPermission && this.canEdit) {
+            let savedTimeEntries: TimeEntry[] = JSON.parse(this.clientStorageService.get(this.incident.id.toString()));
+            if (savedTimeEntries != null) {
+              for (let i = 0; i < savedTimeEntries.length; i++) {
+                savedTimeEntries[i].newEntry = false;
+              }
             }
+            this.incident.timeEntries = savedTimeEntries == null ? [] : (savedTimeEntries.length == 0) ? [] : savedTimeEntries;
+            this.clientStorageService.remove(this.incident.id.toString());
           }
-          this.incident.timeEntries = savedTimeEntries == null ? [] : (savedTimeEntries.length == 0) ? [] : savedTimeEntries;
-          this.clientStorageService.remove(this.incident.id.toString());
         }
         // prepare incidentCommunication object
         this.incidentCommunication = new IncidentCommunication();
@@ -382,7 +385,7 @@ export class EditIncidentComponent implements OnInit {
         this.incidentCommunication.communicatedBy = null;
         this.incidentCommunication.incident = null;
         this.incident.communications.push(this.incidentCommunication);
-        this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };        
+        this.incident.organisation = { id: this.loggedInUserService.getLoggedInUser().organisationId };
         //console.log(this.incident);
         this.callSaveIncidentService();
       }
@@ -758,11 +761,29 @@ export class EditIncidentComponent implements OnInit {
     };
     let savedTimeEntries: TimeEntry[] = JSON.parse(this.clientStorageService.get(this.incident.id.toString()));
     const initialState = {
-      timeEntries: savedTimeEntries == null ? this.incident.timeEntries : savedTimeEntries,
+      timeEntries: (savedTimeEntries == null) ? (this.incident.timeEntries == null) ? [] : this.incident.timeEntries : savedTimeEntries,
       incidentNo: this.incident.incidentNo,
       incidentId: this.incident.id,
     };
     this.modalRef = this.modalService.show(AddTimeEntryComponent,
+      Object.assign({}, config, { initialState })
+    );
+  }
+
+  viewTimeEntry() {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-lg',
+    };
+    const initialState = {
+      timeEntries: this.incident.timeEntries,
+      incidentNo: this.incident.incidentNo,
+      incidentId: this.incident.id,
+    };
+    this.modalRef = this.modalService.show(ViewTimeEntryComponent,
       Object.assign({}, config, { initialState })
     );
   }

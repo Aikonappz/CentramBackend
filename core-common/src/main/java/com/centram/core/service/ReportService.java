@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -212,7 +212,7 @@ public class ReportService {
                     "Resolve by Date",
                     "Current Status",
                     "Hours Estimated",
-                    "Actual Time Taken"
+                    "Time Entry"
             );
             csvPrinter.printRecord(data);
             //String actualTimeTaken = "";
@@ -249,8 +249,8 @@ public class ReportService {
                         incident.getSlaBreached() ? "YES" : "NO",
                         incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getStatus().name(),
-                        incident.getExpectedTime() + " HRS",
-                        incident.getTimeEntries().size() > 0 ? this.getActualTimeSpentAccordingTimeEntries(incident.getTimeEntries()) : ""
+                        incident.getExpectedTime() != null ? incident.getExpectedTime() + " HRS" : "",
+                        !CollectionUtils.isEmpty(incident.getTimeEntries()) ? this.getActualTimeSpentAccordingTimeEntries(incident.getTimeEntries()) : ""
                 );
                 csvPrinter.printRecord(data);
             }
@@ -264,11 +264,8 @@ public class ReportService {
     private String getActualTimeSpentAccordingTimeEntries(List<TimeEntry> timeEntries) throws ParseException {
         String s = "";
         Integer minute = 0;
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date date = null;
         for (int k = 0; k < timeEntries.size(); k++) {
-            date = format.parse(timeEntries.get(k).getTime());
-            minute += date.getHours();
+            minute += (int) Float.parseFloat(timeEntries.get(k).getTime().replace(":", "."));
         }
         Integer seconds = minute * 60;
         Integer day = seconds / (24 * 3600);
@@ -278,9 +275,9 @@ public class ReportService {
         Integer minutes = seconds / 60;
         seconds %= 60;
         Integer sec = seconds;
-        s = day > 1 ? day + " days " : day == 1 ? day + " day " : "";
-        s = hour > 1 ? hour + " hours " : hour == 1 ? hour + " hour " : "";
-        s = minutes > 1 ? minutes + " minutes " : minutes == 1 ? minutes + " minute " : "";
+        s += day > 1 ? day + " days " : day == 1 ? day + " day " : "";
+        s += hour > 1 ? hour + " hours " : hour == 1 ? hour + " hour " : "";
+        s += minutes > 1 ? minutes + " minutes " : minutes == 1 ? minutes + " minute " : "";
         return s;
     }
 

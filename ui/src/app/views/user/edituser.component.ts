@@ -31,6 +31,7 @@ export class EditUserComponent implements OnInit {
   user: User;
   roles: Role[];
   locations: LocationVO[];
+  accounts: any[];
   departments: Department[];
   users: User[];
   roleList: any[];
@@ -62,6 +63,7 @@ export class EditUserComponent implements OnInit {
     this.user.status = this.defaultStatus;
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.rolesList = this.loggedInUser.roles;
+
     if (this.rolesList.includes('APP_ADMIN')) {
       this.angForm = new FormGroup({
         firstName: new FormControl('', [
@@ -142,6 +144,9 @@ export class EditUserComponent implements OnInit {
           //Validators.required
         ]),
         location: new FormControl(null, [
+          Validators.required
+        ]),
+        account: new FormControl(null, [
           Validators.required
         ]),
         vendorId: new FormControl(null, [
@@ -241,6 +246,7 @@ export class EditUserComponent implements OnInit {
                 //Object.assign({ "id": vendors[indx].id, "version": vendors[indx].version, "name": vendors[indx].name });
               }
             }
+            this.accounts = this.vendorList;
           });
       }
       this.userService
@@ -382,6 +388,7 @@ export class EditUserComponent implements OnInit {
                                 this.vendorList[this.c++] = vendors[indx];
                               }
                             }
+                            this.accounts = this.vendorList;
                           });
                         if (this.route.snapshot.paramMap.has('id')) {
                           if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
