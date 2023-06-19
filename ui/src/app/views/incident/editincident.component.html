@@ -146,7 +146,8 @@
                 <div class="col" [ngClass]="{'d-none': (hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="subModuleName">Hours Estimated</label>
                   <input type="text" id="subModuleName" readonly
-                    [value]="incident.expectedTime==null? '' : incident.expectedTime+' hr'" class="form-control">
+                    [value]="incident.expectedTime==null? '' : incident.expectedTime=='01:00'? incident.expectedTime+' hr' : incident.expectedTime+' hrs'"
+                    class="form-control">
                 </div>
                 <div class="col" [ngClass]="{'d-none': !(hasAgentPermission&&canEdit)}">
                   <label class="form-col-form-label" for="expectedTime">Hours Estimated</label>

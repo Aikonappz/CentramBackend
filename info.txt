@@ -86,3 +86,8 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads
 
 https://www.appsdeveloperblog.com/spring-boot-password-encryption-using-jasypt/
 
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/server.crt /tmp/server.crt
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/server.key /tmp/server.key
+
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp/server.crt /tmp/server.crt
+scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp/server.key /tmp/server.key

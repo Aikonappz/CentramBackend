@@ -4,6 +4,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.utility.Utility;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
 import org.apache.commons.csv.CSVFormat;
@@ -55,6 +56,8 @@ public class ReportService {
 
     @Autowired
     private UserService userService;
+
+    private Utility utility = new Utility();
 
     @Transactional(readOnly = true)
     public PaginatedList<Organisation> organisationReport(String name, Status status, LicenseType licenseType, Pageable pageable) {
@@ -267,18 +270,7 @@ public class ReportService {
         for (int k = 0; k < timeEntries.size(); k++) {
             minute += (int) Float.parseFloat(timeEntries.get(k).getTime().replace(":", "."));
         }
-        Integer seconds = minute * 60;
-        Integer day = seconds / (24 * 3600);
-        seconds = seconds % (24 * 3600);
-        Integer hour = seconds / 3600;
-        seconds %= 3600;
-        Integer minutes = seconds / 60;
-        seconds %= 60;
-        Integer sec = seconds;
-        s += day > 1 ? day + " days " : day == 1 ? day + " day " : "";
-        s += hour > 1 ? hour + " hours " : hour == 1 ? hour + " hour " : "";
-        s += minutes > 1 ? minutes + " minutes " : minutes == 1 ? minutes + " minute " : "";
-        return s;
+        return utility.convertSecondsToStringDate(minute * 60);
     }
 
     @Transactional(readOnly = true)
