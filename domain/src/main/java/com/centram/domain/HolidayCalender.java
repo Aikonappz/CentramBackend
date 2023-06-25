@@ -69,4 +69,11 @@ public class HolidayCalender extends BaseEntity implements Serializable {
     @JoinColumn(name = "location_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Location location;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
 }

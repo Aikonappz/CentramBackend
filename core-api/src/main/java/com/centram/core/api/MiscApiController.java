@@ -70,6 +70,9 @@ public class MiscApiController {
     private LocationService locationService;
 
     @Autowired
+    private AccountService accountService;
+
+    @Autowired
     private DepartmentService departmentService;
 
     @Autowired
@@ -331,8 +334,11 @@ public class MiscApiController {
     })
     @RequestMapping(value = "/all-location", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION,ORGANISATION,USER,ORDER ASSET','READ,WRITE,WRITE,WRITE',authentication.principal)")
-    public ResponseEntity<PaginatedList<Location>> getLocations(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<Location>> getLocations(
+            @ApiParam(value = "id of account", required = false, defaultValue = "") @PathVariable(name = "accountId", required = false) BigInteger accountId,
+            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(accountId, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a Priority", nickname = "savePriority", notes = "Save a Priority", tags = {"Misc",})
@@ -658,5 +664,43 @@ public class MiscApiController {
     ) {
         return new ResponseEntity<PaginatedList<ChatMessage>>(chatMessageService.findAll(chatRoomId, pageable), HttpStatus.OK);
     }*/
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a account", nickname = "saveAccount", notes = "Save a account", tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/account", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ACCOUNT','READ|WRITE',authentication.principal)")
+    public ResponseEntity<Account> saveAccount(@ApiParam(value = "Account object", required = true) @Valid @RequestBody Account body) {
+        return new ResponseEntity<Account>(accountService.save(body), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find account by id", nickname = "getAccountById", notes = "Find account by id", response = Account.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
+            @ApiResponse(code = 400, message = "Invalid name supplied"),
+            @ApiResponse(code = 404, message = "Location not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/account/{accountId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ACCOUNT','READ',authentication.principal)")
+    public ResponseEntity<Account> getAccountById(@ApiParam(value = "id of account", required = true) @PathVariable("accountId") BigInteger accountId) {
+        return new ResponseEntity<Account>(accountService.getById(accountId), HttpStatus.OK);
+    }
+
+    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Accounts", nickname = "getAccounts", notes = "Get all Accounts", response = PaginatedList.class, tags = {"Misc",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
+            @ApiResponse(code = 400, message = "Invalid status value"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/all-account", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ACCOUNT,ORGANISATION,USER,ORDER ASSET','READ,WRITE,WRITE,WRITE',authentication.principal)")
+    public ResponseEntity<PaginatedList<Account>> getAccounts(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<Account>>(accountService.getAccounts(pageable), HttpStatus.OK);
+    }
 
 }

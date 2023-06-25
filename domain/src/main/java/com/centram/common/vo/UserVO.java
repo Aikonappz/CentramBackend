@@ -70,7 +70,9 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     @JsonView(Views.ThirdPartyView.class)
     private String department;
     private LicenseType licenseType;
-
+    private BigInteger accountId;
+    private String accountName;
+    private String accountNo;
 
     public UserVO(User user) {
         super(user.getCreatedDate(), user.getModifiedDate(), user.getVersion(), user.getModifiedBy(), user.getCreatedBy());
@@ -97,6 +99,9 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.timeZone = (user.getLocation() != null) ? user.getLocation().getTimezone() : "Asia/Kolkata";
         this.licenseType = (user.getOrganisation() != null) ? user.getOrganisation().getLicenseType() : null;
         this.vendorId = (user.getVendor() != null) ? user.getVendor().getId() : null;
+        this.accountId = (user.getAccount() != null) ? user.getAccount().getId() : null;
+        this.accountName = (user.getAccount() != null) ? user.getAccount().getName() : null;
+        this.accountNo = (user.getAccount() != null) ? user.getAccount().getAccountNo() : null;
         this.vendor = (user.getVendor() != null) ? user.getVendor().getName() : null;
     }
 

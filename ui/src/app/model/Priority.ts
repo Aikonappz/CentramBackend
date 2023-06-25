@@ -1,3 +1,4 @@
+import { Account } from "./Account";
 import { Base } from "./Base";
 import { Status } from "./enumerator/Status";
 import { Organisation } from "./Organisation";
@@ -10,6 +11,7 @@ export class Priority extends Base {
     status: any;
     priorityType: any;
     organisation: Organisation;
+    account: Account;
     constructor() {
         super();
         this.id = null;
@@ -18,6 +20,7 @@ export class Priority extends Base {
         this.sla = '';
         this.status = Status.ACTIVE;
         this.organisation = new Organisation();
+        this.account = new Account();
         this.priorityType = null;
     }
 }

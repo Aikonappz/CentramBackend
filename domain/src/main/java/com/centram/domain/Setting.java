@@ -23,6 +23,7 @@ public class Setting implements Serializable {
     private String outboundAssetRequestPrefix;
     private String inboundAssetRequestPrefix;
     private IncidentAllocationType ticketAllocationType;
+    private String accountPrefix;
 
     public Setting(IncidentAllocationType ticketAllocationType) {
         this.ticketAllocationType = ticketAllocationType;

@@ -1,3 +1,4 @@
+import { Account } from "./Account";
 import { Base } from "./Base";
 import { Status } from "./enumerator/Status";
 import { Organisation } from "./Organisation";
@@ -14,6 +15,7 @@ export class LocationVO extends Base {
     opsEndTime: string;
     status: any;
     organisation: Organisation;
+    account: Account;
     constructor() {
         super();
         this.id = null;
@@ -26,6 +28,7 @@ export class LocationVO extends Base {
         this.opsEndTime = '';
         this.status = Status.ACTIVE;
         this.organisation = new Organisation();
+        this.account = new Account();
     }
 }
 export interface LocationList {

@@ -6,50 +6,11 @@
           <strong>Add Account</strong>
         </div>
         <div class="card-header" *ngIf="!newEntity">
-          <strong>Edit Account</strong>
+          <strong>Edit Account - {{account.accountNo}}</strong>
         </div>
         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
           <div class="card-body">
-            <div class="row">
-              <div class="col d-none">
-                <label class="form-col-form-label required-control-label" for="dlModuleId">Category</label>
-                <ng-select [items]="moduleList" #dlModuleId [multiple]="true" (change)="populateSubmodule($event)"
-                  placeholder="-- Select Category --" formControlName="dlModuleId" id="dlModuleId" name="dlModuleId"
-                  bindLabel="customerModuleName" bindValue="id"></ng-select>
-                <div *ngIf="f.dlModuleId.touched && f.dlModuleId.invalid" class="alert alert-danger-custom">
-                  <div *ngIf="f.dlModuleId.errors?.required">
-                    Category is required.
-                  </div>
-                </div>
-              </div>
-              <div class="col d-none">
-                <label class="form-col-form-label required-control-label" for="dlSubModuleId">Sub Category</label>
-                <ng-select [items]="subModuleList" [multiple]="true" placeholder="-- Select Sub Category --"
-                  formControlName="dlSubModuleId" id="dlSubModuleId" name="dlSubModuleId" bindLabel="customerModuleName"
-                  bindValue="id"></ng-select>
-                <div *ngIf="f.dlSubModuleId.touched && f.dlSubModuleId.invalid" class="alert alert-danger-custom">
-                  <div *ngIf="f.dlSubModuleId.errors?.required">
-                    Sub Category is required.
-                  </div>
-                </div>
-              </div>
-              <div [ngClass]="{col : true}">
-                <label [ngClass]="{'d-none': !hasAllocationType}" class="form-col-form-label"
-                  for="ticketAllocationType">Incident Allocation Type</label>
-                <ng-select [ngClass]="{'d-none': !hasAllocationType}" [items]="ticketAllocationTypes" [multiple]="false"
-                  placeholder="-- Select Incident Allocation Type --" formControlName="ticketAllocationType"
-                  id="ticketAllocationType" name="ticketAllocationType" bindLabel="label" bindValue="id"></ng-select>
-                <div *ngIf="f.ticketAllocationType.touched && f.ticketAllocationType.invalid"
-                  class="alert alert-danger-custom">
-                  <div *ngIf="f.ticketAllocationType.errors?.required">
-                    Incident Allocation Type is required.
-                  </div>
-                </div>
-              </div>
-              <div class="col"></div>
-              <div class="col"></div>
-            </div>
-            <div class="row row-margin-05">
+            <div class="row ">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="name">Account Name</label>
                 <input type="text" formControlName="name" id="name" name="name" class="form-control"
@@ -120,29 +81,32 @@
                   </div>
                 </div>
               </div>
+              <div [ngClass]="{col : true}">
+                <label class="form-col-form-label required-control-label" for="ticketAllocationType">Incident Allocation
+                  Type</label>
+                <ng-select [items]="ticketAllocationTypes" [multiple]="false"
+                  placeholder="-- Select Incident Allocation Type --" formControlName="ticketAllocationType"
+                  id="ticketAllocationType" name="ticketAllocationType" bindLabel="label" bindValue="id"></ng-select>
+                <div *ngIf="f.ticketAllocationType.touched && f.ticketAllocationType.invalid"
+                  class="alert alert-danger-custom">
+                  <div *ngIf="f.ticketAllocationType.errors?.required">
+                    Incident Allocation Type is required.
+                  </div>
+                </div>
+              </div>
               <div class="col">
                 <label class="col-md-3 col-form-label" for="status">Status</label>
                 <div class="col-md-9 col-form-label">
                   <div class="form-check form-check-inline mr-1" id="inline-radios">
                     <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
-                      name="status" id="ACTIVE" [checked]="(vendor.status == 'ACTIVE')" value="true">
+                      name="status" id="ACTIVE" [checked]="(account.status == 'ACTIVE')" value="true">
                     <label class="form-check-label" for="ACTIVE">Active</label>
                   </div>
                   <div class="form-check form-check-inline mr-1">
                     <input class="form-check-input" type="radio" name="status" id="INACTIVE"
-                      [checked]="(vendor.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                      [checked]="(account.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
                       value="false">
                     <label class="form-check-label" for="INACTIVE">Inactive</label>
-                  </div>
-                </div>
-              </div>
-              <div class="col d-none">
-                <label class="col-md-3 col-form-label" for="status">Type</label>
-                <div class="col-md-9 col-form-label">
-                  <div class="form-check form-check-inline mr-1" id="inline-radios">
-                    <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
-                      name="inHouse" value="1">
-                    <label class="form-check-label" for="inHouse">In House</label>
                   </div>
                 </div>
               </div>

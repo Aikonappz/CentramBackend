@@ -106,6 +106,13 @@ public class Location extends BaseEntity implements Serializable {
     @JoinColumn(name = "organisation_id", referencedColumnName = "id")
     private Organisation organisation;
 
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
+
     public Location(@NotNull BigInteger id) {
         this.id = id;
     }

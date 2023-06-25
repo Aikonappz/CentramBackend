@@ -156,6 +156,13 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Department department;
 
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
+
     public User(@NotNull BigInteger id) {
         this.id = id;
     }
@@ -183,6 +190,8 @@ public class User extends BaseEntity implements Serializable {
         this.email = userVO.getEmail();
         this.contactNo = userVO.getContactNo();
         this.organisation = new Organisation();
+        this.account = new Account();
+        this.account.setId(userVO.getAccountId());
         this.organisation.setId(userVO.getOrganisationId());
     }
 }

@@ -18,7 +18,7 @@ import { MiscService } from '../../service/MiscService';
 export class PriorityComponent implements OnInit {
   moduleName: string = "PRIORITY";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
+  displayedColumns = ['account', 'name', 'description', 'sla', 'status', 'action'];
   private datasource: PriorityDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   type: string;
@@ -57,9 +57,9 @@ export class PriorityComponent implements OnInit {
       this.type = this.route.snapshot.paramMap.get('type');
       console.log(this.type);
       if (this.type == "asset") {
-        this.displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
+        this.displayedColumns = ['account', 'name', 'description', 'sla', 'status', 'action'];
       } else {
-        this.displayedColumns = ['name', 'description', 'sla', 'status', 'action'];
+        this.displayedColumns = ['account', 'name', 'description', 'sla', 'status', 'action'];
       }
       this.datasource = new PriorityDataSource(this.service);
       this.datasource.loadData(0, 10, { priorityType: this.type.toUpperCase() });

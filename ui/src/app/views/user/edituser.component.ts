@@ -13,6 +13,7 @@ import { Status } from '../../model/enumerator/Status';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { Vendor } from '../../model/Vendor';
 import { LoggedInUser } from '../../model/LoggedInUser';
+import { Account } from '../../model/Account';
 declare var $: any;
 
 @Component({
@@ -29,21 +30,21 @@ export class EditUserComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   user: User;
-  roles: Role[];
-  locations: LocationVO[];
-  accounts: any[];
-  departments: Department[];
-  users: User[];
-  roleList: any[];
-  locationList: any[];
-  departmentList: any[];
-  usrList: any[];
-  vendorList: any[];
+  roles: Role[] = [];
+  locations: LocationVO[] = [];
+  departments: Department[] = [];
+  users: User[] = [];
+  roleList: any[] = [];
+  departmentList: any[] = [];
+  usrList: any[] = [];
+  vendorList: any[] = [];
   c: number = 0;
-  rolesList: string[];
+  rolesList: string[] = [];
   loggedInUser: LoggedInUser;
   angForm: FormGroup;
   userTypes = [{ "id": 'Employee', "label": "Employee" }, { "id": 'Agent', label: "Agent" }];
+  accounts: Account[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private _location: Location,
@@ -207,18 +208,13 @@ export class EditUserComponent implements OnInit {
 
       if (!this.loggedInUserService.appManager()) {
         this.miscService
-          .locationsService()
+          .accountsService()
           .subscribe((data: any) => {
-            //console.log("load locations");
-            if (typeof data.content !== 'undefined') {
-              this.locations = data.content;
-              this.c = 0;
-              for (let indx = 0; indx < this.locations.length; indx++) {
-                if (this.locations[indx].status == 1) {
-                  this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
-                }
-              }
+            this.accounts = data.content;
+            for (let i = 0; i < this.accounts.length; i++) {
+              this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
             }
+            this.angForm.get('account').setValue(this.accounts[0].id);
           });
         this.miscService
           .departmentsService()
@@ -246,7 +242,6 @@ export class EditUserComponent implements OnInit {
                 //Object.assign({ "id": vendors[indx].id, "version": vendors[indx].version, "name": vendors[indx].name });
               }
             }
-            this.accounts = this.vendorList;
           });
       }
       this.userService
@@ -315,41 +310,36 @@ export class EditUserComponent implements OnInit {
           });
       } else {
         this.miscService
-          .rolesService()
+          .accountsService()
           .subscribe((data: any) => {
-            //console.log("load roles");
-            this.roles = data.content;
-            let tmpRoles: any = [];
-            this.c = 0;
-            for (let i = 0; i < this.roles.length; i++) {
-              if (this.loggedInUserService.appManager()) {
-                if (!this.roles[i].name.match(/ORG_.*/)) {
-                  tmpRoles[this.c++] = this.roles[i];
-                }
-              } else {
-                if (this.roles[i].name.match(/ORG_.*/)) {
-                  tmpRoles[this.c++] = this.roles[i];
-                }
-              }
+            this.accounts = data.content;
+            for (let i = 0; i < this.accounts.length; i++) {
+              this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
             }
-            this.roles = tmpRoles;
-            this.c = 0;
-            for (let indx = 0; indx < this.roles.length; indx++) {
-              if (this.roles[indx].status == 1) {
-                this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "displayName": this.roles[indx].displayName, "description": this.roles[indx].description, "name": this.roles[indx].name });
-              }
-            }
+            //console.log("here I am", this.accounts);
             this.miscService
-              .locationsService()
+              .rolesService()
               .subscribe((data: any) => {
-                //console.log("load locations");
-                if (typeof data.content !== 'undefined') {
-                  this.locations = data.content;
-                  this.c = 0;
-                  for (let indx = 0; indx < this.locations.length; indx++) {
-                    if (this.locations[indx].status == 1) {
-                      this.locationList[this.c++] = Object.assign({ "id": this.locations[indx].id, "name": this.locations[indx].name });
+                //console.log("load roles");
+                this.roles = data.content;
+                let tmpRoles: any = [];
+                this.c = 0;
+                for (let i = 0; i < this.roles.length; i++) {
+                  if (this.loggedInUserService.appManager()) {
+                    if (!this.roles[i].name.match(/ORG_.*/)) {
+                      tmpRoles[this.c++] = this.roles[i];
                     }
+                  } else {
+                    if (this.roles[i].name.match(/ORG_.*/)) {
+                      tmpRoles[this.c++] = this.roles[i];
+                    }
+                  }
+                }
+                this.roles = tmpRoles;
+                this.c = 0;
+                for (let indx = 0; indx < this.roles.length; indx++) {
+                  if (this.roles[indx].status == 1) {
+                    this.roleList[this.c++] = Object.assign({ "id": this.roles[indx].id, "displayName": this.roles[indx].displayName, "description": this.roles[indx].description, "name": this.roles[indx].name });
                   }
                 }
                 this.miscService
@@ -388,7 +378,6 @@ export class EditUserComponent implements OnInit {
                                 this.vendorList[this.c++] = vendors[indx];
                               }
                             }
-                            this.accounts = this.vendorList;
                           });
                         if (this.route.snapshot.paramMap.has('id')) {
                           if (!Number.isNaN(this.route.snapshot.paramMap.get('id'))) {
@@ -404,11 +393,6 @@ export class EditUserComponent implements OnInit {
           });
       }
     }
-  }
-
-  preapareSelect() {
-    $(document).ready(function () {
-    })
   }
 
   ngAfterViewInit() { }
@@ -457,21 +441,15 @@ export class EditUserComponent implements OnInit {
       if (location != "") {
         for (let i in this.locations) {
           if (this.locations[i].id == location) {
-            let loc = new LocationVO();
-            loc.version = this.locations[i].version;
-            loc.id = this.locations[i].id;
-            this.user.location = loc;
-            console.log(loc);
+            this.user.location = { version: this.locations[i].version, id: this.locations[i].id, account: null } as LocationVO;
+            //console.log(loc);
           }
         }
       }
       if (department != "") {
         for (let i in this.departments) {
           if (this.departments[i].id == department) {
-            let dept = new Department();
-            dept.version = this.departments[i].version;
-            dept.id = this.departments[i].id;
-            this.user.department = dept;
+            this.user.department = { version: this.departments[i].version, id: this.departments[i].id } as Department;
           }
         }
       }
@@ -493,6 +471,11 @@ export class EditUserComponent implements OnInit {
       }
       /* process department and location */
       this.user.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
+      for (let i = 0; i < this.accounts.length; i++) {
+        if (this.accounts[i].id == this.angForm.controls['account'].value) {
+          this.user.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+        }
+      }
       //console.log(this.user);
       this.callSaveUserService();
     } else {
@@ -535,8 +518,10 @@ export class EditUserComponent implements OnInit {
         this.user.secContactNo = data.secContactNo;
         this.user.vendor = new Vendor();
         this.user.vendor.id = data.vendorId;
+        this.user.account.id = data.accountId;
         //console.log(JSON.stringify(this.user));
         //console.log(this.user.roles.map(String));
+        this.populateLocaton({ id: this.user.account.id });
         this.angForm.get('firstName').setValue(this.user.firstName);
         this.angForm.get('lastName').setValue(this.user.lastName);
         this.angForm.get('email').setValue(this.user.email);
@@ -546,6 +531,7 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('projectCode').setValue(this.user.projectCode);
         this.angForm.get('roles').setValue(this.user.roles.map(Number));
         this.angForm.get('managerId').setValue(this.user.managerId);
+        this.angForm.get('account').setValue(this.user.account.id);
         if (this.user.vendor.id != null) {
           this.angForm.get('vendorId').setValue(this.user.vendor.id);
           this.angForm.get('userType').setValue('Agent');
@@ -565,6 +551,7 @@ export class EditUserComponent implements OnInit {
           if (typeof this.locations !== 'undefined') {
             for (var i = 0; i < this.locations.length; i++) {
               if (this.locations[i].id == this.user.location.id) {
+                console.log(this.user.location.id);
                 this.angForm.get('location').setValue(Number(this.user.location.id));
               }
             }
@@ -595,6 +582,30 @@ export class EditUserComponent implements OnInit {
           $('.vendor-col').removeClass('d-none');
         }
       });
+    }
+  }
+
+  @ViewChild("accountId") accountId;
+  populateLocaton(accountId) {
+    if (typeof accountId !== 'undefined') {
+      //console.log(accountId);
+      this.miscService
+        .locationsService({ accountId: accountId.id })
+        .subscribe((data: any) => {
+          //console.log("load locations");
+          if (typeof data.content !== 'undefined') {
+            this.locations = [];
+            for (let indx = 0; indx < data.content.length; indx++) {
+              if (data.content[indx].status == "ACTIVE") {
+                this.locations.push(data.content[indx]);
+              }
+            }
+            //console.log(this.locations);
+            if (this.user != null && this.user.location.id != null) {
+              this.angForm.get('location').setValue(Number(this.user.location.id));
+            }
+          }
+        });
     }
   }
 

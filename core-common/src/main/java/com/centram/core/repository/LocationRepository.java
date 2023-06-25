@@ -23,8 +23,18 @@ public interface LocationRepository extends PagingAndSortingRepository<Location,
     @Query("select l from Location l where UPPER(l.officeName) = UPPER((:officeName)) and l.organisation.id = (:organisationId)")
     Location getByOfficeName(@Param("officeName") String officeName, @Param("organisationId") BigInteger organisationId);
 
-    @Query("select l from Location l where l.organisation.id = (:organisationId)")
-    Page getLocationByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
+    @Query("select l from Location l where l.organisation.id = (:organisationId) and " +
+            " ( " +
+            "   ((:accountId) is not null and l.account.id = (:accountId)) " +
+            "   OR " +
+            "   ((:accountId) is null) " +
+            " )"
+    )
+    Page getLocationByOrganisation(
+            @Param("accountId") BigInteger accountId,
+            @Param("organisationId") BigInteger organisationId,
+            @Param("pageable") Pageable pageable
+    );
 
     @Query("select new com.centram.common.vo.LocationVO(l) from Location l where l.organisation.id = (:organisationId)")
     List<LocationVO> getLocationByOrganisation(@Param("organisationId") BigInteger organisationId);

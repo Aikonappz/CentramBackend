@@ -29,6 +29,9 @@ export class UserVO {
     department: string;
     licenseType: LicenseType;
     label: string;
+    accountId: number;
+    accountName: string;
+    accountNo: string;
 
     constructor() {
         this.id = null;
@@ -47,6 +50,9 @@ export class UserVO {
         this.organisationId = null;
         this.locationId = null;
         this.departmentId = null;
+        this.accountId = null;
+        this.accountNo = null;
+        this.accountName = null;
     }
 
 }

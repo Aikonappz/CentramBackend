@@ -374,9 +374,9 @@ export class EditIncidentComponent implements OnInit {
               for (let i = 0; i < savedTimeEntries.length; i++) {
                 savedTimeEntries[i].newEntry = false;
               }
+              this.incident.timeEntries = savedTimeEntries;
+              this.clientStorageService.remove(this.incident.id.toString());
             }
-            this.incident.timeEntries = savedTimeEntries == null ? [] : (savedTimeEntries.length == 0) ? [] : savedTimeEntries;
-            this.clientStorageService.remove(this.incident.id.toString());
           }
         }
         // prepare incidentCommunication object

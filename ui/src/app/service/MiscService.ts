@@ -16,6 +16,7 @@ import { Vendor, VendorList } from '../model/Vendor';
 import { AssetModel } from '../model/AssetModel';
 import { PermissionDTO } from '../model/PermissionDTO';
 import { ChatMessage } from '../model/ChatMessage';
+import { Account, AccountList } from '../model/Account';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -141,5 +142,15 @@ export class MiscService {
     }
     chatMassagesService(chatRoomId: string, request?: any): Observable<any> {
         return this.http.get('/v1/misc/chat-message/' + chatRoomId, { "params": request });
+    }
+
+    saveAccountService(account: Account): Observable<Account> {
+        return this.http.post('/v1/misc/account', account);
+    }
+    accountsService(request?: any): Observable<AccountList> {
+        return this.http.get('/v1/misc/all-account', { "params": request });
+    }
+    accountService(id: number, request?: any): Observable<Account> {
+        return this.http.get('/v1/misc/account/' + id, { "params": request });
     }
 }

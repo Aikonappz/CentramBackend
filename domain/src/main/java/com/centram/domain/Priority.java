@@ -89,4 +89,11 @@ public class Priority extends BaseEntity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private PriorityType priorityType;
+
+    @ApiModelProperty(required = true, value = "")
+    @Valid
+    @NotNull
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
 }
