@@ -296,6 +296,8 @@ export class EditIncidentComponent implements OnInit {
             priority.id = priorityId;
             priority.name = this.priorities[i].name;
             priority.version = this.priorities[i].version;
+            priority.organisation = null;
+            priority.account = null;
           }
         }
         if (this.newEntity) {
@@ -351,6 +353,7 @@ export class EditIncidentComponent implements OnInit {
             priority.name = this.priorities[i].name;
             priority.version = this.priorities[i].version;
             priority.organisation = null;
+            priority.account = null;
           }
         }
         if (this.newEntity) {
@@ -602,6 +605,8 @@ export class EditIncidentComponent implements OnInit {
         this.incident.assetApproved = data.assetApproved;
         this.incident.feedbackProvided = data.feedbackProvided;
         this.incident.timeEntries = data.timeEntries;
+        this.incident.slaBreached = data.slaBreached;
+        this.incident.reOpened = data.reOpened;
         let org = data.organisation;
         this.incident.organisation = { id: org.id, version: org.version };
         for (let k in this.incident.communications) {

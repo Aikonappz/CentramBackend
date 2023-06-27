@@ -129,53 +129,108 @@ export class DefaultLayoutComponent implements OnInit {
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       this.menuAttributes = this.navItems[i].attributes;
-      for (let j in this.permissions) {
-        if (
-          this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
-          this.menuAttributes.moduleName === this.permissions[j].moduleName &&
-          this.permissions[j].actions.includes('READ')
-        ) {
-          //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
-          this.newNavItems[c] = this.navItems[i];
-          if (this.navItems[i].hasOwnProperty("children")) {
-            let parentId = this.permissions[j].moduleId;
-            //console.log(this.newNavItems[c].children);
-            let childMenus = [];
-            for (let sm in this.newNavItems[c].children) {
-              for (let k in this.permissions) {
-                this.menuAttributes = this.newNavItems[c].children[sm].attributes;
-                if (typeof this.menuAttributes.licenceType !== 'undefined') {
-                  let licences = this.menuAttributes.licenceType.split(',');
-                  if (
-                    licences.includes(this.loggedInUser.licenseType)
-                    && this.permissions[k].appModule == true
-                    && this.permissions[k].moduleParentId != null
-                    && parentId === this.permissions[k].moduleParentId
-                    &&
-                    (
-                      (this.menuAttributes.moduleName === this.permissions[k].moduleName
-                        && this.permissions[k].actions.includes('READ'))
-                    )
-                  ) {
-                    //console.log(this.newNavItems[c].children[sm]);
-                    childMenus.push(this.newNavItems[c].children[sm]);
-                  }
-                } else {
-                  if (
-                    this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-                    this.menuAttributes.moduleName === this.permissions[k].moduleName &&
-                    this.permissions[k].actions.includes('READ') &&
-                    parentId === this.permissions[k].moduleParentId
-                  ) {
-                    //console.log(this.newNavItems[c].children[sm]);
-                    childMenus.push(this.newNavItems[c].children[sm]);
+      //console.log(this.menuAttributes.licenceType);
+      if (typeof this.menuAttributes.licenceType !== 'undefined') {
+        let licences = this.menuAttributes.licenceType.split(',');
+        for (let j in this.permissions) {
+          if (
+            licences.includes(this.loggedInUser.licenseType) &&
+            this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
+            this.menuAttributes.moduleName === this.permissions[j].moduleName &&
+            this.permissions[j].actions.includes('READ')
+          ) {
+            //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
+            this.newNavItems[c] = this.navItems[i];
+            if (this.navItems[i].hasOwnProperty("children")) {
+              let parentId = this.permissions[j].moduleId;
+              //console.log(this.newNavItems[c].children);
+              let childMenus = [];
+              for (let sm in this.newNavItems[c].children) {
+                for (let k in this.permissions) {
+                  this.menuAttributes = this.newNavItems[c].children[sm].attributes;
+                  if (typeof this.menuAttributes.licenceType !== 'undefined') {
+                    let licences = this.menuAttributes.licenceType.split(',');
+                    if (
+                      licences.includes(this.loggedInUser.licenseType)
+                      && this.permissions[k].appModule == true
+                      && this.permissions[k].moduleParentId != null
+                      && parentId === this.permissions[k].moduleParentId
+                      &&
+                      (
+                        (this.menuAttributes.moduleName === this.permissions[k].moduleName
+                          && this.permissions[k].actions.includes('READ'))
+                      )
+                    ) {
+                      //console.log(this.newNavItems[c].children[sm]);
+                      childMenus.push(this.newNavItems[c].children[sm]);
+                    }
+                  } else {
+                    if (
+                      this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
+                      this.menuAttributes.moduleName === this.permissions[k].moduleName &&
+                      this.permissions[k].actions.includes('READ') &&
+                      parentId === this.permissions[k].moduleParentId
+                    ) {
+                      //console.log(this.newNavItems[c].children[sm]);
+                      childMenus.push(this.newNavItems[c].children[sm]);
+                    }
                   }
                 }
               }
+              this.newNavItems[c].children = childMenus;
             }
-            this.newNavItems[c].children = childMenus;
+            c++;
           }
-          c++;
+        }
+      } else {
+        for (let j in this.permissions) {
+          if (
+            this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
+            this.menuAttributes.moduleName === this.permissions[j].moduleName &&
+            this.permissions[j].actions.includes('READ')
+          ) {
+            //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
+            this.newNavItems[c] = this.navItems[i];
+            if (this.navItems[i].hasOwnProperty("children")) {
+              let parentId = this.permissions[j].moduleId;
+              //console.log(this.newNavItems[c].children);
+              let childMenus = [];
+              for (let sm in this.newNavItems[c].children) {
+                for (let k in this.permissions) {
+                  this.menuAttributes = this.newNavItems[c].children[sm].attributes;
+                  if (typeof this.menuAttributes.licenceType !== 'undefined') {
+                    let licences = this.menuAttributes.licenceType.split(',');
+                    if (
+                      licences.includes(this.loggedInUser.licenseType)
+                      && this.permissions[k].appModule == true
+                      && this.permissions[k].moduleParentId != null
+                      && parentId === this.permissions[k].moduleParentId
+                      &&
+                      (
+                        (this.menuAttributes.moduleName === this.permissions[k].moduleName
+                          && this.permissions[k].actions.includes('READ'))
+                      )
+                    ) {
+                      //console.log(this.newNavItems[c].children[sm]);
+                      childMenus.push(this.newNavItems[c].children[sm]);
+                    }
+                  } else {
+                    if (
+                      this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
+                      this.menuAttributes.moduleName === this.permissions[k].moduleName &&
+                      this.permissions[k].actions.includes('READ') &&
+                      parentId === this.permissions[k].moduleParentId
+                    ) {
+                      //console.log(this.newNavItems[c].children[sm]);
+                      childMenus.push(this.newNavItems[c].children[sm]);
+                    }
+                  }
+                }
+              }
+              this.newNavItems[c].children = childMenus;
+            }
+            c++;
+          }
         }
       }
     }

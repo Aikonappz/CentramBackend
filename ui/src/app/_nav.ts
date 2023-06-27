@@ -92,7 +92,7 @@ export const navItems: INavData[] = [
     name: 'Incidents',
     url: '/incident',
     icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "INCIDENT" },
+    attributes: { "moduleName": "INCIDENT", "licenceType": "ALL,INCIDENT" },
     children: [
       {
         name: 'Employee Access',
@@ -137,7 +137,7 @@ export const navItems: INavData[] = [
     name: 'Asset',
     url: '/asset',
     icon: 'fa fa-cubes',
-    attributes: { "moduleName": "ASSET" },
+    attributes: { "moduleName": "ASSET", "licenceType": "ALL,ASSET" },
     children: [
       {
         name: 'Admin Access',

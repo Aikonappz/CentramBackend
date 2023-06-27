@@ -233,6 +233,9 @@ export class EditHolidayCalenderComponent implements OnInit {
             }
           }
         });
+    } else {
+      this.locations = [];
+      this.angForm.get('location').setValue(null);
     }
   }
 

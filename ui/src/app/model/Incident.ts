@@ -18,6 +18,8 @@ export class Incident extends Base {
     subModuleName: string;
     prevStatus: any;
     status: any;
+    reOpened: boolean;
+    slaBreached: boolean;
     raisedUser: User;
     assignedUser: User;
     communications: IncidentCommunication[];
@@ -39,6 +41,9 @@ export class Incident extends Base {
     deallocationDateTime: any;
     expectedTime: string;
     timeEntries: TimeEntry[];
+    approvalRequired: boolean;
+    validityExpirationMessageSent: boolean;
+    validityExpiredMessageSent: boolean;
     constructor() {
         super();
         this.id = null;
@@ -65,6 +70,11 @@ export class Incident extends Base {
         this.deallocationDateTime = null;
         this.expectedTime = null;
         this.timeEntries = [];
+        this.slaBreached = false;
+        this.reOpened = false;
+        this.approvalRequired = false;
+        this.validityExpirationMessageSent = false;
+        this.validityExpiredMessageSent = false;
     }
 }
 export interface IncidentList {
