@@ -19,4 +19,7 @@ export class LoggedInUser {
     modulePermissions: Permission[];
     licenseType: any;
     orgAdmin: boolean;
+    accountId: number;
+    accountName: string;
+    accountNo: string;
 }

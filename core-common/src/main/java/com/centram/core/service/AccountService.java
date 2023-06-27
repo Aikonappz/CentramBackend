@@ -89,10 +89,12 @@ public class AccountService {
     @Transactional
     public Account save(Account account) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (account.getId() == null) {
+            Long total = accountRepository.getCount(loggedInUser.getOrganisationId()) + 1;
+            String accountNo = appDefaultAccountPrefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(total), 4, "0");
+            account.setAccountNo(accountNo);
+        }
         account.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        Long total = accountRepository.getCount(loggedInUser.getOrganisationId()) + 1;
-        String accountNo = appDefaultAccountPrefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(total), 4, "0");
-        account.setAccountNo(accountNo);
         return accountRepository.save(account);
     }
 }

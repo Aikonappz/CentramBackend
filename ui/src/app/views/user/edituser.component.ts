@@ -606,6 +606,9 @@ export class EditUserComponent implements OnInit {
             }
           }
         });
+    } else {
+      this.locations = [];
+      this.angForm.get('location').setValue(null);
     }
   }
 
