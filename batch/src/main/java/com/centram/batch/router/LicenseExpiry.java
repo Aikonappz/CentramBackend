@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class LicenseExpiry extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
+                        //exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
                 .to("direct:processOrganisationLicenseNotifications");
@@ -74,12 +73,6 @@ public class LicenseExpiry extends RouteBuilder {
                     }
                 })
                 .end()
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
                 .log(LoggingLevel.INFO, "=================== organization-license-expiry job completed ===================")
                 .end();
     }

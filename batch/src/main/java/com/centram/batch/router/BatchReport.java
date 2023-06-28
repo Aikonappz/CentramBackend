@@ -52,13 +52,6 @@ public class BatchReport extends RouteBuilder {
                 .log(LoggingLevel.INFO, "=================== batch-report job started ===================")
                 .autoStartup(true)
                 .routeId("batch-report")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                //.log(LoggingLevel.INFO, "incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processIncidentReport")
                 .end();
 
@@ -67,7 +60,7 @@ public class BatchReport extends RouteBuilder {
                 .routeId("process-incident-report")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -107,13 +100,6 @@ public class BatchReport extends RouteBuilder {
                 .log(LoggingLevel.INFO, "=================== escalated-incident-report ===================")
                 .autoStartup(true)
                 .routeId("escalated-incident-report")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                //.log(LoggingLevel.INFO, "escalated-incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processEscalatedIncidentReport")
                 .end();
 
@@ -162,13 +148,6 @@ public class BatchReport extends RouteBuilder {
                 .log(LoggingLevel.INFO, "=================== reopened-incident-report ===================")
                 .autoStartup(true)
                 .routeId("reopened-incident-report")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                //.log(LoggingLevel.INFO, "reopened-incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processReopenedIncidentReport")
                 .end();
 
@@ -217,12 +196,6 @@ public class BatchReport extends RouteBuilder {
                 .log(LoggingLevel.INFO, "=================== aging-incident-report started ===================")
                 .autoStartup(true)
                 .routeId("aging-incident-report")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
                 //.log(LoggingLevel.INFO, "aging-incident-report started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processAgingIncidentReport")
                 .end();
@@ -268,6 +241,5 @@ public class BatchReport extends RouteBuilder {
                 //.log(LoggingLevel.INFO, "reopened-incident-report completed -> ${header.CURRENT_DATE_TIME}")
                 .end();
     }
-
 
 }

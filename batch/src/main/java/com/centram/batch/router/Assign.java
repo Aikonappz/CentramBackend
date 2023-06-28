@@ -53,24 +53,11 @@ public class Assign extends RouteBuilder {
                 .autoStartup(true)
                 .routeId("assign")
                 .enrich("bean:organisationService?method=getRoundRobinOrganisations()", new OrganisationAggregator())
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                //.log(LoggingLevel.INFO, "assign started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:getOrganisationIncidents");
 
         from("direct:getOrganisationIncidents")
                 .log(LoggingLevel.INFO, "=================== get-organisation-incidents ===================")
                 .routeId("get-organisation-incidents")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        //log.info("BODY {}", exchange.getIn().getBody());
-                    }
-                })
                 .loop(simple("${body.size}"))
                 //log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
@@ -121,12 +108,6 @@ public class Assign extends RouteBuilder {
                     }
                 })
                 .end()
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
                 //.log(LoggingLevel.INFO, "assign completed -> ${header.CURRENT_DATE_TIME}")
                 .log(LoggingLevel.INFO, "=================== assign job completed ===================")
                 .end();

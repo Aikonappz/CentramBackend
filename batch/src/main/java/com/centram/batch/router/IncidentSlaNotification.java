@@ -23,23 +23,22 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public class SlaNotify extends RouteBuilder {
-
-    private static final Logger log = LoggerFactory.getLogger(SlaNotify.class);
+public class IncidentSlaNotification extends RouteBuilder {
+    private static final Logger log = LoggerFactory.getLogger(IncidentSlaNotification.class);
     @Value("${app.incident.sla.notification.cron}")
     private String interval;
     @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
     private String dateTimeFormat;
     @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
+    @Value("${app.date.time.view.format}")
+    private String appDateTimeViewFormat;
     @Autowired
     private IncidentService incidentService;
     @Autowired
     private ProducerTemplate producerTemplate;
     @Autowired
     private MiscService miscService;
-    @Value("${app.date.time.view.format}")
-    private String appDateTimeViewFormat;
 
     @Override
     public void configure() throws Exception {
@@ -114,7 +113,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
+                        //log.info("[{}] notification triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
                         incident.setAgentNotification1At(LocalDateTime.now());
                         incident = incidentService.saveViaBatch(incident);
                         miscService.notifyWip50PercentTimePassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" 50% time passed! Please complete within SLA.")));
@@ -125,7 +124,7 @@ public class SlaNotify extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        Incident incident = (Incident) exchange.getIn().getBody();
+                        //Incident incident = (Incident) exchange.getIn().getBody();
                         //log.info("[{}] notification already triggered for wip-50-percent-time-passed!", incident.getIncidentNo());
                     }
                 })
@@ -146,7 +145,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
+                        //log.info("[{}] notification triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
                         incident.setStatus(IncidentStatus.SLA_ABOUT_TO_BREACH);
                         incident.setAgentNotification2At(LocalDateTime.now());
                         incident = incidentService.saveViaBatch(incident);
@@ -158,7 +157,7 @@ public class SlaNotify extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        Incident incident = (Incident) exchange.getIn().getBody();
+                        //Incident incident = (Incident) exchange.getIn().getBody();
                         //log.info("[{}] notification already triggered for wip-75-percent-time-passed!", incident.getIncidentNo());
                     }
                 })
@@ -179,7 +178,7 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification triggered for sla-just-breached!", incident.getIncidentNo());
+                        //log.info("[{}] notification triggered for sla-just-breached!", incident.getIncidentNo());
                         incident.setStatus(IncidentStatus.SLA_BREACHED);
                         incident.setSlaBreached(true);
                         incident.setEscalation1At(LocalDateTime.now());
@@ -192,7 +191,7 @@ public class SlaNotify extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        Incident incident = (Incident) exchange.getIn().getBody();
+                        //Incident incident = (Incident) exchange.getIn().getBody();
                         //log.info("[{}] notification already triggered for sla-just-breached!", incident.getIncidentNo());
                     }
                 })
@@ -213,7 +212,8 @@ public class SlaNotify extends RouteBuilder {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         Incident incident = (Incident) exchange.getIn().getBody();
-                        log.info("[{}] notification triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
+                        //log.info("[{}] notification triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
+                        incident.setSlaBreached(true);
                         incident.setEscalation2At(LocalDateTime.now());
                         incident = incidentService.saveViaBatch(incident);
                         miscService.notifySlaBreached60MinutesPassed(new IncidentEmailVO(incident, appDateTimeViewFormat, incident.getIncidentNo().concat(" exceeds SLA. Please respond immediately!")));
@@ -224,7 +224,7 @@ public class SlaNotify extends RouteBuilder {
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        Incident incident = (Incident) exchange.getIn().getBody();
+                        //Incident incident = (Incident) exchange.getIn().getBody();
                         //log.info("[{}] notification already triggered for sla-breached-60-minutes-passed!", incident.getIncidentNo());
                     }
                 })
@@ -235,25 +235,10 @@ public class SlaNotify extends RouteBuilder {
 
         from("direct:skipIncident")
                 .routeId("skip-incident")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        Incident incident = (Incident) exchange.getIn().getBody();
-                        //log.info("[{}] skipped!", incident.getIncidentNo());
-                    }
-                })
                 .to("direct:completeIncidentSlaNotification")
                 .end();
-
         from("direct:completeIncidentSlaNotification")
                 .routeId("complete-incident-sla-notification")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                //.log(LoggingLevel.INFO, "sla-notify completed -> ${header.CURRENT_DATE_TIME}")
                 .log(LoggingLevel.INFO, "=================== sla-notify job completed ===================")
                 .end();
 
