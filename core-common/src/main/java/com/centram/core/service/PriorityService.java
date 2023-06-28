@@ -60,9 +60,9 @@ public class PriorityService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Priority> getPriorities(String priorityType, Pageable pageable) {
+    public PaginatedList<Priority> getPriorities(BigInteger accountId, String priorityType, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<Priority>(priorityRepository.getPriorityByOrganisation(PriorityType.valueOf(priorityType), loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Priority>(priorityRepository.getPriorityByOrganisation(accountId, PriorityType.valueOf(priorityType), loggedInUser.getOrganisationId(), pageable));
     }
 
     /**

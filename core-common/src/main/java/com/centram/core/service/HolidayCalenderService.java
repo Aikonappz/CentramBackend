@@ -165,7 +165,10 @@ public class HolidayCalenderService {
     public List<Holiday> getHolidaysByYear(String year) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(
-                year, loggedInUser.getLocationId(), loggedInUser.getOrganisationId()
+                loggedInUser.getAccountId(),
+                year,
+                loggedInUser.getLocationId(),
+                loggedInUser.getOrganisationId()
         );
         if (holidayCalender == null) {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);

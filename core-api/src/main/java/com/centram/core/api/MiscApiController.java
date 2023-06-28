@@ -390,10 +390,11 @@ public class MiscApiController {
     @RequestMapping(value = "/all-priority", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY,MY INCIDENTS,MY GROUP INCIDENTS,REPORT,','READ,WRITE|SEARCH,WRITE|SEARCH,READ',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
     public ResponseEntity<PaginatedList<Priority>> getPriorities(
+            @ApiParam(value = "id of account", required = false, defaultValue = "") @PathVariable(name = "accountId", required = false) BigInteger accountId,
             @ApiParam(value = "Priority Type", defaultValue = "", required = false) @RequestParam(value = "priorityType", defaultValue = "INCIDENT", required = false) String priorityType,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(priorityType, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(accountId, priorityType, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all holiday calenders", nickname = "getHolidayCalenders", notes = "Get holiday calenders", response = PaginatedList.class, tags = {"Misc",})
