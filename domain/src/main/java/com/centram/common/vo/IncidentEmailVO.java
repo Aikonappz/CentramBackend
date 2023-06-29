@@ -44,6 +44,7 @@ public class IncidentEmailVO implements Serializable {
     private BigInteger userId;
     private Long userVersion;
     private String userName;
+    private String userAccountDetails;
     private String userEmail;
     private String userContactNo;
     private String userLocation;
@@ -103,6 +104,7 @@ public class IncidentEmailVO implements Serializable {
         this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userId = incident.getRaisedUser().getId();
         this.userVersion = incident.getRaisedUser().getVersion();
+        this.userAccountDetails = incident.getRaisedUser().getAccount().getName().concat("[").concat(incident.getRaisedUser().getAccount().getAccountNo()).concat("]");
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
@@ -147,6 +149,7 @@ public class IncidentEmailVO implements Serializable {
         this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userId = incident.getRaisedUser().getId();
         this.userVersion = incident.getRaisedUser().getVersion();
+        this.userAccountDetails = incident.getRaisedUser().getAccount().getName().concat("[").concat(incident.getRaisedUser().getAccount().getAccountNo()).concat("]");
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
@@ -192,6 +195,7 @@ public class IncidentEmailVO implements Serializable {
         this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userId = incident.getRaisedUser().getId();
         this.userVersion = incident.getRaisedUser().getVersion();
+        this.userAccountDetails = incident.getRaisedUser().getAccount().getName().concat("[").concat(incident.getRaisedUser().getAccount().getAccountNo()).concat("]");
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
