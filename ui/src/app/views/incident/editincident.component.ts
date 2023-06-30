@@ -108,9 +108,9 @@ export class EditIncidentComponent implements OnInit {
 
     let tmList = AppUtility.getSlaList(79);
     for (let k = 0; k < tmList.length; k++) {
-      if (k != 0) {
+      //if (k != 0) {
         this.timeList.push({ id: tmList[k], label: tmList[k] + " hrs" });
-      }
+      //}
     }
 
     this.permissions = this.loggedInUserService.getModulePermissions();
@@ -195,23 +195,23 @@ export class EditIncidentComponent implements OnInit {
           Validators.required,
         ]),
       });
+      this.userService.getUsersService()
+        .subscribe((result: UserVOListResponse) => {
+          this.users = result.content;
+        });
       this.newEntity = false;
       this.entityId = Number(this.route.snapshot.paramMap.get('id'));
       this.callIncidentService(this.entityId);
     }
   }
 
-  populatePriorites(raisedUserAcId: number) {
+  populatePrioritesBasedOnRaisedUserAcId(raisedUserAcId: number) {
     this.miscService.prioritiesService({ "accountId": raisedUserAcId, "priorityType": "INCIDENT", "sort": "name,asc" })
       .subscribe((result: PriorityList) => {
         this.priorities = result.content;
         for (let k in this.priorities) {
           this.priorities[k].label = this.priorities[k].name + " (" + this.priorities[k].description + ") ";
         }
-        this.userService.getUsersService()
-          .subscribe((result: UserVOListResponse) => {
-            this.users = result.content;
-          });
       });
   }
 
@@ -585,7 +585,7 @@ export class EditIncidentComponent implements OnInit {
       .incidentService(id)
       .subscribe((data: any) => {
         //console.log(JSON.stringify(data));
-        this.populatePriorites(data.raisedUser.accountId);
+        this.populatePrioritesBasedOnRaisedUserAcId(data.raisedUser.accountId);
         this.incident.version = data.version;
         this.incident.id = data.id;
         this.incident.moduleId = data.moduleId;

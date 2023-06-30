@@ -4,6 +4,7 @@ import com.centram.common.view.Views;
 import com.centram.common.vo.UserVO;
 import com.centram.domain.converter.RoleConverter;
 import com.centram.domain.enumarator.Status;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,6 +25,7 @@ import java.util.List;
  * User
  */
 @ApiModel(description = "User")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
@@ -163,12 +165,6 @@ public class User extends BaseEntity implements Serializable {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    @Transient
-    @JsonView(Views.BasicView.class)
-    public BigInteger getAccountId() {
-        return account.getId();
-    }
-
     public User(@NotNull BigInteger id) {
         this.id = id;
     }
@@ -198,6 +194,14 @@ public class User extends BaseEntity implements Serializable {
         this.organisation = new Organisation();
         this.account = new Account();
         this.account.setId(userVO.getAccountId());
+        this.account.setAccountNo(userVO.getAccountNo());
+        this.account.setName(userVO.getAccountName());
         this.organisation.setId(userVO.getOrganisationId());
+    }
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    public BigInteger getAccountId() {
+        return (account != null) ? account.getId() : null;
     }
 }

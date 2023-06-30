@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,6 +33,7 @@ import java.util.List;
 @Table(name = "incident_communication", indexes = {
         @Index(name = "incident_idx", columnList = "incident_id", unique = false)
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncidentCommunication extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -1033450309367452581L;
 

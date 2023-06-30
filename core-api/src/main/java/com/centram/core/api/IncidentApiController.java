@@ -63,8 +63,8 @@ public class IncidentApiController {
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MY INCIDENTS,MY GROUP INCIDENTS','WRITE,WRITE|SOLVE',authentication.principal)")
-    public ResponseEntity<Incident> save(@ApiParam(value = "Incident object", required = true) @Valid @RequestBody Incident body) {
-        return new ResponseEntity<Incident>(incidentService.save(body), HttpStatus.OK);
+    public ResponseEntity save(@ApiParam(value = "Incident object", required = true) @Valid @RequestBody Incident body) {
+        return ResponseEntity.ok(incidentService.save(body));
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find incident by Id", nickname = "getIncidentById", notes = "Find incident by Id", response = Incident.class, tags = {"Incident",})
@@ -199,7 +199,7 @@ public class IncidentApiController {
             @ApiParam(value = "incident no", defaultValue = "", required = false) @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo,
             @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
-        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getPendingAssetApprovals(incidentNo,pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Incident>>(incidentService.getPendingAssetApprovals(incidentNo, pageable), HttpStatus.OK);
     }
 
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset request", nickname = "approveAssetRequest", notes = "Approve an asset request", tags = {"Incident",})
