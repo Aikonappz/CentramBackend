@@ -615,6 +615,7 @@ public class IncidentService {
         incident.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         incident.setWatchList(incident.getWatchList() == null ? Collections.emptyList() : incident.getWatchList());
         if (incident.getId() == null) {
+            incident.setExpectedTime("00:00");
             incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
             Setting setting = null;
