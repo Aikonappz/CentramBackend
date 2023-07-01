@@ -134,6 +134,11 @@ public class BatchConfig {
         return new BatchReport();
     }
 
+    @Bean
+    EmailDistributionListListener emailDistributionListListener() {
+        return new EmailDistributionListListener();
+    }
+
     /*@Bean
     JunkCleaner junkCleaner() {
         return new JunkCleaner();
