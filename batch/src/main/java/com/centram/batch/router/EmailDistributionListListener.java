@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EmailDistributionListListener extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(EmailDistributionListListener.class);
 
@@ -19,8 +22,7 @@ public class EmailDistributionListListener extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        // from("quartzComponent://junk/cleaner?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
-        from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false")
+        from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
                 .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("test")
@@ -29,6 +31,8 @@ public class EmailDistributionListListener extends RouteBuilder {
                     public void process(Exchange exchange) throws Exception {
                         Exchange ex = exchange;
                         String body = exchange.getIn().getBody(String.class);
+                        Map<String,Object> dataAttributes = new HashMap<String,Object>();
+
                         log.info("exchange body {}", body);
                     }
                 })

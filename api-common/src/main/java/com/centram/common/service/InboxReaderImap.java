@@ -1,16 +1,8 @@
 package com.centram.common.service;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.mail.*;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 //@EnableScheduling
 //@Service
@@ -56,5 +48,25 @@ class InboxReaderImap {
         }
         sentFolder.close(false);
     }*/
+
+    public static void main(String[] args) {
+        Map<String,Object> dataAttributes = new HashMap<String,Object>();
+        String myString = "Category: IT Support\n" +
+                "Sub Category: Mouse\n" +
+                "Priority: P4\n" +
+                "Title: My Desktop Mouse Not Working.\n" +
+                "Description: <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. \n" +
+                "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software \n" +
+                "like Aldus PageMaker including versions of Lorem Ipsum.<p>";
+
+        String[] lines = myString.split(System.getProperty("line.separator"));
+        String[] line;
+        for(String s: lines){
+            line = s.split(":");
+            dataAttributes.put(line[0], line[1].trim());
+        }
+
+        System.out.println(dataAttributes);
+    }
 
 }
