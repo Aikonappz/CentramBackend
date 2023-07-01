@@ -2,8 +2,8 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +19,9 @@ import java.math.BigInteger;
 /**
  * VendorModule
  */
-@ApiModel(description = "Vendor Module")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,7 +38,7 @@ import java.math.BigInteger;
 public class VendorModule extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337189073432054L;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,19 +46,19 @@ public class VendorModule extends BaseEntity implements Serializable {
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "module_id", nullable = false)
     @JsonView(Views.BasicView.class)
     private BigInteger moduleId;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "sub_module_id", nullable = false)
     @JsonView(Views.BasicView.class)
     private BigInteger subModuleId;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vendor_id", nullable = false)

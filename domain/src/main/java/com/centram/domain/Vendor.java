@@ -5,8 +5,8 @@ import com.centram.domain.enumarator.IncidentAllocationType;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +26,9 @@ import java.util.List;
 /**
  * Vendor
  */
-@ApiModel(description = "Vendor")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,7 +46,7 @@ import java.util.List;
 public class Vendor extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575312184473432054L;
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,37 +54,37 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String name;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "contact_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactName;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "contact_email", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactEmail;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "contact_number", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactNumber;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "contact_address", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactAddress;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Valid
     //@NotNull
     @Fetch(FetchMode.JOIN)
@@ -92,7 +92,7 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private List<VendorModule> vendorModules;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -100,7 +100,7 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")
@@ -108,7 +108,7 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Status status;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "vendor_type")
@@ -116,7 +116,7 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private VendorType vendorType;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "ticket_allocation_type")
@@ -124,7 +124,7 @@ public class Vendor extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private IncidentAllocationType ticketAllocationType;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "in_house")

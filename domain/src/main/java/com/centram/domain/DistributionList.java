@@ -2,8 +2,8 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,9 +24,9 @@ import java.util.Set;
 /**
  * Incident
  */
-@ApiModel(description = "Distribution List")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -45,7 +45,7 @@ import java.util.Set;
 public class DistributionList extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337184473432054L;
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,19 +53,19 @@ public class DistributionList extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "dl_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String dlName;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "dl_email", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String dlEmail;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Valid
     //@NotNull
     @Fetch(FetchMode.JOIN)
@@ -73,7 +73,7 @@ public class DistributionList extends BaseEntity implements Serializable {
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private List<DistributionListModule> distributionListModules;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)

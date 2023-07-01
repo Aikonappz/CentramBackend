@@ -7,7 +7,7 @@ import com.centram.common.view.Views;
 import com.centram.core.service.AssetService;
 import com.centram.domain.Asset;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.math.BigInteger;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "asset", description = "Asset Api")
+
+
 @RequestMapping(value = "/api/v1/asset")
 @Controller
 public class AssetApiController {
@@ -43,47 +43,33 @@ public class AssetApiController {
     @Autowired
     private AssetService assetService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset", nickname = "save", notes = "Save an asset", tags = {"Asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','WRITE',authentication.principal)")
-    public ResponseEntity<Asset> save(@ApiParam(value = "Asset object", required = true) @Valid @RequestBody Asset body) {
+    public ResponseEntity<Asset> save( @Valid @RequestBody Asset body) {
         return new ResponseEntity<Asset>(assetService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset by Id", nickname = "getAssetById", notes = "Find asset by Id", response = Asset.class, tags = {"Asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = Asset.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{assetId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|WRITE|APPROVE',authentication.principal)")
-    public ResponseEntity<Asset> getAssetById(@ApiParam(value = "id of asset to return", required = true) @PathVariable("assetId") BigInteger assetId) {
+    public ResponseEntity<Asset> getAssetById( @PathVariable("assetId") BigInteger assetId) {
         return new ResponseEntity<Asset>(assetService.getAssetById(assetId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get assets", nickname = "getAssets", notes = "Get assets", response = PaginatedList.class, tags = {"Asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET,REQUESTED ASSET','READ|SEARCH,WRITE|SOLVE|ASSIGN',authentication.principal) || @appSecurityUtilityService.hasOrgAdminAccess(authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
     public ResponseEntity<PaginatedList<Asset>> getAssets(
-            @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
-            @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
-            @ApiParam(value = "model No", defaultValue = "", required = false) @RequestParam(value = "modelNo", defaultValue = "", required = false) String modelNo,
-            @ApiParam(value = "serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
-            @ApiParam(value = "asset available", defaultValue = "-1", required = false) @RequestParam(value = "available", defaultValue = "-1", required = false) Integer available,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+             @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
+             @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
+             @RequestParam(value = "modelNo", defaultValue = "", required = false) String modelNo,
+             @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
+             @RequestParam(value = "available", defaultValue = "-1", required = false) Integer available,
+             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Asset>>(assetService.getAssets(productCategory, assetType, modelNo, serialNo, available, pageable), HttpStatus.OK);
     }
@@ -95,15 +81,10 @@ public class AssetApiController {
      * @return
      * @throws IOException
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload assets data csv", nickname = "uploadAssetsData", notes = "Upload assets data", tags = {"Asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Validation exception"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','WRITE',authentication.principal)")
-    public ResponseEntity uploadAssetsData(@ApiParam(value = "Assets CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
+    public ResponseEntity uploadAssetsData( @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
         assetService.uploadAssetsData(multipartFile);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -113,19 +94,15 @@ public class AssetApiController {
      *
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Assets", nickname = "downloadAssets", notes = "Download all Assets", response = Resource.class, tags = {"Asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Resource.class),
-            @ApiResponse(code = 400, message = "Invalid status value")
-    })
+
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET','READ|SEARCH',authentication.principal)")
     public ResponseEntity<Resource> downloadAssets(
-            @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
-            @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
-            @ApiParam(value = "model No", defaultValue = "", required = false) @RequestParam(value = "modelNo", defaultValue = "", required = false) String modelNo,
-            @ApiParam(value = "serial no", defaultValue = "", required = false) @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
-            @ApiParam(value = "asset available", defaultValue = "-1", required = false) @RequestParam(value = "available", defaultValue = "-1", required = false) Integer available
+             @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
+             @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
+             @RequestParam(value = "modelNo", defaultValue = "", required = false) String modelNo,
+             @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo,
+             @RequestParam(value = "available", defaultValue = "-1", required = false) Integer available
     ) {
         final InputStreamResource resource = new InputStreamResource(assetService.download(productCategory, assetType, modelNo, serialNo, available));
         return ResponseEntity.ok()
@@ -134,20 +111,15 @@ public class AssetApiController {
                 .body(resource);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get assets by user location/organisation/department", nickname = "getFilteredAssets", notes = "Get assets by user location/organisation/department", response = PaginatedList.class, tags = {"Asset",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/available-asset", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('MANAGE ASSET,REQUESTED ASSET','READ|SEARCH,WRITE|SOLVE|ASSIGN',authentication.principal) || @appSecurityUtilityService.hasOrgAdminAccess(authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
     public ResponseEntity<PaginatedList<Asset>> getAvailableAssets(
-            @ApiParam(value = "Product Category", defaultValue = "", required = false) @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
-            @ApiParam(value = "Asset Type", defaultValue = "", required = false) @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
-            @ApiParam(value = "Request Raised User Id", required = false) @RequestParam(value = "requestRaisedId", required = false) BigInteger requestRaisedId,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+             @RequestParam(value = "productCategory", defaultValue = "", required = false) String productCategory,
+             @RequestParam(value = "assetType", defaultValue = "", required = false) String assetType,
+             @RequestParam(value = "requestRaisedId", required = false) BigInteger requestRaisedId,
+             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Asset>>(assetService.getAvailableAssets(productCategory, assetType, requestRaisedId, pageable), HttpStatus.OK);
     }

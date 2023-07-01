@@ -6,8 +6,8 @@ import com.centram.domain.converter.RoleConverter;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -24,10 +24,10 @@ import java.util.List;
 /**
  * User
  */
-@ApiModel(description = "User")
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -53,7 +53,7 @@ import java.util.List;
 public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337834473432054L;
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,58 +61,58 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "first_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String firstName;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "last_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String lastName;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "email", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String email;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255) not null")
     private String password;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "contact_no", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactNo;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String secContactNo;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Column(name = "employee_id", nullable = true, columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String employeeId;
 
-    @ApiModelProperty(required = false, value = "")
+    
     //@OneToOne(optional = true, fetch = FetchType.LAZY)
     //@JoinColumn(name = "manager_id", referencedColumnName = "id")
     @Column(name = "manager_id", nullable = true, columnDefinition = "BIGINT default null")
     @JsonView(Views.BasicView.class)
     private BigInteger managerId;
 
-    @ApiModelProperty(value = "")
+    
     @Column(name = "project_code", nullable = true, columnDefinition = "varchar(255) default null")
     @JsonView(Views.BasicView.class)
     private String projectCode;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Valid
     @NotNull
     @Lob
@@ -121,7 +121,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<BigInteger> roles;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")
@@ -129,20 +129,20 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Status status;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     private Organisation organisation;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = true, referencedColumnName = "id")
     private Vendor vendor;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -150,7 +150,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Location location;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -158,7 +158,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Department department;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Valid
     @NotNull
     @OneToOne
