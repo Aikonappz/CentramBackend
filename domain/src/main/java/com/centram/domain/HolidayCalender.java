@@ -3,8 +3,6 @@ package com.centram.domain;
 import com.centram.common.view.Views;
 import com.centram.domain.converter.HolidayConverter;
 import com.fasterxml.jackson.annotation.JsonView;
-
-
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -32,37 +30,37 @@ import java.util.List;
 @Audited
 @Entity
 @Table(name = "holiday_calender", indexes = {
-        @Index(name = "year_loc_org_idx", columnList = "year,location_id,organisation_id", unique = true)
+        @Index(name = "acc_year_loc_org_idx", columnList = "year,location_id,account_id,organisation_id", unique = true)
 })
 public class HolidayCalender extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -1039150309367452581L;
 
-    
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    
+
     @NotNull
     @Column(name = "year")
     private String year;
 
-    
+
     @Valid
     @Lob
     @Column(name = "holidays", nullable = false, columnDefinition = "TEXT not null")
     @Convert(converter = HolidayConverter.class)
     private List<Holiday> holidays;
 
-    
+
     @Valid
     @OneToOne
     @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
     private Organisation organisation;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -70,7 +68,7 @@ public class HolidayCalender extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Location location;
 
-    
+
     @Valid
     @NotNull
     @OneToOne

@@ -7,6 +7,7 @@ export class Account extends Base {
     id: number;
     label: string;
     name: string;
+    contractHours: string;
     accountNo: string;
     contactName: string;
     contactEmail: string;
@@ -21,6 +22,7 @@ export class Account extends Base {
         super();
         this.id = null;
         this.name = '';
+        this.contractHours = '';
         this.accountNo = '';
         this.contactName = '';
         this.contactEmail = '';

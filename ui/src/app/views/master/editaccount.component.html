@@ -56,7 +56,7 @@
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contactNumber">Contact Number</label>
                 <input type="text" formControlName="contactNumber" id="contactNumber" name="contactNumber"
-                  class="form-control" placeholder="Account Name" aria-label="Account Name">
+                  class="form-control" placeholder="Contact Number" aria-label="Account Name">
                 <div *ngIf="f.contactNumber.touched && f.contactNumber.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.contactNumber.errors?.required">
                     Contact Number is required.
@@ -68,6 +68,19 @@
               </div>
             </div>
             <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="contractHours">Contract Hours</label>
+                <input type="text" formControlName="contractHours" id="contractHours" name="contractHours"
+                  class="form-control" placeholder="Contract Hours" aria-label="Account Name">
+                <div *ngIf="f.contractHours.touched && f.contractHours.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.contractHours.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                  <div *ngIf="f.contractHours.errors?.pattern">
+                    Invalid input! Only numbers allowed.
+                  </div>
+                </div>
+              </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contactAddress">Address</label>
                 <textarea formControlName="contactAddress" id="contactAddress" name="contactAddress" rows="4"
@@ -110,7 +123,6 @@
                   </div>
                 </div>
               </div>
-              <div class="col"></div>
             </div>
           </div>
           <div class="card-footer">

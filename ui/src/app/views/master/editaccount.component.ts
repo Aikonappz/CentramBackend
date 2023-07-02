@@ -19,6 +19,7 @@ export class EditAccountComponent implements OnInit {
   moduleName: string = "ACCOUNT";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+  numRegex = /^\d+$/;
   newEntity: boolean = true;
   defaultStatus: any = 'ACTIVE';
   statusFlag: boolean = true;
@@ -90,6 +91,10 @@ export class EditAccountComponent implements OnInit {
           Validators.maxLength(255),
           Validators.email,
         ]),
+        contractHours: new FormControl(null, [
+          Validators.maxLength(255),
+          Validators.pattern(this.numRegex),
+        ]),
         contactNumber: new FormControl(null, [
           Validators.required,
           Validators.pattern(this.phoneRegex),
@@ -121,6 +126,7 @@ export class EditAccountComponent implements OnInit {
         }
       }
       //console.log(this.angForm);
+      this.account.contractHours = this.angForm.controls['contractHours'].value;
       this.account.name = this.angForm.controls['name'].value;
       this.account.contactAddress = this.angForm.controls['contactAddress'].value;
       this.account.contactEmail = this.angForm.controls['contactEmail'].value;
@@ -161,9 +167,11 @@ export class EditAccountComponent implements OnInit {
         this.account.contactName = data.contactName;
         this.account.contactNumber = data.contactNumber;
         this.account.status = data.status;
+        this.account.contractHours = data.contractHours;
         this.account.version = data.version;
         this.account.ticketAllocationType = data.ticketAllocationType;
         //console.log(JSON.stringify(this.user));
+        this.angForm.get('contractHours').setValue(this.account.contractHours);
         this.angForm.get('name').setValue(this.account.name);
         this.angForm.get('contactAddress').setValue(this.account.contactAddress);
         this.angForm.get('contactEmail').setValue(this.account.contactEmail);

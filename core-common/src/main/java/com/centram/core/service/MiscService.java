@@ -208,7 +208,7 @@ public class MiscService {
                     rowWiseIssues.put(rowNo++, "User With Same Employee ID already Exist!");
                     continue;
                 }
-                user.setEmployeeId(data.get("EMP_ID").trim());
+                user.setEmployeeId(data.get("EMP_ID").trim().equals("")? null : data.get("EMP_ID").trim());
             }
             if (data.get("PROJECT_CODE") == null || data.get("PROJECT_CODE").trim().equals("")) {
                 user.setProjectCode(null);
@@ -216,8 +216,8 @@ public class MiscService {
                 user.setProjectCode(data.get("PROJECT_CODE").trim());
             }
             if (data.get("MANAGER_ID") == null || data.get("MANAGER_ID").trim().equals("")) {
-                rowWiseIssues.put(rowNo++, "Manager Id Required!");
-                continue;
+                //rowWiseIssues.put(rowNo++, "Manager Id Required!");
+                //continue;
             } else {
                 User u = userService.getUserByEmployeeId(data.get("MANAGER_ID").trim());
                 if (u != null) {

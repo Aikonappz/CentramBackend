@@ -5,8 +5,6 @@ import com.centram.domain.enumarator.AccountType;
 import com.centram.domain.enumarator.IncidentAllocationType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +43,7 @@ import java.math.BigInteger;
 public class Account extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -4374104635965387182L;
 
-    
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,43 +51,43 @@ public class Account extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    
+
     @NotNull
     @Column(name = "name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String name;
 
-    
+
     @NotNull
     @Column(name = "account_no", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String accountNo;
 
-    
+
     @NotNull
     @Column(name = "contact_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactName;
 
-    
+
     @NotNull
     @Column(name = "contact_email", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactEmail;
 
-    
+
     @NotNull
     @Column(name = "contact_number", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactNumber;
 
-    
+
     @NotNull
     @Column(name = "contact_address", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactAddress;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -97,7 +95,7 @@ public class Account extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "status")
@@ -105,7 +103,7 @@ public class Account extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Status status;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "account_type")
@@ -113,13 +111,18 @@ public class Account extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private AccountType accountType;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "ticket_allocation_type")
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private IncidentAllocationType ticketAllocationType;
+
+    @NotNull
+    @Column(name = "contract_hours", nullable = true, columnDefinition = "varchar(255) default null")
+    @JsonView(Views.BasicView.class)
+    private String contractHours;
 
     public Account(@NotNull BigInteger id) {
         this.id = id;

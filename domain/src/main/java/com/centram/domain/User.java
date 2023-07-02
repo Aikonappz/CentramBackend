@@ -6,8 +6,6 @@ import com.centram.domain.converter.RoleConverter;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-
-
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -53,7 +51,7 @@ import java.util.List;
 public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337834473432054L;
 
-    
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,58 +59,58 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    
+
     @NotNull
     @Column(name = "first_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String firstName;
 
-    
+
     @NotNull
     @Column(name = "last_name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String lastName;
 
-    
+
     @NotNull
     @Column(name = "email", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String email;
 
-    
+
     @NotNull
     @Column(name = "password", nullable = false, columnDefinition = "varchar(255) not null")
     private String password;
 
-    
+
     @NotNull
     @Column(name = "contact_no", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String contactNo;
 
-    
+
     @Column(name = "sec_contact_no", nullable = true, columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String secContactNo;
 
-    
+
     @Column(name = "employee_id", nullable = true, columnDefinition = "varchar(255)")
     @JsonView(Views.BasicView.class)
     private String employeeId;
 
-    
+
     //@OneToOne(optional = true, fetch = FetchType.LAZY)
     //@JoinColumn(name = "manager_id", referencedColumnName = "id")
     @Column(name = "manager_id", nullable = true, columnDefinition = "BIGINT default null")
     @JsonView(Views.BasicView.class)
     private BigInteger managerId;
 
-    
+
     @Column(name = "project_code", nullable = true, columnDefinition = "varchar(255) default null")
     @JsonView(Views.BasicView.class)
     private String projectCode;
 
-    
+
     @Valid
     @NotNull
     @Lob
@@ -121,7 +119,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<BigInteger> roles;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "status")
@@ -129,20 +127,20 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Status status;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     private Organisation organisation;
 
-    
+
     @Valid
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id", nullable = true, referencedColumnName = "id")
     private Vendor vendor;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -150,7 +148,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Location location;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -158,7 +156,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Department department;
 
-    
+
     @Valid
     @NotNull
     @OneToOne

@@ -898,7 +898,7 @@ public class UserService implements UserDetailsService {
         if (userVO.getPassword() != null)
             user.setPassword(passwordEncoder.encode(userVO.getPassword()));
         user.setEmployeeId(userVO.getEmployeeId());
-        user.setManagerId(manager.getId());
+        user.setManagerId((manager != null)? manager.getId() : null);
         user.setContactNo(userVO.getContactNo());
         user.setSecContactNo(userVO.getSecContactNo());
         user.setProjectCode(userVO.getProjectCode());

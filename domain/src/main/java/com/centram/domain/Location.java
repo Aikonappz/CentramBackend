@@ -32,7 +32,7 @@ import java.time.LocalTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(
         name = "location",
-        uniqueConstraints = @UniqueConstraint(name = "location_org_constraint", columnNames = {"name", "organisation_id"}),
+        uniqueConstraints = @UniqueConstraint(name = "acc_location_org_constraint", columnNames = {"name", "account_id", "organisation_id"}),
         indexes = {
                 @Index(name = "loc_org_idx", columnList = "organisation_id", unique = false),
         }
