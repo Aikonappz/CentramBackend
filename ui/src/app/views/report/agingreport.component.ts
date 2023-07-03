@@ -116,6 +116,10 @@ export class AgingReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.loggedInUserService.isOrgAdmin()) { }
+    else if (this.loggedInUserService.isIncidentUserOnly()) {
+      this.searchedData.raisedUserId = this.loggedInUserService.getLoggedInUser().userId;
+    }
     this.datasource = new ReportAgingIncidentDataSource(this.service);
     this.datasource.loadData(0, 10, this.searchedData);
   }

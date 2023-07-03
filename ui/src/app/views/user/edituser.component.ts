@@ -84,11 +84,11 @@ export class EditUserComponent implements OnInit {
         secContactNo: new FormControl('', [
           Validators.pattern(this.phoneRegex),
         ]),
-        employeeId: new FormControl('NA', [
-          Validators.required,
+        employeeId: new FormControl(null, [
+          //Validators.required,
         ]),
         managerId: new FormControl(null, [
-          Validators.required,
+          //Validators.required,
         ]),
         projectCode: new FormControl('NA', [
           //Validators.required
@@ -129,11 +129,11 @@ export class EditUserComponent implements OnInit {
         secContactNo: new FormControl('', [
           Validators.pattern(this.phoneRegex),
         ]),
-        employeeId: new FormControl('NA', [
-          Validators.required,
+        employeeId: new FormControl(null, [
+          //Validators.required,
         ]),
         managerId: new FormControl(null, [
-          Validators.required,
+          //Validators.required,
         ]),
         projectCode: new FormControl('NA', [
           //Validators.required
@@ -514,7 +514,6 @@ export class EditUserComponent implements OnInit {
         this.user.department.id = data.departmentId;
         this.user.status = data.status;
         this.user.password = data.password;
-        this.user.managerId = data.managerId;
         this.user.secContactNo = data.secContactNo;
         this.user.vendor = new Vendor();
         this.user.vendor.id = data.vendorId;
