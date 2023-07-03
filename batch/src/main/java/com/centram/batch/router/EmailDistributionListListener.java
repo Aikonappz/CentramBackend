@@ -30,7 +30,7 @@ public class EmailDistributionListListener extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
+        /*from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
                 .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("test")
@@ -66,7 +66,7 @@ public class EmailDistributionListListener extends RouteBuilder {
                     }
                 })
                 .log(LoggingLevel.INFO, "junk-cleaner started -> ${header.CURRENT_DATE_TIME}")
-                .end();
+                .end();*/
     }
 
 
