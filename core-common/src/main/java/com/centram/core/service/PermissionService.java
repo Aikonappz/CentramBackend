@@ -93,6 +93,7 @@ public class PermissionService {
         return permissionRepository.getRoleIdsByModuleAndAction(moduleIds, actionName);
     }
 
+
     @Transactional(readOnly = true)
     public List<Permission> getPermissionByRoleNames(List<String> roleIds) {
         return permissionRepository.getPermissionByRoleNames(roleIds);

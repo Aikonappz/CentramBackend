@@ -95,4 +95,9 @@ public class PriorityService {
         priorityRepository.updateStatus(status, userIds);
 
     }
+
+    @Transactional(readOnly = true)
+    public Priority getPriorityByNameAndAccountIdAndOrganisationId(String name, BigInteger accountId, BigInteger organisationId) {
+        return priorityRepository.getPriorityByNameAndAccountIdAndOrganisationId(name, accountId, organisationId);
+    }
 }

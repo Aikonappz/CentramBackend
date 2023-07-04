@@ -30,6 +30,13 @@ public interface PriorityRepository extends PagingAndSortingRepository<Priority,
             @Param("pageable") Pageable pageable
     );
 
+    @Query("select p from Priority p where p.organisation.id = (:organisationId) and p.name = (:name) and p.account.id = (:accountId) ")
+    Priority getPriorityByNameAndAccountIdAndOrganisationId(
+            @Param("name") String name,
+            @Param("accountId") BigInteger accountId,
+            @Param("organisationId") BigInteger organisationId
+    );
+
     @Modifying
     @Query("update Priority set status = (:status) where id in (:priorityIds)")
     Integer updateStatus(@Param("status") Status status, @Param("priorityIds") List<BigInteger> priorityIds);

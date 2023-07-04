@@ -620,6 +620,16 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     *
+     * @param email
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public User findUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
+    /**
      * get users by multiple email
      *
      * @param emails

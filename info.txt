@@ -94,3 +94,18 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-1
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-13-233-107-24.ap-south-1.compute.amazonaws.com:/tmp/server.key /tmp/server.key
 
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/centram.sql /tmp/centram.sql
+
+
+select
+-- p.id as permissionId,
+ a.id as actionId,
+ a.name as actionName,
+ r.id as roleId,
+ r.name as roleName,
+ m.id as parentModuleId,
+ m.name as parentModuleName,
+ sm.id as moduleId,
+ sm.name as moduleName
+from permission p join `action` a on (p.action_id = a.id) join `role` r on (p.role_id = r.id)
+join module sm on (p.module_id = sm.id) left join module m on (sm.parent_module_id = m.id)
+where a.name = "RAISE INCIDENT";

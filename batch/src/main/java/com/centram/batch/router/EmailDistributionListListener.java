@@ -1,7 +1,9 @@
 package com.centram.batch.router;
 
-import com.centram.core.service.ModuleService;
+import com.centram.core.service.*;
 import com.centram.domain.Module;
+import com.centram.domain.*;
+import com.centram.domain.enumarator.LicenseType;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -11,10 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.*;
 
 public class EmailDistributionListListener extends RouteBuilder {
     private static final Logger log = LoggerFactory.getLogger(EmailDistributionListListener.class);
@@ -28,12 +28,35 @@ public class EmailDistributionListListener extends RouteBuilder {
     @Autowired
     private ModuleService moduleService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private PriorityService priorityService;
+
+    @Autowired
+    private IncidentService incidentService;
+
     @Override
     public void configure() throws Exception {
-        /*from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
+        //from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
+        from("timer:timerName?period=120000")
                 .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("test")
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setBody("Category ==> IT Support\n" +
+                                "Sub Category ==> Mouse\n" +
+                                "Priority ==> P4\n" +
+                                "Title ==> My Desktop Mouse Not Working.\n" +
+                                "Description ==> My Desktop Mouse Not Working.");
+                    }
+                })
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -54,20 +77,79 @@ public class EmailDistributionListListener extends RouteBuilder {
                             List<String> keys = Arrays.asList("Category", "Sub Category", "Priority", "Title", "Description");
                             for (String s : keys) {
                                 if (!dataAttributes.containsKey(s)) {
-                                    log.error("Key ==> {} not exist!",s);
+                                    log.error("Key ==> {} not exist!", s);
+                                    return;
                                 }
                             }
+                            String email = "user@centram.live";
+                            //TODO : get sender email from exchange
+                            User user = userService.findUserByEmail(email);
+                            if (user == null) {
+                                log.error("User {} not exist or active!", email);
+                                return;
+                            }
+                            Module category = moduleService.getModuleByCustomerModuleName(String.valueOf(dataAttributes.get("Category")));
+                            if (category == null) {
+                                log.error("Not a valid Category {}!", dataAttributes.get("Category"));
+                                return;
+                            }
+                            Module subCategory = moduleService.getModuleByCustomerModuleName(String.valueOf(dataAttributes.get("Sub Category")));
+                            if (subCategory == null) {
+                                log.error("Not a valid Sub Category {}!", dataAttributes.get("Sub Category"));
+                                return;
+                            }
+                            List<Permission> permissions = permissionService.getPermissionByRoleIds(user.getRoles());
+                            if (!hasPermissionToRaiseIncident(category.getId(), subCategory.getId(), permissions)) {
+                                log.error("User don't have valid permission to raise incident!");
+                                return;
+                            }
+                            Priority priority = priorityService.getPriorityByNameAndAccountIdAndOrganisationId(
+                                    String.valueOf(dataAttributes.get("Sub Category")),
+                                    user.getAccount().getId(),
+                                    user.getOrganisation().getId()
+                            );
+                            if (priority == null) {
+                                log.error("Not a valid Priority {}!", dataAttributes.get("Priority"));
+                                return;
+                            }
 
-                            //Module category = moduleService.getModuleByCustomerModuleName(String.valueOf(dataAttributes.get("Category")));
-                            //Module subCategory = moduleService.getModuleByCustomerModuleName(String.valueOf(dataAttributes.get("Sub Category")));
-                        }else{
-                            log.error("Body ==> {} not valid for incident creation!",body);
+                            Incident incident = new Incident();
+                            incident.setTitle(String.valueOf(dataAttributes.get("Title")));
+                            incident.setPriority(priority);
+                            incident.setRaisedUser(user);
+                            incident.setModuleId(category.getId());
+                            incident.setSubModuleId(subCategory.getId());
+                            incident.setIncidentType(LicenseType.INCIDENT);
+
+                            IncidentCommunication incidentCommunication =new IncidentCommunication();
+                            incidentCommunication.setIncident(incident);
+                            incidentCommunication.setCommunicatedBy(user);
+                            incidentCommunication.setMessage(String.valueOf(dataAttributes.get("Description")));
+                            //incidentCommunication.setAttachments();
+                            incident.setCommunications(
+                                    new HashSet<IncidentCommunication>(){{
+                                        add(incidentCommunication);
+                                    }}
+                            );
+                            incidentService.save(incident);
+                        } else {
+                            log.error("Category=> {},Sub Category=> {}", dataAttributes.get("Category"), dataAttributes.get("Sub Category"));
                         }
                     }
                 })
                 .log(LoggingLevel.INFO, "junk-cleaner started -> ${header.CURRENT_DATE_TIME}")
-                .end();*/
+                .end();
     }
 
+    private Boolean hasPermissionToRaiseIncident(BigInteger moduleId, BigInteger subModuleId, List<Permission> permissions) {
+        return permissions.stream()
+                .filter(i -> {
+                    return (
+                            i.getModule().getId().compareTo(moduleId) == 0 && i.getAction().getName().equals("RAISE INCIDENT")
+                                    ||
+                                    i.getModule().getId().compareTo(subModuleId) == 0 && i.getAction().getName().equals("RAISE INCIDENT") && i.getModule().getParentModuleId().compareTo(moduleId) == 0
+                    );
+                }).count() > 2;
+    }
 
 }
