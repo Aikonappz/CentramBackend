@@ -175,4 +175,18 @@ public class HolidayCalenderService {
         }
         return holidayCalender.getHolidays();
     }
+
+    @Transactional(readOnly = true)
+    public List<Holiday> getHolidaysByYear(BigInteger accountId, BigInteger locationId, BigInteger organisationId, String year) {
+        HolidayCalender holidayCalender = holidayCalenderRepository.getHolidayCalenderByYear(
+                accountId,
+                year,
+                locationId,
+                organisationId
+        );
+        if (holidayCalender == null) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        return holidayCalender.getHolidays();
+    }
 }

@@ -3,6 +3,7 @@ package com.centram.batch.router;
 import com.centram.core.service.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
+import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -53,8 +54,10 @@ public class EmailDistributionListListener extends RouteBuilder {
                         exchange.getIn().setBody("Category ==> IT Support\n" +
                                 "Sub Category ==> Mouse\n" +
                                 "Priority ==> P4\n" +
+                                "Watch List ==> abc@gmail.com,bcd@gmai.com\n" +
                                 "Title ==> My Desktop Mouse Not Working.\n" +
                                 "Description ==> My Desktop Mouse Not Working.");
+                        log.info(exchange.getIn().getBody().toString());
                     }
                 })
                 .process(new Processor() {
@@ -74,26 +77,27 @@ public class EmailDistributionListListener extends RouteBuilder {
                                     dataAttributes.put(line[0].trim(), line[1].trim());
                                 } else continue;
                             }
-                            List<String> keys = Arrays.asList("Category", "Sub Category", "Priority", "Title", "Description");
+                            List<String> keys = Arrays.asList("Category", "Sub Category", "Priority", "Watch List", "Title", "Description");
                             for (String s : keys) {
                                 if (!dataAttributes.containsKey(s)) {
                                     log.error("Key ==> {} not exist!", s);
                                     return;
                                 }
                             }
-                            String email = "user@centram.live";
+                            List<String> watchListEmail = new ArrayList<String>();
+                            String email = "rachel.young@ixerv.com";
                             //TODO : get sender email from exchange
                             User user = userService.findUserByEmail(email);
                             if (user == null) {
                                 log.error("User {} not exist or active!", email);
                                 return;
                             }
-                            Module category = moduleService.getModuleByCustomerModuleName(String.valueOf(dataAttributes.get("Category")));
+                            Module category = moduleService.getModuleByCustomerModuleName(LicenseType.INCIDENT, String.valueOf(dataAttributes.get("Category")));
                             if (category == null) {
                                 log.error("Not a valid Category {}!", dataAttributes.get("Category"));
                                 return;
                             }
-                            Module subCategory = moduleService.getModuleByCustomerModuleName(String.valueOf(dataAttributes.get("Sub Category")));
+                            Module subCategory = moduleService.getModuleByCustomerModuleName(LicenseType.INCIDENT, String.valueOf(dataAttributes.get("Sub Category")));
                             if (subCategory == null) {
                                 log.error("Not a valid Sub Category {}!", dataAttributes.get("Sub Category"));
                                 return;
@@ -104,7 +108,7 @@ public class EmailDistributionListListener extends RouteBuilder {
                                 return;
                             }
                             Priority priority = priorityService.getPriorityByNameAndAccountIdAndOrganisationId(
-                                    String.valueOf(dataAttributes.get("Sub Category")),
+                                    String.valueOf(dataAttributes.get("Priority")),
                                     user.getAccount().getId(),
                                     user.getOrganisation().getId()
                             );
@@ -112,26 +116,35 @@ public class EmailDistributionListListener extends RouteBuilder {
                                 log.error("Not a valid Priority {}!", dataAttributes.get("Priority"));
                                 return;
                             }
-
+                            if (!String.valueOf(dataAttributes.get("Watch List")).trim().equalsIgnoreCase("")) {
+                                String[] emails = String.valueOf(dataAttributes.get("Watch List")).split(",");
+                                watchListEmail = Arrays.asList(emails);
+                            }
                             Incident incident = new Incident();
+                            incident.setCategory(category);
+                            incident.setSubCategory(subCategory);
                             incident.setTitle(String.valueOf(dataAttributes.get("Title")));
                             incident.setPriority(priority);
                             incident.setRaisedUser(user);
                             incident.setModuleId(category.getId());
                             incident.setSubModuleId(subCategory.getId());
+                            incident.setStatus(IncidentStatus.OPEN);
                             incident.setIncidentType(LicenseType.INCIDENT);
-
-                            IncidentCommunication incidentCommunication =new IncidentCommunication();
+                            incident.setOrganisation(user.getOrganisation());
+                            if (watchListEmail != null && watchListEmail.size() > 0) {
+                                incident.setWatchList(watchListEmail);
+                            }
+                            IncidentCommunication incidentCommunication = new IncidentCommunication();
                             incidentCommunication.setIncident(incident);
                             incidentCommunication.setCommunicatedBy(user);
                             incidentCommunication.setMessage(String.valueOf(dataAttributes.get("Description")));
                             //incidentCommunication.setAttachments();
                             incident.setCommunications(
-                                    new HashSet<IncidentCommunication>(){{
+                                    new HashSet<IncidentCommunication>() {{
                                         add(incidentCommunication);
                                     }}
                             );
-                            incidentService.save(incident);
+                            incidentService.createFromEmail(incident);
                         } else {
                             log.error("Category=> {},Sub Category=> {}", dataAttributes.get("Category"), dataAttributes.get("Sub Category"));
                         }
@@ -149,7 +162,7 @@ public class EmailDistributionListListener extends RouteBuilder {
                                     ||
                                     i.getModule().getId().compareTo(subModuleId) == 0 && i.getAction().getName().equals("RAISE INCIDENT") && i.getModule().getParentModuleId().compareTo(moduleId) == 0
                     );
-                }).count() > 2;
+                }).count() > 1;
     }
 
 }

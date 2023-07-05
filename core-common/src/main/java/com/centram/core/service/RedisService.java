@@ -3,6 +3,7 @@ package com.centram.core.service;
 import com.centram.common.vo.UserVO;
 import com.centram.domain.Module;
 import com.centram.domain.*;
+import com.centram.domain.enumarator.LicenseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
@@ -41,13 +42,13 @@ public class RedisService {
     public Module getModuleById(BigInteger moduleId) {
         return null;
     }
-    @CachePut(value = "module", key = "#customerModuleName")
-    public Module saveModuleByCustomerModuleName(String customerModuleName, Module module) {
+    @CachePut(value = "module", key = "#p1 + #p2")
+    public Module saveModuleByCustomerModuleName(LicenseType licenseType, String customerModuleName, Module module) {
         return module;
     }
 
-    @Cacheable(value = "module", key = "#customerModuleName")
-    public Module getModuleByCustomerModuleName(String customerModuleName) {
+    @Cacheable(value = "module", key = "#p1 + #p2")
+    public Module getModuleByCustomerModuleName(LicenseType licenseType, String customerModuleName) {
         return null;
     }
     /*MODULE*/

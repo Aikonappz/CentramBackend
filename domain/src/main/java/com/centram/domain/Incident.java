@@ -345,6 +345,12 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<TimeEntry> timeEntries;
 
+    @Transient
+    private com.centram.domain.Module category;
+
+    @Transient
+    private com.centram.domain.Module subCategory;
+
     public Incident(@NotNull BigInteger id) {
         this.id = id;
     }
