@@ -636,9 +636,9 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<UserVO> getUsersByEmails(List<String> emails) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> users = userRepository.getUsersByEmails(emails, loggedInUser.getOrganisationId());
+    public List<UserVO> getUsersByEmails(List<String> emails, BigInteger organisationId) {
+        //LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<User> users = userRepository.getUsersByEmails(emails, organisationId);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         for (User user : users) {
             userVOS.add(new UserVO(user));
@@ -733,12 +733,12 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<UserVO> getUsersByRoles(List<String> roles) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<UserVO> getUsersByRoles(List<String> roles, BigInteger organisationId) {
+        //LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<Role> roleList = roleService.getByNames(roles);
         List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
-        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), loggedInUser.getOrganisationId());
+        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), organisationId);
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;
         for (User user : users) {

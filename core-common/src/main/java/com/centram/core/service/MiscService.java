@@ -559,7 +559,7 @@ public class MiscService {
             distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisationId(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
             dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
-        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"));
+        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         if (dlEmails.size() > 0) {
             incidentEmailVO.setMailSubjectKey("incNewDlSub");
             incidentEmailVO.setMailBodyKey("incNewDlCnt");
@@ -579,7 +579,7 @@ public class MiscService {
             add(incidentEmailVO.getUserEmail());
         }};
         userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-        List<UserVO> users = userService.getUsersByEmails(userEmails);
+        List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
         for (UserVO userVO : users) {
             incidentEmailVO.setMailSubjectKey("incNewEmpSub");
             incidentEmailVO.setMailBodyKey("incNewEmpCnt");
@@ -622,7 +622,7 @@ public class MiscService {
             dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
         if (incidentEmailVO.getIncidentType() == LicenseType.INCIDENT) {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"));
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
             if (incidentEmailVO.getUserEmail().equalsIgnoreCase(loggedInUser.getEmail())) {
                 if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
                     incidentEmailVO.setMailSubjectKey(getSubjectKeyByStatus(incidentEmailVO));
@@ -661,7 +661,7 @@ public class MiscService {
                         add(incidentEmailVO.getUserEmail());
                     }};
                     userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-                    List<UserVO> users = userService.getUsersByEmails(userEmails);
+                    List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
                     for (UserVO userVO : users) {
                         incidentEmailVO.setMailSubjectKey("incNewEmpSub");
                         incidentEmailVO.setMailBodyKey("incNewEmpCnt");
@@ -684,7 +684,7 @@ public class MiscService {
                     add(incidentEmailVO.getUserEmail());
                 }};
                 userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-                List<UserVO> users = userService.getUsersByEmails(userEmails);
+                List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
                 for (UserVO userVO : users) {
                     incidentEmailVO.setMailSubjectKey(getSubjectKeyByStatus(incidentEmailVO));
                     incidentEmailVO.setMailBodyKey("incUpdtCnt");
@@ -703,7 +703,7 @@ public class MiscService {
                 }
             }
         } else {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"));
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
             if (incidentEmailVO.getUserEmail().equalsIgnoreCase(loggedInUser.getEmail())) {
                 if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
                     incidentEmailVO.setMailSubjectKey(getSubjectKeyByStatus(incidentEmailVO));
@@ -763,7 +763,7 @@ public class MiscService {
                         add(incidentEmailVO.getUserEmail());
                     }};
                     userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-                    List<UserVO> users = userService.getUsersByEmails(userEmails);
+                    List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
                     for (UserVO userVO : users) {
                         incidentEmailVO.setMailSubjectKey("astEmpSub");
                         incidentEmailVO.setMailBodyKey("astEmpCnt");
@@ -786,7 +786,7 @@ public class MiscService {
                     add(incidentEmailVO.getUserEmail());
                 }};
                 userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-                List<UserVO> users = userService.getUsersByEmails(userEmails);
+                List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
                 for (UserVO userVO : users) {
                     incidentEmailVO.setMailSubjectKey(getSubjectKeyByStatus(incidentEmailVO));
                     incidentEmailVO.setMailBodyKey("astUpdtCnt");
@@ -865,7 +865,7 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
         if (incidentEmailVO.getIncidentType() == LicenseType.INCIDENT) {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"));
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
             incidentEmailVO.setMailToType("AGENT");
             //prepare agent email
             incidentEmailVO.setMailSubjectKey("incAgntAsgnSub");
@@ -885,7 +885,7 @@ public class MiscService {
                 add(incidentEmailVO.getUserEmail());
             }};
             userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-            List<UserVO> users = userService.getUsersByEmails(userEmails);
+            List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
             for (UserVO userVO : users) {
                 //prepare emp email
                 incidentEmailVO.setMailToType("EMP");
@@ -905,7 +905,7 @@ public class MiscService {
                 appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
             }
         } else {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"));
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
             incidentEmailVO.setMailToType("AGENT");
             //prepare agent email
             incidentEmailVO.setMailSubjectKey("astAgntAsgnSub");
@@ -925,7 +925,7 @@ public class MiscService {
                 add(incidentEmailVO.getUserEmail());
             }};
             userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-            List<UserVO> users = userService.getUsersByEmails(userEmails);
+            List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
             for (UserVO userVO : users) {
                 //prepare emp email
                 incidentEmailVO.setMailToType("EMP");
@@ -1289,7 +1289,7 @@ public class MiscService {
         appEmailService.organisationUpdate(mailValues, newEntity);
         if (!newEntity) {
             // for org admin
-            List<UserVO> userVOS = userService.getUsersByRoles(Collections.singletonList("ORG_ADMIN"));
+            List<UserVO> userVOS = userService.getUsersByRoles(Collections.singletonList("ORG_ADMIN"),organisation.getId());
             mailValues.put("recipientType", "Organization Admin");
             mailValues.put("recipients", userVOS.stream().map(UserVO::getEmail).collect(Collectors.toList()));
             mailValues.put("userToNotify", userVOS);
@@ -1505,7 +1505,7 @@ public class MiscService {
             distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisationId(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
             dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
-        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"));
+        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
         if (incidentEmailVO.getFeedbackProvided() && incidentEmailVO.getAssetApproved()) {
             if (dlEmails.size() > 0) {
                 incidentEmailVO.setMailSubjectKey("astDlSub");
@@ -1527,7 +1527,7 @@ public class MiscService {
             add(incidentEmailVO.getUserEmail());
         }};
         userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-        List<UserVO> users = userService.getUsersByEmails(userEmails);
+        List<UserVO> users = userService.getUsersByEmails(userEmails,incidentEmailVO.getOrganisationId());
         for (UserVO userVO : users) {
             incidentEmailVO.setMailSubjectKey("astMngrFdbckSub");
             incidentEmailVO.setMailBodyKey("astMngrFdbckCnt");
