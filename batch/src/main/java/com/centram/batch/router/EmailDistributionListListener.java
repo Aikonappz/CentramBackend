@@ -43,12 +43,11 @@ public class EmailDistributionListListener extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        //from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
-        from("timer:timerName?period=120000")
+        from("{{support.mail.protocol}}://{{support.mail.host}}:{{support.mail.port}}?username={{support.mail.username}}&password={{support.mail.password}}&unseen=true&delete=false&peek=false&closeFolder=false&disconnect=false&folderName=INBOX&searchTerm.subject=Issue Report")
                 .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("test")
-                .process(new Processor() {
+                /*.process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
                         exchange.getIn().setBody("Category ==> IT Support\n" +
@@ -59,7 +58,7 @@ public class EmailDistributionListListener extends RouteBuilder {
                                 "Description ==> My Desktop Mouse Not Working.");
                         log.info(exchange.getIn().getBody().toString());
                     }
-                })
+                })*/
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -84,9 +83,10 @@ public class EmailDistributionListListener extends RouteBuilder {
                                     return;
                                 }
                             }
+                            String email = exchange.getIn().getHeader("From").toString();
+                            email = email.substring(email.indexOf("<") + 1);
+                            email = email.substring(0, email.indexOf(">"));
                             List<String> watchListEmail = new ArrayList<String>();
-                            String email = "rachel.young@ixerv.com";
-                            //TODO : get sender email from exchange
                             User user = userService.findUserByEmail(email);
                             if (user == null) {
                                 log.error("User {} not exist or active!", email);
