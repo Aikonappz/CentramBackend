@@ -78,13 +78,13 @@ public class LoggedInUser implements UserDetails, Serializable {
         this.appManager = userVO.getOrganisationId() == null;
         this.licenseType = (userVO.getDepartmentId() == null) ? null : userVO.getLicenseType();
         this.locationOpsTime = userVO.getLocationOpsTime();
+        this.accountId = userVO.getAccountId();
+        this.accountName = userVO.getAccountName();
+        this.accountNo = userVO.getAccountNo();
     }
 
     public String getLocationOpsTime() {
         return locationOpsTime;
-        this.accountId = userVO.getAccountId();
-        this.accountName = userVO.getAccountName();
-        this.accountNo = userVO.getAccountNo();
     }
 
     public BigInteger getAccountId() {

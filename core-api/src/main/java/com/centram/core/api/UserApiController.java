@@ -43,7 +43,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 
-
 @RequestMapping(value = "/api/v1/user")
 @Controller
 public class UserApiController {
@@ -68,10 +67,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    
-
     @RequestMapping(value = "/sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<LoggedInUserVO> login( @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<LoggedInUserVO> login(@Valid @RequestBody AuthRequestDTO body) {
         try {
             LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), Utility.decode(body.getPassword()))).getPrincipal();
             loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
@@ -92,10 +89,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    
-
     @RequestMapping(value = "/sso-sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<LoggedInUserVO> SSOlogin( @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<LoggedInUserVO> SSOlogin(@Valid @RequestBody AuthRequestDTO body) {
         try {
             String email = body.getUsername();
             log.info("SSO principal => {} ", email);
@@ -118,7 +113,6 @@ public class UserApiController {
      *
      * @return
      */
-
     @RequestMapping(value = "/sign-out", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<CommonResponse> logout() {
         return new ResponseEntity<CommonResponse>(userService.signOut(), HttpStatus.OK);
@@ -130,10 +124,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    
-
     @RequestMapping(value = "/forgot-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<CommonResponse> forgotPassword( @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<CommonResponse> forgotPassword(@Valid @RequestBody AuthRequestDTO body) {
         return new ResponseEntity<CommonResponse>(userService.forgotPassword(body), HttpStatus.OK);
     }
 
@@ -143,10 +135,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    
-
     @RequestMapping(value = "/reset-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<CommonResponse> resetPassword( @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<CommonResponse> resetPassword(@Valid @RequestBody AuthRequestDTO body) {
         return new ResponseEntity<CommonResponse>(userService.resetPassword(body), HttpStatus.OK);
     }
 
@@ -156,9 +146,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-
     @RequestMapping(value = "/change-password", consumes = {"application/json"}, method = RequestMethod.PUT)
-    public ResponseEntity<Void> changePassword( @Valid @RequestBody UserDTO body) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody UserDTO body) {
         userService.changePassword(body);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -172,17 +161,9 @@ public class UserApiController {
      * @param pageable
      * @return
      */
-
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASSIGNMENT REPORT,USER,MY INCIDENTS,MY GROUP INCIDENTS,ORDER ASSET,ALLOCATE PROJECT,DEALLOCATE PROJECT','READ,READ,WRITE|SEARCH,WRITE|SEARCH,READ|WRITE,ASSIGN,DEALLOCATE',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
-    public ResponseEntity<PaginatedList<UserVO>> getUsers(
-             @RequestParam(value = "email", defaultValue = "", required = false) String email,
-             @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId,
-             @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
-             @RequestParam(value = "filterType", defaultValue = "", required = false) String filterType,
-             @RequestParam(value = "vendorId", defaultValue = "", required = false) BigInteger vendorId,
-             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<UserVO>> getUsers(@RequestParam(value = "email", defaultValue = "", required = false) String email, @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "filterType", defaultValue = "", required = false) String filterType, @RequestParam(value = "vendorId", defaultValue = "", required = false) BigInteger vendorId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), filterType, vendorId, pageable), HttpStatus.OK);
     }
 
@@ -192,10 +173,9 @@ public class UserApiController {
      * @param body
      * @return
      */
-
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
-    public ResponseEntity<UserVO> save( @Valid @RequestBody User body) {
+    public ResponseEntity<UserVO> save(@Valid @RequestBody User body) {
         return new ResponseEntity<UserVO>(userService.save(body), HttpStatus.OK);
     }
 
@@ -206,10 +186,9 @@ public class UserApiController {
      * @param status
      * @return
      */
-
     @RequestMapping(value = "/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
-    public ResponseEntity<Void> updateStatus(@NotNull  @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,  @PathVariable("status") Status status) {
+    public ResponseEntity<Void> updateStatus(@NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @PathVariable("status") Status status) {
         userService.updateUsersStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -220,10 +199,9 @@ public class UserApiController {
      * @param userId
      * @return
      */
-
     @RequestMapping(value = "/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER,MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE,WRITE',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
-    public ResponseEntity<UserVO> getUserById( @PathVariable("userId") BigInteger userId) {
+    public ResponseEntity<UserVO> getUserById(@PathVariable("userId") BigInteger userId) {
         return new ResponseEntity<UserVO>(userService.getUserById(userId), HttpStatus.OK);
     }
 
@@ -232,15 +210,11 @@ public class UserApiController {
      *
      * @return
      */
-
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
     public ResponseEntity<Resource> downloadUsers() {
         final InputStreamResource resource = new InputStreamResource(userService.downloadUsers());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "users-" + System.currentTimeMillis() + ".csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "users-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
     /**
@@ -250,10 +224,9 @@ public class UserApiController {
      * @return
      * @throws IOException
      */
-
     @RequestMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
-    public ResponseEntity uploadUsersData( @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
+    public ResponseEntity uploadUsersData(@RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
         userService.uploadUsersData(multipartFile);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -265,12 +238,8 @@ public class UserApiController {
      * @param actionName
      * @return
      */
-
     @RequestMapping(value = "/find-by-modules-permissions", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<List<UserVO>> getUsersByModuleAndAction(
-            @NotNull  @Valid @RequestParam(value = "moduleIds", required = true) List<BigInteger> moduleIds,
-            @NotNull  @Valid @RequestParam(value = "actionName", required = true) String actionName
-    ) {
+    public ResponseEntity<List<UserVO>> getUsersByModuleAndAction(@NotNull @Valid @RequestParam(value = "moduleIds", required = true) List<BigInteger> moduleIds, @NotNull @Valid @RequestParam(value = "actionName", required = true) String actionName) {
         return new ResponseEntity<List<UserVO>>(userService.getUsersByModuleAndAction(moduleIds, actionName), HttpStatus.OK);
     }
 

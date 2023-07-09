@@ -17,7 +17,7 @@ declare var $: any;
   styleUrls: ['./editproject.component.scss']
 })
 export class EditProjectComponent implements OnInit {
-  moduleName: string = "PROJECT";
+  moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;

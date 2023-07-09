@@ -113,11 +113,7 @@ public class MiscApiController {
     @Autowired
     private ProjectAllocationDetailService projectAllocationDetailService;
 
-    @ApiOperation(value = "Request a demo", nickname = "requestADemo", notes = "Request a demo", tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<CommonResponse> requestADemo(@Valid @RequestBody RequestDemoDTO body) {
         return new ResponseEntity<CommonResponse>(miscService.requestDemo(body), HttpStatus.OK);
@@ -131,10 +127,7 @@ public class MiscApiController {
 
 
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Module>> getModules(
-            @NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Module>> getModules(@NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, pageable), HttpStatus.OK);
     }
 
@@ -176,10 +169,7 @@ public class MiscApiController {
 
 
     @RequestMapping(value = "/all-action-by-role-module/{roleId}/{moduleId}", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<List<Action>> getActionsByRoleAndModule(
-            @PathVariable("roleId") BigInteger roleId,
-            @PathVariable("moduleId") BigInteger moduleId
-    ) {
+    public ResponseEntity<List<Action>> getActionsByRoleAndModule(@PathVariable("roleId") BigInteger roleId, @PathVariable("moduleId") BigInteger moduleId) {
         return new ResponseEntity<List<Action>>(permissionService.getActionsByRoleAndModule(roleId, moduleId), HttpStatus.OK);
     }
 
@@ -213,10 +203,7 @@ public class MiscApiController {
 
     @RequestMapping(value = "/department/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DEPARTMENT','WRITE',authentication.principal)")
-    public ResponseEntity<Void> updateDepartmentsStatus(
-            @NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
-            @PathVariable("status") Status status
-    ) {
+    public ResponseEntity<Void> updateDepartmentsStatus(@NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @PathVariable("status") Status status) {
         departmentService.updateDepartmentsStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -246,10 +233,7 @@ public class MiscApiController {
 
     @RequestMapping(value = "/all-location", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('LOCATION,ORGANISATION,USER,ORDER ASSET','READ,WRITE,WRITE,WRITE',authentication.principal)")
-    public ResponseEntity<PaginatedList<Location>> getLocations(
-            @RequestParam(name = "accountId", required = false) BigInteger accountId,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Location>> getLocations(@RequestParam(name = "accountId", required = false) BigInteger accountId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Location>>(locationService.getLocations(accountId, pageable), HttpStatus.OK);
     }
 
@@ -277,11 +261,7 @@ public class MiscApiController {
 
     @RequestMapping(value = "/all-priority", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY,MY INCIDENTS,MY GROUP INCIDENTS,REPORT,','READ,WRITE|SEARCH,WRITE|SEARCH,READ',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
-    public ResponseEntity<PaginatedList<Priority>> getPriorities(
-            @PathVariable(name = "accountId", required = false) BigInteger accountId,
-            @RequestParam(value = "priorityType", defaultValue = "INCIDENT", required = false) String priorityType,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Priority>> getPriorities(@PathVariable(name = "accountId", required = false) BigInteger accountId, @RequestParam(value = "priorityType", defaultValue = "INCIDENT", required = false) String priorityType, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(accountId, priorityType, pageable), HttpStatus.OK);
     }
 
@@ -300,58 +280,31 @@ public class MiscApiController {
     }
 
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find holiday by location, year", nickname = "getHolidayCalenderById", notes = "Find holiday by location, year", response = Holiday.class, tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = Location.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "Holiday calender not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/holiday-callender/{locationId}/{year}", produces = {"application/json"}, method = RequestMethod.GET)
     //@PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR|MANAGE TIMESHEET','READ,READ',authentication.principal)")
-    public ResponseEntity<List<Holiday>> getHolidayCalenderByLocation(
-            @ApiParam(value = "id of locationId", required = true) @PathVariable("locationId") BigInteger locationId,
-            @ApiParam(value = "year", required = true) @PathVariable("year") String year
-    ) {
-        return new ResponseEntity<List<Holiday>>(holidayCalenderService.getHolidaysByYearAndLocation(locationId, year), HttpStatus.OK);
+    public ResponseEntity<List<Holiday>> getHolidayCalenderByLocation(@PathVariable("accountId") BigInteger accountId, @PathVariable("locationId") BigInteger locationId, @PathVariable("year") String year) {
+        return new ResponseEntity<List<Holiday>>(holidayCalenderService.getHolidaysByYearAndLocation(accountId, locationId, year), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload holiday calender data csv", nickname = "uploadHolidayCalenderData", notes = "Upload holiday calender data", tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/upload-holiday-calender", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','WRITE',authentication.principal)")
-    public ResponseEntity<HolidayCalender> uploadHolidayCalenderData(
-            @RequestPart(name = "file", required = true) MultipartFile multipartFile,
-            @RequestPart("holidayCalender") HolidayCalender holidayCalender
-    ) throws IOException {
+    public ResponseEntity<HolidayCalender> uploadHolidayCalenderData(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("holidayCalender") HolidayCalender holidayCalender) throws IOException {
         return new ResponseEntity<HolidayCalender>(holidayCalenderService.uploadHolidayCalenderData(multipartFile, holidayCalender), HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/holiday-callender/{holidayCallenderId}/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
-    public ResponseEntity<Resource> downloadHolidayCalender(
-            @PathVariable("holidayCallenderId") BigInteger holidayCallenderId
-    ) {
+    public ResponseEntity<Resource> downloadHolidayCalender(@PathVariable("holidayCallenderId") BigInteger holidayCallenderId) {
         final InputStreamResource resource = new InputStreamResource(holidayCalenderService.downloadHolidayCalender(holidayCallenderId));
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "holiday-calender-" + System.currentTimeMillis() + ".csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "holiday-calender-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
 
     @RequestMapping(value = "/all-notifications", produces = {"application/json"}, method = RequestMethod.GET)
     @JsonView(Views.ListView.class)
-    public ResponseEntity<PaginatedList<Notification>> getNotifications(
-            @RequestParam(value = "searchValue", defaultValue = "", required = false) String searchValue,
-            @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Notification>> getNotifications(@RequestParam(value = "searchValue", defaultValue = "", required = false) String searchValue, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Notification>>(notificationService.getNotifications(searchValue, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
@@ -364,19 +317,14 @@ public class MiscApiController {
 
 
     @RequestMapping(value = "/notification/{ids}/{status}", method = RequestMethod.GET)
-    public ResponseEntity updateNotificationStatus(
-            @NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,
-            @PathVariable("status") Status status
-    ) {
+    public ResponseEntity updateNotificationStatus(@NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @PathVariable("status") Status status) {
         notificationService.updateNotificationStatus(ids, status);
         return new ResponseEntity(HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/notification", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity saveNotification(
-            @Valid @RequestBody List<Notification> body
-    ) {
+    public ResponseEntity saveNotification(@Valid @RequestBody List<Notification> body) {
         notificationService.save(body);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -417,11 +365,7 @@ public class MiscApiController {
     @RequestMapping(value = "/all-vendor", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('VENDOR,ORDER ASSET','READ,WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity<PaginatedList<Vendor>> getVendors(
-            @RequestParam(value = "vendorType", defaultValue = "INCIDENT", required = false) String vendorType,
-            @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Vendor>> getVendors(@RequestParam(value = "vendorType", defaultValue = "INCIDENT", required = false) String vendorType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Vendor>>(vendorService.getVendors(inHouse, VendorType.valueOf(vendorType), pageable), HttpStatus.OK);
     }
 
@@ -449,10 +393,7 @@ public class MiscApiController {
 
     @RequestMapping(value = "/all-chat-room", produces = {"application/json"}, method = RequestMethod.GET)
     @JsonView(Views.ListView.class)
-    public ResponseEntity<PaginatedList<ChatRoom>> findAll(
-            @RequestParam(value = "chatRoomNo", defaultValue = "", required = false) String chatRoomNo,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<ChatRoom>> findAll(@RequestParam(value = "chatRoomNo", defaultValue = "", required = false) String chatRoomNo, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<ChatRoom>>(chatRoomService.findAll(chatRoomNo, pageable), HttpStatus.OK);
     }
 
@@ -478,9 +419,7 @@ public class MiscApiController {
     }
 
     @RequestMapping(value = "/chat/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity generateDummyNotification(
-            @RequestBody ChatMessage body
-    ) throws JsonProcessingException {
+    public ResponseEntity generateDummyNotification(@RequestBody ChatMessage body) throws JsonProcessingException {
         log.info("Consumed message: " + objectMapper.writeValueAsString(body));
         simpMessagingTemplate.convertAndSend("/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12", objectMapper.writeValueAsString(body));
         return new ResponseEntity(body, HttpStatus.OK);
@@ -521,74 +460,44 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<Account>>(accountService.getAccounts(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find project by id", nickname = "getProjectById", notes = "Find project by id", response = Department.class, tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = Department.class),
-            @ApiResponse(code = 400, message = "Invalid name supplied"),
-            @ApiResponse(code = 404, message = "MapDl not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/project/{projectId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','READ',authentication.principal)")
     @JsonView({Views.DetailView.class,})
-    public ResponseEntity<Project> getProjectById(@ApiParam(value = "id of project", required = true) @PathVariable("projectId") BigInteger projectId) {
+    public ResponseEntity<Project> getProjectById(@PathVariable("projectId") BigInteger projectId) {
         return new ResponseEntity<Project>(projectService.getById(projectId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all project", nickname = "getProjects", notes = "Get all project", response = PaginatedList.class, tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
-            @ApiResponse(code = 400, message = "Invalid status value"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT','READ,WRITE,ASSIGN,DEALLOCATE',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity<PaginatedList<Project>> getProjects(
-            @ApiParam(value = "Project Type", defaultValue = "", required = false) @RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType,
-            @ApiParam(value = "In House Project", defaultValue = "", required = false) @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(inHouse, ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a project", nickname = "saveProject", notes = "Save a project", tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity<Project> saveProject(@ApiParam(value = "Project object", required = true) @Valid @RequestBody Project body) {
+    public ResponseEntity<Project> saveProject(@Valid @RequestBody Project body) {
         return new ResponseEntity<Project>(projectService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Allocate projects", nickname = "allocateProjects", notes = "Allocate projects", tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/allocate-project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ALLOCATE PROJECT','WRITE|ASSIGN',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity allocateProjects(@ApiParam(value = "list of ProjectAllocationDetail object", required = true) @Valid @RequestBody List<ProjectAllocationDetail> projectAllocationDetailList) {
+    public ResponseEntity allocateProjects(@Valid @RequestBody List<ProjectAllocationDetail> projectAllocationDetailList) {
         Map<BigInteger, String> allocateProjectDTOS = projectAllocationDetailService.allocation(projectAllocationDetailList);
         miscService.allocateUserProjects(allocateProjectDTOS);
         return ResponseEntity.ok().body(null);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Deallocate projects", nickname = "deallocateProjects", notes = "Deallocate projects", tags = {"Misc",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/deallocate-project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|ASSIGN',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity deallocateProjects(@ApiParam(value = "ProjectDeallocateDTO object", required = true) @Valid @RequestBody ProjectDeallocateDTO projectDeallocateDTO) {
+    public ResponseEntity deallocateProjects(@Valid @RequestBody ProjectDeallocateDTO projectDeallocateDTO) {
         Map<BigInteger, String> deallocateProjectDTOS = projectAllocationDetailService.deallocation(projectDeallocateDTO);
         miscService.deallocateUserProjects(deallocateProjectDTOS);
         return ResponseEntity.ok().body(null);

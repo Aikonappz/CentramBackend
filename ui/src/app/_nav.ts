@@ -78,7 +78,7 @@ export const navItems: INavData[] = [
         name: 'Project Master',
         url: '/master/project',
         icon: 'cil-blur-linear',
-        attributes: { "moduleName": "PROJECT_MASTER" }
+        attributes: { "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT" }
       },
       {
         name: 'Vendor -Incident',

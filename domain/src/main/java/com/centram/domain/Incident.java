@@ -2,12 +2,13 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.common.vo.CategoryAdminDashboardVO;
-import com.centram.domain.converter.WatchListConverter;
+import com.centram.domain.converter.StringCommaSeparetedToListConverter;
+import com.centram.domain.converter.TimeEntryConverter;
 import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

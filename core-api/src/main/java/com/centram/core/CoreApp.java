@@ -19,7 +19,6 @@ import java.util.TimeZone;
 
 @EnableCaching
 @EnableAsync
-@EnableSwagger2
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class, basePackages = {"com.centram.core.repository"})
 @EnableTransactionManagement
 @EnableAutoConfiguration

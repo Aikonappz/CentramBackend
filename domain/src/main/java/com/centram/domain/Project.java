@@ -6,8 +6,8 @@ import com.centram.domain.enumarator.IncidentAllocationType;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.ProjectType;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Vendor
  */
-@ApiModel(description = "Project")
+
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
@@ -48,7 +48,7 @@ import java.util.List;
 public class Project extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575312184473432054L;
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +56,7 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "project_type")
@@ -64,19 +64,19 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private ProjectType projectType;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String name;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "code", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String code;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Valid
     @Lob
     @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
@@ -84,14 +84,14 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<String> watchList;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "in_house")
     @JsonView(Views.BasicView.class)
     private Boolean inHouse;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -99,7 +99,7 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")

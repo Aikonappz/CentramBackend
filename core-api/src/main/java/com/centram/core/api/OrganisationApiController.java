@@ -8,7 +8,6 @@ import com.centram.domain.Setting;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
-import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 
-
 @RequestMapping(value = "/api/v1/organisation")
 @Controller
 public class OrganisationApiController {
@@ -43,14 +41,14 @@ public class OrganisationApiController {
 
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','WRITE',authentication.principal)")
-    public ResponseEntity<Organisation> addOrganisation( @Valid @RequestBody Organisation body) {
+    public ResponseEntity<Organisation> addOrganisation(@Valid @RequestBody Organisation body) {
         return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/{ids}/{status}", method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','WRITE',authentication.principal)")
-    public ResponseEntity<Void> updateStatus(@NotNull  @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids,  @PathVariable("status") Status status) {
+    public ResponseEntity<Void> updateStatus(@NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @PathVariable("status") Status status) {
         organisationService.updateStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -58,19 +56,14 @@ public class OrganisationApiController {
 
     @RequestMapping(value = "/{organisationId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
-    public ResponseEntity<Organisation> getOrganisationById( @PathVariable("organisationId") BigInteger organisationId) {
+    public ResponseEntity<Organisation> getOrganisationById(@PathVariable("organisationId") BigInteger organisationId) {
         return new ResponseEntity<Organisation>(organisationService.getOrganisationById(organisationId), HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
-    public ResponseEntity<PaginatedList<Organisation>> getOrganisations(
-             @RequestParam(value = "name", defaultValue = "", required = false) String name,
-             @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
-             @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
-             @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Organisation>> getOrganisations(@RequestParam(value = "name", defaultValue = "", required = false) String name, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(name, Status.valueOf(status), LicenseType.valueOf(licenseType), pageable), HttpStatus.OK);
     }
 
@@ -84,7 +77,7 @@ public class OrganisationApiController {
 
     @RequestMapping(value = "/set-settings", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
-    public ResponseEntity<Setting> updateOrganisationSettings( @Valid @RequestBody Setting body) {
+    public ResponseEntity<Setting> updateOrganisationSettings(@Valid @RequestBody Setting body) {
         return new ResponseEntity<Setting>(organisationService.updateOrganisationSettings(body), HttpStatus.OK);
     }
 
