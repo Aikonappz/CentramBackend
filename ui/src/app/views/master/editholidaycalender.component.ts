@@ -7,6 +7,7 @@ import { MiscService } from '../../service/MiscService';
 import { HolidayCalender } from '../../model/HolidayCalender';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { LocationVO } from '../../model/LocationVO';
+import { Account } from '../../model/Account';
 
 @Component({
   selector: 'app-editholidaycalender',
@@ -27,6 +28,8 @@ export class EditHolidayCalenderComponent implements OnInit {
   locations: LocationVO[];
   locationList: any[] = [];
   c: number = 0;
+  accounts: Account[] = [];
+
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -43,6 +46,9 @@ export class EditHolidayCalenderComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
+      account: new FormControl(null, [
+        Validators.required,
+      ]),
       location: new FormControl(null, [
         Validators.required,
       ]),
@@ -107,32 +113,21 @@ export class EditHolidayCalenderComponent implements OnInit {
 
     if (!this.route.snapshot.paramMap.has('id')) {
       this.miscService
-        .locationsService()
+        .accountsService()
         .subscribe((data: any) => {
-          //console.log("load locations");
-          if (typeof data.content !== 'undefined') {
-            this.locations = data.content;
-            this.c = 0;
-            for (let indx = 0; indx < this.locations.length; indx++) {
-              if (this.locations[indx].status == "ACTIVE") {
-                this.locationList[this.c++] = Object.assign({ "version": this.locations[indx].version, "id": this.locations[indx].id, "name": this.locations[indx].name });
-              }
-            }
+          this.accounts = data.content;
+          for (let i = 0; i < this.accounts.length; i++) {
+            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
           }
+          this.angForm.get('account').setValue(this.accounts[0].id);
         });
     } else {
       this.miscService
-        .locationsService()
+        .accountsService()
         .subscribe((data: any) => {
-          //console.log("load locations");
-          if (typeof data.content !== 'undefined') {
-            this.locations = data.content;
-            this.c = 0;
-            for (let indx = 0; indx < this.locations.length; indx++) {
-              if (this.locations[indx].status == "ACTIVE") {
-                this.locationList[this.c++] = Object.assign({ "version": this.locations[indx].version, "id": this.locations[indx].id, "name": this.locations[indx].name });
-              }
-            }
+          this.accounts = data.content;
+          for (let i = 0; i < this.accounts.length; i++) {
+            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
           }
           this.newEntity = false;
           this.entityId = Number(this.route.snapshot.paramMap.get('id'));
@@ -156,6 +151,11 @@ export class EditHolidayCalenderComponent implements OnInit {
       }
       this.hc.year = this.angForm.controls['year'].value;
       this.hc.holidays = [];
+      for (let i = 0; i < this.accounts.length; i++) {
+        if (this.accounts[i].id == this.angForm.controls['account'].value) {
+          this.hc.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+        }
+      }
       const file: File | null = this.selectedFiles.item(0);
       const formData: FormData = new FormData();
       formData.append('file', file, file.name);
@@ -196,10 +196,13 @@ export class EditHolidayCalenderComponent implements OnInit {
         this.hc.holidays = data.holidays;
         // this.hc.status = data.status;
         this.hc.version = data.version;
+        this.hc.account = data.account;
         //console.log(JSON.stringify(this.user));
+        this.populateLocaton({ id: this.hc.account.id });
         this.angForm.get('year').setValue(this.hc.year);
-        this.angForm.get('location').setValue(this.hc.location.id);
         this.angForm.get('year').disable();
+        this.angForm.get('account').setValue(this.hc.account.id);
+        this.angForm.get('location').setValue(this.hc.location.id);
         //this.angForm.markAllAsTouched();
       });
   }
@@ -211,4 +214,29 @@ export class EditHolidayCalenderComponent implements OnInit {
   //   //console.log(inp);
   //   this.statusFlag = status;
   // }
+
+  @ViewChild("accountId") accountId;
+  populateLocaton(accountId) {
+    if (typeof accountId !== 'undefined') {
+      //console.log(accountId);
+      this.miscService
+        .locationsService({ accountId: accountId.id })
+        .subscribe((data: any) => {
+          //console.log("load locations");
+          if (typeof data.content !== 'undefined') {
+            this.locations = data.content;
+            this.c = 0;
+            for (let indx = 0; indx < this.locations.length; indx++) {
+              if (this.locations[indx].status == "ACTIVE") {
+                this.locationList[this.c++] = Object.assign({ "version": this.locations[indx].version, "id": this.locations[indx].id, "name": this.locations[indx].name });
+              }
+            }
+          }
+        });
+    } else {
+      this.locations = [];
+      this.angForm.get('location').setValue(null);
+    }
+  }
+
 }

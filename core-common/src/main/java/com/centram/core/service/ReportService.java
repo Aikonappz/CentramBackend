@@ -4,6 +4,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.utility.Utility;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
 import org.apache.commons.csv.CSVFormat;
@@ -17,12 +18,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +56,8 @@ public class ReportService {
 
     @Autowired
     private UserService userService;
+
+    private Utility utility = new Utility();
 
     @Transactional(readOnly = true)
     public PaginatedList<Organisation> organisationReport(String name, Status status, LicenseType licenseType, Pageable pageable) {
@@ -208,9 +213,14 @@ public class ReportService {
                     "Vendor Name",
                     "SLA Overdue?",
                     "Resolve by Date",
-                    "Current Status"
+                    "Current Status",
+                    "Hours Estimated",
+                    "Time Entry"
             );
             csvPrinter.printRecord(data);
+            //String actualTimeTaken = "";
+            //Long seconds = null;
+            //Long day = null;
             for (Incident incident : incidents) {
                 TreeSet<IncidentCommunication> ascSortedCommunicationSet = new TreeSet<IncidentCommunication>(new Comparator<IncidentCommunication>() {
                     @Override
@@ -222,10 +232,16 @@ public class ReportService {
                     ascSortedCommunicationSet.add(incidentCommunication);
                 }
                 incident.setCommunications(ascSortedCommunicationSet);
+                //seconds = Duration.between(incident.getCreatedDate(), incident.getModifiedDate()).toSeconds();
+                //day = TimeUnit.SECONDS.toDays(seconds);
+                //actualTimeTaken = "";
+                //actualTimeTaken += ( day > 0) ? String.valueOf(day) + ":" : "00:";
+                //actualTimeTaken += (TimeUnit.SECONDS.toHours(seconds) - (day * 24) > 0) ? String.valueOf(TimeUnit.SECONDS.toHours(seconds) - (day * 24)) + ":" : "00:";
+                //actualTimeTaken += (TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60) > 0) ? String.valueOf(TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60))  : "00";
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),
@@ -235,15 +251,26 @@ public class ReportService {
                         (incident.getAssignedUser() != null && incident.getAssignedUser().getVendor() != null) ? incident.getAssignedUser().getVendor().getName() : "",
                         incident.getSlaBreached() ? "YES" : "NO",
                         incident.getSlaAt().format(DateTimeFormatter.ofPattern(dateFormat)),
-                        incident.getStatus().name()
+                        incident.getStatus().name(),
+                        incident.getExpectedTime() != null ? incident.getExpectedTime() + " HRS" : "",
+                        !CollectionUtils.isEmpty(incident.getTimeEntries()) ? this.getActualTimeSpentAccordingTimeEntries(incident.getTimeEntries()) : ""
                 );
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
             return new ByteArrayInputStream(out.toByteArray());
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
+    }
+
+    private String getActualTimeSpentAccordingTimeEntries(List<TimeEntry> timeEntries) throws ParseException {
+        String s = "";
+        Integer minute = 0;
+        for (int k = 0; k < timeEntries.size(); k++) {
+            minute += (int) Float.parseFloat(timeEntries.get(k).getTime().replace(":", "."));
+        }
+        return utility.convertSecondsToStringDate(minute * 60);
     }
 
     @Transactional(readOnly = true)
@@ -296,7 +323,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),
@@ -368,7 +395,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),
@@ -438,7 +465,7 @@ public class ReportService {
                 data = Arrays.asList(
                         incident.getIncidentNo(),
                         incident.getTitle(),
-                        incident.getCommunications().iterator().next().getMessage(),
+                        incident.getCommunications().iterator().next().getMessage().replaceAll("<[^>]*>", ""),
                         moduleService.getModuleById(incident.getModuleId()).getName(),
                         moduleService.getModuleById(incident.getSubModuleId()).getName(), incident.getRaisedAt().format(DateTimeFormatter.ofPattern(dateFormat)),
                         incident.getPriority().getName(),

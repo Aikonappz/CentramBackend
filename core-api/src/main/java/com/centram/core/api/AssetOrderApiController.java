@@ -9,7 +9,7 @@ import com.centram.core.service.AssetOrderService;
 import com.centram.domain.AssetOrder;
 import com.centram.domain.Incident;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.math.BigInteger;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "Assset Order", description = "Asset Order Api")
+
+
 @RequestMapping(value = "/api/v1/asset-order")
 @Controller
 public class AssetOrderApiController {
@@ -39,74 +39,51 @@ public class AssetOrderApiController {
     @Autowired
     private AssetOrderService assetOrderService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save an asset order", nickname = "save", notes = "Save an asset order", tags = {"Asset Order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','WRITE',authentication.principal)")
-    public ResponseEntity<AssetOrder> save(@ApiParam(value = "Asset Order object", required = true) @Valid @RequestBody AssetOrder body) {
+    public ResponseEntity<AssetOrder> save( @Valid @RequestBody AssetOrder body) {
         return new ResponseEntity<AssetOrder>(assetOrderService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find asset order by Id", nickname = "getAssetOrderById", notes = "Find asset order by Id", response = Incident.class, tags = {"Asset Order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = AssetOrder.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView({Views.DetailView.class,})
     @RequestMapping(value = "/{assetOrderId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET,ORDERED ASSET ACTION','READ|WRITE|APPROVE,READ|APPROVE',authentication.principal)")
-    public ResponseEntity<AssetOrder> getAssetOrderById(@ApiParam(value = "id of asset order to return", required = true) @PathVariable("assetOrderId") BigInteger assetOrderId) {
+    public ResponseEntity<AssetOrder> getAssetOrderById( @PathVariable("assetOrderId") BigInteger assetOrderId) {
         return new ResponseEntity<AssetOrder>(assetOrderService.getAssetOrderById(assetOrderId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all ordered assets", nickname = "getOrderedAssets", notes = "Get all ordered assets", response = PaginatedList.class, tags = {"Asset Order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET','READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<AssetOrder>> getOrderedAssets(
-            @ApiParam(value = "order no", defaultValue = "", required = false) @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
-            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+             @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
+             @RequestParam(value = "status", defaultValue = "", required = false) String status,
+             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<AssetOrder>>(assetOrderService.getOrderedAssets(orderNo, status, pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all ordered assets for approval", nickname = "getOrderedAssetsForApproval", notes = "Get all ordered assets for approval", response = PaginatedList.class, tags = {"Asset Order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.ListView.class)
     @RequestMapping(value = "/all-asset-order-for-approval", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDERED ASSET ACTION','READ|SEARCH',authentication.principal)")
     public ResponseEntity<PaginatedList<AssetOrder>> getOrderedAssetsForApproval(
-            @ApiParam(value = "order no", defaultValue = "", required = false) @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
-            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "", required = false) String status,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+             @RequestParam(value = "orderNo", defaultValue = "", required = false) String orderNo,
+             @RequestParam(value = "status", defaultValue = "", required = false) String status,
+             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<AssetOrder>>(assetOrderService.getOrderedAssetsForApproval(orderNo, status, pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Approve an asset order", nickname = "assetOrderAction", notes = "Approve an asset order", tags = {"Asset Order",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @JsonView(Views.DetailView.class)
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORDER ASSET,ORDERED ASSET ACTION','WRITE|APPROVE,WRITE|APPROVE',authentication.principal)")
-    public ResponseEntity<AssetOrder> assetOrderAction(@ApiParam(value = "AssetApprovalDTO object", required = true) @Valid @RequestBody AssetApprovalDTO body) {
+    public ResponseEntity<AssetOrder> assetOrderAction( @Valid @RequestBody AssetApprovalDTO body) {
         return new ResponseEntity<AssetOrder>(assetOrderService.assetOrderAction(body), HttpStatus.OK);
     }
 }

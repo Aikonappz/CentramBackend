@@ -9,6 +9,7 @@ import { AppUtility } from '../../config/AppUtility';
 import { Priority } from '../../model/Priority';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { environment } from '../../../environments/environment';
+import { Account } from '../../model/Account';
 
 @Component({
   selector: 'app-editpriority',
@@ -27,6 +28,8 @@ export class EditPriorityComponent implements OnInit {
   nameList: any[] = [];
   angForm: FormGroup;
   type: string;
+  accounts: Account[] = [];
+
   constructor(
     private loggedInUserService: LoggedInUserService,
     private fb: FormBuilder,
@@ -34,7 +37,7 @@ export class EditPriorityComponent implements OnInit {
     private _location: Location,
     private titleService: Title,
     private router: Router,
-    private service: MiscService
+    private miscService: MiscService
   ) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -43,6 +46,9 @@ export class EditPriorityComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
+      account: new FormControl(null, [
+        Validators.required,
+      ]),
       name: new FormControl(null, [
         Validators.required,
         Validators.maxLength(255),
@@ -97,12 +103,29 @@ export class EditPriorityComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.type = this.route.snapshot.paramMap.get('licenceType');
-
     });
-    if (!this.route.snapshot.paramMap.has('id')) { } else {
-      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-      this.newEntity = false;
-      this.callGetPriorityService(this.entityId);
+    if (!this.route.snapshot.paramMap.has('id')) {
+      this.miscService
+        .accountsService()
+        .subscribe((data: any) => {
+          this.accounts = data.content;
+          for (let i = 0; i < this.accounts.length; i++) {
+            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
+          }
+          this.angForm.get('account').setValue(this.accounts[0].id);
+        });
+    } else {
+      this.miscService
+        .accountsService()
+        .subscribe((data: any) => {
+          this.accounts = data.content;
+          for (let i = 0; i < this.accounts.length; i++) {
+            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
+          }
+          this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+          this.newEntity = false;
+          this.callGetPriorityService(this.entityId);
+        });
     }
   }
 
@@ -127,6 +150,11 @@ export class EditPriorityComponent implements OnInit {
       this.priority.priorityType = this.type.toUpperCase() == "ASSET" ? 0 : 1;
       /* process department and location */
       this.priority.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
+      for (let i = 0; i < this.accounts.length; i++) {
+        if (this.accounts[i].id == this.angForm.controls['account'].value) {
+          this.priority.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+        }
+      }
       //console.log(this.user.status);
       this.callSavePriorityService();
     } else {
@@ -137,7 +165,7 @@ export class EditPriorityComponent implements OnInit {
   goBack() { this._location.back(); }
 
   callSavePriorityService() {
-    this.service
+    this.miscService
       .savePriorityService(this.priority)
       .subscribe((data: any) => {
         //console.log(data);
@@ -146,7 +174,7 @@ export class EditPriorityComponent implements OnInit {
   }
 
   callGetPriorityService(id: number) {
-    this.service
+    this.miscService
       .priorityService(id)
       .subscribe((data: any) => {
         //console.log(JSON.stringify(data));
@@ -156,11 +184,13 @@ export class EditPriorityComponent implements OnInit {
         this.priority.sla = data.sla;
         this.priority.status = data.status;
         this.priority.version = data.version;
+        this.priority.account = data.account;
         //console.log(JSON.stringify(this.user));
         this.angForm.get('name').setValue(this.priority.name);
         this.angForm.get('description').setValue(this.priority.description);
         this.angForm.get('sla').setValue(this.priority.sla);
         this.statusFlag = String(this.priority.status) == 'ACTIVE' ? true : false;
+        this.angForm.get('account').setValue(this.priority.account.id);
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.markAllAsTouched();

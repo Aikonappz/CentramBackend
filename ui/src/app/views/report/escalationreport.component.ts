@@ -116,6 +116,10 @@ export class EscalationReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.loggedInUserService.isOrgAdmin()) { }
+    else if (this.loggedInUserService.isIncidentUserOnly()) {
+      this.searchedData.raisedUserId = this.loggedInUserService.getLoggedInUser().userId;
+    }
     this.datasource = new ReportEscalationIncidentDataSource(this.service);
     this.datasource.loadData(0, 10, this.searchedData);
   }

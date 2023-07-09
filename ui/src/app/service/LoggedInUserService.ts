@@ -64,4 +64,10 @@ export class LoggedInUserService {
     public isAgentLead(): boolean {
         return this.getRoles().includes('ORG_INCIDENT_AGENT_LEAD');
     }
+    public isIncidentUserOnly(): boolean {
+        return this.getRoles().includes('ORG_USER_INCIDENT')
+            && !this.getRoles().includes('ORG_INCIDENT_AGENT_LEAD')
+            && !this.getRoles().includes('ORG_INCIDENT_AGENT_MANAGER')
+            && !this.getRoles().includes('ORG_AGENT_INCIDENT');
+    }
 }

@@ -1,6 +1,5 @@
 package com.centram.common.config.ws;
 
-import com.centram.common.service.JasyptService;
 import com.centram.common.utility.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +33,6 @@ public class AppWSChannelInterceptor implements ChannelInterceptor {
     @Value("${app.ws.password}")
     private String appWsPassword;
 
-    @Autowired
-    private JasyptService jasyptService;
-
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         /*MessageHeaders headers = message.getHeaders();
@@ -63,7 +59,7 @@ public class AppWSChannelInterceptor implements ChannelInterceptor {
             throw new AuthenticationCredentialsNotFoundException("Password was null or empty.");
         }
         // Add your own logic for retrieving user in fetchUserFromDb()
-        if (!username.equals(jasyptService.decrypt(appWsUsername)) || !password.equals(jasyptService.decrypt(appWsPassword))) {
+        if (!username.equals(appWsUsername) || !password.equals(appWsPassword)) {
             throw new BadCredentialsException("Bad credentials for user " + username);
         }
         // null credentials, we do not pass the password along

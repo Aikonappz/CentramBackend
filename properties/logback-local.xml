@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/default.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+    <property name="LOG_PATH" value="/var/log/centram"/>
+    <property name="LOG_FILE" value="/var/log/centram/centram-core.log"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yy-MM-dd E HH:mm:ss.SSS} %-5p [%thread] %logger %X{CorrelationId:-NA} %m%n
+            </Pattern>
+        </layout>
+    </appender>
+    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/centram-core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <totalSizeCap>100MB</totalSizeCap>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yy-MM-dd E HH:mm:ss.SSS} %-5p [%thread] %logger %X{CorrelationId:-NA} %m%n</pattern>
+        </encoder>
+    </appender>
+    <!-- Console Log Config-->
+    <logger name="org.springframework.*" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.zaxxer.hikari.HikariConfig.*" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.centram.core.*" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.centram.core.CoreApp" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+    <!-- Console Log Config-->
+    <!-- File Log Config-->
+    <logger name="org.springframework.*" level="INFO" additivity="false">
+        <appender-ref ref="FILE-ROLLING"/>
+    </logger>
+    <logger name="com.zaxxer.hikari.HikariConfig.*" level="INFO" additivity="false">
+        <appender-ref ref="FILE-ROLLING"/>
+    </logger>
+    <logger name="com.centram.core.*" level="INFO" additivity="false">
+        <appender-ref ref="FILE-ROLLING"/>
+    </logger>
+    <logger name="com.centram.core.CoreApp" level="INFO" additivity="false">
+        <appender-ref ref="FILE-ROLLING"/>
+    </logger>
+    <root level="info">
+        <appender-ref ref="FILE-ROLLING"/>
+    </root>
+    <!-- File Log Config-->
+</configuration>

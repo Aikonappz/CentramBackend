@@ -3,6 +3,7 @@ package com.centram.core.repository;
 
 import com.centram.common.vo.CategoryLocationVO;
 import com.centram.domain.Module;
+import com.centram.domain.enumarator.LicenseType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,7 +36,8 @@ public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
     @Query("select m from Module m where m.appModule = false and m.parentModuleId = (:parentModuleId)")
     List<Module> getSubCategories(@Param("parentModuleId") BigInteger parentModuleId);
 
-    Module findByCustomerModuleNameIgnoreCase(@Param("customerModuleName") String customerModuleName);
+    Module findByLicenseTypeAndCustomerModuleNameIgnoreCase(@Param("licenseType") LicenseType licenseType, @Param("customerModuleName") String customerModuleName);
+
     @Query("select m from Module m where m.parentModuleId = (:parentModuleId) and m.customerModuleName = (:customerModuleName)")
     Module getSubModuleByCustomerModuleNameAndParentModuleId(@Param("parentModuleId") BigInteger parentModuleId, @Param("customerModuleName") String customerModuleName);
 

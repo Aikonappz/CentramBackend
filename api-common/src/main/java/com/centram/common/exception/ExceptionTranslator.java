@@ -36,6 +36,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler({AppException.class})
     public ResponseEntity<ClientError> handleBusinessException(AppException ex, WebRequest request) {
+        LOG.error(" code {} , message {} ", ex.getCode(), ex.getMessage());
         ClientError digest = new ClientError(ex.getCode().getCode(), ex.getCode().getTemplate());
         return new ResponseEntity<ClientError>(digest, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

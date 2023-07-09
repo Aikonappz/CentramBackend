@@ -1,7 +1,7 @@
 package com.centram.domain;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,9 +14,9 @@ import java.math.BigInteger;
 /**
  * User Permissions
  */
-@ApiModel(description = "Permissions")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,28 +32,28 @@ import java.math.BigInteger;
 public class Permission implements Serializable {
     private static final long serialVersionUID = -2590688718125313577L;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "module_id", referencedColumnName = "id")
     private Module module;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

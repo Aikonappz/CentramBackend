@@ -43,6 +43,10 @@ import { UserVO } from "../../../model/UserVO";
                         <td>{{usr.roleViewNames.join(',')}}</td>
                     </tr>
                     <tr>
+                        <td><strong>Account</strong></td>
+                        <td>{{usr.accountName}} - {{usr.accountNo}}</td>
+                    </tr>
+                    <tr>
                         <td><strong>Location</strong></td>
                         <td>{{usr.location}} - {{usr.locationOfficeName}}</td>
                     </tr>

@@ -28,14 +28,17 @@ public class LoggedInUserVO implements Serializable {
     private String email;
     private String timeZone;
     private String location;
-    private BigInteger locationId;
-    private String locationOpsTime;
     private String department;
     private LicenseType licenseType;
     private MediaFile profileImage;
     private MediaFile organisationLogo;
     private List<String> roles;
     private List<PermissionVO> modulePermissions;
+    private BigInteger locationId;
+    private String locationOpsTime;
+    private BigInteger accountId;
+    private String accountName;
+    private String accountNo;
 
     public LoggedInUserVO(LoggedInUser loggedInUser) {
         this.userId = loggedInUser.getUserId();
@@ -55,6 +58,9 @@ public class LoggedInUserVO implements Serializable {
                 .map(i -> i.getAuthority())
                 .collect(Collectors.toList());
         this.licenseType = loggedInUser.getLicenseType();
+        this.accountId = loggedInUser.getAccountId();
+        this.accountName = loggedInUser.getAccountName();
+        this.accountNo = loggedInUser.getAccountNo();
         this.locationId = loggedInUser.getLocationId();
     }
 
@@ -74,5 +80,9 @@ public class LoggedInUserVO implements Serializable {
         this.roles = loggedInUser.getAuthorities().stream()
                 .map(i -> i.getAuthority())
                 .collect(Collectors.toList());
+        this.licenseType = loggedInUser.getLicenseType();
+        this.accountId = loggedInUser.getAccountId();
+        this.accountName = loggedInUser.getAccountName();
+        this.accountNo = loggedInUser.getAccountNo();
     }
 }

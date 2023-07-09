@@ -6,7 +6,7 @@ import com.centram.core.service.MediaService;
 import com.centram.domain.MediaFile;
 import com.centram.domain.enumarator.EntityType;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "media", description = "Media Api")
+
+
 @RequestMapping(value = "/api/v1/media")
 @Controller
 public class MediaApiController {
@@ -38,19 +38,14 @@ public class MediaApiController {
     @Autowired
     private MediaService mediaService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload media", nickname = "uploadMedia", notes = "Upload media", tags = {"media",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid organisation supplied"),
-            @ApiResponse(code = 404, message = "Media not found"),
-            @ApiResponse(code = 405, message = "Validation exception")
-    })
+
     @RequestMapping(value = "/upload-media/{entityId}/{entityType}/{mediaType}/{chatRoomId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     public ResponseEntity<List<MediaFile>> uploadMedia(
-            @ApiParam(value = "Media id", required = true) @PathVariable("entityId") BigInteger entityId,
-            @ApiParam(value = "Entity type", required = true) @PathVariable("entityType") EntityType entityType,
-            @ApiParam(value = "Media type", required = true) @PathVariable("mediaType") com.centram.domain.enumarator.MediaType mediaType,
-            @ApiParam(value = "Chat Room id", required = true) @PathVariable("chatRoomId") String chatRoomId,
-            @ApiParam(value = "File", required = true) @RequestParam(name = "file", required = true) MultipartFile[] multipartFiles
+             @PathVariable("entityId") BigInteger entityId,
+             @PathVariable("entityType") EntityType entityType,
+             @PathVariable("mediaType") com.centram.domain.enumarator.MediaType mediaType,
+             @PathVariable("chatRoomId") String chatRoomId,
+             @RequestParam(name = "file", required = true) MultipartFile[] multipartFiles
     ) {
         return new ResponseEntity<List<MediaFile>>(
                 mediaService.uploadMediaFile(entityId, entityType, mediaType, chatRoomId, multipartFiles),
@@ -58,35 +53,23 @@ public class MediaApiController {
         );
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Delete a media", nickname = "deleteMedia", notes = "Delete a media", response = Void.class, tags = {"media",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Media not found")
-    })
+
     @RequestMapping(value = "/{mediaId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Void> deleteMedia(@ApiParam(value = "Media id", required = true) @PathVariable("mediaId") BigInteger mediaId) {
+    public ResponseEntity<Void> deleteMedia( @PathVariable("mediaId") BigInteger mediaId) {
         mediaService.delete(mediaId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get a media", nickname = "getMediaById", notes = "Get a media", response = MediaFile.class, tags = {"media",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Media not found")
-    })
+
     @RequestMapping(value = "/{mediaId}", method = RequestMethod.GET)
     @JsonView({Views.BasicView.class})
-    public ResponseEntity<MediaFile> getMediaById(@ApiParam(value = "Media id", required = true) @PathVariable("mediaId") BigInteger mediaId) {
+    public ResponseEntity<MediaFile> getMediaById( @PathVariable("mediaId") BigInteger mediaId) {
         return new ResponseEntity<MediaFile>(mediaService.getById(mediaId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Download a media", nickname = "downloadMedia", notes = "Download a media", response = Resource.class, tags = {"media",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Invalid ID supplied"),
-            @ApiResponse(code = 404, message = "Media not found")
-    })
+
     @RequestMapping(value = "/{mediaId}/download", method = RequestMethod.GET)
-    public ResponseEntity<Resource> downloadMedia(@ApiParam(value = "Media id", required = true) @PathVariable("mediaId") BigInteger mediaId) {
+    public ResponseEntity<Resource> downloadMedia( @PathVariable("mediaId") BigInteger mediaId) {
         MediaFile mediaFile = mediaService.getById(mediaId);
         final InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(mediaFile.getContent()));
         return ResponseEntity.ok()

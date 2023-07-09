@@ -9,9 +9,7 @@ import { Status } from '../model/enumerator/Status';
 import { Priority, PriorityList } from '../model/Priority';
 import { HolidayCalenderList } from '../model/HolidayCalender';
 import { Notification, NotificationList } from '../model/Notification';
-import { MapDLVO, MapDLVOList } from '../model/MapDLVO';
 import { DistributionList, DistributionListList } from '../model/DistributionList';
-import { Module } from '../model/Module';
 import { Vendor, VendorList } from '../model/Vendor';
 import { AssetModel } from '../model/AssetModel';
 import { PermissionDTO } from '../model/PermissionDTO';
@@ -20,6 +18,7 @@ import { Project, ProjectList } from '../model/Project';
 import { ProjectAllocationDetail } from '../model/ProjectAllocationDetail';
 import { ProjectDeallocateDTO } from '../model/ProjectDeallocateDTO';
 import { Holiday } from '../model/Holiday';
+import { Account, AccountList } from '../model/Account';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -157,6 +156,16 @@ export class MiscService {
     }
     chatMassagesService(chatRoomId: string, request?: any): Observable<any> {
         return this.http.get('/v1/misc/chat-message/' + chatRoomId, { "params": request });
+    }
+
+    saveAccountService(account: Account): Observable<Account> {
+        return this.http.post('/v1/misc/account', account);
+    }
+    accountsService(request?: any): Observable<AccountList> {
+        return this.http.get('/v1/misc/all-account', { "params": request });
+    }
+    accountService(id: number, request?: any): Observable<Account> {
+        return this.http.get('/v1/misc/account/' + id, { "params": request });
     }
     allocateProjects(projectAllocationDetailList: ProjectAllocationDetail[]): Observable<any> {
         return this.http.post('/v1/misc/allocate-project', projectAllocationDetailList,);

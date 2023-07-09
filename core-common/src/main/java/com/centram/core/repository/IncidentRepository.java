@@ -636,4 +636,7 @@ public interface IncidentRepository extends PagingAndSortingRepository<Incident,
             Pageable pageable
     );
 
+    @Query("SELECT i.version FROM Incident i WHERE i.id = (:id)")
+    long getCurrentVersion(@Param("id") BigInteger id);
+
 }

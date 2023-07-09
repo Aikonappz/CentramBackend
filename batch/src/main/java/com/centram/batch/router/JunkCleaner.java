@@ -31,6 +31,7 @@ public class JunkCleaner extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://junk/cleaner?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("junk-cleaner")
                 .process(new Processor() {

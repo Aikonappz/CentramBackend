@@ -14,6 +14,8 @@ import { LocationComponent } from './location.component';
 import { PriorityComponent } from './priority.component';
 import { ProjectComponent } from './project.component';
 import { VendorComponent } from './vendor.component';
+import { AccountComponent } from './account.component';
+import { EditAccountComponent } from './editaccount.component';
 
 const routes: Routes = [
   {
@@ -25,6 +27,30 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'department'
+      },
+      {
+        path: 'account',
+        component: AccountComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Account'
+        },
+      },
+      {
+        path: 'account/add',
+        component: EditAccountComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Account'
+        }
+      },
+      {
+        path: 'account/edit/:id',
+        component: EditAccountComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Account'
+        }
       },
       {
         path: 'department',

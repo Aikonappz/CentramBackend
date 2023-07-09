@@ -2,8 +2,8 @@ package com.centram.domain;
 
 import com.centram.domain.converter.StringCommaSeparetedToListConverter;
 import com.centram.domain.enumarator.Status;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
@@ -15,9 +15,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
 
-@ApiModel(description = "Form Template")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,34 +30,34 @@ public class FormTemplate extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1704980863958691973L;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "form_type", nullable = false)
     private String formType;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "template_name", nullable = false)
     private String templateName;
 
     @Lob
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "template", nullable = false)
     private String template;
 
     @Lob
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "group_ignore_fields", nullable = false)
@@ -65,7 +65,7 @@ public class FormTemplate extends BaseEntity implements Serializable {
     private List<String> groupIgnoreFields;
 
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")

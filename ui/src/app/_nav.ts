@@ -33,6 +33,12 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "MASTERS" },
     children: [
       {
+        name: 'Account',
+        url: '/master/account',
+        icon: 'cil-object-group',
+        attributes: { "moduleName": "ACCOUNT" }
+      },
+      {
         name: 'Department',
         url: '/master/department',
         icon: 'icon-puzzle',
@@ -92,7 +98,7 @@ export const navItems: INavData[] = [
     name: 'Incidents',
     url: '/incident',
     icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "INCIDENT" },
+    attributes: { "moduleName": "INCIDENT", "licenceType": "ALL,INCIDENT" },
     children: [
       {
         name: 'Employee Access',
@@ -137,7 +143,7 @@ export const navItems: INavData[] = [
     name: 'Asset',
     url: '/asset',
     icon: 'fa fa-cubes',
-    attributes: { "moduleName": "ASSET" },
+    attributes: { "moduleName": "ASSET", "licenceType": "ALL,ASSET" },
     children: [
       {
         name: 'Admin Access',

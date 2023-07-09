@@ -43,5 +43,4 @@ public interface PermissionRepository extends JpaRepository<Permission, BigInteg
 
     @Query("select p.action from Permission p where p.role.id = (:roleId) and p.module.id = (:moduleId)")
     List<Action> getActionsByRoleAndModule(@Param("roleId") BigInteger roleId, @Param("moduleId") BigInteger moduleId);
-
 }

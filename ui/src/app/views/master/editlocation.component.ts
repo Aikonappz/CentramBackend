@@ -11,6 +11,7 @@ import { CountryWithTimeZone } from '../../model/CountryWithTimeZone';
 import { AppUtility } from '../../config/AppUtility';
 import { StartEndTimeValidation } from '../../validator/StartEndTimeValidation';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { Account } from '../../model/Account';
 
 @Component({
   selector: 'app-editlocation',
@@ -30,6 +31,7 @@ export class EditLocationComponent implements OnInit {
   filterdCountry: CountryWithTimeZone[];
   timeList: any[] = [];
   angForm: FormGroup;
+  accounts: Account[] = [];
 
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -38,7 +40,7 @@ export class EditLocationComponent implements OnInit {
     private _location: Location,
     private titleService: Title,
     private router: Router,
-    private service: MiscService) {
+    private miscService: MiscService) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         var title = this.getTitle(router.routerState, router.routerState.root).join('-');
@@ -46,6 +48,9 @@ export class EditLocationComponent implements OnInit {
       }
     });
     this.angForm = this.fb.group({
+      account: new FormControl(null, [
+        Validators.required,
+      ]),
       country: new FormControl(null, [
         Validators.required,
       ]),
@@ -112,11 +117,27 @@ export class EditLocationComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.route.snapshot.paramMap.has('id')) {
-
+      this.miscService
+        .accountsService()
+        .subscribe((data: any) => {
+          this.accounts = data.content;
+          for (let i = 0; i < this.accounts.length; i++) {
+            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
+          }
+          this.angForm.get('account').setValue(this.accounts[0].id);
+        });
     } else {
-      this.entityId = Number(this.route.snapshot.paramMap.get('id'));
-      this.newEntity = false;
-      this.callGetLocationService(this.entityId);
+      this.miscService
+        .accountsService()
+        .subscribe((data: any) => {
+          this.accounts = data.content;
+          for (let i = 0; i < this.accounts.length; i++) {
+            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
+          }
+          this.entityId = Number(this.route.snapshot.paramMap.get('id'));
+          this.newEntity = false;
+          this.callGetLocationService(this.entityId);
+        });
     }
   }
 
@@ -143,7 +164,11 @@ export class EditLocationComponent implements OnInit {
       this.loc.opsStartTime = this.angForm.controls['opsStartTime'].value;
       this.loc.opsEndTime = this.angForm.controls['opsEndTime'].value;
       this.loc.officeName = this.angForm.controls['officeName'].value;
-
+      for (let i = 0; i < this.accounts.length; i++) {
+        if (this.accounts[i].id == this.angForm.controls['account'].value) {
+          this.loc.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+        }
+      }
       /* process department and location */
       this.loc.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user.status);
@@ -156,7 +181,7 @@ export class EditLocationComponent implements OnInit {
   goBack() { this._location.back(); }
 
   callSaveLocationService() {
-    this.service
+    this.miscService
       .saveLocationService(this.loc)
       .subscribe((data: any) => {
         //console.log(data);
@@ -165,7 +190,7 @@ export class EditLocationComponent implements OnInit {
   }
 
   callGetLocationService(id: number) {
-    this.service
+    this.miscService
       .locationService(id)
       .subscribe((data: any) => {
         //console.log(JSON.stringify(data));
@@ -180,6 +205,7 @@ export class EditLocationComponent implements OnInit {
         this.loc.status = data.status;
         this.loc.version = data.version;
         this.loc.officeName = data.officeName;
+        this.loc.account = data.account;
         //console.log(JSON.stringify(this.user));
 
         this.populateTimezone({ id: this.loc.country });
@@ -191,6 +217,7 @@ export class EditLocationComponent implements OnInit {
         this.angForm.get('city').setValue(this.loc.city);
         this.angForm.get('country').setValue(this.loc.country);
         this.angForm.get('officeName').setValue(this.loc.officeName);
+        this.angForm.get('account').setValue(this.loc.account.id);
 
         this.statusFlag = String(this.loc.status) == 'ACTIVE' ? true : false;
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);

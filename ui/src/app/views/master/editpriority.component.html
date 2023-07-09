@@ -12,6 +12,17 @@
           <div class="card-body">
             <div class="row">
               <div class="col">
+                <label class="form-col-form-label required-control-label" for="account">Account</label>
+                <ng-select [items]="accounts" placeholder="-- Select Account --" formControlName="account" id="account"
+                  location name="account" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.account.touched && f.account.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.account.errors?.required">
+                    Account is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
                 <label class="form-col-form-label required-control-label" for="name">Priority Type</label>
                 <ng-select [items]="nameList" placeholder="-- Select Priority Type --" formControlName="name" id="name"
                   name="name" bindLabel="label" bindValue="id"></ng-select>

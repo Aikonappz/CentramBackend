@@ -166,7 +166,7 @@ public class AssetService {
             if (asset.getId() == null) {
                 asset.setIsAvailable(true);
                 asset.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-                Setting setting = organisationService.getOrganisationSettings();
+                Setting setting = asset.getOrganisation().getSetting();
                 String prefix = (setting != null && setting.getAssetPrefix() != null) ? setting.getAssetPrefix() : appDefaultAssetPrefix;
                 Module module = moduleService.getModuleById(asset.getSubModuleId());
                 if (module.getGenerateAssetNo()) {

@@ -45,6 +45,7 @@ public class AllocatedAssetValidityExpiry extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://organisation/allocatedAssetValidityExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== allocated-asset-validity-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("allocated-asset-validity-expiry")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
@@ -54,13 +55,14 @@ public class AllocatedAssetValidityExpiry extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "allocated-asset-validity-expiry -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "allocated-asset-validity-expiry -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processAllocatedAssetValidityExpiryNotifications");
 
         from("direct:processAllocatedAssetValidityExpiryNotifications")
+                .log(LoggingLevel.INFO, "=================== process-allocated-asset-validity-expiry-notifications ===================")
                 .routeId("process-allocated-asset-validity-expiry-notifications")
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -95,7 +97,8 @@ public class AllocatedAssetValidityExpiry extends RouteBuilder {
                         exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "allocated-asset-validity-expiry completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "allocated-asset-validity-expiry completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "=================== allocated-asset-validity-expiry job completed ===================")
                 .end();
     }
 

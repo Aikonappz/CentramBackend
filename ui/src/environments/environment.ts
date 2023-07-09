@@ -3,34 +3,16 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
-export const environment = {
-  production: false,
-  appUrl: 'https://www.google.com',
-  appBrandName: 'Centram',
-  appDevName: 'Centram Dev',
-  appLandingPage: '/',
-  appName: 'Centram',
-  appSSOEndpoint: 'http://localhost:7001/login-sso',
-  appServiceEndpoint: 'http://localhost:7001/api',
-  appWSServiceEndpoint: 'http://localhost:7001/app-ws-notification',
-  appWSNotificationTopic: '/topic/notification',
-  appWSChatTopic: '/topic/chat',
-  appWSCred: {
-    "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
-    "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
-  }
-};
-
 // export const environment = {
 //   production: false,
-//   appUrl: 'https://d3giyeevvj3x7p.cloudfront.net',
+//   appUrl: 'https://www.google.com',
 //   appBrandName: 'Centram',
 //   appDevName: 'Centram Dev',
 //   appLandingPage: '/',
 //   appName: 'Centram',
-//   appSSOEndpoint: 'https://api.centram.live/login-sso',
-//   appServiceEndpoint: 'https://api.centram.live/api',
-//   appWSServiceEndpoint: 'https://api.centram.live/app-ws-notification',
+//   appSSOEndpoint: 'http://localhost:7001/login-sso',
+//   appServiceEndpoint: 'http://localhost:7001/api',
+//   appWSServiceEndpoint: 'http://localhost:7001/app-ws-notification',
 //   appWSNotificationTopic: '/topic/notification',
 //   appWSChatTopic: '/topic/chat',
 //   appWSCred: {
@@ -38,3 +20,21 @@ export const environment = {
 //     "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
 //   }
 // };
+
+export const environment = {
+  production: false,
+  appUrl: 'http://www.centram.live',
+  appBrandName: 'Centram',
+  appDevName: 'Centram Dev',
+  appLandingPage: '/',
+  appName: 'Centram',
+  appSSOEndpoint: 'https://api.centram.live/login-sso',
+  appServiceEndpoint: 'https://api.centram.live/api',
+  appWSServiceEndpoint: 'https://api.centram.live/app-ws-notification',
+  appWSNotificationTopic: '/topic/notification',
+  appWSChatTopic: '/topic/chat',
+  appWSCred: {
+    "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
+    "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="
+  }
+};

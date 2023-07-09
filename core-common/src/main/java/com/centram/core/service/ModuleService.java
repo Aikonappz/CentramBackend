@@ -7,6 +7,7 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.CategoryLocationVO;
 import com.centram.core.repository.ModuleRepository;
 import com.centram.domain.Module;
+import com.centram.domain.enumarator.LicenseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,12 +72,12 @@ public class ModuleService {
     }
 
     @Transactional(readOnly = true)
-    public Module getModuleByCustomerModuleName(String customerModuleName) {
-        Module module = redisService.getModuleByCustomerModuleName(customerModuleName);
+    public Module getModuleByCustomerModuleName(LicenseType licenseType, String customerModuleName) {
+        Module module = redisService.getModuleByCustomerModuleName(licenseType, customerModuleName);
         if (module == null) {
-            module = moduleRepository.findByCustomerModuleNameIgnoreCase(customerModuleName);
+            module = moduleRepository.findByLicenseTypeAndCustomerModuleNameIgnoreCase(licenseType, customerModuleName);
             if (module != null) {
-                redisService.saveModuleByCustomerModuleName(customerModuleName, module);
+                redisService.saveModuleByCustomerModuleName(licenseType, customerModuleName, module);
             } else {
                 return null;
             }

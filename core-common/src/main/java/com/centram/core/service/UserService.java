@@ -525,6 +525,7 @@ public class UserService implements UserDetailsService {
                     "Employee Id.",
                     "Project Code",
                     "Roles",
+                    "Account",
                     "Location",
                     "Department",
                     "Vendor",
@@ -541,6 +542,7 @@ public class UserService implements UserDetailsService {
                         uv.getEmployeeId(),
                         uv.getProjectCode(),
                         String.join(",", uv.getRoleNames()),
+                        uv.getAccountName() + "[" + uv.getAccountNo() + "]",
                         uv.getLocation(),
                         uv.getDepartment(),
                         uv.getVendor(),
@@ -618,15 +620,25 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     *
+     * @param email
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public User findUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
+    /**
      * get users by multiple email
      *
      * @param emails
      * @return
      */
     @Transactional(readOnly = true)
-    public List<UserVO> getUsersByEmails(List<String> emails) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<User> users = userRepository.getUsersByEmails(emails, loggedInUser.getOrganisationId());
+    public List<UserVO> getUsersByEmails(List<String> emails, BigInteger organisationId) {
+        //LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<User> users = userRepository.getUsersByEmails(emails, organisationId);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         for (User user : users) {
             userVOS.add(new UserVO(user));
@@ -721,12 +733,12 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<UserVO> getUsersByRoles(List<String> roles) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<UserVO> getUsersByRoles(List<String> roles, BigInteger organisationId) {
+        //LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<UserVO> userVOS = new ArrayList<UserVO>();
         List<Role> roleList = roleService.getByNames(roles);
         List<BigInteger> roleIds = roleList.stream().map(Role::getId).collect(Collectors.toList());
-        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), loggedInUser.getOrganisationId());
+        List<User> users = userRepository.getUsersByRoleIds(roleIds.stream().map(String::valueOf).collect(Collectors.joining("|")), organisationId);
         List<String> roleNames = new ArrayList<>();
         UserVO userVO = null;
         for (User user : users) {
@@ -896,7 +908,7 @@ public class UserService implements UserDetailsService {
         if (userVO.getPassword() != null)
             user.setPassword(passwordEncoder.encode(userVO.getPassword()));
         user.setEmployeeId(userVO.getEmployeeId());
-        user.setManagerId(manager.getId());
+        user.setManagerId((manager != null)? manager.getId() : null);
         user.setContactNo(userVO.getContactNo());
         user.setSecContactNo(userVO.getSecContactNo());
         user.setProjectCode(userVO.getProjectCode());

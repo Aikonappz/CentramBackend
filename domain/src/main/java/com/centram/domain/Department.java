@@ -4,8 +4,8 @@ import com.centram.common.view.Views;
 import com.centram.common.vo.DepartmentVO;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +19,9 @@ import java.math.BigInteger;
 /**
  * Department
  */
-@ApiModel(description = "Department")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,7 +40,7 @@ import java.math.BigInteger;
 public class Department extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7161526376698505219L;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,20 +48,20 @@ public class Department extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "name", columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String name;
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Valid
     @NotNull
     @OneToOne

@@ -46,6 +46,12 @@ public class LoggedInUser implements UserDetails, Serializable {
     private BigInteger userAuthId;
     private String locationOpsTime;
 
+    private BigInteger accountId;
+
+    private String accountName;
+
+    private String accountNo;
+
 
     public LoggedInUser() {
     }
@@ -76,6 +82,21 @@ public class LoggedInUser implements UserDetails, Serializable {
 
     public String getLocationOpsTime() {
         return locationOpsTime;
+        this.accountId = userVO.getAccountId();
+        this.accountName = userVO.getAccountName();
+        this.accountNo = userVO.getAccountNo();
+    }
+
+    public BigInteger getAccountId() {
+        return accountId;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public String getAccountNo() {
+        return accountNo;
     }
 
     public BigInteger getUserAuthId() {

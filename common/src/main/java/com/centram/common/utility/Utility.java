@@ -131,4 +131,24 @@ public class Utility {
         Matcher m = r.matcher(s);
         return m.find();
     }
+
+    /**
+     * Convert seconds to string date like => 3600 = 1 hour
+     * @param seconds
+     * @return
+     */
+    public String convertSecondsToStringDate(Integer seconds) {
+        String str = "";
+        Integer day = seconds / (24 * 3600);
+        seconds = seconds % (24 * 3600);
+        Integer hour = seconds / 3600;
+        seconds %= 3600;
+        Integer minutes = seconds / 60;
+        seconds %= 60;
+        Integer sec = seconds;
+        str += day > 1 ? day + " days " : day == 1 ? day + " day " : "";
+        str += hour > 1 ? hour + " hours " : hour == 1 ? hour + " hour " : "";
+        str += minutes > 1 ? minutes + " minutes " : minutes == 1 ? minutes + " minute " : "";
+        return str;
+    }
 }
