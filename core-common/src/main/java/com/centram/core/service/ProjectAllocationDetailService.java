@@ -25,6 +25,10 @@ public class ProjectAllocationDetailService {
     @Autowired
     private MiscService miscService;
 
+    /**
+     * @param projectAllocationDetailList
+     * @return
+     */
     @Transactional(readOnly = false)
     public Map<BigInteger, String> allocation(List<ProjectAllocationDetail> projectAllocationDetailList) {
         //prepare project codes for user
@@ -40,14 +44,17 @@ public class ProjectAllocationDetailService {
             }
         }
         // save project allocation detail
-        projectAllocationDetailList.stream()
-                .forEach(i -> {
-                    i.setDeallocated(false);
-                });
+        projectAllocationDetailList.stream().forEach(i -> {
+            i.setDeallocated(false);
+        });
         projectAllocationDetailRepository.saveAll(projectAllocationDetailList);
         return allocateProjectDTOS;
     }
 
+    /**
+     * @param projectDeallocateDTO
+     * @return
+     */
     @Transactional(readOnly = false)
     public Map<BigInteger, String> deallocation(ProjectDeallocateDTO projectDeallocateDTO) {
         List<ProjectAllocationDetail> projectAllocationDetails = projectAllocationDetailRepository.getDeallocationList(projectDeallocateDTO.getProjectId(), projectDeallocateDTO.getUserIds());
@@ -55,10 +62,9 @@ public class ProjectAllocationDetailService {
         for (ProjectAllocationDetail projectAllocationDetail : projectAllocationDetails) {
             deallocateProjectDTOS.put(projectAllocationDetail.getUser().getId(), projectAllocationDetail.getProject().getCode());
         }
-        projectAllocationDetails.stream()
-                .forEach(i -> {
-                    i.setDeallocated(true);
-                });
+        projectAllocationDetails.stream().forEach(i -> {
+            i.setDeallocated(true);
+        });
         projectAllocationDetailRepository.saveAll(projectAllocationDetails);
         return deallocateProjectDTOS;
     }

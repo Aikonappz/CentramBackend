@@ -252,7 +252,7 @@ export class EditUserComponent implements OnInit {
           this.c = 0;
           this.usrList = [];
           for (let indx = 0; indx < this.users.length; indx++) {
-            if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
+            if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "" && this.users[indx].employeeId != null) {
               this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
             }
           }
@@ -294,7 +294,7 @@ export class EditUserComponent implements OnInit {
                 this.c = 0;
                 this.usrList = [];
                 for (let indx = 0; indx < this.users.length; indx++) {
-                  if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
+                  if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "" && this.users[indx].employeeId != null) {
                     this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
                   }
                 }
@@ -363,7 +363,7 @@ export class EditUserComponent implements OnInit {
                         this.c = 0;
                         this.usrList = [];
                         for (let indx = 0; indx < this.users.length; indx++) {
-                          if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "") {
+                          if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "" && this.users[indx].employeeId != null) {
                             this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
                           }
                         }

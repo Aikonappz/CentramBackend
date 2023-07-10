@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,6 +33,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -41,6 +43,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -132,18 +135,13 @@ public class UserService implements UserDetailsService {
             List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
             List<PermissionVO> modulePermissions = new ArrayList<PermissionVO>();
             for (Permission permission : permissions) {
-                Boolean alreadyExist = modulePermissions.stream()
-                        .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
-                        .findFirst().isPresent();
+                Boolean alreadyExist = modulePermissions.stream().filter(o -> o.getModuleId().equals(permission.getModule().getId())).findFirst().isPresent();
                 if (alreadyExist) {
-                    modulePermissions.stream()
-                            .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
-                            .findFirst()
-                            .ifPresent(i -> {
-                                String actionNames = i.getActionName().concat(",").concat(permission.getAction().getName());
-                                actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
-                                i.setActionName(actionNames);
-                            });
+                    modulePermissions.stream().filter(o -> o.getModuleId().equals(permission.getModule().getId())).findFirst().ifPresent(i -> {
+                        String actionNames = i.getActionName().concat(",").concat(permission.getAction().getName());
+                        actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
+                        i.setActionName(actionNames);
+                    });
                 } else {
                     modulePermissions.add(new PermissionVO(permission));
                 }
@@ -178,18 +176,13 @@ public class UserService implements UserDetailsService {
             List<Permission> permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
             List<PermissionVO> modulePermissions = new ArrayList<PermissionVO>();
             for (Permission permission : permissions) {
-                Boolean alreadyExist = modulePermissions.stream()
-                        .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
-                        .findFirst().isPresent();
+                Boolean alreadyExist = modulePermissions.stream().filter(o -> o.getModuleId().equals(permission.getModule().getId())).findFirst().isPresent();
                 if (alreadyExist) {
-                    modulePermissions.stream()
-                            .filter(o -> o.getModuleId().equals(permission.getModule().getId()))
-                            .findFirst()
-                            .ifPresent(i -> {
-                                String actionNames = i.getActionName().concat(",").concat(permission.getAction().getName());
-                                actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
-                                i.setActionName(actionNames);
-                            });
+                    modulePermissions.stream().filter(o -> o.getModuleId().equals(permission.getModule().getId())).findFirst().ifPresent(i -> {
+                        String actionNames = i.getActionName().concat(",").concat(permission.getAction().getName());
+                        actionNames = String.join(",", new HashSet<String>(Arrays.asList(actionNames.split(","))));
+                        i.setActionName(actionNames);
+                    });
                 } else {
                     modulePermissions.add(new PermissionVO(permission));
                 }
@@ -312,15 +305,7 @@ public class UserService implements UserDetailsService {
         email = (!email.equals("")) ? "%" + email.toUpperCase() + "%" : null;
         employeeId = (!employeeId.equals("")) ? "%" + employeeId.toUpperCase() + "%" : null;
         filterType = (!filterType.equals("")) ? filterType.toUpperCase(Locale.ROOT) : null;
-        Page<User> page = userRepository.getUsers(
-                loggedInUser.getOrganisationId(),
-                email,
-                employeeId,
-                status.ordinal(),
-                filterType,
-                vendorId,
-                pageable
-        );
+        Page<User> page = userRepository.getUsers(loggedInUser.getOrganisationId(), email, employeeId, status.ordinal(), filterType, vendorId, pageable);
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         List<String> roleNames = null;
@@ -340,18 +325,12 @@ public class UserService implements UserDetailsService {
             userVO.setRoleViewNames(roleViewNames);
             // prepare category & subcategory access list
             permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
-            modules = permissions.stream()
-                    .filter(i -> {
-                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() == null;
-                    })
-                    .map(Permission::getModule)
-                    .collect(Collectors.toList());
-            subModules = permissions.stream()
-                    .filter(i -> {
-                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() != null;
-                    })
-                    .map(Permission::getModule)
-                    .collect(Collectors.toList());
+            modules = permissions.stream().filter(i -> {
+                return !i.getModule().getAppModule() && i.getModule().getParentModuleId() == null;
+            }).map(Permission::getModule).collect(Collectors.toList());
+            subModules = permissions.stream().filter(i -> {
+                return !i.getModule().getAppModule() && i.getModule().getParentModuleId() != null;
+            }).map(Permission::getModule).collect(Collectors.toList());
             userVO.setCategories(modules.stream().map(Module::getCustomerModuleName).map(i -> {
                 return WordUtils.capitalizeFully(i);
             }).collect(Collectors.toSet()));
@@ -386,18 +365,12 @@ public class UserService implements UserDetailsService {
             userVO.setRoleViewNames(roleViewNames);
             // prepare category & subcategory access list
             permissions = permissionService.getPermissionByRoleIds(userVO.getRoles());
-            modules = permissions.stream()
-                    .filter(i -> {
-                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() == null;
-                    })
-                    .map(Permission::getModule)
-                    .collect(Collectors.toList());
-            subModules = permissions.stream()
-                    .filter(i -> {
-                        return !i.getModule().getAppModule() && i.getModule().getParentModuleId() != null;
-                    })
-                    .map(Permission::getModule)
-                    .collect(Collectors.toList());
+            modules = permissions.stream().filter(i -> {
+                return !i.getModule().getAppModule() && i.getModule().getParentModuleId() == null;
+            }).map(Permission::getModule).collect(Collectors.toList());
+            subModules = permissions.stream().filter(i -> {
+                return !i.getModule().getAppModule() && i.getModule().getParentModuleId() != null;
+            }).map(Permission::getModule).collect(Collectors.toList());
             userVO.setCategories(modules.stream().map(Module::getCustomerModuleName).map(i -> {
                 return WordUtils.capitalizeFully(i);
             }).collect(Collectors.toSet()));
@@ -496,15 +469,7 @@ public class UserService implements UserDetailsService {
         List<UserVO> userVOS = new ArrayList<UserVO>();
         UserVO userVO = null;
         List<String> roleNames = null;
-        Page<User> page = userRepository.getUsers(
-                loggedInUser.getOrganisationId(),
-                null,
-                null,
-                Status.ALL.ordinal(),
-                null,
-                null,
-                Pageable.unpaged()
-        );
+        Page<User> page = userRepository.getUsers(loggedInUser.getOrganisationId(), null, null, Status.ALL.ordinal(), null, null, Pageable.unpaged());
         for (User user : page.getContent()) {
             userVO = new UserVO(user);
             roleNames = new ArrayList<>();
@@ -514,40 +479,11 @@ public class UserService implements UserDetailsService {
             userVO.setRoleNames(roleNames);
             userVOS.add(userVO);
         }
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
-            data = Arrays.asList(
-                    "First Name",
-                    "Last Name",
-                    "Email",
-                    "Contact No",
-                    "Sec. ContactNo",
-                    "Employee Id.",
-                    "Project Code",
-                    "Roles",
-                    "Account",
-                    "Location",
-                    "Department",
-                    "Vendor",
-                    "Status"
-            );
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
+            data = Arrays.asList("First Name", "Last Name", "Email", "Contact No", "Sec. ContactNo", "Employee Id.", "Project Code", "Roles", "Account", "Location", "Department", "Vendor", "Status");
             csvPrinter.printRecord(data);
             for (UserVO uv : userVOS) {
-                data = Arrays.asList(
-                        uv.getFirstName(),
-                        uv.getLastName(),
-                        uv.getEmail(),
-                        uv.getContactNo(),
-                        uv.getSecContactNo(),
-                        uv.getEmployeeId(),
-                        uv.getProjectCode(),
-                        String.join(",", uv.getRoleNames()),
-                        uv.getAccountName() + "[" + uv.getAccountNo() + "]",
-                        uv.getLocation(),
-                        uv.getDepartment(),
-                        uv.getVendor(),
-                        uv.getStatus()
-                );
+                data = Arrays.asList(uv.getFirstName(), uv.getLastName(), uv.getEmail(), uv.getContactNo(), uv.getSecContactNo(), uv.getEmployeeId(), uv.getProjectCode(), String.join(",", uv.getRoleNames()), uv.getAccountName() + "[" + uv.getAccountNo() + "]", uv.getLocation(), uv.getDepartment(), uv.getVendor(), uv.getStatus());
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
@@ -620,7 +556,6 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     *
      * @param email
      * @return
      */
@@ -688,18 +623,10 @@ public class UserService implements UserDetailsService {
         }
         List<Map<String, String>> values = new ArrayList<Map<String, String>>();
         List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID", "VENDOR");
-        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
-             CSVParser csvParser = new CSVParser(fileReader,
-                     CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())
-        ) {
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8)); CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {
-                values.add(
-                        csvRecord.toMap()
-                                .entrySet().stream()
-                                .filter(i -> commonHeaders.contains(i.getKey()))
-                                .collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue()))
-                );
+                values.add(csvRecord.toMap().entrySet().stream().filter(i -> commonHeaders.contains(i.getKey())).collect(Collectors.toMap(i -> i.getKey(), i -> i.getValue())));
             }
             //log.info("Uploaded Users data => {}", values);
             miscService.saveBulkUploadedData(values);
@@ -905,10 +832,9 @@ public class UserService implements UserDetailsService {
         user.setFirstName(userVO.getFirstName());
         user.setLastName(userVO.getLastName());
         user.setEmail(userVO.getEmail());
-        if (userVO.getPassword() != null)
-            user.setPassword(passwordEncoder.encode(userVO.getPassword()));
+        if (userVO.getPassword() != null) user.setPassword(passwordEncoder.encode(userVO.getPassword()));
         user.setEmployeeId(userVO.getEmployeeId());
-        user.setManagerId((manager != null)? manager.getId() : null);
+        user.setManagerId((manager != null) ? manager.getId() : null);
         user.setContactNo(userVO.getContactNo());
         user.setSecContactNo(userVO.getSecContactNo());
         user.setProjectCode(userVO.getProjectCode());
@@ -949,6 +875,47 @@ public class UserService implements UserDetailsService {
                     //throw e;
                     continue;
                 }
+            }
+        }
+    }
+
+    /**
+     * @param allocateProjectDTOS
+     */
+    @Transactional(readOnly = false)
+    @Async("delayedExecutor")
+    public void allocateUserProjects(Map<BigInteger, String> allocateProjectDTOS) {
+        User user = new User();
+        String projects = null;
+        for (Map.Entry<BigInteger, String> entry : allocateProjectDTOS.entrySet()) {
+            user = userRepository.getUserById(entry.getKey());
+            if (!StringUtils.isEmpty(user.getProjectCode())) {
+                projects = user.getProjectCode().concat(",").concat(entry.getValue());
+            } else {
+                projects = entry.getValue();
+            }
+            user.setProjectCode(projects);
+            user = userRepository.save(user);
+        }
+    }
+
+    /**
+     * @param deallocateProjectDTOS
+     */
+    @Transactional(readOnly = false)
+    @Async("delayedExecutor")
+    public void deallocateUserProjects(Map<BigInteger, String> deallocateProjectDTOS) {
+        User user = new User();
+        List<String> projectList = new ArrayList<String>();
+        String projects = null;
+        for (Map.Entry<BigInteger, String> entry : deallocateProjectDTOS.entrySet()) {
+            user = userRepository.getUserById(entry.getKey());
+            if (!StringUtils.isEmpty(user.getProjectCode())) {
+                projects = user.getProjectCode();
+                projectList = Stream.of(projects.split(",")).map(String::trim).collect(Collectors.toList());
+                projectList.remove(entry.getValue());
+                user.setProjectCode(String.join(",", projectList));
+                userRepository.save(user);
             }
         }
     }

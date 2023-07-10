@@ -85,7 +85,7 @@ export class ManageTimeSheetComponent implements OnInit {
       },
     });
 
-    this.miscService.holidayCalenderHolidaysService(this.loggedInUser.locationId, this.today.format('YYYY'))
+    this.miscService.holidayCalendarHolidaysService(this.loggedInUser.accountId, this.loggedInUser.locationId, this.today.format('YYYY'))
       .subscribe((result: Holiday[]) => {
         this.holidays = result;
         for (let k = 0; k < this.holidays.length; k++) {
@@ -144,7 +144,6 @@ export class ManageTimeSheetComponent implements OnInit {
 
     console.log(this.dateRangesGroup);
 
-    //this.miscService.holidayCalendersService()
 
 
     this.projectTypes.push({ id: "HOURLY", label: "Hourly" });

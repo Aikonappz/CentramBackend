@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.PermissionDTO;
 import com.centram.common.dto.ProjectDeallocateDTO;
 import com.centram.common.dto.RequestDemoDTO;
@@ -31,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,7 +85,7 @@ public class MiscApiController {
     private PermissionService permissionService;
 
     @Autowired
-    private HolidayCalenderService holidayCalenderService;
+    private HolidayCalendarService holidayCalendarService;
 
     @Autowired
     private MiscService miscService;
@@ -112,6 +114,9 @@ public class MiscApiController {
 
     @Autowired
     private ProjectAllocationDetailService projectAllocationDetailService;
+
+    @Autowired
+    private UserService userService;
 
 
     @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
@@ -263,42 +268,6 @@ public class MiscApiController {
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY,MY INCIDENTS,MY GROUP INCIDENTS,REPORT,','READ,WRITE|SEARCH,WRITE|SEARCH,READ',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
     public ResponseEntity<PaginatedList<Priority>> getPriorities(@PathVariable(name = "accountId", required = false) BigInteger accountId, @RequestParam(value = "priorityType", defaultValue = "INCIDENT", required = false) String priorityType, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(accountId, priorityType, pageable), HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/all-holiday-callender", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
-    public ResponseEntity<PaginatedList<HolidayCalender>> getHolidayCalenders(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<HolidayCalender>>(holidayCalenderService.getHolidayCalenders(pageable), HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/holiday-callender/{holidayCallenderId}", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
-    public ResponseEntity<HolidayCalender> getHolidayCalenderById(@PathVariable("holidayCallenderId") BigInteger holidayCallenderId) {
-        return new ResponseEntity<HolidayCalender>(holidayCalenderService.getById(holidayCallenderId), HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/holiday-callender/{locationId}/{year}", produces = {"application/json"}, method = RequestMethod.GET)
-    //@PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR|MANAGE TIMESHEET','READ,READ',authentication.principal)")
-    public ResponseEntity<List<Holiday>> getHolidayCalenderByLocation(@PathVariable("accountId") BigInteger accountId, @PathVariable("locationId") BigInteger locationId, @PathVariable("year") String year) {
-        return new ResponseEntity<List<Holiday>>(holidayCalenderService.getHolidaysByYearAndLocation(accountId, locationId, year), HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/upload-holiday-calender", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','WRITE',authentication.principal)")
-    public ResponseEntity<HolidayCalender> uploadHolidayCalenderData(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("holidayCalender") HolidayCalender holidayCalender) throws IOException {
-        return new ResponseEntity<HolidayCalender>(holidayCalenderService.uploadHolidayCalenderData(multipartFile, holidayCalender), HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/holiday-callender/{holidayCallenderId}/download", method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
-    public ResponseEntity<Resource> downloadHolidayCalender(@PathVariable("holidayCallenderId") BigInteger holidayCallenderId) {
-        final InputStreamResource resource = new InputStreamResource(holidayCalenderService.downloadHolidayCalender(holidayCallenderId));
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "holiday-calender-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
 
@@ -461,6 +430,68 @@ public class MiscApiController {
     }
 
 
+    /**
+     * @param pageable
+     * @return
+     */
+    @RequestMapping(value = "/all-holiday-calendar", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<HolidayCalendar>> getHolidayCalendars(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<HolidayCalendar>>(holidayCalendarService.getHolidayCalendars(loggedInUser.getOrganisationId(), pageable), HttpStatus.OK);
+    }
+
+    /**
+     * @param holidayCalendarId
+     * @return
+     */
+    @RequestMapping(value = "/holiday-calendar/{holidayCalendarId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
+    public ResponseEntity<HolidayCalendar> getHolidayCalendarById(@PathVariable("holidayCalendarId") BigInteger holidayCalendarId) {
+        return new ResponseEntity<HolidayCalendar>(holidayCalendarService.getById(holidayCalendarId), HttpStatus.OK);
+    }
+
+    /**
+     * @param accountId
+     * @param locationId
+     * @param year
+     * @return
+     */
+    @RequestMapping(value = "/holiday-calendar/{accountId}/{locationId}/{year}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR,MANAGE TIMESHEET','READ,READ',authentication.principal)")
+    public ResponseEntity<List<Holiday>> getHolidayCalendarByLocation(@PathVariable("accountId") BigInteger accountId, @PathVariable("locationId") BigInteger locationId, @PathVariable("year") String year) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<List<Holiday>>(holidayCalendarService.getHolidays(accountId, locationId, loggedInUser.getOrganisationId(), year), HttpStatus.OK);
+    }
+
+    /**
+     * @param multipartFile
+     * @param holidayCalendar
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = "/upload-holiday-calendar", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','WRITE',authentication.principal)")
+    public ResponseEntity<HolidayCalendar> uploadHolidayCalendarData(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("holidayCalendar") HolidayCalendar holidayCalendar) throws IOException {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<HolidayCalendar>(holidayCalendarService.uploadHolidayCalendarData(loggedInUser.getOrganisationId(), multipartFile, holidayCalendar), HttpStatus.OK);
+    }
+
+    /**
+     * @param holidayCalendarId
+     * @return
+     */
+    @RequestMapping(value = "/holiday-calendar/{holidayCalendarId}/download", method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('HOLIDAY CALENDAR','READ',authentication.principal)")
+    public ResponseEntity<Resource> downloadHolidayCalendar(@PathVariable("holidayCalendarId") BigInteger holidayCalendarId) {
+        final InputStreamResource resource = new InputStreamResource(holidayCalendarService.downloadHolidayCalendar(holidayCalendarId));
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "holiday-calendar-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
+    }
+
+    /**
+     * @param projectId
+     * @return
+     */
     @RequestMapping(value = "/project/{projectId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','READ',authentication.principal)")
     @JsonView({Views.DetailView.class,})
@@ -468,38 +499,55 @@ public class MiscApiController {
         return new ResponseEntity<Project>(projectService.getById(projectId), HttpStatus.OK);
     }
 
-
+    /**
+     * @param projectType
+     * @param inHouse
+     * @param pageable
+     * @return
+     */
     @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT','READ,WRITE,ASSIGN,DEALLOCATE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT,MANAGE TIMESHEET','READ,ALLOCATE,DEALLOCATE,WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(inHouse, ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(loggedInUser.getOrganisationId(), inHouse, ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
     }
 
+    /**
+     * @param body
+     * @return
+     */
     @RequestMapping(value = "/project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<Project> saveProject(@Valid @RequestBody Project body) {
-        return new ResponseEntity<Project>(projectService.save(body), HttpStatus.OK);
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<Project>(projectService.save(loggedInUser.getOrganisationId(), body), HttpStatus.OK);
     }
 
-
+    /**
+     * @param projectAllocationDetailList
+     * @return
+     */
     @RequestMapping(value = "/allocate-project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ALLOCATE PROJECT','WRITE|ASSIGN',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ALLOCATE PROJECT','WRITE|ALLOCATE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity allocateProjects(@Valid @RequestBody List<ProjectAllocationDetail> projectAllocationDetailList) {
         Map<BigInteger, String> allocateProjectDTOS = projectAllocationDetailService.allocation(projectAllocationDetailList);
-        miscService.allocateUserProjects(allocateProjectDTOS);
+        userService.allocateUserProjects(allocateProjectDTOS);
         return ResponseEntity.ok().body(null);
     }
 
-
+    /**
+     * @param projectDeallocateDTO
+     * @return
+     */
     @RequestMapping(value = "/deallocate-project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|ASSIGN',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|DEALLOCATE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity deallocateProjects(@Valid @RequestBody ProjectDeallocateDTO projectDeallocateDTO) {
         Map<BigInteger, String> deallocateProjectDTOS = projectAllocationDetailService.deallocation(projectDeallocateDTO);
-        miscService.deallocateUserProjects(deallocateProjectDTOS);
+        userService.deallocateUserProjects(deallocateProjectDTOS);
         return ResponseEntity.ok().body(null);
     }
 

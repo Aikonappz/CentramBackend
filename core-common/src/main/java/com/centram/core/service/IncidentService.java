@@ -61,7 +61,7 @@ public class IncidentService {
     @Autowired
     private OrganisationService organisationService;
     @Autowired
-    private HolidayCalenderService holidayCalenderService;
+    private HolidayCalendarService holidayCalendarService;
     @Autowired
     private PriorityService priorityService;
     @Autowired
@@ -112,11 +112,10 @@ public class IncidentService {
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         Page<Incident> incidentPage = incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
-                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+            i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -136,13 +135,12 @@ public class IncidentService {
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         Page<Incident> incidentPage = incidentRepository.assetTicketReport(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, ruId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    Module module = moduleService.getModuleById(i.getModuleId());
-                    Module subModule = moduleService.getModuleById(i.getSubModuleId());
-                    i.setModuleName(module.getCustomerModuleName());
-                    i.setSubModuleName(subModule.getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            Module module = moduleService.getModuleById(i.getModuleId());
+            Module subModule = moduleService.getModuleById(i.getSubModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            i.setSubModuleName(subModule.getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -158,13 +156,12 @@ public class IncidentService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         Page<Incident> incidentPage = incidentRepository.getPendingAssetApprovals(incidentNo, loggedInUser.getUserId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    Module module = moduleService.getModuleById(i.getModuleId());
-                    Module subModule = moduleService.getModuleById(i.getSubModuleId());
-                    i.setModuleName(module.getCustomerModuleName());
-                    i.setSubModuleName(subModule.getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            Module module = moduleService.getModuleById(i.getModuleId());
+            Module subModule = moduleService.getModuleById(i.getSubModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            i.setSubModuleName(subModule.getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -327,11 +324,10 @@ public class IncidentService {
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         Page<Incident> incidentPage = incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, serialNo, title, intStatus, assigned, deallocated, loggedInUser.getUserId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
-                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+            i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -345,11 +341,10 @@ public class IncidentService {
     public PaginatedList<Incident> getUserAllocatedAssets(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Page<Incident> incidentPage = incidentRepository.getUserAllocatedAssets(LicenseType.ASSET, IncidentStatus.CLOSED, loggedInUser.getUserId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
-                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+            i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -485,10 +480,10 @@ public class IncidentService {
             /*prepare holiday List*/
             ZonedDateTime raiseDateTime = ZonedDateTime.now();
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (raiseDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
@@ -525,10 +520,10 @@ public class IncidentService {
             /*prepare holiday List*/
             ZonedDateTime raiseDateTime = ZonedDateTime.now();
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (raiseDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
@@ -622,10 +617,10 @@ public class IncidentService {
             Priority priority = priorityService.getById(incident.getPriority().getId());
             /*prepare holiday List*/
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (currentDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
@@ -714,10 +709,10 @@ public class IncidentService {
             Priority priority = priorityService.getById(incident.getPriority().getId());
             /*prepare holiday List*/
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (currentDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             ZonedDateTime holdDateTime = incident.getHoldAt().atZone(ZoneId.systemDefault());
@@ -779,20 +774,10 @@ public class IncidentService {
         Priority priority = incident.getPriority();
         /*prepare holiday List*/
         List<Holiday> holidays = new ArrayList<Holiday>();
-        List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(
-                incident.getRaisedUser().getAccount().getId(),
-                incident.getRaisedUser().getLocation().getId(),
-                incident.getRaisedUser().getOrganisation().getId(),
-                Year.now().toString()
-        );
+        List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(incident.getRaisedUser().getAccount().getId(), incident.getRaisedUser().getLocation().getId(), incident.getRaisedUser().getOrganisation().getId(), Year.now().toString());
         List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
         if (currentDateTime.getMonth() == Month.DECEMBER) {
-            nextYearHolidays = holidayCalenderService.getHolidaysByYear(
-                    incident.getRaisedUser().getAccount().getId(),
-                    incident.getRaisedUser().getLocation().getId(),
-                    incident.getRaisedUser().getOrganisation().getId(),
-                    Year.now().plusYears(1).toString()
-            );
+            nextYearHolidays = holidayCalendarService.getHolidays(incident.getRaisedUser().getAccount().getId(), incident.getRaisedUser().getLocation().getId(), incident.getRaisedUser().getOrganisation().getId(), Year.now().plusYears(1).toString());
         }
         holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
         /*prepare holiday List*/

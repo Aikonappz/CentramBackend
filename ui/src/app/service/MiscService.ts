@@ -7,7 +7,7 @@ import { LocationList, LocationVO } from '../model/LocationVO';
 import { Department, DepartmentList } from '../model/Department';
 import { Status } from '../model/enumerator/Status';
 import { Priority, PriorityList } from '../model/Priority';
-import { HolidayCalenderList } from '../model/HolidayCalender';
+import { HolidayCalendarList } from '../model/HolidayCalendar';
 import { Notification, NotificationList } from '../model/Notification';
 import { DistributionList, DistributionListList } from '../model/DistributionList';
 import { Vendor, VendorList } from '../model/Vendor';
@@ -70,20 +70,20 @@ export class MiscService {
     priorityService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/priority/' + id, { "params": request });
     }
-    holidayCalendersService(request?: any): Observable<HolidayCalenderList> {
-        return this.http.get('/v1/misc/all-holiday-callender', { "params": request });
+    holidayCalendarsService(request?: any): Observable<HolidayCalendarList> {
+        return this.http.get('/v1/misc/all-holiday-calendar', { "params": request });
     }
-    holidayCalenderService(id: number, request?: any): Observable<any> {
-        return this.http.get('/v1/misc/holiday-callender/' + id, { "params": request });
+    holidayCalendarService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/holiday-calendar/' + id, { "params": request });
     }
-    holidayCalenderHolidaysService(locationId: number, year: string, request?: any): Observable<Holiday[]> {
-        return this.http.get('/v1/misc/holiday-callender/' + locationId + '/' + year, { "params": request });
+    holidayCalendarHolidaysService(accountId: number, locationId: number, year: string, request?: any): Observable<Holiday[]> {
+        return this.http.get('/v1/misc/holiday-calendar/' + accountId + '/' + locationId + '/' + year, { "params": request });
     }
-    saveHolidayCalenderService(formData: FormData, request?: any): Observable<Department> {
-        return this.http.post('/v1/misc/upload-holiday-calender', formData, request);
+    saveHolidayCalendarService(formData: FormData, request?: any): Observable<Department> {
+        return this.http.post('/v1/misc/upload-holiday-calendar', formData, request);
     }
-    downloadholidayCalenderService(id: number, request?: any): Observable<any> {
-        return this.http.get('/v1/misc/holiday-callender/' + id + '/download', { responseType: 'blob' });
+    downloadholidayCalendarService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/holiday-calendar/' + id + '/download', { responseType: 'blob' });
     }
     notificationsService(request?: any): Observable<NotificationList> {
         return this.http.get('/v1/misc/all-notifications', { "params": request });

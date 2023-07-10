@@ -226,6 +226,32 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "MY NOTIFICATIONS" }
   },
   {
+    name: 'Project',
+    url: '/project',
+    icon: 'fa fa-list-alt',
+    attributes: { "moduleName": "PROJECT" },
+    children: [
+      {
+        name: 'Manage Timesheet',
+        url: '/project/manage-timesheet',
+        icon: 'cil-clock',
+        attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
+      },
+      {
+        name: 'Allocate Project',
+        url: '/project/allocate',
+        icon: 'cil-grain',
+        attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+      {
+        name: 'Deallocate Project',
+        url: '/project/deallocate',
+        icon: 'cil-gradient',
+        attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+    ]
+  },
+  {
     name: 'Reports',
     url: '/report',
     icon: 'fa fa-folder',
@@ -317,32 +343,6 @@ export const navItems: INavData[] = [
       },
     ]
   },
-  {
-    name: 'Project',
-    url: '/project',
-    icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "PROJECT" },
-    children: [
-      {
-        name: 'Manage Timesheet',
-        url: '/project/manage-timesheet',
-        icon: 'cil-clock',
-        attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
-      },
-      {
-        name: 'Allocate Project',
-        url: '/project/allocate',
-        icon: 'cil-grain',
-        attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
-      },
-      {
-        name: 'Deallocate Project',
-        url: '/project/deallocate',
-        icon: 'cil-gradient',
-        attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
-      },
-    ]
-  }
 ];
 
 //attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }
