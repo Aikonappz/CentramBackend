@@ -5,8 +5,10 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.core.repository.ProjectAllocationDetailRepository;
 import com.centram.core.repository.ProjectRepository;
 import com.centram.domain.Project;
+import com.centram.domain.ProjectAllocationDetail;
 import com.centram.domain.Vendor;
 import com.centram.domain.VendorModule;
 import com.centram.domain.enumarator.ProjectType;
@@ -34,6 +36,9 @@ public class ProjectService {
 
     @Autowired
     private OrganisationService organisationService;
+
+    @Autowired
+    private ProjectAllocationDetailRepository projectAllocationDetailRepository;
 
 
     /**

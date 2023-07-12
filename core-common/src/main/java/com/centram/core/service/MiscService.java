@@ -7,6 +7,7 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.Utility;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.IncidentEmailVO;
+import com.centram.common.vo.ManageTimeSheetInputVO;
 import com.centram.common.vo.UserVO;
 import com.centram.core.repository.AppConfigRepository;
 import com.centram.core.repository.ProjectAllocationDetailRepository;
@@ -31,7 +32,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.centram.common.utility.Utility.assetNo;
 
@@ -78,6 +77,9 @@ public class MiscService {
     private UserService userService;
     @Autowired
     private ModuleService moduleService;
+
+    @Autowired
+    private ProjectAllocationDetailService projectAllocationDetailService;
 
     @Autowired
     private ProjectAllocationDetailRepository projectAllocationDetailRepository;
@@ -116,10 +118,7 @@ public class MiscService {
                     Thread.sleep(2000);
                 }
                 log.info("CHAT ROOM ID {}.", chatMessage.getRoomId());
-                simpMessagingTemplate.convertAndSend(
-                        appWsBrokerPrefix.concat("/chat/").concat(String.valueOf(chatMessage.getRoomId())),
-                        objectMapper.writeValueAsString(chatMessage)
-                );
+                simpMessagingTemplate.convertAndSend(appWsBrokerPrefix.concat("/chat/").concat(String.valueOf(chatMessage.getRoomId())), objectMapper.writeValueAsString(chatMessage));
             }
         } catch (JsonProcessingException e) {
             log.error("CHAT PUSH ISSUE {}", e.getOriginalMessage());
@@ -632,7 +631,7 @@ public class MiscService {
             dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
         if (incidentEmailVO.getIncidentType() == LicenseType.INCIDENT) {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
             if (incidentEmailVO.getUserEmail().equalsIgnoreCase(loggedInUser.getEmail())) {
                 if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
                     incidentEmailVO.setMailSubjectKey(getSubjectKeyByStatus(incidentEmailVO));
@@ -713,7 +712,7 @@ public class MiscService {
                 }
             }
         } else {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
             if (incidentEmailVO.getUserEmail().equalsIgnoreCase(loggedInUser.getEmail())) {
                 if (!incidentEmailVO.getAgentEmail().equalsIgnoreCase("NA")) {
                     incidentEmailVO.setMailSubjectKey(getSubjectKeyByStatus(incidentEmailVO));
@@ -875,7 +874,7 @@ public class MiscService {
             return i.getId().equals(incidentEmailVO.getSubModuleId());
         }).findFirst().get().getName();
         if (incidentEmailVO.getIncidentType() == LicenseType.INCIDENT) {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_INCIDENT_AGENT_LEAD", "ORG_INCIDENT_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
             incidentEmailVO.setMailToType("AGENT");
             //prepare agent email
             incidentEmailVO.setMailSubjectKey("incAgntAsgnSub");
@@ -915,7 +914,7 @@ public class MiscService {
                 appEmailService.sendIncidentUpdateEmail(incidentEmailVO);
             }
         } else {
-            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
+            List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
             incidentEmailVO.setMailToType("AGENT");
             //prepare agent email
             incidentEmailVO.setMailSubjectKey("astAgntAsgnSub");
@@ -1299,7 +1298,7 @@ public class MiscService {
         appEmailService.organisationUpdate(mailValues, newEntity);
         if (!newEntity) {
             // for org admin
-            List<UserVO> userVOS = userService.getUsersByRoles(Collections.singletonList("ORG_ADMIN"),organisation.getId());
+            List<UserVO> userVOS = userService.getUsersByRoles(Collections.singletonList("ORG_ADMIN"), organisation.getId());
             mailValues.put("recipientType", "Organization Admin");
             mailValues.put("recipients", userVOS.stream().map(UserVO::getEmail).collect(Collectors.toList()));
             mailValues.put("userToNotify", userVOS);
@@ -1515,7 +1514,7 @@ public class MiscService {
             distributionLists = distributionListService.getByModuleIdAndSubModuleIdAndOrganisationId(incidentEmailVO.getModuleId(), incidentEmailVO.getSubModuleId(), incidentEmailVO.getOrganisationId());
             dlEmails = distributionLists.stream().map(DistributionList::getDlEmail).collect(Collectors.toList());
         }
-        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"),incidentEmailVO.getOrganisationId());
+        List<UserVO> userVOS = userService.getUsersByRoles(Arrays.asList("ORG_ASSET_AGENT_LEAD", "ORG_ASSET_AGENT_MANAGER"), incidentEmailVO.getOrganisationId());
         if (incidentEmailVO.getFeedbackProvided() && incidentEmailVO.getAssetApproved()) {
             if (dlEmails.size() > 0) {
                 incidentEmailVO.setMailSubjectKey("astDlSub");
@@ -1537,7 +1536,7 @@ public class MiscService {
             add(incidentEmailVO.getUserEmail());
         }};
         userEmails.addAll(!incidentEmailVO.getWatchList().equalsIgnoreCase("") ? Arrays.asList(incidentEmailVO.getWatchList().split(",")) : new ArrayList<String>());
-        List<UserVO> users = userService.getUsersByEmails(userEmails,incidentEmailVO.getOrganisationId());
+        List<UserVO> users = userService.getUsersByEmails(userEmails, incidentEmailVO.getOrganisationId());
         for (UserVO userVO : users) {
             incidentEmailVO.setMailSubjectKey("astMngrFdbckSub");
             incidentEmailVO.setMailBodyKey("astMngrFdbckCnt");
@@ -1581,4 +1580,22 @@ public class MiscService {
         attributes.put("bcc", new String[]{});
         appEmailService.sendChatInteractionEmail(attributes);
     }
+
+    /**
+     * @param userId
+     * @return
+     */
+    private List<Project> getUserProjects(BigInteger userId) {
+        List<ProjectAllocationDetail> projectAllocationDetails = projectAllocationDetailService.getUserProjects(userId);
+        return projectAllocationDetails.stream().map(ProjectAllocationDetail::getProject).collect(Collectors.toList());
+    }
+
+    /**
+     * @param userId
+     * @return
+     */
+    public ManageTimeSheetInputVO getManageTimeSheetInput(BigInteger userId) {
+        return new ManageTimeSheetInputVO(this.getUserProjects(userId));
+    }
+
 }

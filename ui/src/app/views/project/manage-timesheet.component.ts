@@ -194,7 +194,7 @@ export class ManageTimeSheetComponent implements OnInit {
       keyboard: false,
       animated: true,
       ignoreBackdropClick: true,
-      class: 'modal-xl',
+      class: 'modal-xl modal-extra-large',
     };
     const initialState = {
       params: weeklyData

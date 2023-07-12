@@ -1,7 +1,9 @@
 package com.centram.core.service;
 
 import com.centram.common.dto.ProjectDeallocateDTO;
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectAllocationDetailRepository;
+import com.centram.domain.Project;
 import com.centram.domain.ProjectAllocationDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,15 @@ public class ProjectAllocationDetailService {
         });
         projectAllocationDetailRepository.saveAll(projectAllocationDetails);
         return deallocateProjectDTOS;
+    }
+
+    /**
+     * @param userId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<ProjectAllocationDetail> getUserProjects(BigInteger userId) {
+        return projectAllocationDetailRepository.getUserProjects(userId);
     }
 
 }

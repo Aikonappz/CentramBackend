@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
  */
 
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,17 +32,12 @@ import java.time.LocalDateTime;
 //@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "project_allocation_detail",
-        indexes = {
-                @Index(name = "prjct_indx", columnList = "project_id", unique = false),
-                @Index(name = "usr_indx", columnList = "user_id", unique = false)
-        }
-)
+@Table(name = "project_allocation_detail", indexes = {@Index(name = "prjct_indx", columnList = "project_id", unique = false), @Index(name = "usr_indx", columnList = "user_id", unique = false)})
 @Audited
 public class ProjectAllocationDetail extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4463732397819338770L;
 
-    
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +45,7 @@ public class ProjectAllocationDetail extends BaseEntity implements Serializable 
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -59,7 +53,7 @@ public class ProjectAllocationDetail extends BaseEntity implements Serializable 
     @JsonView(Views.BasicView.class)
     private Project project;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -67,7 +61,7 @@ public class ProjectAllocationDetail extends BaseEntity implements Serializable 
     @JsonView(Views.BasicView.class)
     private User user;
 
-    
+
     @NotNull
     @Column(name = "max_allocation", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)

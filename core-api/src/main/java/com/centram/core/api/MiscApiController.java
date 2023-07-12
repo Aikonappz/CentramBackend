@@ -9,6 +9,7 @@ import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.common.vo.CommonResponse;
+import com.centram.common.vo.ManageTimeSheetInputVO;
 import com.centram.core.service.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
@@ -549,6 +550,17 @@ public class MiscApiController {
         Map<BigInteger, String> deallocateProjectDTOS = projectAllocationDetailService.deallocation(projectDeallocateDTO);
         userService.deallocateUserProjects(deallocateProjectDTOS);
         return ResponseEntity.ok().body(null);
+    }
+
+    /**
+     * @return
+     */
+    @RequestMapping(value = "/user-projects", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,MANAGE TIMESHEET','READ,READ|WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<ManageTimeSheetInputVO> getUserProjects() {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<ManageTimeSheetInputVO>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
     }
 
 }

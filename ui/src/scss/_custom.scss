@@ -896,6 +896,7 @@ a.chat-button-open {
   max-width: 80%;
   /* height: 30px; */
 }
+
 input#chatMessage {
   background: #e9e9e9 !important;
   padding: 5px !important;
@@ -1110,4 +1111,10 @@ a.chat-close {
 .card-body-notification div table td strong {
   font-weight: 600;
   line-height: 18px;
+}
+
+
+.modal-extra-large {
+  max-width: 80% !important;
+  max-height: 80% !important;
 }
