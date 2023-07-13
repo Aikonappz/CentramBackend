@@ -35,6 +35,9 @@ public class ProxyService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TimeSheetRepository timeSheetRepository;
+
     @Transactional(readOnly = false)
     public Asset saveAsset(Asset asset) {
         return assetRepository.save(asset);
@@ -78,5 +81,10 @@ public class ProxyService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public TimeSheet saveTimeSheet(TimeSheet timeSheet) {
+        return timeSheetRepository.save(timeSheet);
     }
 }

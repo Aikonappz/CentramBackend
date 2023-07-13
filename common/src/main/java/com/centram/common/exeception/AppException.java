@@ -31,6 +31,7 @@ public class AppException extends RuntimeException {
 
     public AppException(final ErrorCode code, final Throwable throwable, final Map<String, Object> context) {
         super(code.getCode(), throwable);
+        this.code = code;
         this.context = context;
         occurredAt = Instant.now();
     }
@@ -44,6 +45,7 @@ public class AppException extends RuntimeException {
 
     public AppException(final ErrorCode code, final Map<String, Object> context) {
         super(code.getCode());
+        this.code = code;
         this.context = context;
         occurredAt = Instant.now();
     }

@@ -24,9 +24,6 @@ public class ProjectAllocationDetailService {
     @Autowired
     private ProjectAllocationDetailRepository projectAllocationDetailRepository;
 
-    @Autowired
-    private MiscService miscService;
-
     /**
      * @param projectAllocationDetailList
      * @return

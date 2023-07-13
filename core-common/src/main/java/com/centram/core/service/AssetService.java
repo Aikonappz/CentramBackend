@@ -186,7 +186,9 @@ public class AssetService {
             }
             return proxyService.saveAsset(asset);
         } catch (DataIntegrityViolationException e) {
-            throw new AppException(GenericErrorCode.ASSET_DATA_EXIST);
+            throw new AppException(GenericErrorCode.DATA_EXIST,new HashMap<String, Object>() {{
+                put("entity", "Asset");
+            }});
         }
     }
 

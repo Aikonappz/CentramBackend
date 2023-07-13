@@ -2,6 +2,9 @@ package com.centram.common.vo;
 
 
 import com.centram.domain.Project;
+import com.centram.domain.enumarator.BillingType;
+import com.centram.domain.enumarator.TaskType;
+import com.centram.domain.enumarator.TimeSheetLocationType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -18,14 +21,14 @@ import java.util.List;
 public class ManageTimeSheetInputVO implements Serializable {
     private static final long serialVersionUID = -6554446568157662441L;
     private List<Project> projects;
-    private List<String> tasks;
-    private List<String> locations;
-    private List<String> billingTypes;
+    private List<TaskType> tasks;
+    private List<TimeSheetLocationType> locations;
+    private List<BillingType> billingTypes;
 
     public ManageTimeSheetInputVO(List<Project> projects) {
         this.projects = projects;
-        this.tasks = Arrays.asList("Travel","Training","Req. Analysis & Backlog Groom","Architecture & Design","Configuration or Build","Migration","QA Testing","User Acceptance Testing","Release & Deployment","Warranty Support & HyperCare","Sprint Plng Prj & Srv Del Mgmt","Transition","Project Training & KEDB Act.","Review & Rework","Cont. Improvement & Automation","BCP");
-        this.locations = Arrays.asList("ON","OFF");
-        this.billingTypes = Arrays.asList("Billable","Non Billable");
+        this.tasks = Arrays.asList(TaskType.values());
+        this.locations = Arrays.asList(TimeSheetLocationType.values());
+        this.billingTypes = Arrays.asList(BillingType.values());
     }
 }

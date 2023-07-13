@@ -246,7 +246,8 @@ public class MiscApiController {
     @RequestMapping(value = "/priority", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY','WRITE',authentication.principal)")
     public ResponseEntity<Priority> savePriority(@Valid @RequestBody Priority body) {
-        return new ResponseEntity<Priority>(priorityService.save(body), HttpStatus.OK);
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<Priority>(priorityService.save(loggedInUser.getOrganisationId(), body), HttpStatus.OK);
     }
 
 

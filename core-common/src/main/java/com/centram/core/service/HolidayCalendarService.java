@@ -111,7 +111,9 @@ public class HolidayCalendarService {
             holidayCalendar.setOrganisation(organisationService.getOrganisationById(organisationId));
             return proxyService.saveHolidayCalender(holidayCalendar);
         } catch (DataIntegrityViolationException e) {
-            throw new AppException(GenericErrorCode.CALENDER_DATA_EXIST);
+            throw new AppException(GenericErrorCode.DATA_EXIST, new HashMap<String, Object>() {{
+                put("entity", "Holiday Calendar");
+            }});
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_PROCESSING_ISSUE);
         }
