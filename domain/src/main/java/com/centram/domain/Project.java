@@ -2,12 +2,9 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.domain.converter.StringCommaSeparetedToListConverter;
-import com.centram.domain.enumarator.IncidentAllocationType;
-import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.ProjectType;
+import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,18 +34,12 @@ import java.util.List;
 //@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "project",
-        indexes = {
-                @Index(name = "prjct_name_indx", columnList = "name", unique = false),
-                @Index(name = "prjct_code_indx", columnList = "code", unique = true),
-                @Index(name = "prjct_org_id_indx", columnList = "organisation_id", unique = false),
-        }
-)
+@Table(name = "project", indexes = {@Index(name = "prjct_name_indx", columnList = "name", unique = false), @Index(name = "prjct_code_indx", columnList = "code", unique = true), @Index(name = "prjct_org_id_indx", columnList = "organisation_id", unique = false),})
 @Audited
 public class Project extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575312184473432054L;
 
-    
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +47,7 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "project_type")
@@ -64,19 +55,19 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private ProjectType projectType;
 
-    
+
     @NotNull
     @Column(name = "name", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String name;
 
-    
+
     @NotNull
     @Column(name = "code", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String code;
 
-    
+
     @Valid
     @Lob
     @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
@@ -84,14 +75,14 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<String> watchList;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "in_house")
     @JsonView(Views.BasicView.class)
     private Boolean inHouse;
 
-    
+
     @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
@@ -99,13 +90,17 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
 
-    
+
     @NotNull
     @Valid
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
     private Status status;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String label;
 
     public Project(@NotNull BigInteger id) {
         this.id = id;
@@ -114,5 +109,9 @@ public class Project extends BaseEntity implements Serializable {
     public Project(Long version, BigInteger id) {
         super(version);
         this.id = id;
+    }
+
+    public String getLabel() {
+        return this.getName().concat(" [").concat(this.getCode()).concat("]");
     }
 }

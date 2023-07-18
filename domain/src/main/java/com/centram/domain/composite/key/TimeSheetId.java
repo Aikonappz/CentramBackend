@@ -20,8 +20,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TimeSheetId implements Serializable {
-    private LocalDate weekStart;
-    private LocalDate weekEnd;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Project project;
     private User user;
 }

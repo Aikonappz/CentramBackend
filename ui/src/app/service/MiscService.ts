@@ -19,6 +19,7 @@ import { ProjectAllocationDetail } from '../model/ProjectAllocationDetail';
 import { ProjectDeallocateDTO } from '../model/ProjectDeallocateDTO';
 import { Holiday } from '../model/Holiday';
 import { Account, AccountList } from '../model/Account';
+import { ManageTimeSheetInputVO } from '../model/ManageTimeSheetInputVO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -172,5 +173,9 @@ export class MiscService {
     }
     deallocateProjects(projectDeallocateDTO: ProjectDeallocateDTO): Observable<any> {
         return this.http.post('/v1/misc/deallocate-project', projectDeallocateDTO,);
+    }
+
+    getUserProjects(request?: any): Observable<ManageTimeSheetInputVO> {
+        return this.http.get('/v1/misc/user-projects', { "params": request });
     }
 }

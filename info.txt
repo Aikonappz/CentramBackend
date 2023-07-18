@@ -84,3 +84,5 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/server.crt  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp/centram.sql /home/sumit/IdeaProjects/centram/db/centram.sql
+
+https://jsfiddle.net/sWbfk/

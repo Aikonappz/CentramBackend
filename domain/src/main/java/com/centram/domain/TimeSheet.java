@@ -41,17 +41,17 @@ public class TimeSheet extends BaseEntity implements Serializable {
     @Id
     @NotNull
     @Valid
-    @Column(name = "week_start", nullable = false)
+    @Column(name = "start_date", nullable = false)
     @JsonView(Views.BasicView.class)
-    private LocalDate weekStart;
+    private LocalDate startDate;
 
 
     @Id
     @NotNull
     @Valid
-    @Column(name = "week_end", nullable = false)
+    @Column(name = "end_date", nullable = false)
     @JsonView(Views.BasicView.class)
-    private LocalDate weekEnd;
+    private LocalDate endDate;
 
     @Id
     @NotNull

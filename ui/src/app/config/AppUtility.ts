@@ -28,6 +28,7 @@ export class AppUtility {
     public static MAX_PAGE_SIZE = 2147483647;
     public static APP_CHAT_SESSION_ALERT_ENABLED_KEY = 'appChatSessionTimeout';
     public static APP_HAS_ACTIVE_CHAT_SESSION = 'chatSessionActive';
+    public static storage = AppUtility.APP_CLIENT_STORAGE_TYPE == "SESSION" ? sessionStorage : localStorage;
 
     public static EDITOR_CONFIG = {
         readOnly: false,

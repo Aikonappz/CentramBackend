@@ -558,10 +558,17 @@ public class MiscApiController {
      */
     @RequestMapping(value = "/user-projects", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,MANAGE TIMESHEET','READ,READ|WRITE',authentication.principal)")
-    @JsonView(Views.DetailView.class)
     public ResponseEntity<ManageTimeSheetInputVO> getUserProjects() {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<ManageTimeSheetInputVO>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
     }
+
+    /*@RequestMapping(value = "/user-timesheet", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,MANAGE TIMESHEET','READ,READ|WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<PaginatedList<TimeSheet>> getUserTimeSheets() {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<TimeSheet>>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
+    }*/
 
 }
