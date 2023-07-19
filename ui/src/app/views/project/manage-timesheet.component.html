@@ -72,6 +72,9 @@
                   <ng-select [items]="projects" placeholder="-- Select Project --" formControlName="project"
                     id="project" name="project" bindLabel="label" bindValue="id">
                   </ng-select>
+                  <div id="error-row-{{timeEntryIndex}}" class="d-none alert alert-danger-custom entry-error">
+                    {{errorText}}
+                  </div>
                 </td>
                 <td width="10%" [formGroupName]="timeEntryIndex">
                   <div>
@@ -103,14 +106,14 @@
                     <tr formArrayName="entries">
                       <td *ngFor="let entry of getEntries(timeEntryIndex);let entryIndex=index; "
                         [formGroupName]="entryIndex">
-                        <div class="{{entry}}"></div>
                         <input formControlName="date" [readOnly]="true" class="form-control td-date" />
                       </td>
                     </tr>
                     <tr formArrayName="entries">
                       <td *ngFor="let entry of getEntries(timeEntryIndex);let entryIndex=index;"
                         [formGroupName]="entryIndex">
-                        <input formControlName="time" class="form-control td-time" />
+                        <input formControlName="time" [textMask]="mask" class="form-control td-time"
+                          id="td-time-{{entryIndex}}" />
                       </td>
                     </tr>
                   </table>

@@ -44,6 +44,7 @@ export class ManageTimeSheetComponent implements OnInit {
   alphaNumericRegex = /^[0-9]+$/i;
   private loggedInUser: LoggedInUser;
   private timeSheet: TimeSheet;
+  private timeSheets: TimeSheet[] = [];
   dailySelected: boolean = true;
   manageTimeSheetInputVO: ManageTimeSheetInputVO;
   timeEntrySingleRow: any;
@@ -56,6 +57,12 @@ export class ManageTimeSheetComponent implements OnInit {
   // TODO : have to be configurable
   maxOldDays: number = 60;
   maxDateSubmission: number = 7;
+  public mask = {
+    guide: true,
+    showMask: true,
+    mask: [/\d/, /\d/, ':', /\d/, /\d/],
+  };
+  errorText: string;
 
   constructor(
     private fb: FormBuilder,
@@ -252,6 +259,7 @@ export class ManageTimeSheetComponent implements OnInit {
         },
       });
     });
+
   }
 
 
@@ -292,7 +300,7 @@ export class ManageTimeSheetComponent implements OnInit {
               entries: this.timeSheetFormBuilder.array(
                 timeEntry.entries.map(entry => this.timeSheetFormBuilder.group({
                   date: entry.date,
-                  time: entry.time,
+                  time: null,
                 }))
               ),
             }))
@@ -333,7 +341,7 @@ export class ManageTimeSheetComponent implements OnInit {
   }
 
   addTimeEntry() {
-    console.log(JSON.stringify(this.singleRow[0].entries));
+    //console.log(JSON.stringify(this.singleRow[0].entries));
     (<FormArray>this.timeSheetForm.get('timeEntries')).push(this.timeSheetFormBuilder.group({
       project: null,
       task: null,
@@ -344,7 +352,7 @@ export class ManageTimeSheetComponent implements OnInit {
       entries: this.timeSheetFormBuilder.array(
         this.singleRow[0].entries.map(entry => this.timeSheetFormBuilder.group({
           date: entry.date,
-          time: entry.time,
+          time: null,
         }))
       ),
     }));
@@ -354,8 +362,97 @@ export class ManageTimeSheetComponent implements OnInit {
     (<FormArray>this.timeSheetForm.get('timeEntries')).removeAt(i);
   }
 
+  isEmpty(val) {
+    return val == null || val == "";
+  }
+
   onSubmit() {
-    console.log(this.timeSheetForm.value);
+    this.timeSheets = [];
+    let formValues = this.timeSheetForm.value.timeEntries;
+    let entries;
+    let entryHasError = true;
+    for (let i = 0; i < formValues.length; i++) {
+      this.timeSheet = new TimeSheet();
+      if (this.isEmpty(formValues[i].project)) {
+        this.errorText = "Please select project!";
+        this.showTimeEntryError(i);
+        return;
+      } else if (this.isEmpty(formValues[i].task)) {
+        this.errorText = "Please select task!";
+        this.showTimeEntryError(i);
+        return;
+      } else if (this.isEmpty(formValues[i].billingType)) {
+        this.errorText = "Please select billing type!";
+        this.showTimeEntryError(i);
+        return;
+      } else if (formValues[i].task == "OTHER" && this.isEmpty(formValues[i].otherTask)) {
+        this.errorText = "Please enter other task details!";
+        this.showTimeEntryError(i);
+        return;
+      }
+      entries = formValues[i].entries;
+      for (let e = 0; e < entries.length; e++) {
+        entries[e].time = !this.isEmpty(entries[e].time) && entries[e].time.includes("__:__") ? null : entries[e].time;
+        if (!this.isEmpty(entries[e].time)) {
+          entryHasError = false;
+        }
+      }
+      if (entryHasError) {
+        this.errorText = "Please correct entered time!";
+        this.showTimeEntryError(i);
+        return;
+      }
+      formValues[i].entries = entries;
+      let project = this.getProject(formValues[i].project);
+      if (project == null) {
+        this.errorText = "Invalid project selected!";
+        this.showTimeEntryError(i);
+        return;
+      }
+      this.timeSheet = new TimeSheet();
+      this.timeSheet.startDate = AppUtility.prepareDateToString(moment(formValues.startDate, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.timeSheet.endDate = AppUtility.prepareDateToString(moment(formValues.endDate, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.timeSheet.approved = false;
+      this.timeSheet.approver = null;
+      this.timeSheet.approverComment = null;
+      this.timeSheet.approverTookAction = false;
+      this.timeSheet.billingType = formValues[i].billingType;
+      this.timeSheet.task = formValues[i].task;
+      this.timeSheet.project = project as Project;
+      this.timeSheet.referenceId = null;
+      this.timeSheet.timeSheetEntries = formValues[i].entries;
+      this.timeSheets.push(this.timeSheet);
+      this.hideTimeEntryError(i);
+    }
+    console.log(JSON.stringify(this.timeSheets));
+  }
+
+  showTimeEntryError(id) {
+    $(function () {
+      $('#error-row-' + id).removeClass("d-none");
+    });
+  }
+
+  hideTimeEntryError(id) {
+    $(function () {
+      $('#error-row-' + id).addClass("d-none");
+    });
+  }
+
+  hideAllTimeEntryError() {
+
+    $(function () {
+      $('.entry-error').addClass("d-none");
+    });
+  }
+
+  getProject(id) {
+    for (let k = 0; k < this.manageTimeSheetInputVO.projects.length; k++) {
+      if (this.manageTimeSheetInputVO.projects[k].id == id) {
+        return { id: this.manageTimeSheetInputVO.projects[k].id, version: this.manageTimeSheetInputVO.projects[k].version };
+      }
+    }
+    return null;
   }
 
   goBack() {

@@ -20,7 +20,6 @@ export class TimeSheet extends Base {
     submissionSelection: string = "DAILY";
     constructor() {
         super();
-
     }
 }
 
