@@ -1,6 +1,6 @@
 package com.centram.domain;
 
-import com.centram.domain.converter.StringCommaSeparetedToListConverter;
+import com.centram.domain.converter.StringCommaSeparatedToListConverter;
 import com.centram.domain.enumarator.Status;
 
 
@@ -61,7 +61,7 @@ public class FormTemplate extends BaseEntity implements Serializable {
     @NotNull
     @Valid
     @Column(name = "group_ignore_fields", nullable = false)
-    @Convert(converter = StringCommaSeparetedToListConverter.class)
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
     private List<String> groupIgnoreFields;
 
 

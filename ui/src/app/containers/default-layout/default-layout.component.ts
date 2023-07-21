@@ -131,7 +131,7 @@ export class DefaultLayoutComponent implements OnInit {
       this.menuAttributes = this.navItems[i].attributes;
       //console.log(this.menuAttributes.licenceType);
       if (typeof this.menuAttributes.licenceType !== 'undefined') {
-        let licences = this.menuAttributes.licenceType.split(',');
+        let licences = this.menuAttributes.licenceType.split(',');        
         for (let j in this.permissions) {
           if (
             licences.includes(this.loggedInUser.licenseType) &&
@@ -139,6 +139,7 @@ export class DefaultLayoutComponent implements OnInit {
             this.menuAttributes.moduleName === this.permissions[j].moduleName &&
             this.permissions[j].actions.includes('READ')
           ) {
+            //console.log(licences, this.loggedInUser.licenseType);
             //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
             this.newNavItems[c] = this.navItems[i];
             if (this.navItems[i].hasOwnProperty("children")) {

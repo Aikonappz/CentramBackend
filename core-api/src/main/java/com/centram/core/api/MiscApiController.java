@@ -133,8 +133,12 @@ public class MiscApiController {
 
 
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Module>> getModules(@NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<Module>> getModules(
+            @NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
+            @NotNull @Valid @RequestParam(value = "organisationId", defaultValue = "", required = false) BigInteger organisationId,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, organisationId, pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/all-asset-model", produces = {"application/json"}, method = RequestMethod.GET)

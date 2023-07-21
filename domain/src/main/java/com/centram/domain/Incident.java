@@ -2,7 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.common.vo.CategoryAdminDashboardVO;
-import com.centram.domain.converter.StringCommaSeparetedToListConverter;
+import com.centram.domain.converter.StringCommaSeparatedToListConverter;
 import com.centram.domain.converter.TimeEntryConverter;
 import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
@@ -145,7 +145,7 @@ public class Incident extends BaseEntity implements Serializable {
     @Valid
     @Lob
     @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
-    @Convert(converter = StringCommaSeparetedToListConverter.class)
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
     @JsonView(Views.BasicView.class)
     private List<String> watchList;
 

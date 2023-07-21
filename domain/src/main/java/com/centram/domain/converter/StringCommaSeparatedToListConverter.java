@@ -4,12 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Converter(autoApply = true)
-public class StringCommaSeparetedToListConverter implements AttributeConverter<List<String>, String> {
+public class StringCommaSeparatedToListConverter implements AttributeConverter<List<String>, String> {
 
     @Override
     public String convertToDatabaseColumn(List<String> categoryIds) {
@@ -18,9 +19,10 @@ public class StringCommaSeparetedToListConverter implements AttributeConverter<L
 
     @Override
     public List<String> convertToEntityAttribute(String s) {
-        return Arrays.asList(s.split(","))
-                .stream()
-                .map(String::trim)
-                .collect(Collectors.toList());
+        if (s != null) {
+            return Arrays.asList(s.split(",")).stream().map(String::trim).collect(Collectors.toList());
+        } else {
+            return new ArrayList<String>();
+        }
     }
 }

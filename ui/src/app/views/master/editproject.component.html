@@ -48,11 +48,9 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row row-margin-05">
               <div class="col">
-                <label class="form-col-form-label" for="watchList">Managers</label>
-                <ng-select [multiple]="true" [items]="users" placeholder="-- Select Watch List People --"
+                <label class="form-col-form-label required-control-label" for="watchList">Managers</label>
+                <ng-select [multiple]="true" [items]="managers" placeholder="-- Select Watch List People --"
                   formControlName="watchList" id="watchList" name="watchList" bindLabel="email" bindValue="email">
                 </ng-select>
                 <div *ngIf="f.watchList.touched && f.watchList.invalid" class="alert alert-danger-custom">
@@ -60,6 +58,37 @@
                     Manager is required.
                   </div>
                   <div *ngIf="f.watchList.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="stakeHolders">UAT Stakeholders</label>
+                <ng-select [multiple]="true" [items]="uatStakeHolders" placeholder="-- Select UAT Stake Holder --"
+                  formControlName="stakeHolders" id="stakeHolders" name="stakeHolders" bindLabel="email"
+                  bindValue="email">
+                </ng-select>
+                <div *ngIf="f.stakeHolders.touched && f.stakeHolders.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.stakeHolders.errors?.required">
+                    UAT Stake Holder is required.
+                  </div>
+                  <div *ngIf="f.stakeHolders.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="consultants">UAT Consultants</label>
+                <ng-select [multiple]="true" [items]="uatConsultants" placeholder="-- Select Consultants --"
+                  formControlName="consultants" id="consultants" name="consultants" bindLabel="email" bindValue="email">
+                </ng-select>
+                <div *ngIf="f.consultants.touched && f.consultants.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.consultants.errors?.required">
+                    Consultant is required.
+                  </div>
+                  <div *ngIf="f.consultants.errors?.maxlength">
                     Allowed maxlength exceeds.
                   </div>
                 </div>

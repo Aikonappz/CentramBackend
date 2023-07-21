@@ -8,6 +8,8 @@ export class Project extends Base {
     label: string;
     code: String;
     watchList: string[];
+    stakeHolders: string[];
+    consultants: string[];
     inHouse: boolean;
     status: any;
     organisation: Organisation;
@@ -20,6 +22,8 @@ export class Project extends Base {
         this.label = null;
         this.code = null;
         this.watchList = [];
+        this.stakeHolders = [];
+        this.consultants = [];
         this.status = 'ACTIVE';
         this.inHouse = true;
         this.organisation = new Organisation();

@@ -36,19 +36,19 @@ export const navItems: INavData[] = [
         name: 'Account',
         url: '/master/account',
         icon: 'cil-object-group',
-        attributes: { "moduleName": "ACCOUNT" }
+        attributes: { "moduleName": "ACCOUNT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
       },
       {
         name: 'Department',
         url: '/master/department',
         icon: 'icon-puzzle',
-        attributes: { "moduleName": "DEPARTMENT" }
+        attributes: { "moduleName": "DEPARTMENT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
       },
       {
         name: 'Location',
         url: '/master/location',
         icon: 'icon-location-pin',
-        attributes: { "moduleName": "LOCATION" }
+        attributes: { "moduleName": "LOCATION", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
       },
       {
         name: 'Priority -Incident',
@@ -66,19 +66,19 @@ export const navItems: INavData[] = [
         name: 'Holiday Calendar',
         url: '/master/calendar',
         icon: 'icon-calendar',
-        attributes: { "moduleName": "HOLIDAY CALENDAR" }
+        attributes: { "moduleName": "HOLIDAY CALENDAR", "licenceType": "ALL,INCIDENT,ASSET" }
       },
       {
         name: 'Distribution List',
         url: '/master/dl',
         icon: 'icon-list',
-        attributes: { "moduleName": "DISTRIBUTION LIST" }
+        attributes: { "moduleName": "DISTRIBUTION LIST", "licenceType": "ALL,INCIDENT,ASSET" }
       },
       {
         name: 'Project Master',
         url: '/master/project',
         icon: 'cil-blur-linear',
-        attributes: { "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT" }
+        attributes: { "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT,UAT" }
       },
       {
         name: 'Vendor -Incident',
@@ -229,7 +229,7 @@ export const navItems: INavData[] = [
     name: 'Project',
     url: '/project',
     icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "PROJECT" },
+    attributes: { "moduleName": "PROJECT", "licenceType": "ALL,PROJECT" },
     children: [
       {
         name: 'Manage Timesheet',
@@ -248,6 +248,20 @@ export const navItems: INavData[] = [
         url: '/project/deallocate',
         icon: 'cil-gradient',
         attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+    ]
+  },
+  {
+    name: 'UAT',
+    url: '/uat',
+    icon: 'fa fa-flask', 
+    attributes: { "moduleName": "UAT", "licenceType": "ALL,UAT" },
+    children: [
+      {
+        name: 'UAT Activities',
+        url: '/uat/activities',
+        icon: 'fa fa-suitcase',
+        attributes: { "moduleName": "UAT ACTIVITIES", "licenceType": "ALL,UAT" }
       },
     ]
   },

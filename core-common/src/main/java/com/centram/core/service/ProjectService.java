@@ -8,11 +8,7 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectAllocationDetailRepository;
 import com.centram.core.repository.ProjectRepository;
 import com.centram.domain.Project;
-import com.centram.domain.ProjectAllocationDetail;
-import com.centram.domain.Vendor;
-import com.centram.domain.VendorModule;
 import com.centram.domain.enumarator.ProjectType;
-import com.centram.domain.enumarator.VendorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

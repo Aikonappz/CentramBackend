@@ -13,7 +13,7 @@
                 <div class="col">
                   <label class="form-col-form-label" for="assetPrefix">Asset No. Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="assetPrefix"
-                    ngModel id="assetPrefix" name="assetPrefix" class="form-control" placeholder="Asset No. Prefix"
+                    id="assetPrefix" name="assetPrefix" class="form-control" placeholder="Asset No. Prefix"
                     aria-label="Asset No. Prefix">
                   <div *ngIf="f.assetPrefix.touched && f.assetPrefix.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.assetPrefix.errors?.maxlength">
@@ -28,7 +28,7 @@
                   <label class="form-col-form-label" for="outboundAssetRequestPrefix">Outbound Asset Request No.
                     Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()"
-                    formControlName="outboundAssetRequestPrefix" ngModel id="outboundAssetRequestPrefix"
+                    formControlName="outboundAssetRequestPrefix" id="outboundAssetRequestPrefix"
                     name="outboundAssetRequestPrefix" class="form-control"
                     placeholder="Outbound Asset Request No. Prefix" aria-label="Outbound Asset Request No. Prefix">
                   <div *ngIf="f.outboundAssetRequestPrefix.touched && f.outboundAssetRequestPrefix.invalid"
@@ -45,7 +45,7 @@
                   <label class="form-col-form-label" for="inboundAssetRequestPrefix">Inbound Asset Request No.
                     Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()"
-                    formControlName="inboundAssetRequestPrefix" ngModel id="inboundAssetRequestPrefix"
+                    formControlName="inboundAssetRequestPrefix" id="inboundAssetRequestPrefix"
                     name="inboundAssetRequestPrefix" class="form-control" placeholder="Inbound Asset Request No."
                     aria-label="Inbound Asset Request No.">
                   <div *ngIf="f.inboundAssetRequestPrefix.touched && f.inboundAssetRequestPrefix.invalid"
@@ -65,8 +65,8 @@
                 <div class="col">
                   <label class="form-col-form-label" for="incidentPrefix">Incident No. Prefix</label>
                   <input type="text" oninput="this.value = this.value.toUpperCase()" formControlName="incidentPrefix"
-                    ngModel id="incidentPrefix" name="incidentPrefix" class="form-control"
-                    placeholder="Incident No. Prefix" aria-label="Incident No. Prefix">
+                    id="incidentPrefix" name="incidentPrefix" class="form-control" placeholder="Incident No. Prefix"
+                    aria-label="Incident No. Prefix">
                   <div *ngIf="f.incidentPrefix.touched && f.incidentPrefix.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.incidentPrefix.errors?.maxlength">
                       Allowed maxlength exceeds.
@@ -82,7 +82,7 @@
                 <div class="d-none">
                   <label class="form-col-form-label" for="ticketAllocationType">Incident Allocation
                     Type</label>
-                  <select class="form-control" formControlName="ticketAllocationType" ngModel id="ticketAllocationType"
+                  <select class="form-control" formControlName="ticketAllocationType" id="ticketAllocationType"
                     name="ticketAllocationType">
                     <option value="">-- Select Incident Allocation Type --</option>
                     <option *ngFor="let e of ticketAllocationTypes" [value]="e" [label]="e"></option>

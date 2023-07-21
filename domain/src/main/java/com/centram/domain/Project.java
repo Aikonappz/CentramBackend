@@ -1,7 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
-import com.centram.domain.converter.StringCommaSeparetedToListConverter;
+import com.centram.domain.converter.StringCommaSeparatedToListConverter;
 import com.centram.domain.enumarator.ProjectType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,7 +26,6 @@ import java.util.List;
  */
 
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,8 +37,6 @@ import java.util.List;
 @Audited
 public class Project extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575312184473432054L;
-
-
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,10 +68,23 @@ public class Project extends BaseEntity implements Serializable {
     @Valid
     @Lob
     @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
-    @Convert(converter = StringCommaSeparetedToListConverter.class)
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
     @JsonView(Views.BasicView.class)
     private List<String> watchList;
 
+    @Valid
+    @Lob
+    @Column(name = "stake_holders", nullable = true, columnDefinition = "TEXT")
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
+    @JsonView(Views.BasicView.class)
+    private List<String> stakeHolders;
+
+    @Valid
+    @Lob
+    @Column(name = "consultants", nullable = true, columnDefinition = "TEXT")
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
+    @JsonView(Views.BasicView.class)
+    private List<String> consultants;
 
     @NotNull
     @Valid
