@@ -25,6 +25,8 @@ public enum GenericErrorCode implements ErrorCode {
     DATA_EXIST("[[${entity}]] already exist! Please check data once!"),
 
     RELEVANT_DATA_NOT_FOUND("[[${entity}]] data not found!"),
+
+    UPLOADED_FILE_DATA_ISSUE("Uploaded file has issue at sheet - [[${sheet}]], column - [[${col}]], row - [[${row}]]! [[${errorMessage}]]"),
     ;
 
     private final String template;

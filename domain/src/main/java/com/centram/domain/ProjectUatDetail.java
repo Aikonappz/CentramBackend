@@ -2,10 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.fasterxml.jackson.annotation.JsonView;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
@@ -27,7 +24,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@EqualsAndHashCode
+@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
 @Table(name = "project_uat_detail", indexes = {@Index(name = "prjct_uat_id_indx", columnList = "project_uat_id", unique = false),})
@@ -43,9 +40,9 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
 
     @NotNull
     @Valid
-    @Column(name = "step", columnDefinition = "TEXT not null")
+    @Column(name = "step")
     @JsonView(Views.BasicView.class)
-    private String step;
+    private Double step;
 
     @NotNull
     @Valid
@@ -71,7 +68,7 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     @Valid
     @Column(name = "pass")
     @JsonView(Views.BasicView.class)
-    private Boolean pass;
+    private Boolean pass = false;
 
     @Valid
     @Column(name = "retest_date", nullable = true, updatable = false)
@@ -79,9 +76,9 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     private LocalDate retestDate;
 
     @Valid
-    @Column(name = "pass")
+    @Column(name = "reset_pass")
     @JsonView(Views.BasicView.class)
-    private Boolean retestPass;
+    private Boolean retestPass = false;
 
     @Valid
     @Lob
@@ -90,10 +87,10 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     private String remarks;
 
     @Valid
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "project_uat_id", nullable = true, referencedColumnName = "id")
-    @JsonView(Views.BasicView.class)
+    @JsonView(Views.DetailView.class)
     private ProjectUat projectUat;
 
     public ProjectUatDetail(@NotNull BigInteger id) {

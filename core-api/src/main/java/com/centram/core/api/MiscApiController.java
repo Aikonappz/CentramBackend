@@ -119,6 +119,9 @@ public class MiscApiController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ProjectUatService projectUatService;
+
 
     @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<CommonResponse> requestADemo(@Valid @RequestBody RequestDemoDTO body) {
@@ -574,5 +577,14 @@ public class MiscApiController {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<PaginatedList<TimeSheet>>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
     }*/
+
+    /**
+     * @return
+     */
+    @RequestMapping(value = "/test-uat-file-process", produces = {"application/json"}, method = RequestMethod.GET)
+    //@PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,MANAGE TIMESHEET','READ,READ|WRITE',authentication.principal)")
+    public ResponseEntity<List<ProjectUat>> processUATExcel() {
+        return new ResponseEntity<List<ProjectUat>>(projectUatService.processUATExcel(), HttpStatus.OK);
+    }
 
 }

@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Vendor
@@ -30,7 +31,7 @@ import java.time.LocalDate;
 //@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "project_uat", indexes = {@Index(name = "prjct_uat_org_id_indx", columnList = "organisation_id", unique = false),})
+@Table(name = "project_uat", indexes = {@Index(name = "prjct_uat_org_id_indx", columnList = "organisation_id", unique = false), @Index(name = "prjct_uat_prj_id_indx", columnList = "project_id", unique = false),})
 @Audited
 public class ProjectUat extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -145029780828318960L;
@@ -62,9 +63,9 @@ public class ProjectUat extends BaseEntity implements Serializable {
     private String testScenario;
 
     @Valid
-    @Column(name = "test_scenario_position_id")
+    @Column(name = "test_scenario_job_id")
     @JsonView(Views.BasicView.class)
-    private String testScenarioPositionId;
+    private String testScenarioJobId;
 
     @Column(name = "planned_date", nullable = true, updatable = false)
     @JsonView(Views.BasicView.class)
@@ -76,6 +77,12 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
+
+    @Valid
+    //@NotNull
+    @OneToMany(mappedBy = "projectUat", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonView(Views.BasicView.class)
+    private Set<ProjectUatDetail> uatDetails;
 
     public ProjectUat(@NotNull BigInteger id) {
         this.id = id;
