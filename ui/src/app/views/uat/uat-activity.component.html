@@ -1,0 +1,101 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <tabset>
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT'])" heading="Project UAT Upload">
+          <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label" for="project">Project</label>
+                  <ng-select [items]="projectList" placeholder="-- Select Project --" formControlName="project"
+                    id="project" project name="project" bindLabel="label" bindValue="id">
+                  </ng-select>
+                  <div *ngIf="f.project.touched && f.project.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.project.errors?.required">
+                      Project is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="moduleId">Module</label>
+                  <ng-select #moduleId (change)="populateSubmodule($event)" [items]="moduleList"
+                    placeholder="-- Select Module --" formControlName="moduleId" id="moduleId" moduleId name="moduleId"
+                    bindLabel="customerModuleName" bindValue="id">
+                  </ng-select>
+                  <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.moduleId.errors?.required">
+                      Module is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label" for="subModuleId">Sub
+                    Module</label>
+                  <ng-select [items]="subModuleList" placeholder="-- Select Sub Module --" formControlName="subModuleId"
+                    id="subModuleId" moduleId name="subModuleId" bindLabel="customerModuleName"
+                    bindValue="id"></ng-select>
+                  <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.subModuleId.errors?.required">
+                      Sub Module is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="uatScript">UAT Scripts </label>
+                  <i class="icon-info"
+                    tooltip="Max file size can be 3 M.B and suported file types are xslx"></i>&nbsp;&nbsp;
+                  <input #uatScript (change)="getUatScriptFileDetails($event)" type="file" id="uatScript"
+                    formControlName="uatScript" name="uatScript">
+                  <div *ngIf="f.uatScript.touched && f.uatScript.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.uatScript.errors?.validAttachments">
+                      Supported file type is xslx.
+                    </div>
+                    <div *ngIf="f.uatScript.errors?.mustBeLessThan2MB">
+                      File size should be less than 3 MB.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="uatManual">UAT Manual </label>
+                  <i class="icon-info"
+                    tooltip="Max file size can be 3 M.B and suported file types are pdf/doc"></i>&nbsp;&nbsp;
+                  <input #uatManual (change)="getUatManualFileDetails($event)" type="file" id="uatManual"
+                    formControlName="uatManual" name="uatManual">
+                  <div *ngIf="f.uatManual.touched && f.uatManual.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.uatManual.errors?.validAttachments">
+                      Supported file types are pdf/doc.
+                    </div>
+                    <div *ngIf="f.uatManual.errors?.mustBeLessThan2MB">
+                      File size should be less than 3 MB.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fa fa-search"></i> Search
+              </button>
+              <button type="button" (click)="loadPage()" class="btn btn-danger btn-sm">
+                <i class="fa fa-close"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </tab>
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT','ORG_PROJECT_STAKEHOLDER'])" heading="Project UAT Communication">
+          <div class="card">
+            <div class="card-body">
+              <div id="dataSets-app-admin" class="row-margin-05">
+                Project Stake Holder
+              </div>
+            </div>
+          </div>
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</div>

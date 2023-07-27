@@ -51,25 +51,22 @@ public class ProjectUat extends BaseEntity implements Serializable {
 
     @NotNull
     @Valid
-    @Column(name = "test_script_name")
+    @Column(name = "module_id")
     @JsonView(Views.BasicView.class)
-    private String testScriptName;
+    private BigInteger moduleId;
 
     @NotNull
     @Valid
-    @Lob
-    @Column(name = "test_scenario", columnDefinition = "TEXT default null")
+    @Column(name = "sub_module_id")
     @JsonView(Views.BasicView.class)
-    private String testScenario;
+    private BigInteger subModuleId;
 
     @Valid
-    @Column(name = "test_scenario_job_id")
+    @NotNull
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_uat_id", referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
-    private String testScenarioJobId;
-
-    @Column(name = "planned_date", nullable = true, updatable = false)
-    @JsonView(Views.BasicView.class)
-    private LocalDate plannedDate;
+    private Set<ProjectUatScript> projectUatScripts;
 
     @Valid
     @OneToOne
@@ -77,12 +74,6 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
-
-    @Valid
-    //@NotNull
-    @OneToMany(mappedBy = "projectUat", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonView(Views.BasicView.class)
-    private Set<ProjectUatDetail> uatDetails;
 
     public ProjectUat(@NotNull BigInteger id) {
         this.id = id;

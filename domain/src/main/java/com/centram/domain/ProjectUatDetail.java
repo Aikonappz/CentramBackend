@@ -1,6 +1,8 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.converter.UATRemarkConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * ProjectUatDetail
@@ -27,11 +30,11 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "project_uat_detail", indexes = {@Index(name = "prjct_uat_id_indx", columnList = "project_uat_id", unique = false),})
+@Table(name = "project_uat_detail", indexes = {@Index(name = "project_uat_detail_project_uat_script_id_index", columnList = "project_uat_script_id", unique = false),})
 @Audited
 public class ProjectUatDetail extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -145029780828318960L;
-    @NotNull
+    private static final long serialVersionUID = -952600023593118974L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
@@ -58,13 +61,11 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String expectedResult;
 
-    @NotNull
     @Valid
     @Column(name = "actual_result")
     @JsonView(Views.BasicView.class)
     private String actualResult;
 
-    @NotNull
     @Valid
     @Column(name = "pass")
     @JsonView(Views.BasicView.class)
@@ -84,14 +85,8 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     @Lob
     @Column(name = "remarks", columnDefinition = "TEXT default null")
     @JsonView(Views.BasicView.class)
-    private String remarks;
-
-    @Valid
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "project_uat_id", nullable = true, referencedColumnName = "id")
-    @JsonView(Views.DetailView.class)
-    private ProjectUat projectUat;
+    @Convert(converter = UATRemarkConverter.class)
+    private List<UATRemark> remarks;
 
     public ProjectUatDetail(@NotNull BigInteger id) {
         this.id = id;

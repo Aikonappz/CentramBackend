@@ -32,7 +32,7 @@ public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
             "   OR " +
             "   ((:licenseType) = 'PROJECT' and m.licenseType in (3)) " +
             "   OR " +
-            "   ((:licenseType) = 'UAT_ANALYZER' and m.licenseType in (4)) " +
+            "   ((:licenseType) = 'UAT' and m.licenseType in (4)) " +
             " ) "
     )
     Page<Module> findAll(

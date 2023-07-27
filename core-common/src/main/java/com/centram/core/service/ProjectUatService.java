@@ -1,11 +1,13 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.ProjectUATRequestDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.ProjectUatRepository;
-import com.centram.domain.ProjectUat;
-import com.centram.domain.ProjectUatDetail;
+import com.centram.domain.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,12 +17,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -28,8 +35,8 @@ import java.util.*;
 public class ProjectUatService {
 
     private static final Logger log = LoggerFactory.getLogger(ProjectUatService.class);
-    @Value("${app.temp.path}")
-    private String appTmpPath;
+    @Value("${app.data-file.path}")
+    private String appDataFilePath;
     @Autowired
     private ProjectUatRepository projectUatRepository;
     @Autowired
@@ -37,11 +44,31 @@ public class ProjectUatService {
     @Autowired
     private ProjectService projectService;
 
-    @Transactional(readOnly = false)
-    public List<ProjectUat> processUATExcel() {
+    /**
+     * @param organisationId
+     * @param multipartFile
+     * @param projectUATRequestDTO
+     * @return
+     */
+    public List<ProjectUat> uploadScripts(BigInteger organisationId, MultipartFile multipartFile, ProjectUATRequestDTO projectUATRequestDTO) {
         try {
-            String path = "/home/sumit/Downloads/sample-uat-scripts.xlsx";
-            FileInputStream file = new FileInputStream(new File(path));
+            if (multipartFile.getBytes().length == 0) {
+                log.error("FILE_UPLOAD_ISSUE file don't have any content!");
+                throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+            }
+            String filePath = appDataFilePath + File.separator + multipartFile.getOriginalFilename();
+            Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            return this.processUATExcel(filePath, organisationId, projectUATRequestDTO);
+        } catch (IOException e) {
+            log.error("FILE_UPLOAD_ISSUE {}", e.getMessage());
+            throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    private List<ProjectUat> processUATExcel(String filePath, BigInteger organisationId, ProjectUATRequestDTO projectUATRequestDTO) {
+        try {
+            FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet;
             Iterator<Row> rowIterator;
@@ -55,13 +82,17 @@ public class ProjectUatService {
             Map<String, Object> errorContext = new HashMap<String, Object>();
             String cellValue;
             int rw = 0;
+            Project project = projectService.getById(projectUATRequestDTO.getProjectId());
+            Organisation organisation = organisationService.getOrganisationById(organisationId);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 //Get sheet from the workbook
                 sheet = workbook.getSheet(workbook.getSheetName(i));
                 projectUatDetails = new LinkedHashSet<ProjectUatDetail>();
                 projectUat = new ProjectUat();
-                //projectUat.setProject(projectService.getById(BigInteger.ONE));
-                //projectUat.setOrganisation(organisationService.getOrganisationById(BigInteger.valueOf(4)));
+                projectUat.setModuleId(projectUATRequestDTO.getModuleId());
+                projectUat.setSubModuleId(projectUATRequestDTO.getSubModuleId());
+                projectUat.setProject(project);
+                projectUat.setOrganisation(organisation);
                 projectUat.setTestScriptName(workbook.getSheetName(i));
                 //Iterate through each rows one by one
                 rw = 0;
@@ -133,10 +164,9 @@ public class ProjectUatService {
                 }
                 projectUat.setUatDetails(projectUatDetails);
                 projectUats.add(projectUat);
-                file.close();
-                return projectUatRepository.saveAll(projectUats);
             }
-            return projectUats;
+            file.close();
+            return projectUatRepository.saveAll(projectUats);
         } catch (IOException e) {
             log.error("Error detail - {}", e.getMessage());
             throw new RuntimeException(e);

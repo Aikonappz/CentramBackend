@@ -515,7 +515,7 @@ public class MiscApiController {
      * @return
      */
     @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT,MANAGE TIMESHEET','READ,ALLOCATE,DEALLOCATE,WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT,MANAGE TIMESHEET,UAT ACTIVITIES','READ,ALLOCATE,DEALLOCATE,WRITE,WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -577,14 +577,5 @@ public class MiscApiController {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<PaginatedList<TimeSheet>>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
     }*/
-
-    /**
-     * @return
-     */
-    @RequestMapping(value = "/test-uat-file-process", produces = {"application/json"}, method = RequestMethod.GET)
-    //@PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,MANAGE TIMESHEET','READ,READ|WRITE',authentication.principal)")
-    public ResponseEntity<List<ProjectUat>> processUATExcel() {
-        return new ResponseEntity<List<ProjectUat>>(projectUatService.processUATExcel(), HttpStatus.OK);
-    }
 
 }
