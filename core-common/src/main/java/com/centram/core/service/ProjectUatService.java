@@ -5,9 +5,11 @@ import com.centram.common.dto.ProjectUATRequestDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.ProjectUatRepository;
-import com.centram.domain.*;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
+import com.centram.domain.ProjectUat;
+import com.centram.domain.ProjectUatScript;
+import com.centram.domain.ProjectUatScriptDetail;
+import com.centram.domain.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,19 +19,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 @Service
 public class ProjectUatService {
@@ -41,16 +46,23 @@ public class ProjectUatService {
     private ProjectUatRepository projectUatRepository;
     @Autowired
     private OrganisationService organisationService;
+
+    @Autowired
+    private UserService userService;
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     /**
+     * @param userId
      * @param organisationId
      * @param multipartFile
      * @param projectUATRequestDTO
      * @return
      */
-    public List<ProjectUat> uploadScripts(BigInteger organisationId, MultipartFile multipartFile, ProjectUATRequestDTO projectUATRequestDTO) {
+    public ProjectUat uploadScripts(BigInteger userId, BigInteger organisationId, MultipartFile multipartFile, ProjectUATRequestDTO projectUATRequestDTO) {
         try {
             if (multipartFile.getBytes().length == 0) {
                 log.error("FILE_UPLOAD_ISSUE file don't have any content!");
@@ -58,15 +70,22 @@ public class ProjectUatService {
             }
             String filePath = appDataFilePath + File.separator + multipartFile.getOriginalFilename();
             Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-            return this.processUATExcel(filePath, organisationId, projectUATRequestDTO);
+            return this.processUATExcel(filePath, userId, organisationId, projectUATRequestDTO);
         } catch (IOException e) {
             log.error("FILE_UPLOAD_ISSUE {}", e.getMessage());
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
     }
 
+    /**
+     * @param filePath
+     * @param userId
+     * @param organisationId
+     * @param projectUATRequestDTO
+     * @return
+     */
     @Transactional(readOnly = false)
-    private List<ProjectUat> processUATExcel(String filePath, BigInteger organisationId, ProjectUATRequestDTO projectUATRequestDTO) {
+    private ProjectUat processUATExcel(String filePath, BigInteger userId, BigInteger organisationId, ProjectUATRequestDTO projectUATRequestDTO) {
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -75,25 +94,24 @@ public class ProjectUatService {
             Row row;
             Iterator<Cell> cellIterator;
             Cell cell;
-            List<ProjectUat> projectUats = new ArrayList<ProjectUat>();
-            Set<ProjectUatDetail> projectUatDetails = new LinkedHashSet<ProjectUatDetail>();
-            ProjectUatDetail projectUatDetail = new ProjectUatDetail();
             ProjectUat projectUat = new ProjectUat();
-            Map<String, Object> errorContext = new HashMap<String, Object>();
+            projectUat.setUatComplete(false);
+            projectUat.setProject(projectService.getById(projectUATRequestDTO.getProjectId()));
+            projectUat.setOrganisation(organisationService.getOrganisationById(organisationId));
+            projectUat.setUploadedBy(new User(userService.getUserById(userId)));
+            projectUat.setModuleId(projectUATRequestDTO.getModuleId());
+            projectUat.setSubModuleId(projectUATRequestDTO.getSubModuleId());
+            projectUat.setProjectUatScripts(new LinkedHashSet<ProjectUatScript>());
+            ProjectUatScript projectUatScript = new ProjectUatScript();
+            ProjectUatScriptDetail projectUatScriptDetail = new ProjectUatScriptDetail();
             String cellValue;
             int rw = 0;
-            Project project = projectService.getById(projectUATRequestDTO.getProjectId());
-            Organisation organisation = organisationService.getOrganisationById(organisationId);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 //Get sheet from the workbook
                 sheet = workbook.getSheet(workbook.getSheetName(i));
-                projectUatDetails = new LinkedHashSet<ProjectUatDetail>();
-                projectUat = new ProjectUat();
-                projectUat.setModuleId(projectUATRequestDTO.getModuleId());
-                projectUat.setSubModuleId(projectUATRequestDTO.getSubModuleId());
-                projectUat.setProject(project);
-                projectUat.setOrganisation(organisation);
-                projectUat.setTestScriptName(workbook.getSheetName(i));
+                projectUatScript = new ProjectUatScript();
+                projectUatScript.setTestScriptName(workbook.getSheetName(i));
+                projectUatScript.setProjectUatScriptDetails(new LinkedHashSet<ProjectUatScriptDetail>());
                 //Iterate through each rows one by one
                 rw = 0;
                 rowIterator = sheet.iterator();
@@ -105,7 +123,7 @@ public class ProjectUatService {
                     }
                     //For each row, iterate through all the columns
                     cellIterator = row.cellIterator();
-                    projectUatDetail = new ProjectUatDetail();
+                    projectUatScriptDetail = new ProjectUatScriptDetail();
                     while (cellIterator.hasNext()) {
                         cell = cellIterator.next();
                         cellValue = this.getCellValue(cell);
@@ -113,60 +131,62 @@ public class ProjectUatService {
                             if (rw == 1) {
                                 if (cellValue.trim().isEmpty()) {
                                     log.error("Error value - {}", cellValue);
-                                    throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUat.getTestScriptName(), "Second row and first column should have Test Scenario!"));
+                                    throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Second row and first column should have Test Scenario!"));
                                 }
-                                projectUat.setTestScenario(cellValue);
+                                projectUatScript.setTestScenario(cellValue);
                             }
                         } else if (cell.getAddress().getColumn() == 1) {
                             if (rw == 1) {
                                 try {
                                     HSSFDateUtil.isCellDateFormatted(cell);
-                                    projectUat.setPlannedDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                                    projectUatScript.setPlannedDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                                    projectUat.getProjectUatScripts().add(projectUatScript);
                                 } catch (Exception e) {
                                     log.error("Error value - {}", cellValue);
-                                    throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUat.getTestScriptName(), "Second row and second column should have Planned Date!"));
+                                    throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Second row and second column should have Planned Date!"));
                                 }
                             }
                         } else if (cell.getAddress().getColumn() == 2) {
-                            projectUat.setTestScenarioJobId(cellValue);
+                            projectUatScriptDetail.setTestScenarioJobId(cellValue);
                         } else if (cell.getAddress().getColumn() == 3) {
                             if (cellValue.trim().isEmpty()) {
                                 log.error("Error value - {}", cellValue);
-                                throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUat.getTestScriptName(), "Step is mandatory!"));
+                                throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Step is mandatory!"));
                             }
-                            projectUatDetail.setStep(Double.valueOf(cellValue));
+                            projectUatScriptDetail.setStep(Double.valueOf(cellValue));
                         } else if (cell.getAddress().getColumn() == 4) {
                             if (cellValue.trim().isEmpty()) {
                                 log.error("Error value - {}", cellValue);
-                                throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUat.getTestScriptName(), "Action is mandatory!"));
+                                throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Action is mandatory!"));
                             }
-                            projectUatDetail.setAction(cellValue);
+                            projectUatScriptDetail.setAction(cellValue);
                         } else if (cell.getAddress().getColumn() == 5) {
                             if (cellValue.trim().isEmpty()) {
                                 log.error("Error value - {}", cellValue);
-                                throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUat.getTestScriptName(), "Expected Result is mandatory!"));
+                                throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Expected Result is mandatory!"));
                             }
-                            projectUatDetail.setExpectedResult(cellValue);
+                            projectUatScriptDetail.setExpectedResult(cellValue);
                         } else if (cell.getAddress().getColumn() == 6) {
-                            projectUatDetail.setActualResult(null);
+                            projectUatScriptDetail.setActualResult(null);
                         } else if (cell.getAddress().getColumn() == 7) {
-                            projectUatDetail.setPass(false);
+                            projectUatScriptDetail.setPass(false);
                         } else if (cell.getAddress().getColumn() == 8) {
-                            projectUatDetail.setRetestDate(null);
+                            projectUatScriptDetail.setRetestDate(null);
                         } else if (cell.getAddress().getColumn() == 9) {
-                            projectUatDetail.setRetestPass(false);
+                            projectUatScriptDetail.setRetestPass(false);
                         } else if (cell.getAddress().getColumn() == 10) {
-                            projectUatDetail.setRetestPass(null);
+                            projectUatScriptDetail.setRemarks(null);
                         }
                     }
-                    if (projectUatDetail.getStep() != null) projectUatDetails.add(projectUatDetail);
+                    if (projectUatScriptDetail.getStep() != null) {
+                        projectUat.getProjectUatScripts().stream().reduce((first, second) -> second).get().getProjectUatScriptDetails().add(projectUatScriptDetail);
+                    }
                     rw++;
                 }
-                projectUat.setUatDetails(projectUatDetails);
-                projectUats.add(projectUat);
             }
             file.close();
-            return projectUatRepository.saveAll(projectUats);
+            log.debug("projectUat => {} ", objectMapper.writeValueAsString(projectUat));
+            return projectUatRepository.save(projectUat);
         } catch (IOException e) {
             log.error("Error detail - {}", e.getMessage());
             throw new RuntimeException(e);

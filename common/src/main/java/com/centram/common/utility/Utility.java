@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +62,10 @@ public class Utility {
 
     public static String incidentNo(String incidentNoPrefix) {
         return incidentNoPrefix.concat(generateUniqueID());
+    }
+
+    public static String getCorrelationId(){
+        return UUID.randomUUID().toString().toUpperCase().replace("-", "");
     }
 
     public static Long generateUniqueIDOld() {

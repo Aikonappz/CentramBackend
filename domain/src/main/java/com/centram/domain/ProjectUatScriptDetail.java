@@ -2,11 +2,8 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.domain.converter.UATRemarkConverter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
@@ -30,9 +27,9 @@ import java.util.List;
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "project_uat_detail", indexes = {@Index(name = "project_uat_detail_project_uat_script_id_index", columnList = "project_uat_script_id", unique = false),})
+@Table(name = "project_uat_script_detail", indexes = {@Index(name = "project_uat_script_detail_project_uat_script_id_index", columnList = "project_uat_script_id", unique = false),})
 @Audited
-public class ProjectUatDetail extends BaseEntity implements Serializable {
+public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -952600023593118974L;
 
     @Id
@@ -41,23 +38,28 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
+    @Valid
+    @Column(name = "test_scenario_job_id", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private String testScenarioJobId;
+
     @NotNull
     @Valid
-    @Column(name = "step")
+    @Column(name = "step", nullable = false)
     @JsonView(Views.BasicView.class)
     private Double step;
 
     @NotNull
     @Valid
     @Lob
-    @Column(name = "action", columnDefinition = "TEXT not null")
+    @Column(name = "action", nullable = false, columnDefinition = "TEXT not null")
     @JsonView(Views.BasicView.class)
     private String action;
 
     @NotNull
     @Valid
     @Lob
-    @Column(name = "expected_result", columnDefinition = "TEXT not null")
+    @Column(name = "expected_result", nullable = false, columnDefinition = "TEXT not null")
     @JsonView(Views.BasicView.class)
     private String expectedResult;
 
@@ -67,7 +69,7 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     private String actualResult;
 
     @Valid
-    @Column(name = "pass")
+    @Column(name = "pass", nullable = false)
     @JsonView(Views.BasicView.class)
     private Boolean pass = false;
 
@@ -77,22 +79,22 @@ public class ProjectUatDetail extends BaseEntity implements Serializable {
     private LocalDate retestDate;
 
     @Valid
-    @Column(name = "reset_pass")
+    @Column(name = "reset_pass", nullable = false)
     @JsonView(Views.BasicView.class)
     private Boolean retestPass = false;
 
     @Valid
     @Lob
-    @Column(name = "remarks", columnDefinition = "TEXT default null")
+    @Column(name = "remarks", nullable = true, columnDefinition = "TEXT default null")
     @JsonView(Views.BasicView.class)
     @Convert(converter = UATRemarkConverter.class)
     private List<UATRemark> remarks;
 
-    public ProjectUatDetail(@NotNull BigInteger id) {
+    public ProjectUatScriptDetail(@NotNull BigInteger id) {
         this.id = id;
     }
 
-    public ProjectUatDetail(Long version, BigInteger id) {
+    public ProjectUatScriptDetail(Long version, BigInteger id) {
         super(version);
         this.id = id;
     }

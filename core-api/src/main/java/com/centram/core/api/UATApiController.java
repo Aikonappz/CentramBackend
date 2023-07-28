@@ -16,11 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 
 @RequestMapping(value = "/api/v1/project-uat")
@@ -35,9 +36,9 @@ public class UATApiController {
     @JsonView(Views.BasicView.class)
     @RequestMapping(value = "/upload-scripts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<List<ProjectUat>> uploadScripts(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("projectUATRequestDTO") ProjectUATRequestDTO projectUATRequestDTO) throws IOException {
+    public ResponseEntity<ProjectUat> uploadScripts(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("projectUATRequestDTO") ProjectUATRequestDTO projectUATRequestDTO) throws IOException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<List<ProjectUat>>(projectUatService.uploadScripts(loggedInUser.getOrganisationId(), multipartFile, projectUATRequestDTO), HttpStatus.OK);
+        return new ResponseEntity<ProjectUat>(projectUatService.uploadScripts(loggedInUser.getUserId(), loggedInUser.getOrganisationId(), multipartFile, projectUATRequestDTO), HttpStatus.OK);
     }
 
 }
