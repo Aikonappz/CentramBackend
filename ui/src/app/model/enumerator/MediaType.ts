@@ -5,4 +5,5 @@ export enum MediaType {
     USER_PROFILE_IMAGE,
     ASSET_REQUEST,
     CHAT_COMMUNICATION,
+    PROJECT_UAT_MANUAL,
 }

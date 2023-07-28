@@ -29,6 +29,7 @@ import java.util.Set;
 @Table(name = "project_uat_script", indexes = {@Index(name = "project_uat_script_project_uat_id_index", columnList = "project_uat_id", unique = false),})
 @Audited
 public class ProjectUatScript extends BaseEntity implements Serializable {
+
     private static final long serialVersionUID = -4081362839129406536L;
 
     @Id
@@ -39,32 +40,27 @@ public class ProjectUatScript extends BaseEntity implements Serializable {
 
     @NotNull
     @Valid
-    @Column(name = "test_script_name")
+    @Column(name = "test_script_name", nullable = false)
     @JsonView(Views.BasicView.class)
     private String testScriptName;
 
     @NotNull
     @Valid
     @Lob
-    @Column(name = "test_scenario", columnDefinition = "TEXT default null")
+    @Column(name = "test_scenario", nullable = false, columnDefinition = "TEXT")
     @JsonView(Views.BasicView.class)
     private String testScenario;
 
-    @Valid
-    @Column(name = "test_scenario_job_id")
-    @JsonView(Views.BasicView.class)
-    private String testScenarioJobId;
-
-    @Column(name = "planned_date", nullable = true, updatable = false)
+    @Column(name = "planned_date", nullable = false, updatable = false)
     @JsonView(Views.BasicView.class)
     private LocalDate plannedDate;
 
     @Valid
     @NotNull
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "project_uat_script_id", referencedColumnName = "id")
+    @JoinColumn(name = "project_uat_script_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
-    private Set<ProjectUatDetail> uatDetails;
+    private Set<ProjectUatScriptDetail> projectUatScriptDetails;
 
     public ProjectUatScript(@NotNull BigInteger id) {
         this.id = id;
