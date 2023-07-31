@@ -7,11 +7,9 @@ import { LocationList, LocationVO } from '../model/LocationVO';
 import { Department, DepartmentList } from '../model/Department';
 import { Status } from '../model/enumerator/Status';
 import { Priority, PriorityList } from '../model/Priority';
-import { HolidayCalenderList } from '../model/HolidayCalender';
+import { HolidayCalendarList } from '../model/HolidayCalendar';
 import { Notification, NotificationList } from '../model/Notification';
-import { MapDLVO, MapDLVOList } from '../model/MapDLVO';
 import { DistributionList, DistributionListList } from '../model/DistributionList';
-import { Module } from '../model/Module';
 import { Vendor, VendorList } from '../model/Vendor';
 import { AssetModel } from '../model/AssetModel';
 import { PermissionDTO } from '../model/PermissionDTO';
@@ -20,6 +18,8 @@ import { Project, ProjectList } from '../model/Project';
 import { ProjectAllocationDetail } from '../model/ProjectAllocationDetail';
 import { ProjectDeallocateDTO } from '../model/ProjectDeallocateDTO';
 import { Holiday } from '../model/Holiday';
+import { Account, AccountList } from '../model/Account';
+import { ManageTimeSheetInputVO } from '../model/ManageTimeSheetInputVO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -71,20 +71,20 @@ export class MiscService {
     priorityService(id: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/priority/' + id, { "params": request });
     }
-    holidayCalendersService(request?: any): Observable<HolidayCalenderList> {
-        return this.http.get('/v1/misc/all-holiday-callender', { "params": request });
+    holidayCalendarsService(request?: any): Observable<HolidayCalendarList> {
+        return this.http.get('/v1/misc/all-holiday-calendar', { "params": request });
     }
-    holidayCalenderService(id: number, request?: any): Observable<any> {
-        return this.http.get('/v1/misc/holiday-callender/' + id, { "params": request });
+    holidayCalendarService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/holiday-calendar/' + id, { "params": request });
     }
-    holidayCalenderHolidaysService(locationId: number, year: string, request?: any): Observable<Holiday[]> {
-        return this.http.get('/v1/misc/holiday-callender/' + locationId + '/' + year, { "params": request });
+    holidayCalendarHolidaysService(accountId: number, locationId: number, year: string, request?: any): Observable<Holiday[]> {
+        return this.http.get('/v1/misc/holiday-calendar/' + accountId + '/' + locationId + '/' + year, { "params": request });
     }
-    saveHolidayCalenderService(formData: FormData, request?: any): Observable<Department> {
-        return this.http.post('/v1/misc/upload-holiday-calender', formData, request);
+    saveHolidayCalendarService(formData: FormData, request?: any): Observable<Department> {
+        return this.http.post('/v1/misc/upload-holiday-calendar', formData, request);
     }
-    downloadholidayCalenderService(id: number, request?: any): Observable<any> {
-        return this.http.get('/v1/misc/holiday-callender/' + id + '/download', { responseType: 'blob' });
+    downloadholidayCalendarService(id: number, request?: any): Observable<any> {
+        return this.http.get('/v1/misc/holiday-calendar/' + id + '/download', { responseType: 'blob' });
     }
     notificationsService(request?: any): Observable<NotificationList> {
         return this.http.get('/v1/misc/all-notifications', { "params": request });
@@ -158,10 +158,24 @@ export class MiscService {
     chatMassagesService(chatRoomId: string, request?: any): Observable<any> {
         return this.http.get('/v1/misc/chat-message/' + chatRoomId, { "params": request });
     }
+
+    saveAccountService(account: Account): Observable<Account> {
+        return this.http.post('/v1/misc/account', account);
+    }
+    accountsService(request?: any): Observable<AccountList> {
+        return this.http.get('/v1/misc/all-account', { "params": request });
+    }
+    accountService(id: number, request?: any): Observable<Account> {
+        return this.http.get('/v1/misc/account/' + id, { "params": request });
+    }
     allocateProjects(projectAllocationDetailList: ProjectAllocationDetail[]): Observable<any> {
         return this.http.post('/v1/misc/allocate-project', projectAllocationDetailList,);
     }
     deallocateProjects(projectDeallocateDTO: ProjectDeallocateDTO): Observable<any> {
         return this.http.post('/v1/misc/deallocate-project', projectDeallocateDTO,);
+    }
+
+    getUserProjects(request?: any): Observable<ManageTimeSheetInputVO> {
+        return this.http.get('/v1/misc/user-projects', { "params": request });
     }
 }

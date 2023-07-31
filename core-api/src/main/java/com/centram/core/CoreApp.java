@@ -11,7 +11,6 @@ import org.springframework.data.envers.repository.support.EnversRevisionReposito
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -20,7 +19,6 @@ import java.util.TimeZone;
 
 @EnableCaching
 @EnableAsync
-@EnableSwagger2
 @EnableJpaRepositories(repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class, basePackages = {"com.centram.core.repository"})
 @EnableTransactionManagement
 @EnableAutoConfiguration

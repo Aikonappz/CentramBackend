@@ -19,4 +19,7 @@ import java.util.List;
 public interface ProjectAllocationDetailRepository extends JpaRepository<ProjectAllocationDetail, BigInteger> {
     @Query("select pad from ProjectAllocationDetail pad where pad.project.id = (:projectId) and pad.user.id in (:userIds)")
     List<ProjectAllocationDetail> getDeallocationList(@Param("projectId") BigInteger projectId, @Param("userIds") List<BigInteger> userIds);
+
+    @Query("select pad from ProjectAllocationDetail pad where pad.user.id = (:userId)")
+    List<ProjectAllocationDetail> getUserProjects(@Param("userId") BigInteger userId);
 }

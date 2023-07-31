@@ -30,10 +30,13 @@ public class ProxyService {
     private PriorityRepository priorityRepository;
 
     @Autowired
-    private HolidayCalenderRepository holidayCalenderRepository;
+    private HolidayCalendarRepository holidayCalendarRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TimeSheetRepository timeSheetRepository;
 
     @Transactional(readOnly = false)
     public Asset saveAsset(Asset asset) {
@@ -46,8 +49,8 @@ public class ProxyService {
     }
 
     @Transactional(readOnly = false)
-    public HolidayCalender saveHolidayCalender(HolidayCalender holidayCalender) {
-        return holidayCalenderRepository.save(holidayCalender);
+    public HolidayCalendar saveHolidayCalender(HolidayCalendar holidayCalendar) {
+        return holidayCalendarRepository.save(holidayCalendar);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -78,5 +81,10 @@ public class ProxyService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public TimeSheet saveTimeSheet(TimeSheet timeSheet) {
+        return timeSheetRepository.save(timeSheet);
     }
 }

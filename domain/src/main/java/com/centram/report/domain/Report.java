@@ -4,7 +4,7 @@ import com.centram.common.view.Views;
 import com.centram.domain.converter.RoleConverter;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModelProperty;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,7 +24,7 @@ import java.util.List;
 public class Report implements Serializable {
     private static final long serialVersionUID = -1033451209367452581L;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Valid
     @JsonView(Views.BasicView.class)
@@ -33,7 +33,7 @@ public class Report implements Serializable {
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Valid
     @Lob
@@ -42,14 +42,14 @@ public class Report implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<BigInteger> roles;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Valid
     @Column(name = "name", nullable = false)
     @JsonView(Views.BasicView.class)
     private String name;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Valid
     @Column(name = "status")

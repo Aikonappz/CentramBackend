@@ -1,9 +1,11 @@
 package com.centram.domain.enumarator;
 
 public enum MediaType {
+    INCIDENT_SOLUTION_DOCUMENT,
     INCIDENT_COMMUNICATION,
     ORGANISATION_LOGO_IMAGE,
     USER_PROFILE_IMAGE,
     ASSET_REQUEST,
     CHAT_COMMUNICATION,
+    PROJECT_UAT_MANUAL,
 }

@@ -4,4 +4,5 @@ export enum EntityType {
     INCIDENT,
     ASSET_REQUEST,
     CHAT,
+    PROJECT_UAT,
 }

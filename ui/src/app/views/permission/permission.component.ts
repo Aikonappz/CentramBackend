@@ -78,16 +78,18 @@ export class PermissionComponent implements OnInit, OnDestroy {
         for (let k in data.content) {
           //if (data.content[k].appModule) {
           d = data.content[k];
-          if (d.parentModuleId != null) {
-            if (d.licenseType == "INCIDENT") {
-              d.name = "INCIDENT/" + d.parentModuleName + "/" + d.name;
-            } else if (d.licenseType == "ASSET") {
-              d.name = "ASSET/" + d.parentModuleName + "/" + d.name;
-            } else {
-              d.name = d.parentModuleName + "/" + d.name;
+          if (d.organisation == null) {
+            if (d.parentModuleId != null) {
+              if (d.licenseType == "INCIDENT") {
+                d.name = "INCIDENT/" + d.parentModuleName + "/" + d.name;
+              } else if (d.licenseType == "ASSET") {
+                d.name = "ASSET/" + d.parentModuleName + "/" + d.name;
+              } else {
+                d.name = d.parentModuleName + "/" + d.name;
+              }
             }
+            this.modules.push(d);
           }
-          this.modules.push(d);
           //}
         }
       });

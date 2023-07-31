@@ -22,8 +22,11 @@ public enum GenericErrorCode implements ErrorCode {
     PROFILE_INACTIVE("User profile inactive! Please contact System Admin."),
     HOLIDAY_CALENDER_MASTER_DATA_MISSING("Holiday calender master data missing!"),
     ASSET_DATA_EXIST("ASSET WITH SAME SERIAL NO ALREADY EXIST!"),
-    CALENDER_DATA_EXIST("HOLIDAY CALENDER ALREADY EXIST!"),
-    PRIORITY_DATA_EXIST("PRIORITY ALREADY EXIST!"),
+    DATA_EXIST("[[${entity}]] already exist! Please check data once!"),
+
+    RELEVANT_DATA_NOT_FOUND("[[${entity}]] data not found!"),
+
+    UPLOADED_FILE_DATA_ISSUE("Uploaded file has issue at sheet - [[${sheet}]], column - [[${col}]], row - [[${row}]]! [[${errorMessage}]]"),
     ;
 
     private final String template;

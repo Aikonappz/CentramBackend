@@ -4,7 +4,6 @@ package com.centram.core.api;
 import com.centram.common.dto.AuthRequestDTO;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.UserDTO;
-import com.centram.common.service.JasyptService;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.JwtTokenUtil;
 import com.centram.common.utility.PaginatedList;
@@ -15,7 +14,7 @@ import com.centram.common.vo.UserVO;
 import com.centram.core.service.UserService;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.Status;
-import io.swagger.annotations.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "User", description = "User Api")
+
 @RequestMapping(value = "/api/v1/user")
 @Controller
 public class UserApiController {
@@ -63,22 +61,14 @@ public class UserApiController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JasyptService jasyptService;
-
     /**
      * user signin
      *
      * @param body
      * @return
      */
-    @ApiOperation(value = "SignIn Api", nickname = "SignIn", notes = "SignIn user", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<LoggedInUserVO> login(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<LoggedInUserVO> login(@Valid @RequestBody AuthRequestDTO body) {
         try {
             LoggedInUser loggedInUser = (LoggedInUser) authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(body.getUsername(), Utility.decode(body.getPassword()))).getPrincipal();
             loggedInUser.setAuthToken(jwtTokenUtil.generateToken(loggedInUser, body.getRememberMe()));
@@ -99,15 +89,10 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(value = "SSO SignIn Api", nickname = "SSOSignIn", notes = "SSO SignIn user", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/sso-sign-in", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<LoggedInUserVO> SSOlogin(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<LoggedInUserVO> SSOlogin(@Valid @RequestBody AuthRequestDTO body) {
         try {
-            String email = jasyptService.decrypt(body.getUsername());
+            String email = body.getUsername();
             log.info("SSO principal => {} ", email);
             //LoggedInUser loggedInUser = userService.getUserByPrincipal("centramsuperadm@gmail.com");
             LoggedInUser loggedInUser = userService.getUserByPrincipal(email);
@@ -128,10 +113,6 @@ public class UserApiController {
      *
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Logout", nickname = "logout", notes = "logout", response = CommonResponse.class, tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = CommonResponse.class),
-    })
     @RequestMapping(value = "/sign-out", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<CommonResponse> logout() {
         return new ResponseEntity<CommonResponse>(userService.signOut(), HttpStatus.OK);
@@ -143,13 +124,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(value = "Forgot Password Api", nickname = "forgotPassword", notes = "Forgot Password Api", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/forgot-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<CommonResponse> forgotPassword(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<CommonResponse> forgotPassword(@Valid @RequestBody AuthRequestDTO body) {
         return new ResponseEntity<CommonResponse>(userService.forgotPassword(body), HttpStatus.OK);
     }
 
@@ -159,13 +135,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(value = "Reset Password Api", nickname = "resetPassword", notes = "Reset Password Api", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/reset-password", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
-    public ResponseEntity<CommonResponse> resetPassword(@ApiParam(value = "AuthRequest object", required = true) @Valid @RequestBody AuthRequestDTO body) {
+    public ResponseEntity<CommonResponse> resetPassword(@Valid @RequestBody AuthRequestDTO body) {
         return new ResponseEntity<CommonResponse>(userService.resetPassword(body), HttpStatus.OK);
     }
 
@@ -175,14 +146,8 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Change Password", nickname = "changePassword", notes = "Change Password", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "User not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/change-password", consumes = {"application/json"}, method = RequestMethod.PUT)
-    public ResponseEntity<Void> changePassword(@ApiParam(value = "ChangePasswordDTO object", required = true) @Valid @RequestBody UserDTO body) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody UserDTO body) {
         userService.changePassword(body);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -196,22 +161,9 @@ public class UserApiController {
      * @param pageable
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all Users", nickname = "getUsers", notes = "Get all Users", response = PaginatedList.class, tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = PaginatedList.class, responseContainer = "List"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASSIGNMENT REPORT,USER,MY INCIDENTS,MY GROUP INCIDENTS,ORDER ASSET,ALLOCATE PROJECT,DEALLOCATE PROJECT','READ,READ,WRITE|SEARCH,WRITE|SEARCH,READ|WRITE,ASSIGN,DEALLOCATE',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
-    public ResponseEntity<PaginatedList<UserVO>> getUsers(
-            @ApiParam(value = "User Email", defaultValue = "", required = false) @RequestParam(value = "email", defaultValue = "", required = false) String email,
-            @ApiParam(value = "User EmployeeId", defaultValue = "", required = false) @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId,
-            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
-            @ApiParam(value = "Filter Type", defaultValue = "", required = false) @RequestParam(value = "filterType", defaultValue = "", required = false) String filterType,
-            @ApiParam(value = "Vendor Id for Filter ", defaultValue = "", required = false) @RequestParam(value = "vendorId", defaultValue = "", required = false) BigInteger vendorId,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<UserVO>> getUsers(@RequestParam(value = "email", defaultValue = "", required = false) String email, @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "filterType", defaultValue = "", required = false) String filterType, @RequestParam(value = "vendorId", defaultValue = "", required = false) BigInteger vendorId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), filterType, vendorId, pageable), HttpStatus.OK);
     }
 
@@ -221,14 +173,9 @@ public class UserApiController {
      * @param body
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Save a user", nickname = "save", notes = "Save a user", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
-    public ResponseEntity<UserVO> save(@ApiParam(value = "User object", required = true) @Valid @RequestBody User body) {
+    public ResponseEntity<UserVO> save(@Valid @RequestBody User body) {
         return new ResponseEntity<UserVO>(userService.save(body), HttpStatus.OK);
     }
 
@@ -239,15 +186,9 @@ public class UserApiController {
      * @param status
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of user's", nickname = "updateStatus", notes = "Update status of user's", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "User not found")
-    })
     @RequestMapping(value = "/{ids}/{status}", produces = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
-    public ResponseEntity<Void> updateStatus(@NotNull @ApiParam(value = "User id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+    public ResponseEntity<Void> updateStatus(@NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @PathVariable("status") Status status) {
         userService.updateUsersStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -258,16 +199,9 @@ public class UserApiController {
      * @param userId
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by Id", nickname = "getUserById", notes = "Find user by Id", response = UserVO.class, tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = User.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "User not found")
-    })
     @RequestMapping(value = "/{userId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER,MY INCIDENTS,MY GROUP INCIDENTS','READ,WRITE,WRITE',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
-    public ResponseEntity<UserVO> getUserById(@ApiParam(value = "id of user to return", required = true) @PathVariable("userId") BigInteger userId) {
+    public ResponseEntity<UserVO> getUserById(@PathVariable("userId") BigInteger userId) {
         return new ResponseEntity<UserVO>(userService.getUserById(userId), HttpStatus.OK);
     }
 
@@ -276,20 +210,11 @@ public class UserApiController {
      *
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Downoad all Users", nickname = "downloadUsers", notes = "Download all Users", response = Resource.class, tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = Resource.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
     public ResponseEntity<Resource> downloadUsers() {
         final InputStreamResource resource = new InputStreamResource(userService.downloadUsers());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "users-" + System.currentTimeMillis() + ".csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(resource);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "users-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
     /**
@@ -299,15 +224,9 @@ public class UserApiController {
      * @return
      * @throws IOException
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Upload users data csv", nickname = "uploadUsersData", notes = "Upload users data", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Validation exception"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','WRITE',authentication.principal)")
-    public ResponseEntity uploadUsersData(@ApiParam(value = "Users CSV file", required = true) @RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
+    public ResponseEntity uploadUsersData(@RequestParam(name = "file", required = true) MultipartFile multipartFile) throws IOException {
         userService.uploadUsersData(multipartFile);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -319,17 +238,8 @@ public class UserApiController {
      * @param actionName
      * @return
      */
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by module/submodule permission", nickname = "getUsersByModuleAndAction", notes = "Find user by module/submodule permission", response = UserVO.class, responseContainer = "List", tags = {"User",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = UserVO.class, responseContainer = "List"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
     @RequestMapping(value = "/find-by-modules-permissions", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<List<UserVO>> getUsersByModuleAndAction(
-            @NotNull @ApiParam(value = "Module Ids to filter by", required = true) @Valid @RequestParam(value = "moduleIds", required = true) List<BigInteger> moduleIds,
-            @NotNull @ApiParam(value = "Action Name", required = true) @Valid @RequestParam(value = "actionName", required = true) String actionName
-    ) {
+    public ResponseEntity<List<UserVO>> getUsersByModuleAndAction(@NotNull @Valid @RequestParam(value = "moduleIds", required = true) List<BigInteger> moduleIds, @NotNull @Valid @RequestParam(value = "actionName", required = true) String actionName) {
         return new ResponseEntity<List<UserVO>>(userService.getUsersByModuleAndAction(moduleIds, actionName), HttpStatus.OK);
     }
 
@@ -340,7 +250,7 @@ public class UserApiController {
     })
     @RequestMapping(value = "/findByIds", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
-    public ResponseEntity<Page<UserVO>> getUserByIds(@NotNull @ApiParam(value = "Ids to filter by", required = true) @Valid @RequestParam(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+    public ResponseEntity<Page<UserVO>> getUserByIds(@NotNull  @Valid @RequestParam(value = "ids", required = true) List<BigInteger> ids,  @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<Page<UserVO>>(userService.getUserByIds(ids, pageable), HttpStatus.OK);
     }
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find user by username", nickname = "getUserByUserName", notes = "Find user by username", response = UserVO.class, tags = {"User",})
@@ -351,7 +261,7 @@ public class UserApiController {
     })
     @RequestMapping(value = "/{userName}/findByUserName", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('USER','READ',authentication.principal)")
-    public ResponseEntity<UserVO> getUserByUserName(@ApiParam(value = "userName of user to return", required = true) @PathVariable("userName") String userName) {
+    public ResponseEntity<UserVO> getUserByUserName( @PathVariable("userName") String userName) {
         return new ResponseEntity<UserVO>(userService.getUserByUserName(userName), HttpStatus.OK);
     }
     @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get user settings", nickname = "getUserSettings", notes = "Get user settings", response = UserDTO.class, tags = {"User",})
@@ -382,7 +292,7 @@ public class UserApiController {
             @ApiResponse(code = 404, message = "User not found")
     })
     @RequestMapping(value = "/activity-log", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<ActivityLog>> getActivityLogs(@ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+    public ResponseEntity<Page<ActivityLog>> getActivityLogs( @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<Page<ActivityLog>>(userService.getActivityLogs(pageable), HttpStatus.OK);
     }*/
 

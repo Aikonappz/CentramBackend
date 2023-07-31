@@ -1,10 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy, DatePipe, PathLocationStrategy } from '@angular/common';
+import { LocationStrategy, DatePipe, PathLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
 import { IconModule, IconSetModule, IconSetService } from '@coreui/icons-angular';
@@ -70,6 +69,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { LandingComponent } from './views/landing/landing.component';
 import { CommonAlert } from './containers/default-layout/modal/CommonAlert';
 import { SSOLoginComponent } from './views/sso-login/sso-login.component';
+import { NgxMaskModule } from 'ngx-mask'
+import { TextMaskModule } from 'angular2-text-mask';
 
 @NgModule({
   imports: [
@@ -99,6 +100,8 @@ import { SSOLoginComponent } from './views/sso-login/sso-login.component';
     ModalModule.forRoot(),
     PushNotificationsModule,
     NgSelectModule,
+    TextMaskModule,
+    NgxMaskModule.forRoot(),
   ],
   declarations: [
     AppComponent,

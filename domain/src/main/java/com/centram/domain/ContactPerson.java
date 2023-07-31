@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import java.io.Serializable;
 
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor

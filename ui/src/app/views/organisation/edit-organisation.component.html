@@ -15,7 +15,7 @@
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="name">Name</label>
-                  <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
+                  <input type="text" formControlName="name" id="name" name="name" class="form-control"
                     placeholder="Organization Name" aria-label="Organization Name">
                   <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.name.errors?.required">
@@ -28,7 +28,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="add1">Address Line 1</label>
-                  <input type="text" formControlName="add1" ngModel id="add1" name="add1" class="form-control"
+                  <input type="text" formControlName="add1" id="add1" name="add1" class="form-control"
                     placeholder="Address Line 1" aria-label="Address Line 1">
                   <div *ngIf="f.add1.touched && f.add1.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.add1.errors?.required">
@@ -41,7 +41,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label " for="add2">Address Line 2</label>
-                  <input type="text" formControlName="add2" ngModel id="add2" name="add2" class="form-control"
+                  <input type="text" formControlName="add2" id="add2" name="add2" class="form-control"
                     placeholder="Address Line 2" aria-label="Address Line 2 ">
                   <div *ngIf="f.add2.touched && f.add2.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.add2.errors?.maxlength">
@@ -53,7 +53,7 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="city">City</label>
-                  <input type="text" formControlName="city" ngModel id="city" name="city" class="form-control"
+                  <input type="text" formControlName="city" id="city" name="city" class="form-control"
                     placeholder="City" aria-label="City">
                   <div *ngIf="f.city.touched && f.city.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.city.errors?.required">
@@ -66,7 +66,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="pincode">Pincode</label>
-                  <input type="text" formControlName="pincode" ngModel id="pincode" name="pincode" class="form-control"
+                  <input type="text" formControlName="pincode" id="pincode" name="pincode" class="form-control"
                     placeholder="Pincode" aria-label="Pincode">
                   <div *ngIf="f.pincode.touched && f.pincode.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.pincode.errors?.required">
@@ -79,8 +79,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="pan">PAN</label>
-                  <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="pan" ngModel
-                    id="pan" name="pan" class="form-control" placeholder="Pan" aria-label="Pan">
+                  <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="pan" id="pan"
+                    name="pan" class="form-control" placeholder="Pan" aria-label="Pan">
                   <div *ngIf="f.pan.touched && f.pan.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.pan.errors?.required">
                       Pan is required.
@@ -94,8 +94,8 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label" for="tan">TAN</label>
-                  <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="tan" ngModel
-                    id="tan" name="tan" class="form-control" placeholder="Tan" aria-label="Tan">
+                  <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="tan" id="tan"
+                    name="tan" class="form-control" placeholder="Tan" aria-label="Tan">
                   <div *ngIf="f.tan.touched && f.tan.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.tan.errors?.required">
                       Tan is required.
@@ -107,8 +107,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="gstin">GSTIN</label>
-                  <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="gstin" ngModel
-                    id="gstin" name="gstin" class="form-control" placeholder="Gstin" aria-label="Gstin">
+                  <input oninput="this.value = this.value.toUpperCase()" type="text" formControlName="gstin" id="gstin"
+                    name="gstin" class="form-control" placeholder="Gstin" aria-label="Gstin">
                   <div *ngIf="f.gstin.touched && f.gstin.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.gstin.errors?.required">
                       Gstin is required.
@@ -133,8 +133,9 @@
               </div>
               <div class="row row-margin-05">
                 <div class="col">
-                  <label class="form-col-form-label required-control-label" for="licenseStart">License Start Date</label>
-                  <input type="date" format="DD-MM-YYYY" formControlName="licenseStart" ngModel id="licenseStart"
+                  <label class="form-col-form-label required-control-label" for="licenseStart">License Start
+                    Date</label>
+                  <input type="date" format="DD-MM-YYYY" formControlName="licenseStart" id="licenseStart"
                     name="licenseStart" class="form-control" placeholder="License Start" aria-label="License Start">
                   <div *ngIf="f.licenseStart.touched && f.licenseStart.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseStart.errors?.required">
@@ -144,8 +145,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="licenseEnd">License End Date</label>
-                  <input type="date" formControlName="licenseEnd" ngModel id="licenseEnd" name="licenseEnd"
-                    class="form-control" placeholder="License End" aria-label="License End">
+                  <input type="date" formControlName="licenseEnd" id="licenseEnd" name="licenseEnd" class="form-control"
+                    placeholder="License End" aria-label="License End">
                   <div *ngIf="f.licenseEnd.touched && f.licenseEnd.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.licenseEnd.errors?.required">
                       License End Date is required.
@@ -179,7 +180,7 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="keyPersonName1">Key Person Name
                     1</label>
-                  <input type="text" formControlName="keyPersonName1" ngModel id="keyPersonName1" name="keyPersonName1"
+                  <input type="text" formControlName="keyPersonName1" id="keyPersonName1" name="keyPersonName1"
                     class="form-control" placeholder="Key Person Name 1" aria-label="Key Person Name 1">
                   <div *ngIf="f.keyPersonName1.touched && f.keyPersonName1.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.keyPersonName1.errors?.required">
@@ -193,9 +194,8 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="keyPersonEmail1">Key Person Email
                     1</label>
-                  <input type="text" formControlName="keyPersonEmail1" ngModel id="keyPersonEmail1"
-                    name="keyPersonEmail1" class="form-control" placeholder="Key Person Email 1"
-                    aria-label="Key Person Email 1">
+                  <input type="text" formControlName="keyPersonEmail1" id="keyPersonEmail1" name="keyPersonEmail1"
+                    class="form-control" placeholder="Key Person Email 1" aria-label="Key Person Email 1">
                   <div *ngIf="f.keyPersonEmail1.touched && f.keyPersonEmail1.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.keyPersonEmail1.errors?.required">
                       Key Person Email 1 is required.
@@ -211,9 +211,8 @@
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="keyPersonContact1">Key Person Contact
                     1</label>
-                  <input type="text" formControlName="keyPersonContact1" ngModel id="keyPersonContact1"
-                    name="keyPersonContact1" class="form-control" placeholder="Key Person Contact 1"
-                    aria-label="Key Person Contact 1">
+                  <input type="text" formControlName="keyPersonContact1" id="keyPersonContact1" name="keyPersonContact1"
+                    class="form-control" placeholder="Key Person Contact 1" aria-label="Key Person Contact 1">
                   <div *ngIf="f.keyPersonContact1.touched && f.keyPersonContact1.invalid"
                     class="alert alert-danger-custom">
                     <div *ngIf="f.keyPersonContact1.errors?.required">
@@ -231,7 +230,7 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label " for="keyPersonName2">Key Person Name 2</label>
-                  <input type="text" formControlName="keyPersonName2" ngModel id="keyPersonName2" name="keyPersonName2"
+                  <input type="text" formControlName="keyPersonName2" id="keyPersonName2" name="keyPersonName2"
                     class="form-control" placeholder="Key Person Name 2" aria-label="Key Person Name 2">
                   <div *ngIf="f.keyPersonName2.touched && f.keyPersonName2.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.keyPersonName2.errors?.required">
@@ -244,9 +243,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label " for="keyPersonEmail2">Key Person Email 2</label>
-                  <input type="text" formControlName="keyPersonEmail2" ngModel id="keyPersonEmail2"
-                    name="keyPersonEmail2" class="form-control" placeholder="Key Person Email 2"
-                    aria-label="Key Person Email 2">
+                  <input type="text" formControlName="keyPersonEmail2" id="keyPersonEmail2" name="keyPersonEmail2"
+                    class="form-control" placeholder="Key Person Email 2" aria-label="Key Person Email 2">
                   <div *ngIf="f.keyPersonEmail2.touched && f.keyPersonEmail2.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.keyPersonEmail2.errors?.required">
                       Key Person Email 2 is required.
@@ -261,9 +259,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label " for="keyPersonContact2">Key Person Contact 2</label>
-                  <input type="text" formControlName="keyPersonContact2" ngModel id="keyPersonContact2"
-                    name="keyPersonContact2" class="form-control" placeholder="Key Person Contact 2"
-                    aria-label="Key Person Contact 2">
+                  <input type="text" formControlName="keyPersonContact2" id="keyPersonContact2" name="keyPersonContact2"
+                    class="form-control" placeholder="Key Person Contact 2" aria-label="Key Person Contact 2">
                   <div *ngIf="f.keyPersonContact2.touched && f.keyPersonContact2.invalid"
                     class="alert alert-danger-custom">
                     <div *ngIf="f.keyPersonContact2.errors?.required">
@@ -284,8 +281,8 @@
               <div class="row">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="firstName">First Name</label>
-                  <input type="text" formControlName="firstName" ngModel id="firstName" name="firstName"
-                    class="form-control" placeholder="First name" aria-label="First name">
+                  <input type="text" formControlName="firstName" id="firstName" name="firstName" class="form-control"
+                    placeholder="First name" aria-label="First name">
                   <div *ngIf="f.firstName.touched && f.firstName.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.firstName.errors?.required">
                       First Name is required.
@@ -297,8 +294,8 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="lastName">Last Name</label>
-                  <input type="text" formControlName="lastName" ngModel id="lastName" name="lastName"
-                    class="form-control" placeholder="Last name" aria-label="Last name">
+                  <input type="text" formControlName="lastName" id="lastName" name="lastName" class="form-control"
+                    placeholder="Last name" aria-label="Last name">
                   <div *ngIf="f.lastName.touched && f.lastName.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.lastName.errors?.required">
                       Last Name is required.
@@ -310,7 +307,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="email">Email</label>
-                  <input type="text" formControlName="email" ngModel id="email" name="email" class="form-control"
+                  <input type="text" formControlName="email" id="email" name="email" class="form-control"
                     placeholder="Last name" aria-label="Last name">
                   <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.email.errors?.required">
@@ -328,8 +325,8 @@
               <div class="row row-margin-05">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="contactNo">Contact No.</label>
-                  <input type="text" formControlName="contactNo" ngModel id="contactNo" name="contactNo"
-                    class="form-control" placeholder="Contact No." aria-label="Contact No.">
+                  <input type="text" formControlName="contactNo" id="contactNo" name="contactNo" class="form-control"
+                    placeholder="Contact No." aria-label="Contact No.">
                   <div *ngIf="f.contactNo.touched && f.contactNo.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.contactNo.errors?.required">
                       Contact No. is required.
@@ -341,7 +338,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="secContactNo"> Secondary Contact No.</label>
-                  <input type="text" formControlName="secContactNo" ngModel id="secContactNo" name="secContactNo"
+                  <input type="text" formControlName="secContactNo" id="secContactNo" name="secContactNo"
                     class="form-control" placeholder="Secondary Contact No." aria-label="Secondary Contact No.">
                   <div *ngIf="f.secContactNo.touched && f.secContactNo.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.secContactNo.errors?.pattern">
@@ -354,8 +351,8 @@
               <div class="row row-margin-05 d-none">
                 <div class="col">
                   <label class="form-col-form-label required-control-label" for="employeeId">Employee Id.</label>
-                  <input type="text" formControlName="employeeId" ngModel id="employeeId" name="employeeId"
-                    class="form-control" placeholder="Employee Id." aria-label="Employee Id.">
+                  <input type="text" formControlName="employeeId" id="employeeId" name="employeeId" class="form-control"
+                    placeholder="Employee Id." aria-label="Employee Id.">
                   <div *ngIf="f.employeeId.touched && f.employeeId.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.employeeId.errors?.required">
                       Employee Id. is required.
@@ -367,7 +364,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="projectCode">Project Code</label>
-                  <input type="text" formControlName="projectCode" ngModel id="projectCode" name="projectCode"
+                  <input type="text" formControlName="projectCode" id="projectCode" name="projectCode"
                     class="form-control" placeholder="Project Code" aria-label="Project Code">
                   <div *ngIf="f.projectCode.touched && f.projectCode.invalid" class="alert alert-danger-custom">
                     <div *ngIf="f.projectCode.errors?.required">
@@ -380,7 +377,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="department">Department</label>
-                  <select class="form-control select2-single" formControlName="department" ngModel id="department"
+                  <select class="form-control select2-single" formControlName="department" id="department"
                     name="department">
                     <option value="">-- Select Department --</option>
                     <option *ngFor="let e of departments" value="{{e.id}}__{{e.version}}">{{e.name}}</option>
@@ -393,8 +390,7 @@
                 </div>
                 <div class="col">
                   <label class="form-col-form-label" for="location">Location</label>
-                  <select class="form-control select2-single" formControlName="location" ngModel id="location"
-                    name="location">
+                  <select class="form-control select2-single" formControlName="location" id="location" name="location">
                     <option value="">-- Select Location --</option>
                     <option *ngFor="let e of locations" value="{{e.id}}__{{e.version}}">{{e.name}}</option>
                   </select>

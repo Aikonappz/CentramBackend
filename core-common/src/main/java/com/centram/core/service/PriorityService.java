@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,9 +61,9 @@ public class PriorityService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Priority> getPriorities(String priorityType, Pageable pageable) {
+    public PaginatedList<Priority> getPriorities(BigInteger accountId, String priorityType, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new PaginatedList<Priority>(priorityRepository.getPriorityByOrganisation(PriorityType.valueOf(priorityType), loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Priority>(priorityRepository.getPriorityByOrganisation(accountId, PriorityType.valueOf(priorityType), loggedInUser.getOrganisationId(), pageable));
     }
 
     /**
@@ -72,13 +73,14 @@ public class PriorityService {
      * @return
      */
     @Transactional
-    public Priority save(Priority priority) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        priority.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+    public Priority save(BigInteger organisationId, Priority priority) {
+        priority.setOrganisation(organisationService.getOrganisationById(organisationId));
         try {
             priority = proxyService.savePriority(priority);
         } catch (DataIntegrityViolationException e) {
-            throw new AppException(GenericErrorCode.PRIORITY_DATA_EXIST);
+            throw new AppException(GenericErrorCode.DATA_EXIST, new HashMap<String, Object>() {{
+                put("entity", "Priority");
+            }});
         }
         return priority;
     }
@@ -94,5 +96,10 @@ public class PriorityService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         priorityRepository.updateStatus(status, userIds);
 
+    }
+
+    @Transactional(readOnly = true)
+    public Priority getPriorityByNameAndAccountIdAndOrganisationId(String name, BigInteger accountId, BigInteger organisationId) {
+        return priorityRepository.getPriorityByNameAndAccountIdAndOrganisationId(name, accountId, organisationId);
     }
 }

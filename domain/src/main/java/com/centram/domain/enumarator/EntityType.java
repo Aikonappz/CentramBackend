@@ -5,5 +5,6 @@ public enum EntityType {
     USER,
     INCIDENT,
     ASSET_REQUEST,
-    CHAT
+    CHAT,
+    PROJECT_UAT,
 }

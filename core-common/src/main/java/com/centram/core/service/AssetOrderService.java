@@ -150,13 +150,13 @@ public class AssetOrderService {
     public AssetOrder save(AssetOrder assetOrder) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (assetOrder.getId() == null) {
-            Setting setting = organisationService.getOrganisationSettings();
+            assetOrder.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+            Setting setting = assetOrder.getOrganisation().getSetting();
             outboundAssetReqPrefix = (setting != null && setting.getOutboundAssetRequestPrefix() != null) ? setting.getOutboundAssetRequestPrefix() : outboundAssetReqPrefix;
             Long totalAssetOrder = assetOrderRepository.getCountOfAssets(loggedInUser.getOrganisationId())+1;
             String assetOrderNo = outboundAssetReqPrefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalAssetOrder), 4, "0");
             assetOrder.setOrderNo(assetOrderNo);
             assetOrder.setRaisedUser(new User(userService.getUserById(loggedInUser.getUserId())));
-            assetOrder.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         }
         /*if (assetOrder.getPurchaseType() == PurchaseType.RENTED) {
             ZonedDateTime rentStartAt = ZonedDateTime.of(assetOrder.getRentStartAt(), ZoneId.of(loggedInUser.getTimeZone()));

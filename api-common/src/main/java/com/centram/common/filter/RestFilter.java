@@ -2,6 +2,7 @@ package com.centram.common.filter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.centram.common.utility.Utility.getCorrelationId;
 
 
 public class RestFilter implements Filter {
@@ -32,14 +35,12 @@ public class RestFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         RequestWrapper requestWrapper = new RequestWrapper(req);
-        //MDC.put("correlation-id", Utility.getCorrelationId());
-        //log.info("ORIGIN => {} ", req.getHeader("Origin"));
-        //log.info("ALLOWED ORIGIN => {} ", allowedOrigins);
-        //log.info("CONDITIONAL ALLOWED ORIGIN => {}", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
+        MDC.put("correlation-id", getCorrelationId());
+        log.debug("ORIGIN => {} ", req.getHeader("Origin"));
+        log.debug("ALLOWED ORIGIN => {} ", allowedOrigins);
+        log.debug("CONDITIONAL ALLOWED ORIGIN => {}", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
         res.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(req.getHeader("Origin")) ? req.getHeader("Origin") : "");
         res.setHeader("Access-Control-Allow-Credentials", "true");
-        //res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-        //res.setHeader("Access-Control-Allow-Credentials", "false");
         res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
         res.setHeader("Access-Control-Max-Age", "3600");
         res.setHeader("Access-Control-Expose-Headers", "Authorization");

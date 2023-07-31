@@ -1,6 +1,5 @@
 package com.centram.core.api;
 
-import com.centram.common.service.JasyptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -19,8 +18,6 @@ public class Saml2SSOController {
     private final String uiSsoPath = "/sso/sign-in/";
     @Value("${app.base.url}")
     private String appBaseUrl;
-    @Autowired
-    private JasyptService jasyptService;
 
     @RequestMapping("/")
     public String index() {
@@ -44,9 +41,11 @@ public class Saml2SSOController {
         if (authentication != null) {
             httpServletResponse.setHeader("Location", appBaseUrl.concat(uiSsoPath)
                     .concat(URLEncoder.encode(
-                                    jasyptService.encrypt(
-                                            authentication.getPrincipal().toString()
-                                    ), StandardCharsets.UTF_8
+                                    //jasyptService.encrypt(
+                                    //        authentication.getPrincipal().toString()
+                                    //)
+                            authentication.getPrincipal().toString()
+                            , StandardCharsets.UTF_8
                             )
                     )
             );

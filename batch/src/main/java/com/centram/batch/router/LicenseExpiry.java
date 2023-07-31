@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,22 +37,23 @@ public class LicenseExpiry extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://organisation/licenseExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
                 .autoStartup(true)
-                .routeId("license-expiry")
+                .routeId("organization-license-expiry")
                 .enrich("bean:organisationService?method=getActiveOrganisations()", new OrganisationAggregator())
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
+                        //exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
                     }
                 })
-                .log(LoggingLevel.INFO, "license-expiry -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:processOrganisationLicenseNotifications");
 
         from("direct:processOrganisationLicenseNotifications")
+                .log(LoggingLevel.INFO, "=================== organization-license-expiry job processing ===================")
                 .routeId("process-organisation-license-notifications")
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //.log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -61,7 +61,6 @@ public class LicenseExpiry extends RouteBuilder {
                         Organisation organisation = organisations.get((int) exchange.getProperty("CamelLoopIndex"));
                         LocalDateTime currentDateTime = LocalDateTime.now();
                         if (currentDateTime.isBefore(organisation.getLicenseEnd())) {
-                            //Long daysBetween = Duration.between(currentDateTime, organisation.getLicenseEnd()).get(ChronoUnit.DAYS);
                             Long daysBetween = Duration.between(currentDateTime, organisation.getLicenseEnd()).abs().toDays();
                             if (notifyOrganisation(daysBetween.intValue())) {
                                 miscService.organisationNotification(organisation, false);
@@ -74,18 +73,16 @@ public class LicenseExpiry extends RouteBuilder {
                     }
                 })
                 .end()
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                .log(LoggingLevel.INFO, "license-expiry completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "=================== organization-license-expiry job completed ===================")
                 .end();
     }
 
+    /**
+     * reminder day logic
+     **/
     private Boolean notifyOrganisation(Integer remainingDays) {
-        List<Integer> ranges = Arrays.asList(60, 45, 30, 25, 20, 15, 10, 7);
-        return ranges.contains(remainingDays);
+        return Arrays.asList(60, 45, 30, 25, 20, 15, 10, 7)
+                .contains(remainingDays);
     }
+
 }

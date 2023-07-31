@@ -104,19 +104,19 @@ public class BatchConfig {
         return quartz;
     }
 
-    @Bean
+    /*@Bean
     public AllocatedAssetValidityExpiry allocatedAssetValidityExpiry() {
         return new AllocatedAssetValidityExpiry();
-    }
+    }*/
 
-    @Bean
+    /*@Bean
     public AssetWarrantyExpiry assetWarrantyExpiry() {
         return new AssetWarrantyExpiry();
-    }
+    }*/
 
     @Bean
-    public SlaNotify incidentSLANotification() {
-        return new SlaNotify();
+    public IncidentSlaNotification incidentSLANotification() {
+        return new IncidentSlaNotification();
     }
 
     @Bean
@@ -135,11 +135,14 @@ public class BatchConfig {
     }
 
     @Bean
-    JunkCleaner junkCleaner() {
-        return new JunkCleaner();
+    EmailDistributionListListener emailDistributionListListener() {
+        return new EmailDistributionListListener();
     }
 
-
+    /*@Bean
+    JunkCleaner junkCleaner() {
+        return new JunkCleaner();
+    }*/
 
     /*@Bean
     public ServletRegistrationBean camelServletRegistrationBean() {

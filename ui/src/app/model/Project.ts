@@ -5,8 +5,11 @@ export class Project extends Base {
     id: number;
     projectType: any;
     name: string;
+    label: string;
     code: String;
     watchList: string[];
+    stakeHolders: string[];
+    consultants: string[];
     inHouse: boolean;
     status: any;
     organisation: Organisation;
@@ -16,8 +19,11 @@ export class Project extends Base {
         this.id = null;
         this.projectType = null;
         this.name = null;
+        this.label = null;
         this.code = null;
         this.watchList = [];
+        this.stakeHolders = [];
+        this.consultants = [];
         this.status = 'ACTIVE';
         this.inHouse = true;
         this.organisation = new Organisation();

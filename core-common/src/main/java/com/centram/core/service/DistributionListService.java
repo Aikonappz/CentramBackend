@@ -10,7 +10,6 @@ import com.centram.core.repository.DistributionListRepository;
 
 import com.centram.domain.DistributionList;
 import com.centram.domain.DistributionListModule;
-import com.centram.domain.enumarator.ActivityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +63,8 @@ public class DistributionListService {
      * @param subModuleId
      * @return
      */
-    public List<DistributionList> getByModuleIdAndSubModuleId(BigInteger moduleId, BigInteger subModuleId) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, loggedInUser.getOrganisationId());
+    public List<DistributionList> getByModuleIdAndSubModuleIdAndOrganisationId(BigInteger moduleId, BigInteger subModuleId, BigInteger organisationId) {
+        return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, organisationId);
     }
 
     /**
@@ -77,17 +75,6 @@ public class DistributionListService {
      * @return
      */
     public List<DistributionList> getByModuleIdAndSubModuleIdAndOrganisation(BigInteger moduleId, BigInteger subModuleId, BigInteger organisationId) {
-        return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, organisationId);
-    }
-
-    /**
-     * get DL list by module, submodule and organisation wise
-     *
-     * @param moduleId
-     * @param subModuleId
-     * @return
-     */
-    public List<DistributionList> getByModuleIdAndSubModuleId(BigInteger moduleId, BigInteger subModuleId, BigInteger organisationId) {
         return distributionListRepository.getByModuleIdAndSubModuleId(moduleId, subModuleId, organisationId);
     }
 

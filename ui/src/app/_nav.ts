@@ -33,16 +33,22 @@ export const navItems: INavData[] = [
     attributes: { "moduleName": "MASTERS" },
     children: [
       {
+        name: 'Account',
+        url: '/master/account',
+        icon: 'cil-object-group',
+        attributes: { "moduleName": "ACCOUNT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+      },
+      {
         name: 'Department',
         url: '/master/department',
         icon: 'icon-puzzle',
-        attributes: { "moduleName": "DEPARTMENT" }
+        attributes: { "moduleName": "DEPARTMENT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
       },
       {
         name: 'Location',
         url: '/master/location',
         icon: 'icon-location-pin',
-        attributes: { "moduleName": "LOCATION" }
+        attributes: { "moduleName": "LOCATION", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
       },
       {
         name: 'Priority -Incident',
@@ -60,19 +66,19 @@ export const navItems: INavData[] = [
         name: 'Holiday Calendar',
         url: '/master/calendar',
         icon: 'icon-calendar',
-        attributes: { "moduleName": "HOLIDAY CALENDAR" }
+        attributes: { "moduleName": "HOLIDAY CALENDAR", "licenceType": "ALL,INCIDENT,ASSET" }
       },
       {
         name: 'Distribution List',
         url: '/master/dl',
         icon: 'icon-list',
-        attributes: { "moduleName": "DISTRIBUTION LIST" }
+        attributes: { "moduleName": "DISTRIBUTION LIST", "licenceType": "ALL,INCIDENT,ASSET" }
       },
       {
         name: 'Project Master',
         url: '/master/project',
         icon: 'cil-blur-linear',
-        attributes: { "moduleName": "PROJECT_MASTER" }
+        attributes: { "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT,UAT" }
       },
       {
         name: 'Vendor -Incident',
@@ -92,7 +98,7 @@ export const navItems: INavData[] = [
     name: 'Incidents',
     url: '/incident',
     icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "INCIDENT" },
+    attributes: { "moduleName": "INCIDENT", "licenceType": "ALL,INCIDENT" },
     children: [
       {
         name: 'Employee Access',
@@ -137,7 +143,7 @@ export const navItems: INavData[] = [
     name: 'Asset',
     url: '/asset',
     icon: 'fa fa-cubes',
-    attributes: { "moduleName": "ASSET" },
+    attributes: { "moduleName": "ASSET", "licenceType": "ALL,ASSET" },
     children: [
       {
         name: 'Admin Access',
@@ -218,6 +224,46 @@ export const navItems: INavData[] = [
     url: '/notification',
     icon: 'icon-info',
     attributes: { "moduleName": "MY NOTIFICATIONS" }
+  },
+  {
+    name: 'Project',
+    url: '/project',
+    icon: 'fa fa-list-alt',
+    attributes: { "moduleName": "PROJECT", "licenceType": "ALL,PROJECT" },
+    children: [
+      {
+        name: 'Manage Timesheet',
+        url: '/project/manage-timesheet',
+        icon: 'cil-clock',
+        attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
+      },
+      {
+        name: 'Allocate Project',
+        url: '/project/allocate',
+        icon: 'cil-grain',
+        attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+      {
+        name: 'Deallocate Project',
+        url: '/project/deallocate',
+        icon: 'cil-gradient',
+        attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+      },
+    ]
+  },
+  {
+    name: 'UAT',
+    url: '/uat',
+    icon: 'fa fa-flask', 
+    attributes: { "moduleName": "UAT", "licenceType": "ALL,UAT" },
+    children: [
+      {
+        name: 'UAT Activities',
+        url: '/uat/activities',
+        icon: 'fa fa-suitcase',
+        attributes: { "moduleName": "UAT ACTIVITIES", "licenceType": "ALL,UAT" }
+      },
+    ]
   },
   {
     name: 'Reports',
@@ -311,32 +357,6 @@ export const navItems: INavData[] = [
       },
     ]
   },
-  {
-    name: 'Project',
-    url: '/project',
-    icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "PROJECT" },
-    children: [
-      {
-        name: 'Manage Timesheet',
-        url: '/project/manage-timesheet',
-        icon: 'cil-clock',
-        attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
-      },
-      {
-        name: 'Allocate Project',
-        url: '/project/allocate',
-        icon: 'cil-grain',
-        attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
-      },
-      {
-        name: 'Deallocate Project',
-        url: '/project/deallocate',
-        icon: 'cil-gradient',
-        attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
-      },
-    ]
-  }
 ];
 
 //attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }

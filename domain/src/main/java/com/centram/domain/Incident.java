@@ -2,12 +2,13 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.common.vo.CategoryAdminDashboardVO;
-import com.centram.domain.converter.StringCommaSeparetedToListConverter;
+import com.centram.domain.converter.StringCommaSeparatedToListConverter;
+import com.centram.domain.converter.TimeEntryConverter;
 import com.centram.domain.enumarator.IncidentStatus;
 import com.centram.domain.enumarator.LicenseType;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +28,9 @@ import java.util.Set;
 /**
  * Incident
  */
-@ApiModel(description = "Incident")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @NamedNativeQuery(
         name = "Incident.agingWiseIncidentDashboardData",
         query = " SELECT " +
@@ -84,7 +85,7 @@ import java.util.Set;
 public class Incident extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337834473432054L;
 
-    @ApiModelProperty(value = "")
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,13 +93,13 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Column(name = "module_id", nullable = false)
     @JsonView(Views.BasicView.class)
     private BigInteger moduleId;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Column(name = "sub_module_id", nullable = false)
     @JsonView(Views.BasicView.class)
@@ -120,19 +121,19 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String actualSubModuleName;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Column(name = "title", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String title;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Column(name = "incident_no", nullable = false, updatable = false, insertable = true, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String incidentNo;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     @NotNull
     @OneToOne
@@ -140,15 +141,15 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Priority priority;
 
-    @ApiModelProperty(required = true, value = "")
+
     @Valid
     @Lob
     @Column(name = "watch_list", nullable = true, columnDefinition = "TEXT")
-    @Convert(converter = StringCommaSeparetedToListConverter.class)
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
     @JsonView(Views.BasicView.class)
     private List<String> watchList;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Valid
     @Column(name = "status")
@@ -156,7 +157,7 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private IncidentStatus status;
 
-    @ApiModelProperty(required = true, value = "")
+
     @Valid
     @NotNull
     @OneToOne
@@ -164,7 +165,7 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private User raisedUser;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     @NotNull
     @OneToOne
@@ -172,77 +173,77 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class,})
     private User assignedUser;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     //@NotNull
     @OneToMany(mappedBy = "incident", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     private Set<IncidentCommunication> communications;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Column(name = "raised_at", nullable = false, updatable = false)
     @JsonView(Views.BasicView.class)
     private LocalDateTime raisedAt;
 
-    @ApiModelProperty(required = true, value = "")
+
     @Column(name = "sla_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime slaAt;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "hold_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime holdAt;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "reopened_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime reopenedAt;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "agent_notification1_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime agentNotification1At;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "agent_notification2_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime agentNotification2At;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "escalation1_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime escalation1At;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "escalation2_at", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime escalation2At;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "sla_breached", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean slaBreached = false;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "re_opened", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean reOpened = false;
 
-    @ApiModelProperty(required = false)
+
     @Column(name = "assignment_comment", nullable = true, columnDefinition = "varchar(1000) default null")
     @JsonView(Views.BasicView.class)
     private String assignmentComment;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     @OneToOne
     @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
 
-    @ApiModelProperty(required = true, value = "")
+
     @NotNull
     @Valid
     @Column(name = "incident_type")
@@ -250,7 +251,7 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private LicenseType incidentType;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     @NotNull
     @OneToOne
@@ -258,77 +259,97 @@ public class Incident extends BaseEntity implements Serializable {
     @JsonView({Views.BasicView.class, Views.DetailView.class, Views.InternalView.class,})
     private Asset asset;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "old_asset_id", nullable = true)
     @JsonView(Views.BasicView.class)
     private BigInteger oldAssetId;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "old_asset", nullable = true)
     @JsonView(Views.BasicView.class)
     private String oldAsset;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "approval_required", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean approvalRequired = false;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     @NotNull
     @JsonView({Views.BasicView.class, Views.ListView.class, Views.DetailView.class, Views.InternalView.class,})
     private BigInteger approverUserId;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "asset_approved", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean assetApproved = false;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "feedback_provided", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean feedbackProvided = false;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "allocated", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean allocated = false;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "allocation_date_time", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime allocationDateTime;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "deallocated", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean deallocated = false;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Column(name = "dealocation_date_time", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime deallocationDateTime;
 
-    @ApiModelProperty(required = false)
+
     @Column(name = "asset_ticket_type", nullable = true)
     @JsonView(Views.BasicView.class)
     private String ticketType;
 
-    @ApiModelProperty(required = false, value = "")
+
     @Valid
     @Column(name = "asset_validity", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDateTime assetValidity;
 
-    @ApiModelProperty(required = true, value = "")
+
     @Column(name = "validity_expiration_msg_sent", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean validityExpirationMessageSent = false;
 
-    @ApiModelProperty(required = true, value = "")
+
     @Column(name = "validity_expired_msg_sent", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean validityExpiredMessageSent = false;
+
+
+    @NotNull
+    @Column(name = "expected_time", nullable = true, columnDefinition = "varchar(5) default '00:00'")
+    @JsonView(Views.BasicView.class)
+    private String expectedTime;
+
+
+    @Valid
+    @Lob
+    @Column(name = "time_entries", nullable = true, columnDefinition = "TEXT")
+    @Convert(converter = TimeEntryConverter.class)
+    @JsonView(Views.BasicView.class)
+    private List<TimeEntry> timeEntries;
+
+    @Transient
+    private com.centram.domain.Module category;
+
+    @Transient
+    private com.centram.domain.Module subCategory;
 
     public Incident(@NotNull BigInteger id) {
         this.id = id;

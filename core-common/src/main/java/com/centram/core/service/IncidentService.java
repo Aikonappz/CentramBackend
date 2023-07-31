@@ -61,7 +61,7 @@ public class IncidentService {
     @Autowired
     private OrganisationService organisationService;
     @Autowired
-    private HolidayCalenderService holidayCalenderService;
+    private HolidayCalendarService holidayCalendarService;
     @Autowired
     private PriorityService priorityService;
     @Autowired
@@ -112,11 +112,10 @@ public class IncidentService {
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         Page<Incident> incidentPage = incidentRepository.getIncomingIncidents(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
-                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+            i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -136,13 +135,12 @@ public class IncidentService {
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         Page<Incident> incidentPage = incidentRepository.assetTicketReport(LicenseType.valueOf(incidentType), approved, serialNo, assigned, deallocated, incidentNo, mId, smId, pId, uId, ruId, modSubModIds, title, intStatus, loggedInUser.getOrganisationId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    Module module = moduleService.getModuleById(i.getModuleId());
-                    Module subModule = moduleService.getModuleById(i.getSubModuleId());
-                    i.setModuleName(module.getCustomerModuleName());
-                    i.setSubModuleName(subModule.getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            Module module = moduleService.getModuleById(i.getModuleId());
+            Module subModule = moduleService.getModuleById(i.getSubModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            i.setSubModuleName(subModule.getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -158,13 +156,12 @@ public class IncidentService {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         incidentNo = (!incidentNo.equals("")) ? "%" + incidentNo.toUpperCase() + "%" : null;
         Page<Incident> incidentPage = incidentRepository.getPendingAssetApprovals(incidentNo, loggedInUser.getUserId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    Module module = moduleService.getModuleById(i.getModuleId());
-                    Module subModule = moduleService.getModuleById(i.getSubModuleId());
-                    i.setModuleName(module.getCustomerModuleName());
-                    i.setSubModuleName(subModule.getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            Module module = moduleService.getModuleById(i.getModuleId());
+            Module subModule = moduleService.getModuleById(i.getSubModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            i.setSubModuleName(subModule.getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -271,22 +268,6 @@ public class IncidentService {
     }
 
     /**
-     * get all non bocked incidents to process in background
-     *
-     * @return
-     */
-    public List<Incident> getNonBlockedIncidents() {
-        return this.getAllIncidentsByStatus(new ArrayList<IncidentStatus>() {{
-            add(IncidentStatus.OPEN);
-            add(IncidentStatus.ASSIGNED);
-            add(IncidentStatus.WORK_IN_PROGRESS);
-            add(IncidentStatus.CLARIFICATION_PROVIDED);
-            add(IncidentStatus.SLA_ABOUT_TO_BREACH);
-            add(IncidentStatus.SLA_BREACHED);
-        }});
-    }
-
-    /**
      * get all open incidents by category subcategory and organisation and location
      *
      * @param organisationId
@@ -343,11 +324,10 @@ public class IncidentService {
         title = (!title.equals("")) ? "%" + title.toUpperCase() + "%" : null;
         int intStatus = (!status.equals("")) ? IncidentStatus.valueOf(status).ordinal() : IncidentStatus.ALL.ordinal();
         Page<Incident> incidentPage = incidentRepository.getUserIncidents(LicenseType.valueOf(incidentType), incidentNo, serialNo, title, intStatus, assigned, deallocated, loggedInUser.getUserId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
-                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+            i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -361,11 +341,10 @@ public class IncidentService {
     public PaginatedList<Incident> getUserAllocatedAssets(Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Page<Incident> incidentPage = incidentRepository.getUserAllocatedAssets(LicenseType.ASSET, IncidentStatus.CLOSED, loggedInUser.getUserId(), pageable);
-        incidentPage.getContent().stream()
-                .forEach(i -> {
-                    i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
-                    i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
-                });
+        incidentPage.getContent().stream().forEach(i -> {
+            i.setModuleName(moduleService.getModuleById(i.getModuleId()).getCustomerModuleName());
+            i.setSubModuleName(moduleService.getModuleById(i.getSubModuleId()).getCustomerModuleName());
+        });
         return new PaginatedList<Incident>(incidentPage);
     }
 
@@ -441,12 +420,12 @@ public class IncidentService {
     }
 
     /**
-     * @param incidents
+     * @param incident
      * @return
      */
     @Transactional(readOnly = false)
-    public Incident saveViaBatch(Incident incidents) {
-        return incidentRepository.save(incidents);
+    public Incident saveViaBatch(Incident incident) {
+        return incidentRepository.save(incident);
     }
 
     /**
@@ -501,15 +480,15 @@ public class IncidentService {
             /*prepare holiday List*/
             ZonedDateTime raiseDateTime = ZonedDateTime.now();
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (raiseDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
             raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
-            incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays, loggedInUser.getTimeZone()));
             incident = incidentRepository.save(incident);
             miscService.notifyIncidentUpdate(new IncidentEmailVO(incident, appDateTimeViewFormat, "Incident Reopened again!", true));
         }
@@ -541,16 +520,15 @@ public class IncidentService {
             /*prepare holiday List*/
             ZonedDateTime raiseDateTime = ZonedDateTime.now();
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (raiseDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
             raiseDateTime = raiseDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
-            incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
-
+            incident.setSlaAt(this.getSLADateTime(raiseDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays, loggedInUser.getTimeZone()));
             incident = incidentRepository.save(incident);
             miscService.sendInboundAssetRequestActionEmail(new IncidentEmailVO(incident, appDateTimeViewFormat, assetApprovalDTO.getFeedback()));
         } else {
@@ -615,18 +593,19 @@ public class IncidentService {
         incident.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         incident.setWatchList(incident.getWatchList() == null ? Collections.emptyList() : incident.getWatchList());
         if (incident.getId() == null) {
+            incident.setExpectedTime("00:00");
             incident.setRaisedUser(new User(userVO));
             incident.setRaisedAt(LocalDateTime.now());
             Setting setting = null;
             String prefix = null;
             if (incident.getIncidentType() == LicenseType.INCIDENT) {
-                setting = organisationService.getOrganisationSettings();
+                setting = incident.getOrganisation().getSetting();
                 prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
                 Long totalOrder = incidentRepository.getCount(LicenseType.INCIDENT, loggedInUser.getOrganisationId()) + 1;
                 String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
                 incident.setIncidentNo(orderNo);
             } else {
-                setting = organisationService.getOrganisationSettings();
+                setting = incident.getOrganisation().getSetting();
                 prefix = (setting != null && setting.getInboundAssetRequestPrefix() != null) ? setting.getInboundAssetRequestPrefix() : inboundAssetReqPrefix;
                 Long totalOrder = incidentRepository.getCount(LicenseType.ASSET, loggedInUser.getOrganisationId()) + 1;
                 String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
@@ -638,14 +617,14 @@ public class IncidentService {
             Priority priority = priorityService.getById(incident.getPriority().getId());
             /*prepare holiday List*/
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (currentDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             /*prepare holiday List*/
-            incident.setSlaAt(this.getSLADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            incident.setSlaAt(this.getSLADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays, loggedInUser.getTimeZone()));
             if (incident.getIncidentType() == LicenseType.ASSET) {
                 Module assetType = moduleService.getModuleById(incident.getSubModuleId());
                 if (incident.getTicketType().equalsIgnoreCase("ALLOCATE")) {
@@ -666,6 +645,12 @@ public class IncidentService {
                     incident.setAllocated(true);
                     incident.setAsset(assetService.getAssetById(incident.getOldAssetId()));
                 }
+            }
+        } else {
+            // if any update happened in background job
+            Long version = incidentRepository.getCurrentVersion(incident.getId());
+            if (!incident.getVersion().equals(version)) {
+                incident.setVersion(version);
             }
         }
         if (incident.getAssetValidity() != null) {
@@ -724,15 +709,15 @@ public class IncidentService {
             Priority priority = priorityService.getById(incident.getPriority().getId());
             /*prepare holiday List*/
             List<Holiday> holidays = new ArrayList<Holiday>();
-            List<Holiday> currentYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().toString());
+            List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().toString());
             List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
             if (currentDateTime.getMonth() == Month.DECEMBER) {
-                nextYearHolidays = holidayCalenderService.getHolidaysByYear(Year.now().plusYears(1).toString());
+                nextYearHolidays = holidayCalendarService.getHolidays(loggedInUser.getAccountId(), loggedInUser.getLocationId(), loggedInUser.getOrganisationId(), Year.now().plusYears(1).toString());
             }
             holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
             ZonedDateTime holdDateTime = incident.getHoldAt().atZone(ZoneId.systemDefault());
             holdDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone()));
-            incident.setSlaAt(this.getHoldSLADateTime(currentDateTime, holdDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays));
+            incident.setSlaAt(this.getHoldSLADateTime(currentDateTime, holdDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays, loggedInUser.getTimeZone()));
             incident.setHoldAt(null);
         }
         raisedIncident = incidentRepository.save(incident);
@@ -751,6 +736,55 @@ public class IncidentService {
         //notify respected user
         miscService.notifyIncidentUpdate(new IncidentEmailVO(raisedIncident, appDateTimeViewFormat, null));
         return raisedIncident;
+    }
+
+
+    /**
+     * @param incident
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public void createFromEmail(Incident incident) {
+        Incident raisedIncident = null;
+        Location userLocation = incident.getRaisedUser().getLocation();
+        Organisation organisation = incident.getRaisedUser().getOrganisation();
+        ZonedDateTime currentDateTime = ZonedDateTime.now();
+        currentDateTime = currentDateTime.withZoneSameInstant(ZoneId.of(userLocation.getTimezone()));
+        incident.setWatchList(incident.getWatchList() == null ? Collections.emptyList() : incident.getWatchList());
+        incident.setExpectedTime("00:00");
+        incident.setRaisedAt(LocalDateTime.now());
+        Setting setting = null;
+        String prefix = null;
+        if (incident.getIncidentType() == LicenseType.INCIDENT) {
+            setting = organisation.getSetting();
+            prefix = (setting != null && setting.getIncidentPrefix() != null) ? setting.getIncidentPrefix() : appDefaultIncidentPrefix;
+            Long totalOrder = incidentRepository.getCount(LicenseType.INCIDENT, organisation.getId()) + 1;
+            String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
+            incident.setIncidentNo(orderNo);
+        } else {
+            setting = organisation.getSetting();
+            prefix = (setting != null && setting.getInboundAssetRequestPrefix() != null) ? setting.getInboundAssetRequestPrefix() : inboundAssetReqPrefix;
+            Long totalOrder = incidentRepository.getCount(LicenseType.ASSET, organisation.getId()) + 1;
+            String orderNo = prefix + LocalDate.now().getYear() + StringUtils.leftPad(String.valueOf(totalOrder), 4, "0");
+            incident.setIncidentNo(orderNo);
+        }
+        /*fetch location*/
+        Location location = incident.getRaisedUser().getLocation();
+        /*fetch priority*/
+        Priority priority = incident.getPriority();
+        /*prepare holiday List*/
+        List<Holiday> holidays = new ArrayList<Holiday>();
+        List<Holiday> currentYearHolidays = holidayCalendarService.getHolidays(incident.getRaisedUser().getAccount().getId(), incident.getRaisedUser().getLocation().getId(), incident.getRaisedUser().getOrganisation().getId(), Year.now().toString());
+        List<Holiday> nextYearHolidays = new ArrayList<Holiday>();
+        if (currentDateTime.getMonth() == Month.DECEMBER) {
+            nextYearHolidays = holidayCalendarService.getHolidays(incident.getRaisedUser().getAccount().getId(), incident.getRaisedUser().getLocation().getId(), incident.getRaisedUser().getOrganisation().getId(), Year.now().plusYears(1).toString());
+        }
+        holidays = this.mergeHolidays(currentYearHolidays, nextYearHolidays);
+        /*prepare holiday List*/
+        incident.setSlaAt(this.getSLADateTime(currentDateTime, priority.getSla(), location.getOpsStartTime(), location.getOpsEndTime(), holidays, userLocation.getTimezone()));
+        raisedIncident = incidentRepository.save(incident);
+        //notify respected user
+        miscService.notifyIncidentCreationViaEmail(new IncidentEmailVO(raisedIncident, appDateTimeViewFormat, null));
     }
 
     /**
@@ -774,8 +808,7 @@ public class IncidentService {
      * @param holidays
      * @return
      */
-    private LocalDateTime getHoldSLADateTime(ZonedDateTime raisedDateTime, ZonedDateTime holdAtDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    private LocalDateTime getHoldSLADateTime(ZonedDateTime raisedDateTime, ZonedDateTime holdAtDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays, String timeZone) {
         ChronoUnit chronoUnit = ChronoUnit.MINUTES;
         Long timePassed = chronoUnit.between(holdAtDateTime, raisedDateTime);
         Long hours = Long.valueOf(hour.split((":"))[0]);
@@ -792,24 +825,24 @@ public class IncidentService {
         if (this.isHoliday(raisedDateTime.toLocalDate(), holidays)) {
             Optional<WorkingDay> nextWorkingDayOptional = this.nextWorkingDay(raisedDateTime.toLocalDate(), workingDays);
             if (nextWorkingDayOptional.isPresent()) {
-                slaDayDateTime = nextWorkingDayOptional.get().getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                slaDayDateTime = nextWorkingDayOptional.get().getDate().atTime(opsStartTime).atZone(ZoneId.of(timeZone));
             } else {
                 throw new AppException(GenericErrorCode.HOLIDAY_CALENDER_MASTER_DATA_MISSING);
             }
         }
         for (WorkingDay workingDay : workingDays) {
-            if (slaDayDateTime.toLocalDate().compareTo(workingDay.getDate()) == 0) {
-                slaDayDateTime = slaDayDateTime.plusMinutes(minuteToAdd).toLocalDateTime().atZone(ZoneId.of(loggedInUser.getTimeZone()));
+            if (slaDayDateTime.toLocalDate().isEqual(workingDay.getDate())) {
+                slaDayDateTime = slaDayDateTime.plusMinutes(minuteToAdd).toLocalDateTime().atZone(ZoneId.of(timeZone));
                 if (!this.checkIsValidSLA(slaDayDateTime, workingDays)) {
                     slaDayEndTime = slaDayDateTime.with(opsEndTime);
                     duration = Duration.between(slaDayEndTime, slaDayDateTime);
                     minuteToAdd = duration.toMinutes();
-                    slaDayDateTime = slaDayDateTime.plusDays(1).toLocalDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                    slaDayDateTime = slaDayDateTime.plusDays(1).toLocalDate().atTime(opsStartTime).atZone(ZoneId.of(timeZone));
                 }
             }
         }
         log.info("UTC {}", slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
-        log.info("LOCAL {}", slaDayDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone())).toLocalDateTime());
+        log.info("LOCAL {}", slaDayDateTime.withZoneSameInstant(ZoneId.of(timeZone)).toLocalDateTime());
         return slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
@@ -823,8 +856,7 @@ public class IncidentService {
      * @param holidays
      * @return
      */
-    private LocalDateTime getSLADateTime(ZonedDateTime raisedDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    private LocalDateTime getSLADateTime(ZonedDateTime raisedDateTime, String hour, LocalTime opsStartTime, LocalTime opsEndTime, List<Holiday> holidays, String timeZone) {
         Long hours = Long.valueOf(hour.split((":"))[0]);
         Long minutes = Long.valueOf(hour.split((":"))[1]);
         log.info("hours => {}, minutes => {}", hours, minutes);
@@ -838,24 +870,24 @@ public class IncidentService {
         if (this.isHoliday(raisedDateTime.toLocalDate(), holidays)) {
             Optional<WorkingDay> nextWorkingDayOptional = this.nextWorkingDay(raisedDateTime.toLocalDate(), workingDays);
             if (nextWorkingDayOptional.isPresent()) {
-                slaDayDateTime = nextWorkingDayOptional.get().getDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                slaDayDateTime = nextWorkingDayOptional.get().getDate().atTime(opsStartTime).atZone(ZoneId.of(timeZone));
             } else {
                 throw new AppException(GenericErrorCode.HOLIDAY_CALENDER_MASTER_DATA_MISSING);
             }
         }
         for (WorkingDay workingDay : workingDays) {
-            if (slaDayDateTime.toLocalDate().compareTo(workingDay.getDate()) == 0) {
-                slaDayDateTime = slaDayDateTime.plusMinutes(minuteToAdd).toLocalDateTime().atZone(ZoneId.of(loggedInUser.getTimeZone()));
+            if (slaDayDateTime.toLocalDate().isEqual(workingDay.getDate())) {
+                slaDayDateTime = slaDayDateTime.plusMinutes(minuteToAdd).toLocalDateTime().atZone(ZoneId.of(timeZone));
                 if (!this.checkIsValidSLA(slaDayDateTime, workingDays)) {
                     slaDayEndTime = slaDayDateTime.with(opsEndTime);
                     duration = Duration.between(slaDayEndTime, slaDayDateTime);
                     minuteToAdd = duration.toMinutes();
-                    slaDayDateTime = slaDayDateTime.plusDays(1).toLocalDate().atTime(opsStartTime).atZone(ZoneId.of(loggedInUser.getTimeZone()));
+                    slaDayDateTime = slaDayDateTime.plusDays(1).toLocalDate().atTime(opsStartTime).atZone(ZoneId.of(timeZone));
                 }
             }
         }
         log.info("UTC {}", slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
-        log.info("LOCAL {}", slaDayDateTime.withZoneSameInstant(ZoneId.of(loggedInUser.getTimeZone())).toLocalDateTime());
+        log.info("LOCAL {}", slaDayDateTime.withZoneSameInstant(ZoneId.of(timeZone)).toLocalDateTime());
         return slaDayDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
@@ -869,8 +901,8 @@ public class IncidentService {
     private Boolean checkIsValidSLA(ZonedDateTime dateTime, List<WorkingDay> workingDays) {
         LocalDate date = dateTime.toLocalDate();
         for (WorkingDay workingDay : workingDays) {
-            if (workingDay.getDate().compareTo(date) == 0) {
-                return (dateTime.toLocalDateTime().compareTo(workingDay.getStartTime()) == 0 || dateTime.toLocalDateTime().isAfter(workingDay.getStartTime())) && (dateTime.toLocalDateTime().compareTo(workingDay.getEndTime()) == 0 || dateTime.toLocalDateTime().isBefore(workingDay.getEndTime()));
+            if (workingDay.getDate().isEqual(date)) {
+                return (dateTime.toLocalDateTime().isEqual(workingDay.getStartTime()) || dateTime.toLocalDateTime().isAfter(workingDay.getStartTime())) && (dateTime.toLocalDateTime().isEqual(workingDay.getEndTime()) || dateTime.toLocalDateTime().isBefore(workingDay.getEndTime()));
             }
         }
         return false;
@@ -886,7 +918,7 @@ public class IncidentService {
      */
     private Boolean isHoliday(LocalDate date, List<Holiday> holidays) {
         return holidays.stream().filter(i -> {
-            return (i.getDate().compareTo(date) == 0);
+            return (i.getDate().isEqual(date));
         }).findAny().isPresent();
     }
 
@@ -927,6 +959,7 @@ public class IncidentService {
 
     /**
      * merge current year and net year holidays into a list
+     * and sort it
      *
      * @param currentYearHolidays
      * @param nextYearHolidays
@@ -938,5 +971,21 @@ public class IncidentService {
         upcomingHolidays.addAll(nextYearHolidays);
         Collections.sort(upcomingHolidays);
         return upcomingHolidays;
+    }
+
+    /**
+     * get all non bocked incidents to process in background
+     *
+     * @return
+     */
+    public List<Incident> getNonBlockedIncidents() {
+        return this.getAllIncidentsByStatus(new ArrayList<IncidentStatus>() {{
+            add(IncidentStatus.OPEN);
+            add(IncidentStatus.ASSIGNED);
+            add(IncidentStatus.WORK_IN_PROGRESS);
+            add(IncidentStatus.CLARIFICATION_PROVIDED);
+            add(IncidentStatus.SLA_ABOUT_TO_BREACH);
+            add(IncidentStatus.SLA_BREACHED);
+        }});
     }
 }

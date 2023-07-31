@@ -3,4 +3,5 @@ export enum LicenseType {
     INCIDENT,
     ASSET,
     PROJECT,
+    UAT,
 }

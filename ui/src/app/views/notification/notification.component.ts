@@ -179,7 +179,7 @@ export class NotificationComponent implements OnInit {
           keyboard: false,
           animated: true,
           ignoreBackdropClick: true,
-          class: data.notificationBody.length > 100 ? 'modal-bg' : 'modal-bg',
+          class: data.notificationBody.length > 100 ? 'modal-xl' : 'modal-bg',
         };
         const initialState = {
           notification: data,

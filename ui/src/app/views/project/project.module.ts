@@ -15,6 +15,8 @@ import { ManageTimeSheetComponent } from './manage-timesheet.component';
 import { ChartsModule } from 'ng2-charts';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { WeeklyIndividualTimeSheet } from './modal/WeeklyIndividualTimeSheet';
+import { NgxMaskModule } from 'ngx-mask'
+import { TextMaskModule } from 'angular2-text-mask';
 
 
 
@@ -45,6 +47,8 @@ import { WeeklyIndividualTimeSheet } from './modal/WeeklyIndividualTimeSheet';
     MatPaginatorModule,
     BsDropdownModule.forRoot(),
     TabsModule,
+    TextMaskModule,
+    NgxMaskModule.forRoot(),
   ]
 })
 export class ProjectModule { }

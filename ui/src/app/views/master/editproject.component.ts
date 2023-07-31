@@ -7,7 +7,7 @@ import { MiscService } from '../../service/MiscService';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { Status } from '../../model/enumerator/Status';
 import { UserService } from '../../service/UserService';
-import { UserVOListResponse } from '../../model/UserVO';
+import { UserVO, UserVOListResponse } from '../../model/UserVO';
 import { Project } from '../../model/Project';
 declare var $: any;
 
@@ -17,7 +17,7 @@ declare var $: any;
   styleUrls: ['./editproject.component.scss']
 })
 export class EditProjectComponent implements OnInit {
-  moduleName: string = "PROJECT";
+  moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   newEntity: boolean = true;
@@ -26,7 +26,10 @@ export class EditProjectComponent implements OnInit {
   entityId: number;
   angForm: FormGroup;
   type: string;
-  users: any[];
+  users: UserVO[];
+  managers: UserVO[];
+  uatStakeHolders: UserVO[];
+  uatConsultants: UserVO[];
   projectTypes: any[] = [];
   project: Project;
   alphaNumericRegex = /^[a-z0-9]+$/i;
@@ -80,8 +83,22 @@ export class EditProjectComponent implements OnInit {
       .subscribe((result: UserVOListResponse) => {
         //let logedinUser = this.loggedInUserService.getLoggedInUser();
         this.users = [];
+        this.managers = [];
+        this.uatConsultants = [];
+        this.uatStakeHolders = [];
         for (let i = 0; i < result.content.length; i++) {
           this.users.push(result.content[i]);
+        }
+        for (let i = 0; i < this.users.length; i++) {
+          if (this.users[i].roleNames.includes('ORG_ADMIN_PROJECT')) {
+            this.managers.push(this.users[i]);
+          }
+          if (this.users[i].roleNames.includes('ORG_UAT_CONSULTANT')) {
+            this.uatConsultants.push(this.users[i]);
+          }
+          if (this.users[i].roleNames.includes('ORG_PROJECT_STAKEHOLDER')) {
+            this.uatStakeHolders.push(this.users[i]);
+          }
         }
       });
 
@@ -99,6 +116,12 @@ export class EditProjectComponent implements OnInit {
         Validators.required,
       ]),
       watchList: new FormControl(null, [
+        Validators.required,
+      ]),
+      consultants: new FormControl(null, [
+        Validators.required,
+      ]),
+      stakeHolders: new FormControl(null, [
         Validators.required,
       ]),
       status: new FormControl('ACTIVE', [
@@ -128,6 +151,8 @@ export class EditProjectComponent implements OnInit {
       this.project.code = this.angForm.controls['code'].value;
       this.project.projectType = this.angForm.controls['projectType'].value == 'HOURLY' ? 0 : 1;
       this.project.watchList = this.angForm.controls['watchList'].value;
+      this.project.stakeHolders = this.angForm.controls['stakeHolders'].value;
+      this.project.consultants = this.angForm.controls['consultants'].value;
       this.project.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.vendor);
       //console.log(this.angForm.controls['status'].value);
@@ -159,6 +184,8 @@ export class EditProjectComponent implements OnInit {
         this.project.status = data.status;
         this.project.version = data.version;
         this.project.watchList = data.watchList;
+        this.project.stakeHolders = data.stakeHolders;
+        this.project.consultants = data.consultants;
         this.project.projectType = data.projectType;
         this.project.inHouse = data.inHouse;
         //console.log(JSON.stringify(this.user));
@@ -169,6 +196,8 @@ export class EditProjectComponent implements OnInit {
         this.angForm.get('code').setValue(this.project.code);
         this.statusFlag = String(this.project.status) == 'ACTIVE' ? true : false;
         this.angForm.get('watchList').setValue(this.project.watchList.map(String));
+        this.angForm.get('stakeHolders').setValue(this.project.stakeHolders.map(String));
+        this.angForm.get('consultants').setValue(this.project.consultants.map(String));
         //this.angForm.markAllAsTouched();
       });
   }

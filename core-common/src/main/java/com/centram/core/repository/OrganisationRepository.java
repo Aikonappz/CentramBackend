@@ -41,9 +41,9 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
             "   ((:status) = 2) " +
             " ) and " +
             " ( " +
-            "   ((:licenseType) <> 3 and o.licenseType = (:licenseType)) " +
+            "   ((:licenseType) <> 0 and o.licenseType = (:licenseType)) " +
             "   OR  " +
-            "   ((:licenseType) = 3) " +
+            "   ((:licenseType) = 0) " +
             " ) and " +
             " ( " +
             "   ((:name) is not null and UPPER(o.name) like (:name)) " +

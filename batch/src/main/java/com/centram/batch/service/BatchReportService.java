@@ -32,16 +32,12 @@ import java.util.*;
 @Service
 public class BatchReportService {
     private static final Logger log = LoggerFactory.getLogger(BatchReportService.class);
-
     @Value("${app.date.format:yyyy-MM-dd}")
     private String dateFormat;
-
     @Autowired
     private IncidentService incidentService;
-
     @Autowired
     private ModuleService moduleService;
-
     @Transactional(readOnly = true)
     public void generateIncidentReport(
             LocalDateTime start,

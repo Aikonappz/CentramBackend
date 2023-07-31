@@ -8,7 +8,6 @@ import com.centram.domain.Setting;
 import com.centram.domain.User;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
-import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
-@Api(value = "Organisation", description = "Organisation API")
+
 @RequestMapping(value = "/api/v1/organisation")
 @Controller
 public class OrganisationApiController {
@@ -40,81 +38,46 @@ public class OrganisationApiController {
     @Autowired
     private OrganisationService organisationService;
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Add an organisation", nickname = "addOrganisation", notes = "Add an organisation", tags = {"Organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','WRITE',authentication.principal)")
-    public ResponseEntity<Organisation> addOrganisation(@ApiParam(value = "Organisation object", required = true) @Valid @RequestBody Organisation body) {
+    public ResponseEntity<Organisation> addOrganisation(@Valid @RequestBody Organisation body) {
         return new ResponseEntity<Organisation>(organisationService.save(body), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update status of an organisation", nickname = "updateStatus", notes = "Update status of an organisation", tags = {"Organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/{ids}/{status}", method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','WRITE',authentication.principal)")
-    public ResponseEntity<Void> updateStatus(@NotNull @ApiParam(value = "Organisation id's to update status", required = true) @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @ApiParam(value = "Status", required = true) @PathVariable("status") Status status) {
+    public ResponseEntity<Void> updateStatus(@NotNull @Valid @PathVariable(value = "ids", required = true) List<BigInteger> ids, @PathVariable("status") Status status) {
         organisationService.updateStatus(status, ids);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Find organisation by Id", nickname = "getOrganisationById", notes = "Find organisation by Id", response = Organisation.class, tags = {"Organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful Operation", response = User.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "Organization not found")
-    })
+
     @RequestMapping(value = "/{organisationId}", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
-    public ResponseEntity<Organisation> getOrganisationById(@ApiParam(value = "id of organisation", required = true) @PathVariable("organisationId") BigInteger organisationId) {
+    public ResponseEntity<Organisation> getOrganisationById(@PathVariable("organisationId") BigInteger organisationId) {
         return new ResponseEntity<Organisation>(organisationService.getOrganisationById(organisationId), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get all organisation", nickname = "getOrganisations", notes = "Get all Organisation", response = PaginatedList.class, tags = {"Organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = PaginatedList.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
-    public ResponseEntity<PaginatedList<Organisation>> getOrganisations(
-            @ApiParam(value = "Organisation Name", defaultValue = "", required = false) @RequestParam(value = "name", defaultValue = "", required = false) String name,
-            @ApiParam(value = "Status", defaultValue = "ALL", required = false) @RequestParam(value = "status", defaultValue = "ALL", required = false) String status,
-            @ApiParam(value = "License Type", defaultValue = "ALL", required = false) @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
-            @ApiParam(value = "Pageable parameters", required = false) @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Organisation>> getOrganisations(@RequestParam(value = "name", defaultValue = "", required = false) String name, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(name, Status.valueOf(status), LicenseType.valueOf(licenseType), pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Get organisation settings", nickname = "getOrganisationSettings", notes = "Get organisation settings", response = Setting.class, tags = {"Organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "successful operation", response = User.class),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 404, message = "Organization not found")
-    })
+
     @RequestMapping(value = "/get-settings", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
     public ResponseEntity<Setting> getOrganisationSettings() {
         return new ResponseEntity<Setting>(organisationService.getOrganisationSettings(), HttpStatus.OK);
     }
 
-    @ApiOperation(authorizations = {@Authorization(value = "JWT")}, value = "Update organisation settings", nickname = "updateOrganisationSettings", notes = "Update organisation settings", tags = {"Organisation",})
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Organisation not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+
     @RequestMapping(value = "/set-settings", produces = {"application/json"}, consumes = {"application/json"}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasOrgAdminAccess(authentication.principal)")
-    public ResponseEntity<Setting> updateOrganisationSettings(@ApiParam(value = "Setting object", required = true) @Valid @RequestBody Setting body) {
+    public ResponseEntity<Setting> updateOrganisationSettings(@Valid @RequestBody Setting body) {
         return new ResponseEntity<Setting>(organisationService.updateOrganisationSettings(body), HttpStatus.OK);
     }
 

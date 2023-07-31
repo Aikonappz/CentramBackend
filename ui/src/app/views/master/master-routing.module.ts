@@ -4,16 +4,18 @@ import { DepartmentComponent } from './department.component';
 import { DistributionListComponent } from './distributionlist.component';
 import { EditDepartmentComponent } from './editdepartment.component';
 import { EditDlComponent } from './editdl.component';
-import { EditHolidayCalenderComponent } from './editholidaycalender.component';
+import { EditHolidayCalendarComponent } from './editholidaycalendar.component';
 import { EditLocationComponent } from './editlocation.component';
 import { EditPriorityComponent } from './editpriority.component';
 import { EditProjectComponent } from './editproject.component';
 import { EditVendorComponent } from './editvendor.component';
-import { HolidayCalenderComponent } from './holidaycalender.component';
+import { HolidayCalendarComponent } from './holidaycalendar.component';
 import { LocationComponent } from './location.component';
 import { PriorityComponent } from './priority.component';
 import { ProjectComponent } from './project.component';
 import { VendorComponent } from './vendor.component';
+import { AccountComponent } from './account.component';
+import { EditAccountComponent } from './editaccount.component';
 
 const routes: Routes = [
   {
@@ -25,6 +27,30 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'department'
+      },
+      {
+        path: 'account',
+        component: AccountComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Account'
+        },
+      },
+      {
+        path: 'account/add',
+        component: EditAccountComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add Account'
+        }
+      },
+      {
+        path: 'account/edit/:id',
+        component: EditAccountComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit Account'
+        }
       },
       {
         path: 'department',
@@ -100,7 +126,7 @@ const routes: Routes = [
       },
       {
         path: 'calendar',
-        component: HolidayCalenderComponent,
+        component: HolidayCalendarComponent,
         pathMatch: 'full',
         data: {
           title: 'Holiday Calendar'
@@ -108,7 +134,7 @@ const routes: Routes = [
       },
       {
         path: 'calendar/add',
-        component: EditHolidayCalenderComponent,
+        component: EditHolidayCalendarComponent,
         pathMatch: 'full',
         data: {
           title: 'Add Holiday Calendar'
@@ -116,7 +142,7 @@ const routes: Routes = [
       },
       {
         path: 'calendar/edit/:id',
-        component: EditHolidayCalenderComponent,
+        component: EditHolidayCalendarComponent,
         pathMatch: 'full',
         data: {
           title: 'Edit Holiday Calendar'

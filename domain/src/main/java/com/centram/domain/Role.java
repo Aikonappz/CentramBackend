@@ -1,8 +1,8 @@
 package com.centram.domain;
 
 import com.centram.domain.enumarator.Status;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,9 +14,9 @@ import java.math.BigInteger;
 /**
  * User Roles
  */
-@ApiModel(description = "Role")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,29 +31,29 @@ import java.math.BigInteger;
 public class Role implements Serializable {
     private static final long serialVersionUID = -6354417405904984865L;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "name", columnDefinition = "varchar(255) not null")
     private String name;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "display_name", columnDefinition = "varchar(255) not null")
     private String displayName;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "description", columnDefinition = "varchar(1000) not null")
     private String description;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "status")
     @Enumerated(EnumType.ORDINAL)

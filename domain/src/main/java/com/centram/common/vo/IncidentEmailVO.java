@@ -44,6 +44,7 @@ public class IncidentEmailVO implements Serializable {
     private BigInteger userId;
     private Long userVersion;
     private String userName;
+    private String userAccountDetails;
     private String userEmail;
     private String userContactNo;
     private String userLocation;
@@ -75,6 +76,8 @@ public class IncidentEmailVO implements Serializable {
     private String ticketType;
     private String oldAsset;
     private String assetValidity;
+    private com.centram.domain.Module moduleCategory;
+    private com.centram.domain.Module moduleSubCategory;
 
 
     public IncidentEmailVO(Incident incident, String dateTimeFormat, String customComment, Boolean reopened, Boolean deallocated) {
@@ -103,11 +106,14 @@ public class IncidentEmailVO implements Serializable {
         this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userId = incident.getRaisedUser().getId();
         this.userVersion = incident.getRaisedUser().getVersion();
+        this.userAccountDetails = incident.getRaisedUser().getAccount().getName().concat("[").concat(incident.getRaisedUser().getAccount().getAccountNo()).concat("]");
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
         this.userLocation = incident.getRaisedUser().getLocation().getName();
         this.organisationId = incident.getRaisedUser().getOrganisation().getId();
+        this.moduleSubCategory = incident.getSubCategory();
+        this.moduleCategory = incident.getCategory();
         if (incident.getAssignedUser() != null) {
             this.agentId = incident.getAssignedUser().getId();
             this.agentVersion = incident.getAssignedUser().getVersion();
@@ -147,11 +153,14 @@ public class IncidentEmailVO implements Serializable {
         this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userId = incident.getRaisedUser().getId();
         this.userVersion = incident.getRaisedUser().getVersion();
+        this.userAccountDetails = incident.getRaisedUser().getAccount().getName().concat("[").concat(incident.getRaisedUser().getAccount().getAccountNo()).concat("]");
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
         this.userLocation = incident.getRaisedUser().getLocation().getName();
         this.organisationId = incident.getRaisedUser().getOrganisation().getId();
+        this.moduleSubCategory = incident.getSubCategory();
+        this.moduleCategory = incident.getCategory();
         if (incident.getAssignedUser() != null) {
             this.agentId = incident.getAssignedUser().getId();
             this.agentVersion = incident.getAssignedUser().getVersion();
@@ -192,11 +201,14 @@ public class IncidentEmailVO implements Serializable {
         this.userManagerId = incident.getRaisedUser().getManagerId();
         this.userId = incident.getRaisedUser().getId();
         this.userVersion = incident.getRaisedUser().getVersion();
+        this.userAccountDetails = incident.getRaisedUser().getAccount().getName().concat("[").concat(incident.getRaisedUser().getAccount().getAccountNo()).concat("]");
         this.userName = incident.getRaisedUser().getFirstName().concat(" ").concat(incident.getRaisedUser().getLastName());
         this.userEmail = incident.getRaisedUser().getEmail();
         this.userContactNo = incident.getRaisedUser().getContactNo();
         this.userLocation = incident.getRaisedUser().getLocation().getName();
         this.organisationId = incident.getRaisedUser().getOrganisation().getId();
+        this.moduleSubCategory = incident.getSubCategory();
+        this.moduleCategory = incident.getCategory();
         if (incident.getAssignedUser() != null) {
             this.agentId = incident.getAssignedUser().getId();
             this.agentVersion = incident.getAssignedUser().getVersion();

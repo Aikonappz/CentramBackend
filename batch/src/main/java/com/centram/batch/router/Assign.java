@@ -49,28 +49,17 @@ public class Assign extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("quartzComponent://incident/assign?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+                .log(LoggingLevel.INFO, "=================== assign job started ===================")
                 .autoStartup(true)
                 .routeId("assign")
                 .enrich("bean:organisationService?method=getRoundRobinOrganisations()", new OrganisationAggregator())
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                .log(LoggingLevel.INFO, "assign started -> ${header.CURRENT_DATE_TIME}")
                 .to("direct:getOrganisationIncidents");
 
         from("direct:getOrganisationIncidents")
+                .log(LoggingLevel.INFO, "=================== get-organisation-incidents ===================")
                 .routeId("get-organisation-incidents")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        //log.info("BODY {}", exchange.getIn().getBody());
-                    }
-                })
                 .loop(simple("${body.size}"))
-                .log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
+                //log("Incident Index => ${exchangeProperty.CamelLoopIndex}")
                 .process(new Processor() {
                     @Override
                     public void process(Exchange exchange) throws Exception {
@@ -98,7 +87,7 @@ public class Assign extends RouteBuilder {
                                     assignedIncidents = new ArrayList<Incident>();
                                     for (Incident incident : incidents) {
                                         if (counter < max) {
-                                            log.info("{} assigned to {} ", incident.getIncidentNo(), users.get(counter).getFullName());
+                                            //log.info("{} assigned to {} ", incident.getIncidentNo(), users.get(counter).getFullName());
                                             incident.setAssignedUser(new User(users.get(counter)));
                                             incident.setStatus(IncidentStatus.ASSIGNED);
                                             assignedIncidents.add(incident);
@@ -119,13 +108,8 @@ public class Assign extends RouteBuilder {
                     }
                 })
                 .end()
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                .log(LoggingLevel.INFO, "assign completed -> ${header.CURRENT_DATE_TIME}")
+                //.log(LoggingLevel.INFO, "assign completed -> ${header.CURRENT_DATE_TIME}")
+                .log(LoggingLevel.INFO, "=================== assign job completed ===================")
                 .end();
     }
 }

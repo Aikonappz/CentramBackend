@@ -19,7 +19,7 @@ export class AuthHtppInterceptorService implements HttpInterceptor {
     if (this.loggedInUser != null && this.loggedInUser.jwtToken != null && this.loggedInUser.jwtToken.replace(/\s/g, "") != "") {
       req = req.clone({
         setHeaders: {
-          Authorization: 'Bearer ' + atob(this.loggedInUser.jwtToken),
+          Authorization: atob(this.loggedInUser.jwtToken),
           //Accept: 'application/json',
           //'Content-Type': 'application/json'
         },

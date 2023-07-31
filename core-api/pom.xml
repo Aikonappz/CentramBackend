@@ -40,15 +40,6 @@
             <version>1.0.10.RELEASE</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>Shibboleth</id>
-            <name>Shibboleth</name>
-            <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>core-service-api</finalName>
         <resources>

@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
+
+import java.util.Locale;
 
 
 /**
@@ -25,7 +31,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
+    StringTemplateResolver templateResolver = new StringTemplateResolver();
+    TemplateEngine templateEngine = new TemplateEngine();
+    Context context = new Context(Locale.ENGLISH);
 
+    public ExceptionTranslator() {
+        this.templateResolver.setTemplateMode(TemplateMode.TEXT);
+        this.templateEngine.setTemplateResolver(this.templateResolver);
+    }
 
     /**
      * Handle business exception.
@@ -36,7 +49,13 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler({AppException.class})
     public ResponseEntity<ClientError> handleBusinessException(AppException ex, WebRequest request) {
-        ClientError digest = new ClientError(ex.getCode().getCode(), ex.getCode().getTemplate());
+        LOG.error(" code {} , message {} ", ex.getCode(), ex.getMessage());
+        context.setVariable("entity", ex.getContext().get("entity"));
+        context.setVariable("sheet", ex.getContext().get("sheet"));
+        context.setVariable("col", ex.getContext().get("col"));
+        context.setVariable("row", ex.getContext().get("row"));
+        context.setVariable("errorMessage", ex.getContext().get("errorMessage"));
+        ClientError digest = new ClientError(ex.getCode().getCode(), templateEngine.process(ex.getCode().getTemplate(), context));
         return new ResponseEntity<ClientError>(digest, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

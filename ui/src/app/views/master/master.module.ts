@@ -11,8 +11,8 @@ import { LocationComponent } from './location.component';
 import { EditLocationComponent } from './editlocation.component';
 import { PriorityComponent } from './priority.component';
 import { EditPriorityComponent } from './editpriority.component';
-import { HolidayCalenderComponent } from './holidaycalender.component';
-import { EditHolidayCalenderComponent } from './editholidaycalender.component';
+import { HolidayCalendarComponent } from './holidaycalendar.component';
+import { EditHolidayCalendarComponent } from './editholidaycalendar.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { DistributionListComponent } from './distributionlist.component';
 import { EditDlComponent } from './editdl.component';
@@ -21,11 +21,13 @@ import { VendorComponent } from './vendor.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ProjectComponent } from './project.component';
 import { EditProjectComponent } from './editproject.component';
+import { AccountComponent, } from './account.component';
+import { EditAccountComponent } from './editaccount.component';
 
 @NgModule({
   declarations: [
-    HolidayCalenderComponent,
-    EditHolidayCalenderComponent,
+    HolidayCalendarComponent,
+    EditHolidayCalendarComponent,
     PriorityComponent,
     EditPriorityComponent,
     DepartmentComponent,
@@ -36,8 +38,10 @@ import { EditProjectComponent } from './editproject.component';
     EditDlComponent,
     VendorComponent,
     EditVendorComponent,
-    ProjectComponent,
-    EditProjectComponent,
+    AccountComponent,
+    EditAccountComponent,
+     ProjectComponent,
+        EditProjectComponent,
   ],
   imports: [
     CommonModule,

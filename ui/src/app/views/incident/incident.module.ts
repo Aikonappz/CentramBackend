@@ -15,6 +15,8 @@ import { AssignedIncidentComponent } from './assignedincident.component';
 import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 import { AgentIncidentComponent } from './agentincident.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { AddTimeEntryComponent } from './modal/AddTimeEntryComponent';
+import { ViewTimeEntryComponent } from './modal/ViewTimeEntryComponent';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AgentIncidentComponent,
     AssignIncidentComponent,
     AssignedIncidentComponent,
+    AddTimeEntryComponent,
+    ViewTimeEntryComponent,
   ],
   imports: [
     CommonModule,

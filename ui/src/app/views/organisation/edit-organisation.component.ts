@@ -478,6 +478,7 @@ export class EditOrganisationComponent implements OnInit {
         this.org.contactPersons = data.contactPersons;
         this.org.setting = data.setting == null ? new Setting() : data.setting;
         //console.log(JSON.stringify(this.org));
+        console.log(this.org.licenseType);
         this.angForm.get('licenseType').setValue(this.org.licenseType);
         this.angForm.get('licenseStart').setValue(moment(this.org.licenseStart).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
         this.angForm.get('licenseEnd').setValue(moment(this.org.licenseEnd).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));

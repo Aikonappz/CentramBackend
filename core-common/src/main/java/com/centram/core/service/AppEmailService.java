@@ -89,8 +89,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("EMAIL TITLE: {}", mailSubject);
-        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("EMAIL TITLE: {}", mailSubject);
+        //log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
     }
 
@@ -131,8 +131,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("EMAIL TITLE: {}", mailSubject);
-        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("EMAIL TITLE: {}", mailSubject);
+        //log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
     }
 
@@ -172,8 +172,8 @@ public class AppEmailService {
         mailMap.put("subject", demoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
-        log.info("EMAIL TITLE: {}", demoRequestMailSubject);
-        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("EMAIL TITLE: {}", demoRequestMailSubject);
+        //log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         appConfiguration = appConfigurations.stream()
                 .filter(ac -> ac.getConfigurationKey().equals("APP_DEMO_REQUEST_EMAIL_TEMPLATE"))
                 .findFirst().get();
@@ -195,8 +195,8 @@ public class AppEmailService {
         mailMap.put("subject", adminDemoRequestMailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(adminBaseEmailTemplate));
 
-        log.info("EMAIL TITLE: {}", adminDemoRequestMailSubject);
-        log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("EMAIL TITLE: {}", adminDemoRequestMailSubject);
+        //"EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
     }
 
@@ -269,8 +269,8 @@ public class AppEmailService {
         mailMap.put("bcc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("ASSET EMAIL TITLE: {}", mailSubject);
-        log.info("ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("ASSET EMAIL TITLE: {}", mailSubject);
+        //log.info("ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         Notification notification = (Notification) mailValues.get("notification");
         notification.setNotificationTitle(mailSubject);
         notification.setNotificationBody(mailBody);
@@ -327,8 +327,8 @@ public class AppEmailService {
         mailMap.put("bcc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("ASSET REQUEST EMAIL TITLE: {}", mailSubject);
-        log.info("ASSET REQUEST EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("ASSET REQUEST EMAIL TITLE: {}", mailSubject);
+        //log.info("ASSET REQUEST EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         Notification notification = (Notification) mailValues.get("notification");
         notification.setNotificationTitle(mailSubject);
         notification.setNotificationBody(mailBody);
@@ -374,8 +374,8 @@ public class AppEmailService {
         mailMap.put("bcc", attributes.get("bcc"));
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("CHAT INTERACTION EMAIL TITLE: {}", mailSubject);
-        log.info("CHAT INTERACTION BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("CHAT INTERACTION EMAIL TITLE: {}", mailSubject);
+        //log.info("CHAT INTERACTION BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
     }
 
@@ -429,6 +429,7 @@ public class AppEmailService {
         context.setVariable("incident_category", incidentEmailVO.getCategory());
         context.setVariable("incident_subcategory", incidentEmailVO.getSubCategory());
         context.setVariable("incident_raisedby_department", incidentEmailVO.getDepartment());
+        context.setVariable("incident_raisedby_ac_name", incidentEmailVO.getUserAccountDetails());
         context.setVariable("incident_raisedby_name", incidentEmailVO.getUserName());
         context.setVariable("incident_raisedby_email", incidentEmailVO.getUserEmail());
         context.setVariable("incident_raisedby_contact", incidentEmailVO.getUserContactNo());
@@ -453,8 +454,8 @@ public class AppEmailService {
         mailMap.put("bcc", incidentEmailVO.getBcc());
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("INCIDENT/ASSET EMAIL TITLE: {}", mailSubject);
-        log.info("INCIDENT/ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("INCIDENT/ASSET EMAIL TITLE: {}", mailSubject);
+        //log.info("INCIDENT/ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         if (incidentEmailVO.getNotifications() != null && incidentEmailVO.getNotifications().size() > 0) {
             List<Notification> notifications = new ArrayList<Notification>();
             for (Notification notification : incidentEmailVO.getNotifications()) {
@@ -466,79 +467,6 @@ public class AppEmailService {
         }
         emailService.sendMail(mailMap);
     }
-
-    @Transactional
-    //@Async("asyncExecutor")
-    public void sendIncidentAssignEmail(IncidentEmailVO incidentEmailVO) {
-        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INCIDENT_ASSIGN_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("INCIDENT_ASSIGN_EMAIL_TEMPLATE"))
-                .findFirst().get();
-        String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
-        String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
-        String referer = "agent-all";
-        String recipientName = incidentEmailVO.getRecipientName();
-        StringTemplateResolver templateResolver = new StringTemplateResolver();
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        TemplateEngine templateEngine = new TemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver);
-        Context context = new Context(Locale.ENGLISH);
-        context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
-        //context.setVariable("incident_title", incidentEmailVO.getTitle());
-        mailSubject = templateEngine.process(mailSubject, context);
-        String incLink = appBaseUrl.concat("/incident/".concat(referer).concat("/edit/")).concat(String.valueOf(incidentEmailVO.getIncidentId()));
-        context = new Context(Locale.ENGLISH);
-        context.setVariable("incident_title", (incidentEmailVO.getTitle()));
-        context.setVariable("incident_communication", (incidentEmailVO.getDescription()));
-        context.setVariable("incident_no", incidentEmailVO.getIncidentNo());
-        context.setVariable("incident_priority", incidentEmailVO.getPriority());
-        context.setVariable("incident_sla", incidentEmailVO.getSla());
-        context.setVariable("incident_status", incidentEmailVO.getStatus());
-        context.setVariable("incident_category", incidentEmailVO.getCategory());
-        context.setVariable("incident_subcategory", incidentEmailVO.getSubCategory());
-        context.setVariable("incident_raisedby_department", incidentEmailVO.getDepartment());
-        context.setVariable("incident_raisedby_name", incidentEmailVO.getUserName());
-        context.setVariable("incident_raisedby_email", incidentEmailVO.getUserEmail());
-        context.setVariable("incident_raisedby_contact", incidentEmailVO.getUserContactNo());
-        context.setVariable("incident_assignedto_name", incidentEmailVO.getAgentName());
-        context.setVariable("incident_assignedto_email", incidentEmailVO.getAgentEmail());
-        context.setVariable("incident_assignedto_contactno", incidentEmailVO.getAgentContactNo());
-        context.setVariable("incident_raisedby_location", incidentEmailVO.getUserLocation());
-        context.setVariable("incident_watchlist", incidentEmailVO.getWatchList());
-        context.setVariable("incident_ecalation_1", incidentEmailVO.getEscalation1Email());
-        context.setVariable("incident_ecalation_2", incidentEmailVO.getEscalation2Email());
-        context.setVariable("inc_link", incLink);
-        mailBody = templateEngine.process(mailBody, context);
-        context = new Context(Locale.ENGLISH);
-        context.setVariable("recipient_name", recipientName.concat(","));
-        context.setVariable("app_url", appBaseUrl);
-        context.setVariable("team", fromName);
-        context.setVariable("mail_body", mailBody);
-        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
-        Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("to", incidentEmailVO.getTo());
-        mailMap.put("cc", incidentEmailVO.getCc());
-        mailMap.put("bcc", incidentEmailVO.getBcc());
-        mailMap.put("subject", mailSubject);
-        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("ASSIGN EMAIL TITLE: {}", mailSubject);
-        log.info("ASSIGN EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        if (incidentEmailVO.getNotifications() != null && incidentEmailVO.getNotifications().size() > 0) {
-            List<Notification> notifications = new ArrayList<Notification>();
-            for (Notification notification : incidentEmailVO.getNotifications()) {
-                notification.setNotificationTitle(mailSubject);
-                notification.setNotificationBody(mailBody);
-                notifications.add(notification);
-            }
-            notificationService.save(notifications);
-        }
-        emailService.sendMail(mailMap);
-    }
-
-
     @Transactional
     //@Async("asyncExecutor")
     public void organisationUpdate(Map<String, Object> mailValues, Boolean newEntry) {
@@ -576,8 +504,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", body);
-        log.info("ORGANISATION UPDATE EMAIL TITLE: {}", mailSubject);
-        log.info("ORGANISATION UPDATE EMAIL BODY: {}", body);
+        //log.info("ORGANISATION UPDATE EMAIL TITLE: {}", mailSubject);
+        //log.info("ORGANISATION UPDATE EMAIL BODY: {}", body);
         emailService.sendMail(mailMap);
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
@@ -629,8 +557,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", body);
-        log.info("ASSET EXPIRATION EMAIL TITLE: {}", mailSubject);
-        log.info("ASSET EXPIRATION EMAIL BODY: {}", body);
+        //log.info("ASSET EXPIRATION EMAIL TITLE: {}", mailSubject);
+        //log.info("ASSET EXPIRATION EMAIL BODY: {}", body);
         emailService.sendMail(mailMap);
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
@@ -682,8 +610,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", body);
-        log.info("ASSET EXPIRATION EMAIL TITLE: {}", mailSubject);
-        log.info("ASSET EXPIRATION EMAIL BODY: {}", body);
+        //log.info("ASSET EXPIRATION EMAIL TITLE: {}", mailSubject);
+        //log.info("ASSET EXPIRATION EMAIL BODY: {}", body);
         emailService.sendMail(mailMap);
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
@@ -735,8 +663,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", body);
-        log.info("ORGANISATION NOTIFICATION EMAIL TITLE: {}", mailSubject);
-        log.info("ORGANISATION NOTIFICATION EMAIL BODY: {}", body);
+        //log.info("ORGANISATION NOTIFICATION EMAIL TITLE: {}", mailSubject);
+        //log.info("ORGANISATION NOTIFICATION EMAIL BODY: {}", body);
         emailService.sendMail(mailMap);
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
@@ -796,8 +724,8 @@ public class AppEmailService {
             mailMap.put("file", mailValues.get("file").toString());
         }
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("UPLOAD RESULT EMAIL TITLE: {}", mailSubject);
-        log.info("UPLOAD RESULT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("UPLOAD RESULT EMAIL TITLE: {}", mailSubject);
+        //log.info("UPLOAD RESULT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
         Boolean hasUploadIssue = (Boolean) mailValues.get("has_issue");
         if (hasUploadIssue) {
@@ -867,8 +795,8 @@ public class AppEmailService {
         mailMap.put("cc", new String[]{});
         mailMap.put("subject", mailSubject);
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("USER ONBOARD EMAIL TITLE: {}", mailSubject);
-        log.info("USER ONBOARD EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("USER ONBOARD EMAIL TITLE: {}", mailSubject);
+        //log.info("USER ONBOARD EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
         notificationService.save(
                 Collections.singletonList(
@@ -912,8 +840,8 @@ public class AppEmailService {
         mailMap.put("subject", mailSubject);
         mailMap.put("file", mailValues.get("file"));
         mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        log.info("BATCH REPORT EMAIL TITLE: {}", mailSubject);
-        log.info("BATCH REPORT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("BATCH REPORT EMAIL TITLE: {}", mailSubject);
+        //log.info("BATCH REPORT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
         notificationService.save(
                 Collections.singletonList(

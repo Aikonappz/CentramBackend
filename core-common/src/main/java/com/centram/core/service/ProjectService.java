@@ -5,12 +5,10 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.core.repository.ProjectAllocationDetailRepository;
 import com.centram.core.repository.ProjectRepository;
 import com.centram.domain.Project;
-import com.centram.domain.Vendor;
-import com.centram.domain.VendorModule;
 import com.centram.domain.enumarator.ProjectType;
-import com.centram.domain.enumarator.VendorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,6 +30,9 @@ public class ProjectService {
 
     @Autowired
     private OrganisationService organisationService;
+
+    @Autowired
+    private ProjectAllocationDetailRepository projectAllocationDetailRepository;
 
 
     /**
@@ -78,15 +77,14 @@ public class ProjectService {
     }
 
     /**
-     * get all vendor
+     * get all Project
      *
      * @param pageable
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Project> getProjects(String inHouse, ProjectType projectType, Pageable pageable) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Boolean hasFilter = (inHouse.equalsIgnoreCase("")) ? false : true;
+    public PaginatedList<Project> getProjects(BigInteger organisationId, String inHouse, ProjectType projectType, Pageable pageable) {
+        Boolean hasFilter = !inHouse.equalsIgnoreCase("");
         Boolean inHouseFilter = false;
         if (hasFilter && inHouse.equals("1")) {
             inHouseFilter = true;
@@ -95,7 +93,7 @@ public class ProjectService {
         } else {
             hasFilter = false;
         }
-        return new PaginatedList<Project>(projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectType.ordinal(), loggedInUser.getOrganisationId(), pageable));
+        return new PaginatedList<Project>(projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectType.ordinal(), organisationId, pageable));
     }
 
     /**
@@ -105,9 +103,8 @@ public class ProjectService {
      * @return
      */
     @Transactional
-    public Project save(Project project) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        project.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+    public Project save(BigInteger organisationId, Project project) {
+        project.setOrganisation(organisationService.getOrganisationById(organisationId));
         return projectRepository.save(project);
     }
 }

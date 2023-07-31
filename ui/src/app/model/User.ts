@@ -1,3 +1,4 @@
+import { Account } from "./Account";
 import { Base } from "./Base";
 import { Department } from "./Department";
 import { Status } from "./enumerator/Status";
@@ -22,6 +23,7 @@ export class User extends Base {
     location: LocationVO;
     department: Department;
     organisation: Organisation;
+    account: Account;
 
     constructor() {
         super();
@@ -41,6 +43,7 @@ export class User extends Base {
         this.vendor = new Vendor();
         this.department = new Department();
         this.organisation = new Organisation();
+        this.account = new Account();
     }
 
 }

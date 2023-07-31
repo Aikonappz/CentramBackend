@@ -29,11 +29,10 @@ import { ReportService } from "../../../service/ReportService";
               <td mat-cell *matCellDef="let element">
               <a href="javascript:void(0);" (click)="redirectTo(type, element.id)" >
                 <span [ngClass]="{
+                  'badge-closed': element.status=='CLOSED' && element.slaBreached == false && element.reOpened == false ,
                   'badge-sla-about-to-breach':element.status=='SLA_ABOUT_TO_BREACH' ,
-                  'badge-sla-breached':element.status=='SLA_BREACHED' ,
-                  'badge-sla-breached':element.slaBreached==true ,
-                  'badge-re-opened':element.reOpened==true ,
-                  'badge-closed':element.status=='CLOSED' ,
+                  'badge-sla-breached': element.status=='SLA_BREACHED' || element.slaBreached == true,
+                  'badge-re-opened': element.reOpened == true ,  
                   'badge':true
                   }">{{element.incidentNo}}</span></a><br />
                 {{element.title}}<br />

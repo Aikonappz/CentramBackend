@@ -4,8 +4,8 @@ import com.centram.common.view.Views;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +19,9 @@ import java.math.BigInteger;
 /**
  * User
  */
-@ApiModel(description = "Notification")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,7 +38,7 @@ import java.math.BigInteger;
 public class Notification extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2713337834473432054L;
 
-    @ApiModelProperty(value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,20 +46,20 @@ public class Notification extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "notification_title", nullable = false, columnDefinition = "varchar(255) not null")
     @JsonView(Views.BasicView.class)
     private String notificationTitle;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Lob
     @Column(name = "notification_body", nullable = false, columnDefinition = "TEXT")
     @JsonView(Views.BasicView.class)
     private String notificationBody;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @ManyToOne
@@ -67,7 +67,7 @@ public class Notification extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private User user;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")
@@ -75,7 +75,7 @@ public class Notification extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Status status;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "notification_type")

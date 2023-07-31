@@ -16,7 +16,7 @@ import { MiscService } from '../../service/MiscService';
   styleUrls: ['./project.component.scss']
 })
 export class ProjectComponent implements OnInit {
-  moduleName: string = "PROJECT";
+  moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['projectType', 'name', 'code', 'managers', 'status', 'action'];
   datasource: ProjectDataSource;

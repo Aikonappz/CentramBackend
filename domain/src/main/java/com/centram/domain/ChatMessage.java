@@ -4,8 +4,8 @@ import com.centram.common.view.Views;
 import com.centram.domain.enumarator.MessageStatus;
 import com.centram.domain.enumarator.SenderType;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
+
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,9 +20,9 @@ import java.util.List;
 /**
  * Action
  */
-@ApiModel(description = "Chat Message")
+
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-20T12:19:48.018Z")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,7 +33,7 @@ import java.util.List;
 public class ChatMessage implements Serializable {
     private static final long serialVersionUID = 8070246456938375936L;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,61 +41,61 @@ public class ChatMessage implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @NotNull
     @Column(name = "module_id")
     @JsonView(Views.BasicView.class)
     private BigInteger moduleId;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @NotNull
     @Column(name = "sub_module_id")
     @JsonView(Views.BasicView.class)
     private BigInteger subModuleId;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "room_id", nullable = false)
     @JsonView(Views.BasicView.class)
     private String roomId;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "sender_id")
     @JsonView(Views.BasicView.class)
     private BigInteger senderId;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @NotNull
     @Column(name = "recipient_id")
     @JsonView(Views.BasicView.class)
     private BigInteger recipientId;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "sender_name")
     @JsonView(Views.BasicView.class)
     private String senderName;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @NotNull
     @Column(name = "recipient_name")
     @JsonView(Views.BasicView.class)
     private String recipientName;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "content", columnDefinition = "varchar(3000) default null")
     @JsonView(Views.BasicView.class)
     private String content;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Column(name = "conversation_time")
     @JsonView(Views.BasicView.class)
     private LocalDateTime conversationTime;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "status")
@@ -103,18 +103,18 @@ public class ChatMessage implements Serializable {
     @JsonView(Views.BasicView.class)
     private MessageStatus status;
 
-    @ApiModelProperty(required = false, value = "")
+    
     @Valid
     @JsonView({Views.DetailView.class, Views.InternalView.class,})
     @Transient
     private List<MediaFile> attachments;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @Column(name = "room_closed", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean roomClosed = false;
 
-    @ApiModelProperty(required = true, value = "")
+    
     @NotNull
     @Valid
     @Column(name = "sender_type")
