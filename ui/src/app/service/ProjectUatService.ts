@@ -3,7 +3,7 @@ import { Observable, from } from 'rxjs';
 import { ApiHttpService } from './ApiHttpService';
 import { ProjectUat } from '../model/ProjectUat';
 import { ProjectUatScript } from '../model/ProjectUatScript';
-import { ProjectUatScriptDetailList } from '../model/ProjectUatScriptDetail';
+import { ProjectUatScriptDetail, ProjectUatScriptDetailList } from '../model/ProjectUatScriptDetail';
 
 
 @Injectable({
@@ -19,5 +19,8 @@ export class ProjectUatService {
     }
     getProjectUatScriptDetails(request?: any): Observable<ProjectUatScriptDetailList> {
         return this.http.get('/v1/project-uat/uat-script-detail', { "params": request });
+    }
+    saveProjectUatScriptDetail(projectUatScriptDetail: ProjectUatScriptDetail[], request?: any): Observable<any> {
+        return this.http.post('/v1/project-uat/update-project-uat-script-detail', projectUatScriptDetail, { "params": request });
     }
 }

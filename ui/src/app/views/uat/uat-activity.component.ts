@@ -395,4 +395,11 @@ export class UATActivityComponent implements OnInit {
     console.log(JSON.stringify(projectUatScriptDetail));
   }
 
+  enableRetestField(projectUatScriptDetail: any) {
+    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false) {
+      return true;
+    }
+    return false;
+  }
+
 }

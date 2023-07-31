@@ -217,7 +217,8 @@
                 <ng-container matColumnDef="remarks">
                   <th class="remarksHeader" mat-header-cell *matHeaderCellDef> Remark </th>
                   <td class="remarksBody" mat-cell *matCellDef="let element">
-                    <div *ngIf="!element.editable; else editingTemplate">
+                    <div
+                      *ngIf="!element.editable; else editingTemplate">
                       <div><b>Remark - </b>{{element.remarks==null? 'NA' : element.remarks}}</div>
                     </div>
                     <ng-template #editingTemplate>

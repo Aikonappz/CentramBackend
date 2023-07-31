@@ -6,6 +6,7 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectUatRepository;
+import com.centram.core.repository.ProjectUatScriptDetailRepository;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,11 +54,26 @@ public class ProjectUatService {
     private ProjectService projectService;
 
     @Autowired
+    private ProjectUatScriptDetailRepository projectUatScriptDetailRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
+    public ProjectUatScriptDetail saveProjectUatScriptDetail(ProjectUatScriptDetail projectUatScriptDetail){
+        return projectUatScriptDetailRepository.save(projectUatScriptDetail);
+    }
+
+    @Transactional(readOnly = true)
     public PaginatedList<ProjectUatScriptDetail> getProjectUatScriptDetails(BigInteger projectId, BigInteger moduleId, BigInteger subModuleId, BigInteger projectUATScriptId, Pageable pageable) {
-        return new PaginatedList<ProjectUatScriptDetail>(projectUatRepository.findByProjectIdAndModuleIdAndSubModuleIdAndProjectUATScriptId(projectId, moduleId, subModuleId, projectUATScriptId, pageable));
+        Page<ProjectUatScriptDetail> page = projectUatRepository.findByProjectIdAndModuleIdAndSubModuleIdAndProjectUATScriptId(projectId, moduleId, subModuleId, projectUATScriptId, pageable)
+                .getContent().stream()
+                .forEach(i->{
+                    if(!i.getRemarks().isEmpty()){
+                        i.setRemark(i.getRemarks().get(i.getRemarks().size()));
+                    }
+                });
+        return new PaginatedList<ProjectUatScriptDetail>();
     }
 
     /**

@@ -6,11 +6,12 @@ export class ProjectUatScriptDetail extends Base {
   step: number;
   action: string;
   expectedResult: string;
-  actualResult: any;
+  actualResult: string;
   pass: boolean;
-  retestDate: any;
+  retestDate: string;
   retestPass: boolean;
-  remarks: any;
+  remarks: string[];
+  remark: string;
   editable: boolean = false;
 }
 export interface ProjectUatScriptDetailList {
