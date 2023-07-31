@@ -65,3 +65,6 @@ scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/RootCA_emSign_Root_CA_G1.cer  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 scp -i "/home/sumit/Documents/ramesh/centram-key-stag.pem" /home/sumit/Downloads/2184493685/server.crt  ec2-user@ec2-3-108-58-220.ap-south-1.compute.amazonaws.com:/tmp
 
+
+ATBBhfzADcszTmmwYb4RXA9gLCbs218D19C7
+
