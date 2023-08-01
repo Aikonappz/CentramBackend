@@ -67,12 +67,6 @@ public class ProjectUat extends BaseEntity implements Serializable {
     private Set<ProjectUatScript> projectUatScripts;
 
     @Valid
-    @NotNull
-    @Column(name = "uat_complete", nullable = false)
-    @JsonView(Views.BasicView.class)
-    private Boolean uatComplete = false;
-
-    @Valid
     @OneToOne
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "organisation_id", nullable = false, referencedColumnName = "id")

@@ -6,6 +6,7 @@ export class ProjectUatScript extends Base {
     testScriptName: string;
     testScenario: string;
     plannedDate: string;
+    uatComplete: boolean;
     projectUatScriptDetails: ProjectUatScriptDetail[];
     label: string;
 }

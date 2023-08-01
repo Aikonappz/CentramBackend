@@ -9,8 +9,7 @@ export class ProjectUat extends Base {
     project: Project;
     moduleId: number;
     subModuleId: number;
-    projectUatScripts: ProjectUatScript[];
-    uatComplete: boolean;
+    projectUatScripts: ProjectUatScript[];    
     organisation: Organisation;
     user: UserVO;
 }

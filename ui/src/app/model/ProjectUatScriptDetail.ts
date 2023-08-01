@@ -10,7 +10,7 @@ export class ProjectUatScriptDetail extends Base {
   pass: boolean;
   retestDate: string;
   retestPass: boolean;
-  remarks: string[];
+  remarks: any[] = [];
   remark: string;
   editable: boolean = false;
 }

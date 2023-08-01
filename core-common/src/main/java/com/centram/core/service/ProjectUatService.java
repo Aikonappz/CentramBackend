@@ -7,10 +7,12 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectUatRepository;
 import com.centram.core.repository.ProjectUatScriptDetailRepository;
+import com.centram.core.repository.ProjectUatScriptRepository;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
 import com.centram.domain.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -57,23 +59,54 @@ public class ProjectUatService {
     private ProjectUatScriptDetailRepository projectUatScriptDetailRepository;
 
     @Autowired
+    private ProjectUatScriptRepository projectUatScriptRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
-    @Transactional(readOnly = true)
-    public ProjectUatScriptDetail saveProjectUatScriptDetail(ProjectUatScriptDetail projectUatScriptDetail){
-        return projectUatScriptDetailRepository.save(projectUatScriptDetail);
+    @Autowired
+    private MiscService miscService;
+
+    /**
+     * @param uatScriptId
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public ProjectUatScript markUATComplete(BigInteger uatScriptId) {
+        ProjectUatScript projectUatScript = projectUatScriptRepository.getById(uatScriptId);
+        if (projectUatScript != null) {
+            projectUatScript.setUatComplete(true);
+            return projectUatScriptRepository.save(projectUatScript);
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @param projectUatScriptDetail
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public ProjectUatScriptDetail updateProjectUatScriptDetail(ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
+        ProjectUatScriptDetail oldObj = projectUatScriptDetailRepository.getById(projectUatScriptDetail.getId());
+        if (oldObj != null) {
+            oldObj.setActualResult(projectUatScriptDetail.getActualResult());
+            oldObj.setPass(projectUatScriptDetail.getPass());
+            oldObj.setRetestDate(projectUatScriptDetail.getRetestDate());
+            oldObj.setRetestPass(projectUatScriptDetail.getRetestPass());
+            oldObj.setRemarks(projectUatScriptDetail.getRemarks());
+            oldObj = projectUatScriptDetailRepository.save(oldObj);
+            miscService.notifyParticipant(oldObj);
+            return oldObj;
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
     }
 
     @Transactional(readOnly = true)
     public PaginatedList<ProjectUatScriptDetail> getProjectUatScriptDetails(BigInteger projectId, BigInteger moduleId, BigInteger subModuleId, BigInteger projectUATScriptId, Pageable pageable) {
-        Page<ProjectUatScriptDetail> page = projectUatRepository.findByProjectIdAndModuleIdAndSubModuleIdAndProjectUATScriptId(projectId, moduleId, subModuleId, projectUATScriptId, pageable)
-                .getContent().stream()
-                .forEach(i->{
-                    if(!i.getRemarks().isEmpty()){
-                        i.setRemark(i.getRemarks().get(i.getRemarks().size()));
-                    }
-                });
-        return new PaginatedList<ProjectUatScriptDetail>();
+        Page<ProjectUatScriptDetail> page = projectUatRepository.findByProjectIdAndModuleIdAndSubModuleIdAndProjectUATScriptId(projectId, moduleId, subModuleId, projectUATScriptId, pageable);
+        return new PaginatedList<ProjectUatScriptDetail>(page);
     }
 
     /**
@@ -131,7 +164,6 @@ public class ProjectUatService {
             Iterator<Cell> cellIterator;
             Cell cell;
             ProjectUat projectUat = new ProjectUat();
-            projectUat.setUatComplete(false);
             projectUat.setProject(projectService.getById(projectUATRequestDTO.getProjectId()));
             projectUat.setOrganisation(organisationService.getOrganisationById(organisationId));
             projectUat.setUploadedBy(new User(userService.getUserById(userId)));

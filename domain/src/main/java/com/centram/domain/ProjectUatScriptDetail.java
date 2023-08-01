@@ -90,10 +90,6 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @Convert(converter = UATRemarkConverter.class)
     private List<UATRemark> remarks;
 
-    @Transient
-    @JsonView(Views.BasicView.class)
-    private UATRemark remark;
-
     public ProjectUatScriptDetail(@NotNull BigInteger id) {
         this.id = id;
     }

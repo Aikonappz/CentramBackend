@@ -158,7 +158,7 @@
             </form>
             <hr [ngClass]="{'d-none': searched == false}" />
             <div [ngClass]="{'d-none': searched == false}" class="card">
-              <table mat-table [dataSource]="datasource">
+              <table mat-table class="script-table" [dataSource]="datasource">
                 <ng-container matColumnDef="uatDescription">
                   <th class="uatDescriptionHeader" mat-header-cell *matHeaderCellDef> UAT Description </th>
                   <td class="uatDescriptionBody" mat-cell *matCellDef="let element">
@@ -188,7 +188,7 @@
                       <div><b>Test Passed - </b>{{element.pass==true? 'Yes' : 'No'}}</div>
                     </div>
                     <ng-template #editingTemplate>
-                      <textarea class="form-control" [(ngModel)]='element.expectedResult' placeholder="Actual Result"
+                      <textarea class="form-control" [(ngModel)]='element.actualResult' placeholder="Actual Result"
                         rows="7" cols="30">
                       </textarea>
                       <hr />
@@ -216,32 +216,38 @@
                 </ng-container>
                 <ng-container matColumnDef="remarks">
                   <th class="remarksHeader" mat-header-cell *matHeaderCellDef> Remark </th>
-                  <td class="remarksBody" mat-cell *matCellDef="let element">
-                    <div
-                      *ngIf="!element.editable; else editingTemplate">
-                      <div><b>Remark - </b>{{element.remarks==null? 'NA' : element.remarks}}</div>
+                  <td class="remarksBody" align="center" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div *ngIf="element.remarks!=null">
+                        <button type=" button" class="btn btn-link" (click)="viewRemark(element)">Remarks</button>
+                      </div>
                     </div>
                     <ng-template #editingTemplate>
-                      <textarea class="form-control" [(ngModel)]='element.remarks' placeholder="Remark" rows="7"
+                      <textarea class="form-control" [(ngModel)]='element.remark' placeholder="Remark" rows="7"
                         cols="30">
                       </textarea>
                     </ng-template>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="activity">
-                  <th class="activityHeader" mat-header-cell *matHeaderCellDef> &nbsp; </th>
-                  <td class="activityBody" mat-cell *matCellDef="let element">
+                  <th align="center" class="activityHeader" mat-header-cell *matHeaderCellDef>
+                    <div *ngIf="searchedUatScriptId!=null">
+                      <button type=" button" class="btn btn-warning btn-sm" (click)="markProjectUatComplate()">Mark UAT
+                        Complete</button>
+                    </div>
+                  </th>
+                  <td align="center" class="activityBody" mat-cell *matCellDef="let element">
                     <div class="btn-group action-btn" dropdown>
                       <button dropdownToggle type="button" class=" btn btn-primary dropdown-toggle">Actions<span
                           class="caret"></span></button>
                       <ul *dropdownMenu class="dropdown-menu" role="menu">
-                        <li role="menuitem">
+                        <li role="menuitem" *ngIf="!element.editable;">
                           <a class="dropdown-item" href="javascript:void(0);" id="id-view-{{element.id}}" type="button"
                             [ngClass]="{
-                   'btn btn-sm btn-primary':true}" (click)="element.editable = true"><i class="fa fa-pencil"></i> Edit
+                   'btn btn-sm btn-primary':true}" (click)="enableEdit(element)"><i class="fa fa-pencil"></i> Edit
                           </a>
                         </li>
-                        <li role="menuitem">
+                        <li role="menuitem" *ngIf="element.editable;">
                           <a class="dropdown-item" href="javascript:void(0);" id="id-reopen-{{element.id}}" [ngClass]="{
                    'btn btn-sm btn-secondary':true}" (click)="saveElement(element)"><i class="fa fa-book
                           "></i> Save

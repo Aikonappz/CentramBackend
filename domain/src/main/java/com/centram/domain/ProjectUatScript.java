@@ -62,6 +62,12 @@ public class ProjectUatScript extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private Set<ProjectUatScriptDetail> projectUatScriptDetails;
 
+    @Valid
+    @NotNull
+    @Column(name = "uat_complete", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private Boolean uatComplete = false;
+
     public ProjectUatScript(@NotNull BigInteger id) {
         this.id = id;
     }

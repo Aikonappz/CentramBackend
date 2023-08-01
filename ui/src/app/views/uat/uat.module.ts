@@ -11,17 +11,17 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { UATActivityComponent } from './uat-activity.component';
 import { ChartsModule } from 'ng2-charts';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
-import { WeeklyIndividualTimeSheet } from './modal/WeeklyIndividualTimeSheet';
 import { NgxMaskModule } from 'ngx-mask'
 import { TextMaskModule } from 'angular2-text-mask';
 import { UATRoutingModule } from './uat-routing.module';
+import { RemarkViewer } from './modal/RemarkViewer';
 
 
 
 @NgModule({
   declarations: [
     UATActivityComponent,
-    WeeklyIndividualTimeSheet,
+    RemarkViewer,
   ],
   imports: [
     CommonModule,

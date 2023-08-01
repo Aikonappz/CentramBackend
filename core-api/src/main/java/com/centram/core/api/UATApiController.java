@@ -10,6 +10,7 @@ import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,10 +65,18 @@ public class UATApiController {
     }
 
     @JsonView(Views.BasicView.class)
-    @RequestMapping(value = "/update-project-uat-script-detail", consumes = {APPLICATION_JSON_VALUE}, produces = {APPLICATION_JSON_VALUE} ,method = RequestMethod.POST)
+    @RequestMapping(value = "/update-project-uat-script-detail", consumes = {APPLICATION_JSON_VALUE}, produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<ProjectUatScriptDetail> saveProjectUatScriptDetail(@RequestBody(required = true) ProjectUatScriptDetail projectUatScriptDetail) {
+    public ResponseEntity<ProjectUatScriptDetail> updateProjectUatScriptDetail(@RequestBody(required = true) ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<ProjectUatScriptDetail>(projectUatService.saveProjectUatScriptDetail(projectUatScriptDetail), HttpStatus.OK);
+        return new ResponseEntity<ProjectUatScriptDetail>(projectUatService.updateProjectUatScriptDetail(projectUatScriptDetail), HttpStatus.OK);
+    }
+
+    @JsonView(Views.BasicView.class)
+    @RequestMapping(value = "/mark-uat-complete/{uatScriptId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.PUT)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
+    public ResponseEntity<ProjectUatScript> markUATComplete(@PathVariable("uatScriptId") BigInteger uatScriptId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<ProjectUatScript>(projectUatService.markUATComplete(uatScriptId), HttpStatus.OK);
     }
 }

@@ -1598,4 +1598,10 @@ public class MiscService {
         return new ManageTimeSheetInputVO(this.getUserProjects(userId));
     }
 
+    @Async("asyncExecutor")
+    public void notifyParticipant(ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
+        Thread.sleep(5000);
+        log.info(objectMapper.writeValueAsString(projectUatScriptDetail));
+    }
+
 }

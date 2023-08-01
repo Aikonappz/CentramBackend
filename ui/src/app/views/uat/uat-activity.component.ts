@@ -9,7 +9,7 @@ import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MediaService } from '../../service/MediaService';
 import { ClientStorageService } from '../../service/ClientStorageService';
 import { AssetOrderService } from '../../service/AssetOrderService';
-import { BsModalService, } from 'ngx-bootstrap/modal';
+import { BsModalRef, BsModalService, ModalOptions, } from 'ngx-bootstrap/modal';
 import { Project, ProjectList } from '../../model/Project';
 import { ProjectUat } from '../../model/ProjectUat';
 import { ProjectUatService } from '../../service/ProjectUatService';
@@ -21,6 +21,10 @@ import { tap } from 'rxjs/operators';
 import { ProjectUatScriptDetailSource } from '../../service/datasource/ProjectUatScriptDetailSource';
 import { MatPaginator } from '@angular/material/paginator';
 import { ProjectUatScriptDetail } from '../../model/ProjectUatScriptDetail';
+import { LoggedInUser } from '../../model/LoggedInUser';
+import * as moment from 'moment';
+import { AppUtility } from '../../config/AppUtility';
+import { RemarkViewer } from './modal/RemarkViewer';
 declare var $: any;
 
 @Component({
@@ -51,6 +55,10 @@ export class UATActivityComponent implements OnInit {
   searchedData: Object = {};
   searched: boolean = false;
   statusList: any[] = [{ id: true, label: "Pass" }, { id: false, label: "Fail" }];
+  loggedInUser: LoggedInUser;
+  modalRef: BsModalRef;
+  searchedUatScriptId: number;
+  searchedUatScriptComplete: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -73,6 +81,7 @@ export class UATActivityComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.projectUat = new ProjectUat();
     this.miscService.projectsService()
       .subscribe((result: ProjectList) => {
@@ -273,12 +282,19 @@ export class UATActivityComponent implements OnInit {
 
   searchFormSubmit() {
     if (this.angSearchForm.valid) {
+      this.searchedUatScriptId = this.angSearchForm.controls['searchScriptId'].value;
       this.searchedData = {
         projectId: this.angSearchForm.controls['searchProject'].value,
         moduleId: this.angSearchForm.controls['searchModuleId'].value,
         subModuleId: this.angSearchForm.controls['searchSubModuleId'].value,
         projectUATScriptId: this.angSearchForm.controls['searchScriptId'].value,
       };
+      if (this.isScriptUATComplete()) {
+        this.searchedUatScriptComplete = true;
+        this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+      } else {
+        this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+      }
       this.loadData();
       this.searched = true;
     } else {
@@ -362,6 +378,23 @@ export class UATActivityComponent implements OnInit {
     }
   }
 
+  /**
+   * 
+   * @param id 
+   * @returns 
+   */
+  isScriptUATComplete() {
+    for (let k = 0; k < this.projectUatScripts.length; k++) {
+      if (this.projectUatScripts[k].id == this.searchedUatScriptId && this.projectUatScripts[k].uatComplete == true) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * 
+   */
   @ViewChild("searchSubModuleId") searchSubModuleId;
   populateProjectUATScript(searchSubModuleId) {
     //console.log(moduleId);
@@ -380,8 +413,13 @@ export class UATActivityComponent implements OnInit {
         .subscribe((data: any) => {
           this.projectUatScripts = data;
           for (let k = 0; k < this.projectUatScripts.length; k++) {
-            this.projectUatScripts[k].label = this.projectUatScripts[k].testScriptName + " [" + this.projectUatScripts[k].plannedDate + "]";
+            if (this.projectUatScripts[k].uatComplete == false) {
+              this.projectUatScripts[k].label = this.projectUatScripts[k].testScriptName + " [" + this.projectUatScripts[k].plannedDate + "]";
+            } else {
+              this.projectUatScripts[k].label = this.projectUatScripts[k].testScriptName + " [" + this.projectUatScripts[k].plannedDate + "] - Complete";
+            }
           }
+          this.angSearchForm.get('searchScriptId').setValue(null);
         });
     } else {
       this.projectUatScripts = [];
@@ -390,16 +428,77 @@ export class UATActivityComponent implements OnInit {
 
   }
 
-  saveElement(projectUatScriptDetail: ProjectUatScriptDetail) {
-    projectUatScriptDetail.editable = false;
-    console.log(JSON.stringify(projectUatScriptDetail));
+  /**
+   * 
+   * @param projectUatScriptDetail 
+   */
+  enableEdit(projectUatScriptDetail: ProjectUatScriptDetail) {
+    projectUatScriptDetail.editable = true
+    this.clientStorageService.set(projectUatScriptDetail.id.toString(), JSON.stringify(projectUatScriptDetail));
   }
 
-  enableRetestField(projectUatScriptDetail: any) {
-    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false) {
-      return true;
+  /**
+   * 
+   * @param projectUatScriptDetail 
+   */
+  saveElement(projectUatScriptDetail: ProjectUatScriptDetail) {
+    if (projectUatScriptDetail.remark != null) {
+      if (projectUatScriptDetail.remarks == null) {
+        projectUatScriptDetail.remarks = [];
+      }
+      projectUatScriptDetail.remarks.push(
+        { name: this.loggedInUser.name, email: this.loggedInUser.email, comment: projectUatScriptDetail.remark, }
+      );
     }
-    return false;
+    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false) {
+      projectUatScriptDetail.retestDate = moment(projectUatScriptDetail.retestDate).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
+    }
+    //console.log(this.clientStorageService.get(projectUatScriptDetail.id.toString()));
+    //console.log(JSON.stringify(projectUatScriptDetail));
+    //onsole.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));
+    projectUatScriptDetail.editable = false;
+    if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail))) {
+      this.projectUatService
+        .saveProjectUatScriptDetail(projectUatScriptDetail)
+        .subscribe((data: any) => {
+          this.clientStorageService.remove(projectUatScriptDetail.id.toString());
+          projectUatScriptDetail.remark = null;
+          //console.log("updated data", JSON.stringify(data));
+        });
+    }
+  }
+
+  /**
+   * 
+   * @param projectUatScriptDetail 
+   */
+  viewRemark(projectUatScriptDetail: ProjectUatScriptDetail) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-lg',
+    };
+    const initialState = {
+      projectUatScriptDetail: projectUatScriptDetail,
+    };
+    this.modalRef = this.modalService.show(RemarkViewer,
+      Object.assign({}, config, { initialState })
+    );
+  }
+
+  /**
+   * marking ProjectUat as complete
+   */
+  markProjectUatComplate() {
+    this.projectUatService
+      .markProjectUatComplate(this.searchedUatScriptId)
+      .subscribe((data: ProjectUatScript) => {
+        //console.log("updated data", JSON.stringify(data));
+        this.searched = false;
+        this.angSearchForm.reset();
+      });
   }
 
 }
