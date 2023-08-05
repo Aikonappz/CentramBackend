@@ -450,12 +450,12 @@ export class UATActivityComponent implements OnInit {
         { name: this.loggedInUser.name, email: this.loggedInUser.email, comment: projectUatScriptDetail.remark, }
       );
     }
-    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false) {
+    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false && projectUatScriptDetail.retestDate != null && projectUatScriptDetail.retestDate != "") {
       projectUatScriptDetail.retestDate = moment(projectUatScriptDetail.retestDate).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
     }
     //console.log(this.clientStorageService.get(projectUatScriptDetail.id.toString()));
     //console.log(JSON.stringify(projectUatScriptDetail));
-    //onsole.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));
+    //console.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));
     projectUatScriptDetail.editable = false;
     if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail))) {
       this.projectUatService

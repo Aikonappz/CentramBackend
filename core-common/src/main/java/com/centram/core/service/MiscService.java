@@ -5,13 +5,8 @@ import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.Utility;
-import com.centram.common.vo.CommonResponse;
-import com.centram.common.vo.IncidentEmailVO;
-import com.centram.common.vo.ManageTimeSheetInputVO;
-import com.centram.common.vo.UserVO;
-import com.centram.core.repository.AppConfigRepository;
-import com.centram.core.repository.ProjectAllocationDetailRepository;
-import com.centram.core.repository.UserRepository;
+import com.centram.common.vo.*;
+import com.centram.core.repository.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
@@ -109,6 +104,12 @@ public class MiscService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private ProjectUatRepository projectUatRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @Async("asyncExecutor")
     public void pushChats(List<ChatMessage> chatMessages, Boolean requiredDelay) {
@@ -1599,9 +1600,25 @@ public class MiscService {
     }
 
     @Async("asyncExecutor")
-    public void notifyParticipant(ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
-        Thread.sleep(5000);
-        log.info(objectMapper.writeValueAsString(projectUatScriptDetail));
+    public void notifyParticipant(LoggedInUser loggedInUser, ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
+//        ProjectUATVO projectUATVO = new ProjectUATVO();
+//        ProjectUat projectUat = projectUatRepository.findByProjectUATScriptDetailId(projectUatScriptDetail.getId());
+//        Project project = projectUat.getProject();
+//        project.getCode();
+//        project.getName();
+//
+//        projectUATVO.setRecipientName("All");
+//        projectUATVO.setReplyTo(appReplyToEmail);
+//        projectUATVO.setBcc(project.getWatchList().toArray(new String[0]));
+//        if(projectUat.getUploadedBy().getId().compareTo(loggedInUser.getUserId())==0){
+//            //consultant
+//            projectUATVO.setTo(project.getStakeHolders().toArray(new String[0]));
+//        }else{
+//            //stakeholder
+//            projectUATVO.setTo(project.getConsultants().toArray(new String[0]));
+//        }
+//        Thread.sleep(5000);
+//        log.info(objectMapper.writeValueAsString(projectUatScriptDetail));
     }
 
 }

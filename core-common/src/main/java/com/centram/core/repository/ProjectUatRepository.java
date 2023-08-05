@@ -34,4 +34,8 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
     @Query("select pu from ProjectUat pu join pu.projectUatScripts pus where pus.id = (:uatScriptId) ")
     ProjectUat findByProjectUATScriptId( @Param("uatScriptId") BigInteger uatScriptId );
 
+    @Query("select pu from ProjectUat pu join pu.projectUatScripts pus join pus.projectUatScriptDetails pusd where pusd.id = (:projectUATScriptDetailId) ")
+    ProjectUat findByProjectUATScriptDetailId(
+            @Param("projectUATScriptDetailId") BigInteger projectUATScriptDetailId
+    );
 }

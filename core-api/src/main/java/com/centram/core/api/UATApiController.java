@@ -69,7 +69,7 @@ public class UATApiController {
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
     public ResponseEntity<ProjectUatScriptDetail> updateProjectUatScriptDetail(@RequestBody(required = true) ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<ProjectUatScriptDetail>(projectUatService.updateProjectUatScriptDetail(projectUatScriptDetail), HttpStatus.OK);
+        return new ResponseEntity<ProjectUatScriptDetail>(projectUatService.updateProjectUatScriptDetail(loggedInUser, projectUatScriptDetail), HttpStatus.OK);
     }
 
     @JsonView(Views.BasicView.class)

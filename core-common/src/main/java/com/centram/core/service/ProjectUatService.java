@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.ProjectUATRequestDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -87,7 +88,7 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = false)
-    public ProjectUatScriptDetail updateProjectUatScriptDetail(ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
+    public ProjectUatScriptDetail updateProjectUatScriptDetail(LoggedInUser loggedInUser, ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
         ProjectUatScriptDetail oldObj = projectUatScriptDetailRepository.getById(projectUatScriptDetail.getId());
         if (oldObj != null) {
             oldObj.setActualResult(projectUatScriptDetail.getActualResult());
@@ -96,7 +97,7 @@ public class ProjectUatService {
             oldObj.setRetestPass(projectUatScriptDetail.getRetestPass());
             oldObj.setRemarks(projectUatScriptDetail.getRemarks());
             oldObj = projectUatScriptDetailRepository.save(oldObj);
-            miscService.notifyParticipant(oldObj);
+            miscService.notifyParticipant(loggedInUser, oldObj);
             return oldObj;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
