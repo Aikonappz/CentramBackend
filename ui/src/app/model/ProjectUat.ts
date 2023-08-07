@@ -8,8 +8,11 @@ export class ProjectUat extends Base {
     id: number;
     project: Project;
     moduleId: number;
+    uatCycleName: string;
+    label: string;
     subModuleId: number;
     projectUatScripts: ProjectUatScript[];    
     organisation: Organisation;
     user: UserVO;
+    uatCycleComplete: boolean;
 }

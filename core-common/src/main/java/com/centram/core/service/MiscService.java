@@ -26,6 +26,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -1619,6 +1620,47 @@ public class MiscService {
 //        }
 //        Thread.sleep(5000);
 //        log.info(objectMapper.writeValueAsString(projectUatScriptDetail));
+    }
+
+    @Async("asyncExecutor")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public void notifyUatScriptUpload(LoggedInUser loggedInUser, ProjectUat projectUat) throws JsonProcessingException, InterruptedException {
+        ProjectUATVO projectUATVO = new ProjectUATVO();
+        projectUATVO.setNotifications(new ArrayList<Notification>());
+        List<String> usersEmail = new ArrayList<String>();
+        Project project = projectUat.getProject();
+        Module module = moduleService.getModule(projectUat.getModuleId());
+        Module subModule = moduleService.getModule(projectUat.getSubModuleId());
+        projectUATVO.setRecipientName("All");
+        projectUATVO.setReplyTo(appReplyToEmail);
+        projectUATVO.setBcc(project.getWatchList().toArray(new String[0]));
+        usersEmail.addAll(project.getWatchList());
+        usersEmail.addAll(project.getStakeHolders());
+        usersEmail.addAll(project.getConsultants());
+        if (projectUat.getUploadedBy().getId().compareTo(loggedInUser.getUserId()) == 0) {
+            //consultant
+            projectUATVO.setTo(project.getStakeHolders().toArray(new String[0]));
+            projectUATVO.setCc(project.getConsultants().toArray(new String[0]));
+        } else {
+            //stakeholder
+            projectUATVO.setTo(project.getConsultants().toArray(new String[0]));
+            projectUATVO.setCc(project.getStakeHolders().toArray(new String[0]));
+        }
+        Map<String, Object> emailValues = new LinkedHashMap<String, Object>();
+        emailValues.put("uatCycleName", projectUat.getUatCycleName());
+        emailValues.put("projectName", project.getName() + " [" + project.getCode() + "]");
+        emailValues.put("moduleName", module.getCustomerModuleName());
+        emailValues.put("subModuleName", subModule.getCustomerModuleName());
+        projectUATVO.setEmailValues(emailValues);
+        projectUATVO.setMailBodyKey("uploadBody");
+        projectUATVO.setMailSubjectKey("uploadTitle");
+        List<UserVO> users = userService.getUsersByEmails(usersEmail, loggedInUser.getOrganisationId());
+        for (UserVO userVO : users) {
+            projectUATVO.getNotifications().add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        //Thread.sleep(5000);
+        log.info(objectMapper.writeValueAsString(projectUATVO));
+        appEmailService.notifyUatActivities(projectUATVO);
     }
 
 }

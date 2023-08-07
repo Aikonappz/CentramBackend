@@ -30,6 +30,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -49,19 +50,25 @@ public class UATApiController {
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
     public ResponseEntity<ProjectUat> uploadScripts(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("projectUATRequestDTO") ProjectUATRequestDTO projectUATRequestDTO) throws IOException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<ProjectUat>(projectUatService.uploadScripts(loggedInUser.getUserId(), loggedInUser.getOrganisationId(), multipartFile, projectUATRequestDTO), HttpStatus.OK);
+        return new ResponseEntity<ProjectUat>(projectUatService.uploadScripts(loggedInUser, multipartFile, projectUATRequestDTO), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/uat-cycle", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
+    public ResponseEntity<List<ProjectUat>> getProjectUats(@NotNull @Valid @RequestParam(value = "projectId", required = true) BigInteger projectId, @NotNull @Valid @RequestParam(value = "moduleId", required = true) BigInteger moduleId, @NotNull @Valid @RequestParam(value = "subModuleId", required = false) BigInteger subModuleId) {
+        return new ResponseEntity<List<ProjectUat>>(projectUatService.getProjectUats(projectId, moduleId, subModuleId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/uat-script", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<Set<ProjectUatScript>> getProjectUatScripts(@NotNull @Valid @RequestParam(value = "projectId", required = true) BigInteger projectId, @NotNull @Valid @RequestParam(value = "moduleId", required = true) BigInteger moduleId, @NotNull @Valid @RequestParam(value = "subModuleId", required = false) BigInteger subModuleId) {
-        return new ResponseEntity<Set<ProjectUatScript>>(projectUatService.getProjectUatScripts(projectId, moduleId, subModuleId), HttpStatus.OK);
+    public ResponseEntity<Set<ProjectUatScript>> getProjectUatScripts(@NotNull @Valid @RequestParam(value = "uatProjectId", required = true) BigInteger uatProjectId) {
+        return new ResponseEntity<Set<ProjectUatScript>>(projectUatService.getProjectUatScriptsByUatProjectId(uatProjectId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/uat-script-detail", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<PaginatedList<ProjectUatScriptDetail>> getProjectUatScriptDetails(@NotNull @Valid @RequestParam(value = "projectId", required = false) BigInteger projectId, @NotNull @Valid @RequestParam(value = "moduleId", required = false) BigInteger moduleId, @NotNull @Valid @RequestParam(value = "subModuleId", required = false) BigInteger subModuleId, @NotNull @Valid @RequestParam(value = "projectUATScriptId", required = false) BigInteger projectUATScriptId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<ProjectUatScriptDetail>>(projectUatService.getProjectUatScriptDetails(projectId, moduleId, subModuleId, projectUATScriptId, pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<ProjectUatScriptDetail>> getProjectUatScriptDetails(@NotNull @Valid @RequestParam(value = "projectUATScriptId", required = false) BigInteger projectUATScriptId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<ProjectUatScriptDetail>>(projectUatService.findByProjectUATScriptId(projectUATScriptId, pageable), HttpStatus.OK);
     }
 
     @JsonView(Views.BasicView.class)

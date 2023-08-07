@@ -48,6 +48,7 @@ export class UATActivityComponent implements OnInit {
   projectUat: ProjectUat;
   uploadSuccess: boolean = false;
   projectUatScripts: ProjectUatScript[];
+  projectUats: ProjectUat[];
   displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
   //displayedColumns = ['testScenarioJobId', 'step','action', 'activity'];
   private datasource: ProjectUatScriptDetailSource;
@@ -134,7 +135,10 @@ export class UATActivityComponent implements OnInit {
       searchSubModuleId: new FormControl(null, [
         Validators.required,
       ]),
-      searchScriptId: new FormControl(null, [
+      searchUatProjectId: new FormControl(null, [
+        Validators.required,
+      ]),
+      searchUatProjectScriptId: new FormControl(null, [
         Validators.required,
       ]),
     });
@@ -282,12 +286,9 @@ export class UATActivityComponent implements OnInit {
 
   searchFormSubmit() {
     if (this.angSearchForm.valid) {
-      this.searchedUatScriptId = this.angSearchForm.controls['searchScriptId'].value;
+      this.searchedUatScriptId = this.angSearchForm.controls['searchUatProjectId'].value;
       this.searchedData = {
-        projectId: this.angSearchForm.controls['searchProject'].value,
-        moduleId: this.angSearchForm.controls['searchModuleId'].value,
-        subModuleId: this.angSearchForm.controls['searchSubModuleId'].value,
-        projectUATScriptId: this.angSearchForm.controls['searchScriptId'].value,
+        projectUATScriptId: this.angSearchForm.controls['searchUatProjectId'].value,
       };
       if (this.isScriptUATComplete()) {
         this.searchedUatScriptComplete = true;
@@ -371,11 +372,31 @@ export class UATActivityComponent implements OnInit {
           this.searchSubModuleList.push(this.projectModules[i]);
         }
       }
+      this.projectUatScripts = [];
+      this.projectUats = [];
+      this.angSearchForm.get('searchSubModuleId').setValue(null);
+      this.angSearchForm.get('searchUatProjectId').setValue(null);
+      this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
     } else {
       this.searchSubModuleList = [];
+      this.projectUatScripts = [];
+      this.projectUats = [];
       this.angSearchForm.get('searchSubModuleId').setValue(null);
-      this.angSearchForm.get('searchScriptId').setValue(null);
+      this.angSearchForm.get('searchUatProjectId').setValue(null);
+      this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
     }
+  }
+
+  @ViewChild("searchProject") searchProject;
+  searchProjectAction(searchModuleId) {
+    //console.log(moduleId);
+    this.searchSubModuleList = [];
+    this.projectUatScripts = [];
+    this.projectUats = [];
+    this.angSearchForm.get('searchModuleId').setValue(null);
+    this.angSearchForm.get('searchSubModuleId').setValue(null);
+    this.angSearchForm.get('searchUatProjectId').setValue(null);
+    this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
   }
 
   /**
@@ -396,7 +417,7 @@ export class UATActivityComponent implements OnInit {
    * 
    */
   @ViewChild("searchSubModuleId") searchSubModuleId;
-  populateProjectUATScript(searchSubModuleId) {
+  populateProjectUAT(searchSubModuleId) {
     //console.log(moduleId);
     if (typeof searchSubModuleId !== 'undefined') {
       // console.log(
@@ -404,26 +425,63 @@ export class UATActivityComponent implements OnInit {
       //   this.angSearchForm.controls['searchModuleId'].value,
       //   this.angSearchForm.controls['searchSubModuleId'].value
       // );
+      if (
+        this.angSearchForm.controls['searchSubModuleId'].value != null && this.angSearchForm.controls['searchSubModuleId'].value != "" &&
+        this.angSearchForm.controls['searchModuleId'].value != null && this.angSearchForm.controls['searchModuleId'].value != "" &&
+        this.angSearchForm.controls['searchProject'].value != null && this.angSearchForm.controls['searchProject'].value != ""
+      ) {
+        this.projectUatService
+          .getProjectUats({
+            projectId: this.angSearchForm.controls['searchProject'].value,
+            moduleId: this.angSearchForm.controls['searchModuleId'].value,
+            subModuleId: this.angSearchForm.controls['searchSubModuleId'].value,
+          })
+          .subscribe((data: ProjectUat[]) => {
+            this.projectUats = data;
+            for (let k = 0; k < this.projectUats.length; k++) {
+              if (this.projectUats[k].uatCycleComplete == false) {
+                this.projectUats[k].label = this.projectUats[k].uatCycleName;
+              } else {
+                this.projectUats[k].label = this.projectUats[k].uatCycleName + " - Complete";
+              }
+            }
+            this.projectUatScripts = [];
+            this.angSearchForm.get('searchUatProjectId').setValue(null);
+            this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
+          });
+      }
+    } else {
+      this.projectUats = [];
+      this.projectUatScripts = [];
+      this.angSearchForm.get('searchUatProjectId').setValue(null);
+      this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
+    }
+
+  }
+
+
+  @ViewChild("searchUatProjectId") searchUatProjectId;
+  populateProjectUATScript(searchUatProjectId) {
+    //console.log(moduleId);
+    if (typeof searchUatProjectId !== 'undefined') {
       this.projectUatService
         .getProjectUatScripts({
-          projectId: this.angSearchForm.controls['searchProject'].value,
-          moduleId: this.angSearchForm.controls['searchModuleId'].value,
-          subModuleId: this.angSearchForm.controls['searchSubModuleId'].value,
+          uatProjectId: this.angSearchForm.controls['searchUatProjectId'].value,
         })
-        .subscribe((data: any) => {
+        .subscribe((data: ProjectUatScript[]) => {
           this.projectUatScripts = data;
           for (let k = 0; k < this.projectUatScripts.length; k++) {
             if (this.projectUatScripts[k].uatComplete == false) {
-              this.projectUatScripts[k].label = this.projectUatScripts[k].testScriptName + " [" + this.projectUatScripts[k].plannedDate + "]";
+              this.projectUatScripts[k].label = this.projectUatScripts[k].testCaseId;
             } else {
-              this.projectUatScripts[k].label = this.projectUatScripts[k].testScriptName + " [" + this.projectUatScripts[k].plannedDate + "] - Complete";
+              this.projectUatScripts[k].label = this.projectUatScripts[k].testCaseId + " - Complete";
             }
           }
-          this.angSearchForm.get('searchScriptId').setValue(null);
+          this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
         });
     } else {
       this.projectUatScripts = [];
-      this.angSearchForm.get('searchScriptId').setValue(null);
+      this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
     }
 
   }

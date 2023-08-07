@@ -18,15 +18,14 @@ import java.util.Set;
 @Repository
 public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteger> {
 
-    @Query("select pu.projectUatScripts from ProjectUat pu where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId)")
-    List<Set<ProjectUatScript>> findByProjectIdAndModuleIdAndSubModuleId(@Param("projectId") BigInteger projectId, @Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId);
+    @Query("select pu from ProjectUat pu where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId)")
+    List<ProjectUat> getByProjectIdAndModuleIdAndSubModuleId(@Param("projectId") BigInteger projectId, @Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId);
 
-    @Query("select pusd from ProjectUat pu join pu.projectUatScripts pus join pus.projectUatScriptDetails pusd " +
-            " where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId) and pus.id = (:projectUATScriptId) ")
-    Page<ProjectUatScriptDetail> findByProjectIdAndModuleIdAndSubModuleIdAndProjectUATScriptId(
-            @Param("projectId") BigInteger projectId,
-            @Param("moduleId") BigInteger moduleId,
-            @Param("subModuleId") BigInteger subModuleId,
+    @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
+    Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(@Param("uatProjectId") BigInteger uatProjectId);
+
+    @Query("select pusd from ProjectUat pu join pu.projectUatScripts pus join pus.projectUatScriptDetails pusd where pus.id = (:projectUATScriptId) ")
+    Page<ProjectUatScriptDetail> findByProjectUATScriptId(
             @Param("projectUATScriptId") BigInteger projectUATScriptId,
             @Param("pageable") Pageable pageable
     );

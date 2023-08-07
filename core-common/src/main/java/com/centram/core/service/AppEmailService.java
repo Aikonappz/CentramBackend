@@ -4,6 +4,7 @@ package com.centram.core.service;
 import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.service.EmailService;
 import com.centram.common.vo.IncidentEmailVO;
+import com.centram.common.vo.ProjectUATVO;
 import com.centram.common.vo.UserVO;
 import com.centram.domain.AppConfiguration;
 import com.centram.domain.Notification;
@@ -62,12 +63,8 @@ public class AppEmailService {
     @Async("asyncExecutor")
     public void sendForgotPasswordMail(UserVO userVO, Map<String, String> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "FORGOT_PASSWORD_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("FORGOT_PASSWORD_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("FORGOT_PASSWORD_EMAIL_TEMPLATE")).findFirst().get();
         String forgotPasswordEmailTemplate = appConfiguration.getConfigurationValue();
         String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
         String link = appBaseUrl.concat("/reset-password?uuid=").concat(mailValues.get("uuid"));
@@ -104,12 +101,8 @@ public class AppEmailService {
     @Async("asyncExecutor")
     public void sendResetPasswordMail(UserVO userVO, Map<String, String> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "RESET_PASSWORD_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("RESET_PASSWORD_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("RESET_PASSWORD_EMAIL_TEMPLATE")).findFirst().get();
         String resetPasswordEmailTemplate = appConfiguration.getConfigurationValue();
         String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
         String link = appBaseUrl.concat("/sign-in");
@@ -147,12 +140,8 @@ public class AppEmailService {
     @Async("asyncExecutor")
     public void sendOnboardRequestMail(RequestDemoDTO requestDemoDTO, Map<String, String> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "DEMO_REQUEST_EMAIL_TEMPLATE", "APP_DEMO_REQUEST_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("DEMO_REQUEST_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("DEMO_REQUEST_EMAIL_TEMPLATE")).findFirst().get();
         String adminBaseEmailTemplate = baseEmailTemplate;
         String demoRequestEmailTemplate = appConfiguration.getConfigurationValue();
         String demoRequestMailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
@@ -174,9 +163,7 @@ public class AppEmailService {
         emailService.sendMail(mailMap);
         //log.info("EMAIL TITLE: {}", demoRequestMailSubject);
         //log.info("EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
-        appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("APP_DEMO_REQUEST_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("APP_DEMO_REQUEST_EMAIL_TEMPLATE")).findFirst().get();
         String adminDemoRequestEmailTemplate = appConfiguration.getConfigurationValue();
         String adminDemoRequestMailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
         context = new Context(Locale.ENGLISH);
@@ -203,15 +190,9 @@ public class AppEmailService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")
     public void sendOutBoundAssetUpdateEmail(Map<String, Object> mailValues) {
-        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
-                Arrays.asList("BASE_EMAIL_TEMPLATE", "OUTBOUND_ASSET_EMAIL_TEMPLATE")
-        );
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("OUTBOUND_ASSET_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "OUTBOUND_ASSET_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("OUTBOUND_ASSET_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("subject")).toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("body")).toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -281,15 +262,9 @@ public class AppEmailService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     //@Async("asyncExecutor")
     public void sendInboundAssetRequestUpdateEmail(Map<String, Object> mailValues) {
-        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(
-                Arrays.asList("BASE_EMAIL_TEMPLATE", "INBOUND_ASSET_EMAIL_TEMPLATE")
-        );
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("INBOUND_ASSET_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "INBOUND_ASSET_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("INBOUND_ASSET_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("subject")).toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("body")).toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -340,12 +315,8 @@ public class AppEmailService {
     //@Async("asyncExecutor")
     public void sendChatInteractionEmail(Map<String, Object> attributes) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "CHAT_INTERACTION_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("CHAT_INTERACTION_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("CHAT_INTERACTION_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get("subject").toString();
         String mailBody = appConfiguration.getConfigurationProperties().get("content").toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -467,16 +438,13 @@ public class AppEmailService {
         }
         emailService.sendMail(mailMap);
     }
+
     @Transactional
     //@Async("asyncExecutor")
     public void organisationUpdate(Map<String, Object> mailValues, Boolean newEntry) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ORGANISATION_UPDATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("ORGANISATION_UPDATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("ORGANISATION_UPDATE")).findFirst().get();
         String mailBody = appConfiguration.getConfigurationProperties().get(newEntry ? "newOrgBody" : "oldOrgBody").toString();
         String mailSubject = appConfiguration.getConfigurationProperties().get(newEntry ? "newOrgSub" : "oldOrgSub").toString();
         String link = appBaseUrl.concat("/sign-in");
@@ -510,11 +478,7 @@ public class AppEmailService {
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
             for (UserVO uv : userVOS) {
-                notificationService.save(
-                        Collections.singletonList(
-                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
-                        )
-                );
+                notificationService.save(Collections.singletonList(new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)));
             }
         }
     }
@@ -523,12 +487,8 @@ public class AppEmailService {
     //@Async("asyncExecutor")
     public void assetWarrantyExpiration(Map<String, Object> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ASSET_WARRANTY_EXPIRATION_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("ASSET_WARRANTY_EXPIRATION_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("ASSET_WARRANTY_EXPIRATION_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get("subject").toString();
         String mailBody = appConfiguration.getConfigurationProperties().get("content").toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -563,11 +523,7 @@ public class AppEmailService {
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
             for (UserVO uv : userVOS) {
-                notificationService.save(
-                        Collections.singletonList(
-                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
-                        )
-                );
+                notificationService.save(Collections.singletonList(new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)));
             }
         }
     }
@@ -576,12 +532,8 @@ public class AppEmailService {
     //@Async("asyncExecutor")
     public void assetValidityExpiration(Map<String, Object> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ASSET_VALIDITY_EXPIRATION_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("ASSET_VALIDITY_EXPIRATION_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("ASSET_VALIDITY_EXPIRATION_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get("subject").toString();
         String mailBody = appConfiguration.getConfigurationProperties().get("content").toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -616,11 +568,7 @@ public class AppEmailService {
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
             for (UserVO uv : userVOS) {
-                notificationService.save(
-                        Collections.singletonList(
-                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
-                        )
-                );
+                notificationService.save(Collections.singletonList(new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)));
             }
         }
     }
@@ -630,12 +578,8 @@ public class AppEmailService {
     //@Async("asyncExecutor")
     public void organisationNotification(Map<String, Object> mailValues, Boolean expired) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "ORGANISATION_UPDATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("ORGANISATION_UPDATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("ORGANISATION_UPDATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(expired ? "orgExpireSub" : "orgAboutToExpireSub").toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(expired ? "orgExpireBody" : "orgAboutToExpireBody").toString();
         String link = appBaseUrl.concat("/sign-in");
@@ -669,11 +613,7 @@ public class AppEmailService {
         if (mailValues.containsKey("userToNotify")) {
             List<UserVO> userVOS = (List<UserVO>) mailValues.get("userToNotify");
             for (UserVO uv : userVOS) {
-                notificationService.save(
-                        Collections.singletonList(
-                                new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)
-                        )
-                );
+                notificationService.save(Collections.singletonList(new Notification(mailSubject, mailBody, new User(uv), Status.PUSHED, NotificationType.INFO)));
             }
         }
     }
@@ -688,12 +628,8 @@ public class AppEmailService {
     //@Async("asyncExecutor")
     public void sendUploadResult(Map<String, Object> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "UPLOAD_RESULT_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("UPLOAD_RESULT_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("UPLOAD_RESULT_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("mailSubject")).toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("mailBody")).toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -729,28 +665,9 @@ public class AppEmailService {
         emailService.sendMail(mailMap);
         Boolean hasUploadIssue = (Boolean) mailValues.get("has_issue");
         if (hasUploadIssue) {
-            notificationService.save(
-                    Collections.singletonList(
-                            new Notification(
-                                    mailSubject, mailValues.get("upload_tp") + " file import has some issues! Please refer your email for reference.",
-                                    new User((UserVO) mailValues.get("user")),
-                                    Status.PUSHED,
-                                    NotificationType.INFO
-                            )
-                    )
-            );
+            notificationService.save(Collections.singletonList(new Notification(mailSubject, mailValues.get("upload_tp") + " file import has some issues! Please refer your email for reference.", new User((UserVO) mailValues.get("user")), Status.PUSHED, NotificationType.INFO)));
         } else {
-            notificationService.save(
-                    Collections.singletonList(
-                            new Notification(
-                                    mailSubject,
-                                    mailBody,
-                                    new User((UserVO) mailValues.get("user")),
-                                    Status.PUSHED,
-                                    NotificationType.INFO
-                            )
-                    )
-            );
+            notificationService.save(Collections.singletonList(new Notification(mailSubject, mailBody, new User((UserVO) mailValues.get("user")), Status.PUSHED, NotificationType.INFO)));
         }
     }
 
@@ -764,12 +681,8 @@ public class AppEmailService {
     //@Async("asyncExecutor")
     public void sendOnboardMail(UserVO userVO, Map<String, Object> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "WELCOME_ONBOARD_EMAIL_TEMPLATE"));
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("WELCOME_ONBOARD_EMAIL_TEMPLATE"))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("WELCOME_ONBOARD_EMAIL_TEMPLATE")).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
         String mailBody = appConfiguration.getConfigurationProperties().get("mailBody").toString();
         String loginLink = appBaseUrl.concat("/sign-in");
@@ -798,11 +711,7 @@ public class AppEmailService {
         //log.info("USER ONBOARD EMAIL TITLE: {}", mailSubject);
         //log.info("USER ONBOARD EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
-        notificationService.save(
-                Collections.singletonList(
-                        new Notification(mailSubject, mailBody, new User(userVO), Status.PUSHED, NotificationType.INFO)
-                )
-        );
+        notificationService.save(Collections.singletonList(new Notification(mailSubject, mailBody, new User(userVO), Status.PUSHED, NotificationType.INFO)));
     }
 
     @Transactional
@@ -811,12 +720,8 @@ public class AppEmailService {
         UserVO userVO = (UserVO) mailValues.get("recipient");
         List<String> mailTemplates = Arrays.asList("BASE_EMAIL_TEMPLATE", mailValues.get("mailTemplate").toString());
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(mailTemplates);
-        String baseEmailTemplate = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE"))
-                .findFirst().get().getConfigurationValue();
-        AppConfiguration appConfiguration = appConfigurations.stream()
-                .filter(ac -> ac.getConfigurationKey().equals(mailValues.get("mailTemplate").toString()))
-                .findFirst().get();
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals(mailValues.get("mailTemplate").toString())).findFirst().get();
         String mailSubject = appConfiguration.getConfigurationProperties().get(mailValues.get("mailSubject")).toString();
         String mailBody = appConfiguration.getConfigurationProperties().get(mailValues.get("mailBody")).toString();
         StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -843,10 +748,49 @@ public class AppEmailService {
         //log.info("BATCH REPORT EMAIL TITLE: {}", mailSubject);
         //log.info("BATCH REPORT EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
         emailService.sendMail(mailMap);
-        notificationService.save(
-                Collections.singletonList(
-                        new Notification(mailSubject, "Please check your email for details!", new User(userVO), Status.PUSHED, NotificationType.INFO)
-                )
-        );
+        notificationService.save(Collections.singletonList(new Notification(mailSubject, "Please check your email for details!", new User(userVO), Status.PUSHED, NotificationType.INFO)));
     }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+    public void notifyUatActivities(ProjectUATVO projectUATVO) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "UAT_ACTIVITIES_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("UAT_ACTIVITIES_EMAIL_TEMPLATE")).findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(projectUATVO.getMailSubjectKey()).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(projectUATVO.getMailBodyKey()).toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH, projectUATVO.getEmailValues());
+        mailSubject = templateEngine.process(mailSubject, context);
+        context = new Context(Locale.ENGLISH, projectUATVO.getEmailValues());
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", projectUATVO.getRecipientName().concat(","));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", projectUATVO.getTo());
+        mailMap.put("cc", projectUATVO.getCc());
+        mailMap.put("bcc", projectUATVO.getBcc());
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("INCIDENT/ASSET EMAIL TITLE: {}", mailSubject);
+        //log.info("INCIDENT/ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        if (projectUATVO.getNotifications() != null && !projectUATVO.getNotifications().isEmpty()) {
+            List<Notification> notifications = new ArrayList<Notification>();
+            for (Notification notification : projectUATVO.getNotifications()) {
+                notification.setNotificationTitle(mailSubject);
+                notification.setNotificationBody(mailBody);
+                notifications.add(notification);
+            }
+            notificationService.save(notifications);
+        }
+        emailService.sendMail(mailMap);
+    }
+
 }

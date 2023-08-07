@@ -65,14 +65,14 @@
             </div>
             <div class="row row-margin-05">
               <div class="col">
-                <label class="form-col-form-label required-control-label" for="stakeHolders">UAT Stakeholders</label>
+                <label class="form-col-form-label required-control-label" for="stakeHolders">Customer</label>
                 <ng-select [multiple]="true" [items]="uatStakeHolders" placeholder="-- Select UAT Stake Holder --"
                   formControlName="stakeHolders" id="stakeHolders" name="stakeHolders" bindLabel="email"
                   bindValue="email">
                 </ng-select>
                 <div *ngIf="f.stakeHolders.touched && f.stakeHolders.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.stakeHolders.errors?.required">
-                    UAT Stake Holder is required.
+                    Customer is required.
                   </div>
                   <div *ngIf="f.stakeHolders.errors?.maxlength">
                     Allowed maxlength exceeds.
@@ -80,7 +80,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label required-control-label" for="consultants">UAT Consultants</label>
+                <label class="form-col-form-label required-control-label" for="consultants">Consultants</label>
                 <ng-select [multiple]="true" [items]="uatConsultants" placeholder="-- Select Consultants --"
                   formControlName="consultants" id="consultants" name="consultants" bindLabel="email" bindValue="email">
                 </ng-select>
@@ -92,17 +92,7 @@
                     Allowed maxlength exceeds.
                   </div>
                 </div>
-              </div>
-              <div class="col">
-                <label class="col-md-3 col-form-label" for="status">Type</label>
-                <div class="col-md-9 col-form-label">
-                  <div class="form-check form-check-inline mr-1" id="inline-radios">
-                    <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
-                      name="inHouse" value="1">
-                    <label class="form-check-label" for="inHouse">In House</label>
-                  </div>
-                </div>
-              </div>
+              </div>              
               <div class="col">
                 <label class="col-md-3 col-form-label" for="status">Status</label>
                 <div class="col-md-9 col-form-label">
@@ -116,6 +106,17 @@
                       [checked]="(project.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
                       value="false">
                     <label class="form-check-label" for="INACTIVE">Inactive</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col d-none">
+                <label class="col-md-3 col-form-label" for="status">Type</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
+                      name="inHouse" value="1">
+                    <label class="form-check-label" for="inHouse">In House</label>
                   </div>
                 </div>
               </div>

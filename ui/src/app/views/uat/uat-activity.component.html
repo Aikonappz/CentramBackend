@@ -86,6 +86,10 @@
               <button type="button" (click)="resetUploadForm()" class="btn btn-danger btn-sm">
                 Cancel
               </button>
+              <a class="btn btn-link sample-uat-script-download-btn" href="assets/downloads/uat-scripts.xlsx">
+                <i class="icon-arrow-down-circle"></i>
+                Download Sample Template
+              </a>
             </div>
           </form>
         </tab>
@@ -96,7 +100,7 @@
                 <div class="row">
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="searchProject">Project</label>
-                    <ng-select [items]="projectList" placeholder="-- Select Project --" formControlName="searchProject"
+                    <ng-select [items]="projectList" #searchProject (change)="searchProjectAction($event)" placeholder="-- Select Project --" formControlName="searchProject"
                       id="searchProject" searchProject name="searchProject" bindLabel="label" bindValue="id">
                     </ng-select>
                     <div *ngIf="sf.searchProject.touched && sf.searchProject.invalid" class="alert alert-danger-custom">
@@ -121,10 +125,10 @@
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="searchSubModuleId">Sub
                       Module</label>
-                    <ng-select [items]="searchSubModuleList" #searchSubModuleId
-                      (change)="populateProjectUATScript($event)" placeholder="-- Select Sub Module --"
-                      formControlName="searchSubModuleId" id="searchSubModuleId" searchSubModuleId
-                      name="searchSubModuleId" bindLabel="customerModuleName" bindValue="id"></ng-select>
+                    <ng-select [items]="searchSubModuleList" #searchSubModuleId (change)="populateProjectUAT($event)"
+                      placeholder="-- Select Sub Module --" formControlName="searchSubModuleId" id="searchSubModuleId"
+                      searchSubModuleId name="searchSubModuleId" bindLabel="customerModuleName"
+                      bindValue="id"></ng-select>
                     <div *ngIf="sf.searchSubModuleId.touched && sf.searchSubModuleId.invalid"
                       class="alert alert-danger-custom">
                       <div *ngIf="sf.searchSubModuleId.errors?.required">
@@ -133,14 +137,28 @@
                     </div>
                   </div>
                   <div class="col">
-                    <label class="form-col-form-label required-control-label" for="searchScriptId">UAT Script</label>
-                    <ng-select [items]="projectUatScripts" placeholder="-- Select UAT Script --"
-                      formControlName="searchScriptId" id="searchScriptId" searchScriptId name="searchScriptId"
-                      bindLabel="label" bindValue="id"></ng-select>
-                    <div *ngIf="sf.searchScriptId.touched && sf.searchScriptId.invalid"
+                    <label class="form-col-form-label required-control-label" for="searchUatProjectId">UAT Cycle</label>
+                    <ng-select [items]="projectUats" #searchUatProjectId (change)="populateProjectUATScript($event)"
+                      placeholder="-- Select Project UAT --" formControlName="searchUatProjectId"
+                      id="searchUatProjectId" searchUatProjectId name="searchUatProjectId" bindLabel="label"
+                      bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchUatProjectId.touched && sf.searchUatProjectId.invalid"
                       class="alert alert-danger-custom">
-                      <div *ngIf="sf.searchScriptId.errors?.required">
-                        UAT Script is required.
+                      <div *ngIf="sf.searchUatProjectId.errors?.required">
+                        Project UAT Cycle is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatProjectScriptId">UAT
+                      Script</label>
+                    <ng-select [items]="projectUatScripts" placeholder="-- Select Project UAT Script --"
+                      formControlName="searchUatProjectScriptId" id="searchUatProjectScriptId" searchUatProjectScriptId
+                      name="searchUatProjectScriptId" bindLabel="label" bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchUatProjectScriptId.touched && sf.searchUatProjectScriptId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchUatProjectScriptId.errors?.required">
+                        Project UAT Script is required.
                       </div>
                     </div>
                   </div>

@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -28,4 +29,6 @@ public class ProjectUATVO implements Serializable {
     private String[] bcc;
     private String recipientName;
     private String replyTo;
+    private Map<String,Object> emailValues;
+    private List<Notification> notifications;
 }

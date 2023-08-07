@@ -40,6 +40,18 @@ public class ProjectUatScript extends BaseEntity implements Serializable {
 
     @NotNull
     @Valid
+    @Column(name = "test_case_id", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private String testCaseId;
+
+    @NotNull
+    @Valid
+    @Column(name = "test_case_description", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private String testCaseDescription;
+
+    @NotNull
+    @Valid
     @Column(name = "test_script_name", nullable = false)
     @JsonView(Views.BasicView.class)
     private String testScriptName;

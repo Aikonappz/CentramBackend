@@ -14,6 +14,9 @@ export class ProjectUatService {
     uploadProjectUatScript(formData: FormData, request?: any): Observable<ProjectUat> {
         return this.http.post('/v1/project-uat/upload-scripts', formData, request);
     }
+    getProjectUats(request?: any): Observable<ProjectUat[]> {
+        return this.http.get('/v1/project-uat/uat-cycle', { "params": request });
+    }
     getProjectUatScripts(request?: any): Observable<ProjectUatScript[]> {
         return this.http.get('/v1/project-uat/uat-script', { "params": request });
     }

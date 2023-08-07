@@ -59,6 +59,12 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger subModuleId;
 
+    @NotNull
+    @Valid
+    @Column(name = "uat_cycle_name", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private String uatCycleName;
+
     @Valid
     @NotNull
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -79,6 +85,12 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private User uploadedBy;
+
+    @Valid
+    @NotNull
+    @Column(name = "uat_cycle_complete", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private Boolean uatCycleComplete = false;
 
     public ProjectUat(@NotNull BigInteger id) {
         this.id = id;
