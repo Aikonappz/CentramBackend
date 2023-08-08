@@ -80,10 +80,10 @@ public class UATApiController {
     }
 
     @JsonView(Views.BasicView.class)
-    @RequestMapping(value = "/mark-uat-complete/{uatScriptId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.PUT)
+    @RequestMapping(value = "/mark-uat-script-test-complete/{uatScriptId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<ProjectUatScript> markUATComplete(@PathVariable("uatScriptId") BigInteger uatScriptId) {
+    public ResponseEntity<ProjectUatScript> markUATScriptTestComplete(@PathVariable("uatScriptId") BigInteger uatScriptId) throws JsonProcessingException, InterruptedException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<ProjectUatScript>(projectUatService.markUATComplete(uatScriptId), HttpStatus.OK);
+        return new ResponseEntity<ProjectUatScript>(projectUatService.markUATScriptTestComplete(loggedInUser,uatScriptId), HttpStatus.OK);
     }
 }

@@ -73,11 +73,16 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = false)
-    public ProjectUatScript markUATComplete(BigInteger uatScriptId) {
+    public ProjectUatScript markUATScriptTestComplete(LoggedInUser loggedInUser, BigInteger uatScriptId) throws JsonProcessingException, InterruptedException {
         ProjectUatScript projectUatScript = projectUatScriptRepository.getById(uatScriptId);
         if (projectUatScript != null) {
             projectUatScript.setUatComplete(true);
-            return projectUatScriptRepository.save(projectUatScript);
+            projectUatScript.getProjectUatScriptDetails().forEach(i -> {
+                i.setPass(true);
+            });
+            projectUatScript = projectUatScriptRepository.save(projectUatScript);
+            miscService.notifyUatScriptCompletion(loggedInUser, projectUatScript);
+            return projectUatScript;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
@@ -301,11 +306,10 @@ public class ProjectUatService {
                             }
                         } else if (cell.getAddress().getColumn() == 12) {
                             if (!cellValue.trim().isEmpty()) {
-                                UATRemark uatRemark = new UATRemark();
-                                uatRemark.setName(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName());
-                                uatRemark.setEmail(projectUat.getUploadedBy().getEmail());
-                                uatRemark.setComment(cellValue);
-                                projectUatScriptDetail.setRemarks(List.of(uatRemark));
+                                UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue);
+                                projectUatScriptDetail.setRemarks(new LinkedHashSet<UATRemark>() {{
+                                    add(uatRemark);
+                                }});
                             } else {
                                 projectUatScriptDetail.setRemarks(null);
                             }

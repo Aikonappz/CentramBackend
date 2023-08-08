@@ -1601,25 +1601,73 @@ public class MiscService {
     }
 
     @Async("asyncExecutor")
-    public void notifyParticipant(LoggedInUser loggedInUser, ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
-//        ProjectUATVO projectUATVO = new ProjectUATVO();
-//        ProjectUat projectUat = projectUatRepository.findByProjectUATScriptDetailId(projectUatScriptDetail.getId());
-//        Project project = projectUat.getProject();
-//        project.getCode();
-//        project.getName();
-//
-//        projectUATVO.setRecipientName("All");
-//        projectUATVO.setReplyTo(appReplyToEmail);
-//        projectUATVO.setBcc(project.getWatchList().toArray(new String[0]));
-//        if(projectUat.getUploadedBy().getId().compareTo(loggedInUser.getUserId())==0){
-//            //consultant
-//            projectUATVO.setTo(project.getStakeHolders().toArray(new String[0]));
-//        }else{
-//            //stakeholder
-//            projectUATVO.setTo(project.getConsultants().toArray(new String[0]));
-//        }
-//        Thread.sleep(5000);
-//        log.info(objectMapper.writeValueAsString(projectUatScriptDetail));
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public void notifyParticipant(LoggedInUser loggedInUser, final ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
+        UATRemark uatRemark = null;
+        ProjectUATVO projectUATVO = new ProjectUATVO();
+        projectUATVO.setNotifications(new ArrayList<Notification>());
+        List<String> usersEmail = new ArrayList<String>();
+        ProjectUat projectUat = projectUatRepository.findByProjectUATScriptDetailId(projectUatScriptDetail.getId());
+        ProjectUatScript projectUatScript = null;
+        Optional<ProjectUatScript> optionalProjectUatScript = projectUat.getProjectUatScripts().stream().filter(i -> {
+            Optional<ProjectUatScriptDetail> optionalPsud = i.getProjectUatScriptDetails().stream().filter(k -> {
+                return k.getId().compareTo(projectUatScriptDetail.getId()) == 0;
+            }).findFirst();
+            return optionalPsud.isPresent();
+        }).findFirst();
+        if (optionalProjectUatScript.isPresent()) {
+            projectUatScript = optionalProjectUatScript.get();
+        } else {
+            log.error("ProjectUatScript data not found!");
+            return;
+        }
+        Project project = projectUat.getProject();
+        Module module = moduleService.getModule(projectUat.getModuleId());
+        Module subModule = moduleService.getModule(projectUat.getSubModuleId());
+        projectUATVO.setRecipientName("All");
+        projectUATVO.setReplyTo(appReplyToEmail);
+        projectUATVO.setBcc(project.getWatchList().toArray(new String[0]));
+        usersEmail.addAll(project.getWatchList());
+        usersEmail.addAll(project.getStakeHolders());
+        usersEmail.addAll(project.getConsultants());
+        if (projectUat.getUploadedBy().getId().compareTo(loggedInUser.getUserId()) == 0) {
+            //consultant
+            projectUATVO.setTo(project.getStakeHolders().toArray(new String[0]));
+            projectUATVO.setCc(project.getConsultants().toArray(new String[0]));
+        } else {
+            //stakeholder
+            projectUATVO.setTo(project.getConsultants().toArray(new String[0]));
+            projectUATVO.setCc(project.getStakeHolders().toArray(new String[0]));
+        }
+        Map<String, Object> emailValues = new LinkedHashMap<String, Object>();
+        emailValues.put("uatScript", projectUatScript.getTestScriptName() + " [" + projectUatScript.getTestCaseId() + "]");
+        emailValues.put("projectName", project.getName() + " [" + project.getCode() + "]");
+        emailValues.put("moduleName", module.getCustomerModuleName());
+        emailValues.put("subModuleName", subModule.getCustomerModuleName());
+        emailValues.put("uatScriptID", projectUatScript.getTestCaseId());
+        emailValues.put("uatScriptName", projectUatScript.getTestScriptName());
+        emailValues.put("plannedDate", projectUatScript.getPlannedDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+        emailValues.put("step", projectUatScriptDetail.getStep());
+        emailValues.put("action", projectUatScriptDetail.getAction());
+        emailValues.put("expectedResult", projectUatScriptDetail.getExpectedResult());
+        emailValues.put("actualResult", projectUatScriptDetail.getActualResult());
+        emailValues.put("pass", projectUatScriptDetail.getPass() ? "Y" : "N");
+        emailValues.put("retestDate", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "");
+        emailValues.put("retest", projectUatScriptDetail.getRetestPass() ? "Y" : "N");
+        for (UATRemark remark : projectUatScriptDetail.getRemarks()) {
+            uatRemark = remark;
+        }
+        emailValues.put("remark", uatRemark != null ? uatRemark.getComment() : "");
+        emailValues.put("remarkProvidedBy", uatRemark != null ? uatRemark.getName() + " [" + uatRemark.getEmail() + "]" : "");
+        projectUATVO.setEmailValues(emailValues);
+        projectUATVO.setMailBodyKey("activityBody");
+        projectUATVO.setMailSubjectKey("activityTitle");
+        List<UserVO> users = userService.getUsersByEmails(usersEmail, loggedInUser.getOrganisationId());
+        for (UserVO userVO : users) {
+            projectUATVO.getNotifications().add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        //log.info(objectMapper.writeValueAsString(projectUatScriptDetail));
+        appEmailService.notifyUatActivities(projectUATVO);
     }
 
     @Async("asyncExecutor")
@@ -1659,7 +1707,48 @@ public class MiscService {
             projectUATVO.getNotifications().add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
         }
         //Thread.sleep(5000);
-        log.info(objectMapper.writeValueAsString(projectUATVO));
+        //log.info(objectMapper.writeValueAsString(projectUATVO));
+        appEmailService.notifyUatActivities(projectUATVO);
+    }
+
+    @Async("asyncExecutor")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public void notifyUatScriptCompletion(LoggedInUser loggedInUser, final ProjectUatScript projectUatScript) throws JsonProcessingException, InterruptedException {
+        ProjectUATVO projectUATVO = new ProjectUATVO();
+        projectUATVO.setNotifications(new ArrayList<Notification>());
+        List<String> usersEmail = new ArrayList<String>();
+        ProjectUat projectUat = projectUatRepository.findByProjectUATScriptDetailId(projectUatScript.getId());
+        Project project = projectUat.getProject();
+        Module module = moduleService.getModule(projectUat.getModuleId());
+        Module subModule = moduleService.getModule(projectUat.getSubModuleId());
+        projectUATVO.setRecipientName("All");
+        projectUATVO.setReplyTo(appReplyToEmail);
+        projectUATVO.setBcc(project.getWatchList().toArray(new String[0]));
+        usersEmail.addAll(project.getWatchList());
+        usersEmail.addAll(project.getStakeHolders());
+        usersEmail.addAll(project.getConsultants());
+        if (projectUat.getUploadedBy().getId().compareTo(loggedInUser.getUserId()) == 0) {
+            //consultant
+            projectUATVO.setTo(project.getStakeHolders().toArray(new String[0]));
+            projectUATVO.setCc(project.getConsultants().toArray(new String[0]));
+        } else {
+            //stakeholder
+            projectUATVO.setTo(project.getConsultants().toArray(new String[0]));
+            projectUATVO.setCc(project.getStakeHolders().toArray(new String[0]));
+        }
+        Map<String, Object> emailValues = new LinkedHashMap<String, Object>();
+        emailValues.put("uatScript", projectUatScript.getTestScriptName() + " [" + projectUatScript.getTestCaseId() + "]");
+        emailValues.put("projectName", project.getName() + " [" + project.getCode() + "]");
+        emailValues.put("moduleName", module.getCustomerModuleName());
+        emailValues.put("subModuleName", subModule.getCustomerModuleName());
+        projectUATVO.setEmailValues(emailValues);
+        projectUATVO.setMailBodyKey("uatScriptMarkedCompleteBody");
+        projectUATVO.setMailSubjectKey("uatScriptMarkedCompleteTitle");
+        List<UserVO> users = userService.getUsersByEmails(usersEmail, loggedInUser.getOrganisationId());
+        for (UserVO userVO : users) {
+            projectUATVO.getNotifications().add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        //log.info(objectMapper.writeValueAsString(projectUatScript));
         appEmailService.notifyUatActivities(projectUATVO);
     }
 

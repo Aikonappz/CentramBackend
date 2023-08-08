@@ -30,9 +30,9 @@ import { ProjectUatScriptDetail } from "../../../model/ProjectUatScriptDetail";
           </div>
           <table class="table table-bordered table-striped table-sm">
             <tr>
-              <td align="center" width="33%">Name</td>
-              <td align="center" width="33%">Email</td>
-              <td align="center" width="34%">Remark</td>
+              <td align="center" width="33%"><strong>Name</strong></td>
+              <td align="center" width="33%"><strong>Email</strong></td>
+              <td align="center" width="34%"><strong>Remark</strong></td>
             </tr>
             <ng-container *ngFor="let elm of projectUatScriptDetail.remarks;let i=index;">
               <tr>
@@ -60,7 +60,7 @@ export class RemarkViewer implements OnInit {
   ) {
   }
   ngOnInit(): void {
-    console.log(this.projectUatScriptDetail);
+    //console.log(this.projectUatScriptDetail);
   }
 
   ngAfterViewInit() {

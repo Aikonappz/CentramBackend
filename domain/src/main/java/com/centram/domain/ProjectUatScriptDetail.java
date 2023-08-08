@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -88,7 +89,7 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @Column(name = "remarks", nullable = true, columnDefinition = "TEXT default null")
     @JsonView(Views.BasicView.class)
     @Convert(converter = UATRemarkConverter.class)
-    private List<UATRemark> remarks;
+    private LinkedHashSet<UATRemark> remarks;
 
     public ProjectUatScriptDetail(@NotNull BigInteger id) {
         this.id = id;

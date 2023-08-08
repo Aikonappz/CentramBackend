@@ -513,16 +513,18 @@ export class UATActivityComponent implements OnInit {
     }
     //console.log(this.clientStorageService.get(projectUatScriptDetail.id.toString()));
     //console.log(JSON.stringify(projectUatScriptDetail));
-    //console.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));
-    projectUatScriptDetail.editable = false;
+    //console.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));    
     if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail))) {
       this.projectUatService
         .saveProjectUatScriptDetail(projectUatScriptDetail)
         .subscribe((data: any) => {
           this.clientStorageService.remove(projectUatScriptDetail.id.toString());
           projectUatScriptDetail.remark = null;
+          projectUatScriptDetail.editable = false;
           //console.log("updated data", JSON.stringify(data));
         });
+    } else {
+      projectUatScriptDetail.editable = false;
     }
   }
 
@@ -547,16 +549,19 @@ export class UATActivityComponent implements OnInit {
   }
 
   /**
-   * marking ProjectUat as complete
+   * marking ProjectUat script as complete
    */
-  markProjectUatComplate() {
-    this.projectUatService
-      .markProjectUatComplate(this.searchedUatScriptId)
-      .subscribe((data: ProjectUatScript) => {
-        //console.log("updated data", JSON.stringify(data));
-        this.searched = false;
-        this.angSearchForm.reset();
-      });
+  markProjectUatScriptTestComplate() {
+    let res = window.confirm("Are you sure?")
+    if (res) {
+      this.projectUatService
+        .markProjectUatScriptTestComplate(this.searchedUatScriptId)
+        .subscribe((data: ProjectUatScript) => {
+          //console.log("updated data", JSON.stringify(data));
+          this.searched = false;
+          this.angSearchForm.reset();
+        });
+    }
   }
 
 }

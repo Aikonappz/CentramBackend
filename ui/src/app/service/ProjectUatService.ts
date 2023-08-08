@@ -26,7 +26,7 @@ export class ProjectUatService {
     saveProjectUatScriptDetail(projectUatScriptDetail: ProjectUatScriptDetail, request?: any): Observable<any> {
         return this.http.post('/v1/project-uat/update-project-uat-script-detail', projectUatScriptDetail, { "params": request });
     }
-    markProjectUatComplate(uatScriptId: number, request?: any): Observable<ProjectUatScript> {
-        return this.http.put('/v1/project-uat/mark-uat-complete/' + uatScriptId, { "params": request });
+    markProjectUatScriptTestComplate(uatScriptId: number, request?: any): Observable<ProjectUatScript> {
+        return this.http.put('/v1/project-uat/mark-uat-script-test-complete/' + uatScriptId, { "params": request });
     }
 }

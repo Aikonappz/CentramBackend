@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-12 mb-4">
       <tabset>
-        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT'])" heading="Project UAT Upload">
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT'])" heading="Project UAT Script Upload">
           <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="uploadSuccess">
             <h6>UAT Script uploaded successfully!</h6>
           </div>
@@ -93,15 +93,16 @@
             </div>
           </form>
         </tab>
-        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT','ORG_PROJECT_STAKEHOLDER'])" heading="Project UAT Communication">
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT','ORG_PROJECT_STAKEHOLDER'])" heading="Project UAT Script Communication">
           <div class="card">
             <form [formGroup]="angSearchForm" (ngSubmit)="searchFormSubmit()" novalidate>
               <div class="card-body">
                 <div class="row">
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="searchProject">Project</label>
-                    <ng-select [items]="projectList" #searchProject (change)="searchProjectAction($event)" placeholder="-- Select Project --" formControlName="searchProject"
-                      id="searchProject" searchProject name="searchProject" bindLabel="label" bindValue="id">
+                    <ng-select [items]="projectList" #searchProject (change)="searchProjectAction($event)"
+                      placeholder="-- Select Project --" formControlName="searchProject" id="searchProject"
+                      searchProject name="searchProject" bindLabel="label" bindValue="id">
                     </ng-select>
                     <div *ngIf="sf.searchProject.touched && sf.searchProject.invalid" class="alert alert-danger-custom">
                       <div *ngIf="sf.searchProject.errors?.required">
@@ -249,8 +250,206 @@
                 </ng-container>
                 <ng-container matColumnDef="activity">
                   <th align="center" class="activityHeader" mat-header-cell *matHeaderCellDef>
-                    <div *ngIf="searchedUatScriptId!=null">
-                      <button type=" button" class="btn btn-warning btn-sm" (click)="markProjectUatComplate()">Mark UAT
+                    <div *ngIf="searchedUatScriptId!=null&&hasRoles(['ORG_PROJECT_STAKEHOLDER'])">
+                      <button type=" button" class="btn btn-warning btn-sm"
+                        (click)="markProjectUatScriptTestComplate()">Mark Script Test
+                        Complete</button>
+                    </div>
+                  </th>
+                  <td align="center" class="activityBody" mat-cell *matCellDef="let element">
+                    <div class="btn-group action-btn" dropdown>
+                      <button dropdownToggle type="button" class=" btn btn-primary dropdown-toggle">Actions<span
+                          class="caret"></span></button>
+                      <ul *dropdownMenu class="dropdown-menu" role="menu">
+                        <li role="menuitem" *ngIf="!element.editable;">
+                          <a class="dropdown-item" href="javascript:void(0);" id="id-view-{{element.id}}" type="button"
+                            [ngClass]="{
+                   'btn btn-sm btn-primary':true}" (click)="enableEdit(element)"><i class="fa fa-pencil"></i> Edit
+                          </a>
+                        </li>
+                        <li role="menuitem" *ngIf="element.editable;">
+                          <a class="dropdown-item" href="javascript:void(0);" id="id-reopen-{{element.id}}" [ngClass]="{
+                   'btn btn-sm btn-secondary':true}" (click)="saveElement(element)"><i class="fa fa-book
+                          "></i> Save
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;" [ngClass]="{gray: even}">
+                </tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" align="center" colspan="9999">
+                    No data found!
+                  </td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" [pageSize]="10"></mat-paginator>
+            </div>
+          </div>
+        </tab>
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT','ORG_PROJECT_STAKEHOLDER'])" heading="Project UAT Activities">
+          <div class="card">
+            <form [formGroup]="angSearchForm" (ngSubmit)="searchFormSubmit()" novalidate>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchProject">Project</label>
+                    <ng-select [items]="projectList" #searchProject (change)="searchProjectAction($event)"
+                      placeholder="-- Select Project --" formControlName="searchProject" id="searchProject"
+                      searchProject name="searchProject" bindLabel="label" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="sf.searchProject.touched && sf.searchProject.invalid" class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchProject.errors?.required">
+                        Project is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchModuleId">Module</label>
+                    <ng-select #searchModuleId (change)="populateSearchSubmodule($event)" [items]="moduleList"
+                      placeholder="-- Select Module --" formControlName="searchModuleId" id="searchModuleId"
+                      searchModuleId name="searchModuleId" bindLabel="customerModuleName" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="sf.searchModuleId.touched && sf.searchModuleId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchModuleId.errors?.required">
+                        Module is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchSubModuleId">Sub
+                      Module</label>
+                    <ng-select [items]="searchSubModuleList" #searchSubModuleId (change)="populateProjectUAT($event)"
+                      placeholder="-- Select Sub Module --" formControlName="searchSubModuleId" id="searchSubModuleId"
+                      searchSubModuleId name="searchSubModuleId" bindLabel="customerModuleName"
+                      bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchSubModuleId.touched && sf.searchSubModuleId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchSubModuleId.errors?.required">
+                        Sub Module is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatProjectId">UAT Cycle</label>
+                    <ng-select [items]="projectUats" #searchUatProjectId (change)="populateProjectUATScript($event)"
+                      placeholder="-- Select Project UAT --" formControlName="searchUatProjectId"
+                      id="searchUatProjectId" searchUatProjectId name="searchUatProjectId" bindLabel="label"
+                      bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchUatProjectId.touched && sf.searchUatProjectId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchUatProjectId.errors?.required">
+                        Project UAT Cycle is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatProjectScriptId">UAT
+                      Script</label>
+                    <ng-select [items]="projectUatScripts" placeholder="-- Select Project UAT Script --"
+                      formControlName="searchUatProjectScriptId" id="searchUatProjectScriptId" searchUatProjectScriptId
+                      name="searchUatProjectScriptId" bindLabel="label" bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchUatProjectScriptId.touched && sf.searchUatProjectScriptId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchUatProjectScriptId.errors?.required">
+                        Project UAT Script is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05"></div>
+              <div class="card-footer">
+                <button type="submit" class="btn btn-primary btn-sm">
+                  <i class="fa fa-search"></i> Search
+                </button>
+                <button type="button" (click)="resetSearchForm()" class="btn btn-danger btn-sm">
+                  Cancel
+                </button>
+              </div>
+            </form>
+            <hr [ngClass]="{'d-none': searched == false}" />
+            <div [ngClass]="{'d-none': searched == false}" class="card">
+              <table mat-table class="script-table" [dataSource]="datasource">
+                <ng-container matColumnDef="uatDescription">
+                  <th class="uatDescriptionHeader" mat-header-cell *matHeaderCellDef> UAT Description </th>
+                  <td class="uatDescriptionBody" mat-cell *matCellDef="let element">
+                    <div>
+                      <b>Scenario - </b> {{element.testScenarioJobId}}
+                    </div>
+                    <hr />
+                    <div>
+                      <b>Step - </b> {{element.step}}
+                    </div>
+                    <hr />
+                    <div>
+                      <b>Action - </b> {{element.action}}
+                    </div>
+                    <hr />
+                    <div>
+                      <b>Expected Result - </b> {{element.expectedResult}}
+                    </div>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actualResultDetail">
+                  <th class="actualResultHeader" mat-header-cell *matHeaderCellDef> Result Detail</th>
+                  <td class="actualResultBody" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div><b>Actual Result - </b>{{element.actualResult==null? 'NA' : element.actualResult}}</div>
+                      <hr />
+                      <div><b>Test Passed - </b>{{element.pass==true? 'Yes' : 'No'}}</div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <textarea class="form-control" [(ngModel)]='element.actualResult' placeholder="Actual Result"
+                        rows="7" cols="30">
+                      </textarea>
+                      <hr />
+                      <ng-select [items]="statusList" placeholder="-- Select Result Status --"
+                        [(ngModel)]='element.pass' bindLabel="label" bindValue="id"></ng-select>
+                    </ng-template>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="retestDetail">
+                  <th class="retestDetailHeader" mat-header-cell *matHeaderCellDef> Retest Detail </th>
+                  <td class="retestDetailBody" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div><b>Retest Date - </b>{{element.retestDate==null? 'NA' : element.retestDate}}</div>
+                      <hr />
+                      <div><b>Re-Test Passed - </b>{{element.retestPass==true? 'Yes' : 'No'}}</div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <input type="date" format="DD-MM-YYYY" class="form-control" placeholder="Retest Date"
+                        [(ngModel)]="element.retestDate">
+                      <hr />
+                      <ng-select [items]="statusList" placeholder="-- Select Result Status --"
+                        [(ngModel)]='element.retestPass' bindLabel="label" bindValue="id"></ng-select>
+                    </ng-template>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="remarks">
+                  <th class="remarksHeader" mat-header-cell *matHeaderCellDef> Remark </th>
+                  <td class="remarksBody" align="center" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div *ngIf="element.remarks!=null">
+                        <button type=" button" class="btn btn-link" (click)="viewRemark(element)">Remarks</button>
+                      </div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <textarea class="form-control" [(ngModel)]='element.remark' placeholder="Remark" rows="7"
+                        cols="30">
+                      </textarea>
+                    </ng-template>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="activity">
+                  <th align="center" class="activityHeader" mat-header-cell *matHeaderCellDef>
+                    <div *ngIf="searchedUatScriptId!=null&&hasRoles(['ORG_PROJECT_STAKEHOLDER'])">
+                      <button type=" button" class="btn btn-warning btn-sm"
+                        (click)="markProjectUatScriptTestComplate()">Mark Script Test
                         Complete</button>
                     </div>
                   </th>

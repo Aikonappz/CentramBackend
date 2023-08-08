@@ -11,15 +11,15 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.io.IOException;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 @Converter(autoApply = true)
-public class UATRemarkConverter implements AttributeConverter<List<UATRemark>, String> {
+public class UATRemarkConverter implements AttributeConverter<LinkedHashSet<UATRemark>, String> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(List<UATRemark> addresses) {
+    public String convertToDatabaseColumn(LinkedHashSet<UATRemark> addresses) {
         String jsonString = null;
         if (!CollectionUtils.isEmpty(addresses)) {
             try {
@@ -32,11 +32,12 @@ public class UATRemarkConverter implements AttributeConverter<List<UATRemark>, S
     }
 
     @Override
-    public List<UATRemark> convertToEntityAttribute(String s) {
-        List<UATRemark> remarks = null;
+    public LinkedHashSet<UATRemark> convertToEntityAttribute(String s) {
+        LinkedHashSet<UATRemark> remarks = null;
         if (s != null && !s.isEmpty()) {
             try {
-                remarks = objectMapper.readValue(s, new TypeReference<List<UATRemark>>() {});
+                remarks = objectMapper.readValue(s, new TypeReference<LinkedHashSet<UATRemark>>() {
+                });
             } catch (IOException e) {
                 throw new AppException(GenericErrorCode.JSON_PROCESS_EXCEPTION);
             }
