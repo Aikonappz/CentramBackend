@@ -36,6 +36,7 @@ export class UATActivityComponent implements OnInit {
   moduleName: string = "UAT ACTIVITIES";
   angForm: FormGroup;
   angSearchForm: FormGroup;
+  angUatCycleSearchForm: FormGroup;
   projectList: any[];
   projectModules: any[];
   moduleList: any[];
@@ -55,6 +56,7 @@ export class UATActivityComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   searchedData: Object = {};
   searched: boolean = false;
+  searchedUatCycle: boolean = false;
   statusList: any[] = [{ id: true, label: "Pass" }, { id: false, label: "Fail" }];
   loggedInUser: LoggedInUser;
   modalRef: BsModalRef;
@@ -139,6 +141,20 @@ export class UATActivityComponent implements OnInit {
         Validators.required,
       ]),
       searchUatProjectScriptId: new FormControl(null, [
+        Validators.required,
+      ]),
+    });
+    this.angUatCycleSearchForm = this.fb.group({
+      searchUatCycleProject: new FormControl(null, [
+        Validators.required,
+      ]),
+      searchUatCycleModuleId: new FormControl(null, [
+        Validators.required,
+      ]),
+      searchUatCycleSubModuleId: new FormControl(null, [
+        Validators.required,
+      ]),
+      searchUatCycleProjectId: new FormControl(null, [
         Validators.required,
       ]),
     });
@@ -261,6 +277,8 @@ export class UATActivityComponent implements OnInit {
 
   get sf() { return this.angSearchForm.controls; }
 
+  get suf() { return this.angUatCycleSearchForm.controls; }
+
   /**
    * 
    */
@@ -303,6 +321,25 @@ export class UATActivityComponent implements OnInit {
     }
   }
 
+  searchUatCycleFormSubmit() {
+    if (this.angSearchForm.valid) {
+      this.searchedUatScriptId = this.angSearchForm.controls['searchUatProjectId'].value;
+      this.searchedData = {
+        projectUATScriptId: this.angSearchForm.controls['searchUatProjectId'].value,
+      };
+      if (this.isScriptUATComplete()) {
+        this.searchedUatScriptComplete = true;
+        this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+      } else {
+        this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+      }
+      this.loadData();
+      this.searched = true;
+    } else {
+      console.log("Invalid Form!");
+    }
+  }
+
   /**
    * 
    */
@@ -316,6 +353,11 @@ export class UATActivityComponent implements OnInit {
   resetSearchForm() {
     this.searched = false;
     this.angSearchForm.reset();
+  }
+
+  resetSearchUatCycleForm() {
+    this.searchedUatCycle = false;
+    this.angUatCycleSearchForm.reset();
   }
 
   /**
@@ -346,6 +388,9 @@ export class UATActivityComponent implements OnInit {
       });
   }
 
+  /**
+   * 
+   */
   @ViewChild("moduleId") moduleId;
   populateSubmodule(moduleId) {
     //console.log(moduleId);
@@ -362,6 +407,9 @@ export class UATActivityComponent implements OnInit {
     }
   }
 
+  /**
+   * 
+   */
   @ViewChild("searchModuleId") searchModuleId;
   populateSearchSubmodule(searchModuleId) {
     //console.log(moduleId);
@@ -387,8 +435,11 @@ export class UATActivityComponent implements OnInit {
     }
   }
 
+  /**
+   * 
+   */
   @ViewChild("searchProject") searchProject;
-  searchProjectAction(searchModuleId) {
+  projectModifyAction(searchProject) {
     //console.log(moduleId);
     this.searchSubModuleList = [];
     this.projectUatScripts = [];
@@ -397,6 +448,86 @@ export class UATActivityComponent implements OnInit {
     this.angSearchForm.get('searchSubModuleId').setValue(null);
     this.angSearchForm.get('searchUatProjectId').setValue(null);
     this.angSearchForm.get('searchUatProjectScriptId').setValue(null);
+  }
+
+  /**
+   * 
+   */
+  @ViewChild("searchUatCycleProject") searchUatCycleProject;
+  uatCycleProjectModifyAction(searchUatCycleProject) {
+    //console.log(moduleId);
+    this.searchSubModuleList = [];
+    this.projectUatScripts = [];
+    this.projectUats = [];
+    this.angUatCycleSearchForm.get('searchUatCycleModuleId').setValue(null);
+    this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
+    this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+  }
+
+  /**
+  * 
+  */
+  @ViewChild("searchUatCycleModuleId") searchUatCycleModuleId;
+  uatCyclePopulateSubmodule(searchUatCycleModuleId) {
+    //console.log(moduleId);
+    if (typeof searchUatCycleModuleId !== 'undefined') {
+      this.searchSubModuleList = [];
+      for (let i = 0; i < this.projectModules.length; i++) {
+        if (this.projectModules[i].projectModule == true && this.projectModules[i].parentModuleId == searchUatCycleModuleId.id) {
+          this.searchSubModuleList.push(this.projectModules[i]);
+        }
+      }
+      this.projectUatScripts = [];
+      this.projectUats = [];
+      this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
+      this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    } else {
+      this.searchSubModuleList = [];
+      this.projectUatScripts = [];
+      this.projectUats = [];
+      this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
+      this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    }
+  }
+
+  @ViewChild("searchUatCycleSubModuleId") searchUatCycleSubModuleId;
+  uatCyclePopulateProjectUAT(searchUatCycleSubModuleId) {
+    //console.log(moduleId);
+    if (typeof searchUatCycleSubModuleId !== 'undefined') {
+      // console.log(
+      //   this.angSearchForm.controls['searchProject'].value,
+      //   this.angSearchForm.controls['searchModuleId'].value,
+      //   this.angSearchForm.controls['searchSubModuleId'].value
+      // );
+      if (
+        this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value != "" &&
+        this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value != "" &&
+        this.angUatCycleSearchForm.controls['searchUatCycleProject'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleProject'].value != ""
+      ) {
+        this.projectUatService
+          .getProjectUats({
+            projectId: this.angUatCycleSearchForm.controls['searchUatCycleProject'].value,
+            moduleId: this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value,
+            subModuleId: this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value,
+          })
+          .subscribe((data: ProjectUat[]) => {
+            this.projectUats = data;
+            for (let k = 0; k < this.projectUats.length; k++) {
+              if (this.projectUats[k].uatCycleComplete == false) {
+                this.projectUats[k].label = this.projectUats[k].uatCycleName;
+              } else {
+                this.projectUats[k].label = this.projectUats[k].uatCycleName + " - Complete";
+              }
+            }
+            this.projectUatScripts = [];
+            this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+          });
+      }
+    } else {
+      this.projectUats = [];
+      this.projectUatScripts = [];
+      this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    }
   }
 
   /**
