@@ -24,6 +24,12 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
     @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
     Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(@Param("uatProjectId") BigInteger uatProjectId);
 
+    @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
+    Page<ProjectUatScript> getProjectUatScripts(
+            @Param("uatProjectId") BigInteger uatProjectId,
+            @Param("pageable") Pageable pageable
+    );
+
     @Query("select pusd from ProjectUat pu join pu.projectUatScripts pus join pus.projectUatScriptDetails pusd where pus.id = (:projectUATScriptId) ")
     Page<ProjectUatScriptDetail> findByProjectUATScriptId(
             @Param("projectUATScriptId") BigInteger projectUATScriptId,

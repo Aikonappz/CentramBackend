@@ -25,6 +25,8 @@ import { LoggedInUser } from '../../model/LoggedInUser';
 import * as moment from 'moment';
 import { AppUtility } from '../../config/AppUtility';
 import { RemarkViewer } from './modal/RemarkViewer';
+import { ProjectUatScriptDataSource } from '../../service/datasource/ProjectUatScriptSource';
+import { SelectionModel } from '@angular/cdk/collections';
 declare var $: any;
 
 @Component({
@@ -53,10 +55,11 @@ export class UATActivityComponent implements OnInit {
   displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
   //displayedColumns = ['testScenarioJobId', 'step','action', 'activity'];
   private datasource: ProjectUatScriptDetailSource;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('MatPaginator1') paginator: MatPaginator;
   searchedData: Object = {};
   searched: boolean = false;
   searchedUatCycle: boolean = false;
+  searchedUatCycleId: number;
   statusList: any[] = [{ id: true, label: "Pass" }, { id: false, label: "Fail" }];
   loggedInUser: LoggedInUser;
   modalRef: BsModalRef;
@@ -249,6 +252,9 @@ export class UATActivityComponent implements OnInit {
     });
     this.datasource = new ProjectUatScriptDetailSource(this.projectUatService);
     this.datasource.load(0, 10, this.searchedData);
+
+    this.datasourceUatCycle = new ProjectUatScriptDataSource(this.projectUatService);
+    this.datasourceUatCycle.load(0, 10, this.searchedData);
   }
 
   ngAfterViewInit() {
@@ -262,6 +268,19 @@ export class UATActivityComponent implements OnInit {
     this.paginator.page
       .pipe(
         tap(() => this.loadData())
+      )
+      .subscribe();
+
+    this.datasourceUatCycle.counter$
+      .pipe(
+        tap((count) => {
+          this.uatCyclePaginator.length = count;
+        })
+      )
+      .subscribe();
+    this.uatCyclePaginator.page
+      .pipe(
+        tap(() => this.uatCycleloadData())
       )
       .subscribe();
   }
@@ -304,10 +323,11 @@ export class UATActivityComponent implements OnInit {
 
   searchFormSubmit() {
     if (this.angSearchForm.valid) {
-      this.searchedUatScriptId = this.angSearchForm.controls['searchUatProjectId'].value;
+      this.searchedUatScriptId = this.angSearchForm.controls['searchUatProjectScriptId'].value;
       this.searchedData = {
-        projectUATScriptId: this.angSearchForm.controls['searchUatProjectId'].value,
+        projectUATScriptId: this.angSearchForm.controls['searchUatProjectScriptId'].value,
       };
+      //console.log(this.isScriptUATComplete());
       if (this.isScriptUATComplete()) {
         this.searchedUatScriptComplete = true;
         this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
@@ -321,23 +341,77 @@ export class UATActivityComponent implements OnInit {
     }
   }
 
+  //uatCycleDisplayedColumns = ['select', 'testCaseId', 'testScriptName', 'testCaseDescription', 'testScenario', 'plannedDate'];
+  uatCycleDisplayedColumns = ['testCaseId', 'testScriptName', 'testCaseDescription', 'testScenario', 'plannedDate'];
+  datasourceUatCycle: ProjectUatScriptDataSource;
+  @ViewChild('MatPaginator2') uatCyclePaginator: MatPaginator;
+  selection = new SelectionModel<ProjectUatScript>(true, []);
+
   searchUatCycleFormSubmit() {
-    if (this.angSearchForm.valid) {
-      this.searchedUatScriptId = this.angSearchForm.controls['searchUatProjectId'].value;
-      this.searchedData = {
-        projectUATScriptId: this.angSearchForm.controls['searchUatProjectId'].value,
-      };
-      if (this.isScriptUATComplete()) {
-        this.searchedUatScriptComplete = true;
-        this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
-      } else {
-        this.displayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
-      }
-      this.loadData();
-      this.searched = true;
+    if (this.angUatCycleSearchForm.valid) {
+      //console.log(this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value);
+      this.searchedData = { "projectUatId": this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value };
+      this.uatCycleloadData();
+      this.searchedUatCycle = true;
+      this.searchedUatCycleId = this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value;
+      //console.log(this.isUatCycleComplete());
     } else {
       console.log("Invalid Form!");
     }
+  }
+
+  isUatCycleComplete() {
+    for (let k = 0; k < this.projectUats.length; k++) {
+      if (this.projectUats[k].id == this.searchedUatCycleId && this.projectUats[k].uatCycleComplete) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  markUatCycleComplete() {
+    let res = window.confirm("Are you sure?")
+    if (res) {
+      this.projectUatService
+        .markUATCycleComplete(this.searchedUatCycleId)
+        .subscribe((data: ProjectUat) => {
+          //console.log("updated data", JSON.stringify(data));
+          this.searchedUatCycle = false;
+          this.angUatCycleSearchForm.reset();
+        });
+    }
+  }
+
+  uatCycleloadData(req = {}) {
+    this.datasourceUatCycle.load(this.paginator.pageIndex, this.paginator.pageSize, this.searchedData);
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.datasourceUatCycle.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.datasourceUatCycle.data.forEach(row => {
+        //console.log(row);
+        this.selection.select(row);
+      });
+  }
+
+  logSelection() {
+    this.selection.selected.forEach(s => console.log(s.id));
+  }
+
+  formatDate(d: string) {
+    if (d != null && d != "") {
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
+    }
+    return null;
   }
 
   /**
@@ -536,6 +610,8 @@ export class UATActivityComponent implements OnInit {
    * @returns 
    */
   isScriptUATComplete() {
+    //console.log(this.searchedUatScriptId);
+    //console.log(JSON.stringify(this.projectUatScripts));
     for (let k = 0; k < this.projectUatScripts.length; k++) {
       if (this.projectUatScripts[k].id == this.searchedUatScriptId && this.projectUatScripts[k].uatComplete == true) {
         return true;
@@ -686,7 +762,7 @@ export class UATActivityComponent implements OnInit {
     let res = window.confirm("Are you sure?")
     if (res) {
       this.projectUatService
-        .markProjectUatScriptTestComplate(this.searchedUatScriptId)
+        .markProjectUatScriptComplete(this.searchedUatScriptId)
         .subscribe((data: ProjectUatScript) => {
           //console.log("updated data", JSON.stringify(data));
           this.searched = false;

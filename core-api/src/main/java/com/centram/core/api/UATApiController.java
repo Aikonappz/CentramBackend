@@ -46,20 +46,20 @@ public class UATApiController {
     private ProjectUatService projectUatService;
 
     @JsonView(Views.BasicView.class)
-    @RequestMapping(value = "/upload-scripts", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
+    @RequestMapping(value = "/upload-script", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
     public ResponseEntity<ProjectUat> uploadScripts(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("projectUATRequestDTO") ProjectUATRequestDTO projectUATRequestDTO) throws IOException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<ProjectUat>(projectUatService.uploadScripts(loggedInUser, multipartFile, projectUATRequestDTO), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/uat-cycle", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/uat-cycles", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
     public ResponseEntity<List<ProjectUat>> getProjectUats(@NotNull @Valid @RequestParam(value = "projectId", required = true) BigInteger projectId, @NotNull @Valid @RequestParam(value = "moduleId", required = true) BigInteger moduleId, @NotNull @Valid @RequestParam(value = "subModuleId", required = false) BigInteger subModuleId) {
         return new ResponseEntity<List<ProjectUat>>(projectUatService.getProjectUats(projectId, moduleId, subModuleId), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/uat-script", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/uat-scripts", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
     public ResponseEntity<Set<ProjectUatScript>> getProjectUatScripts(@NotNull @Valid @RequestParam(value = "uatProjectId", required = true) BigInteger uatProjectId) {
         return new ResponseEntity<Set<ProjectUatScript>>(projectUatService.getProjectUatScriptsByUatProjectId(uatProjectId), HttpStatus.OK);
@@ -80,10 +80,24 @@ public class UATApiController {
     }
 
     @JsonView(Views.BasicView.class)
-    @RequestMapping(value = "/mark-uat-script-test-complete/{uatScriptId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.PUT)
+    @RequestMapping(value = "/mark-project-uat-script-complete/{uatScriptId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.PUT)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<ProjectUatScript> markUATScriptTestComplete(@PathVariable("uatScriptId") BigInteger uatScriptId) throws JsonProcessingException, InterruptedException {
+    public ResponseEntity<ProjectUatScript> markProjectUatScriptComplete(@PathVariable("uatScriptId") BigInteger uatScriptId) throws JsonProcessingException, InterruptedException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<ProjectUatScript>(projectUatService.markUATScriptTestComplete(loggedInUser,uatScriptId), HttpStatus.OK);
+        return new ResponseEntity<ProjectUatScript>(projectUatService.markProjectUatScriptComplete(loggedInUser, uatScriptId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/uat-script", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
+    public ResponseEntity<PaginatedList<ProjectUatScript>> getProjectUatScripts(@NotNull @Valid @RequestParam(value = "projectUatId", required = false) BigInteger projectUatId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<ProjectUatScript>>(projectUatService.getProjectUatScripts(projectUatId, pageable), HttpStatus.OK);
+    }
+
+    @JsonView(Views.BasicView.class)
+    @RequestMapping(value = "/mark-project-uat-complete/{projectUatId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.PUT)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
+    public ResponseEntity<ProjectUat> markUATCycleComplete(@PathVariable("projectUatId") BigInteger projectUatId) throws JsonProcessingException, InterruptedException {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<ProjectUat>(projectUatService.markProjectUatComplete(loggedInUser, projectUatId), HttpStatus.OK);
     }
 }

@@ -69,11 +69,34 @@ public class ProjectUatService {
     private MiscService miscService;
 
     /**
+     * @param projectUatId
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public ProjectUat markProjectUatComplete(LoggedInUser loggedInUser, BigInteger projectUatId) throws JsonProcessingException, InterruptedException {
+        ProjectUat projectUat = projectUatRepository.getById(projectUatId);
+        if (projectUat != null) {
+            projectUat.setUatCycleComplete(true);
+            projectUat.getProjectUatScripts().forEach(i -> {
+                i.setUatComplete(true);
+                i.getProjectUatScriptDetails().forEach(k -> {
+                    k.setPass(true);
+                });
+            });
+            projectUat = projectUatRepository.save(projectUat);
+            //miscService.notifyUatScriptCompletion(loggedInUser, projectUatScript);
+            return projectUat;
+        } else {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+    }
+
+    /**
      * @param uatScriptId
      * @return
      */
     @Transactional(readOnly = false)
-    public ProjectUatScript markUATScriptTestComplete(LoggedInUser loggedInUser, BigInteger uatScriptId) throws JsonProcessingException, InterruptedException {
+    public ProjectUatScript markProjectUatScriptComplete(LoggedInUser loggedInUser, BigInteger uatScriptId) throws JsonProcessingException, InterruptedException {
         ProjectUatScript projectUatScript = projectUatScriptRepository.getById(uatScriptId);
         if (projectUatScript != null) {
             projectUatScript.setUatComplete(true);
@@ -107,6 +130,17 @@ public class ProjectUatService {
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
         }
+    }
+
+    /**
+     * @param projectUatId
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<ProjectUatScript> getProjectUatScripts(BigInteger projectUatId, Pageable pageable) {
+        Page<ProjectUatScript> page = projectUatRepository.getProjectUatScripts(projectUatId, pageable);
+        return new PaginatedList<ProjectUatScript>(page);
     }
 
     /**
