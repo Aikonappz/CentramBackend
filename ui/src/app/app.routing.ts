@@ -15,6 +15,7 @@ import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { environment } from '../environments/environment';
 import { LandingComponent } from './views/landing/landing.component';
 import { SSOLoginComponent } from './views/sso-login/sso-login.component';
+import { AppUtility } from './config/AppUtility';
 
 export const routes: Routes = [
   {
@@ -102,6 +103,11 @@ export const routes: Routes = [
       title: 'Home'
     },
     children: [
+      {
+        path: AppUtility.EXPLORE_LANDING_PAGE_PATH,
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/explore/explore.module').then(m => m.ExploreModule)
+      },
       {
         path: 'dashboard',
         resolve: { myData: CheckLoggedIn },

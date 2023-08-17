@@ -59,7 +59,7 @@ public class AppEmailService {
      * @param userVO
      * @param mailValues
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Async("asyncExecutor")
     public void sendForgotPasswordMail(UserVO userVO, Map<String, String> mailValues) {
         List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "FORGOT_PASSWORD_EMAIL_TEMPLATE"));
@@ -67,7 +67,7 @@ public class AppEmailService {
         AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("FORGOT_PASSWORD_EMAIL_TEMPLATE")).findFirst().get();
         String forgotPasswordEmailTemplate = appConfiguration.getConfigurationValue();
         String mailSubject = appConfiguration.getConfigurationProperties().get("mailSubject").toString();
-        String link = appBaseUrl.concat("/reset-password?uuid=").concat(mailValues.get("uuid"));
+        String link = appBaseUrl.concat("/reset-password/").concat(mailValues.get("uuid"));
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         TemplateEngine templateEngine = new TemplateEngine();

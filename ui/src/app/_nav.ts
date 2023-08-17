@@ -2,30 +2,92 @@ import { INavData } from '@coreui/angular';
 
 
 export const navItems: INavData[] = [
+  // COMMON FOR SUPER ADMIN OR ORG ADMIN OR WHO HAS PROPER PERMISSIONS
   {
     name: 'Dashboard',
     url: '/dashboard',
     icon: 'icon-speedometer',
-    attributes: { "moduleName": "DASHBOARD" }
+    attributes: { "commonAccess": true, "moduleName": "DASHBOARD" }
   },
   {
     name: 'Organizations',
     url: '/organization',
     icon: 'icon-target',
-    attributes: { "moduleName": "ORGANIZATION" }
+    attributes: { "commonAccess": true, "moduleName": "ORGANIZATION" }
   },
   {
     name: 'Users',
     url: '/user',
     icon: 'icon-people',
-    attributes: { "moduleName": "USER" }
+    attributes: { "commonAccess": true, "moduleName": "USER" }
   },
   {
     name: 'Permissions',
     url: '/permission',
     icon: 'icon-star',
-    attributes: { "moduleName": "ORGANIZATION" }
+    attributes: { "commonAccess": true, "moduleName": "ORGANIZATION" }
   },
+  {
+    name: 'My Notifications',
+    url: '/notification',
+    icon: 'icon-info',
+    attributes: { "commonAccess": true, "moduleName": "MY NOTIFICATIONS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+  },
+  {
+    name: 'Reports',
+    url: '/report',
+    icon: 'fa fa-folder',
+    attributes: { "commonAccess": true, "moduleName": "REPORT" },
+    children: [
+      {
+        name: 'Admin Report',
+        url: '/report/admin-report',
+        icon: 'fa fa-folder-open',
+        attributes: { "commonAccess": true, "moduleName": "SITE ADMIN REPORT" }
+      },
+    ]
+  },
+  // COMMON FOR SUPER ADMIN OR ORG ADMIN OR WHO HAS PROPER PERMISSIONS
+  // UAT
+  {
+    name: 'Dashboard',
+    url: '/uat/dashboard',
+    icon: 'icon-speedometer',
+    attributes: { "parentModule": "UAT", "moduleName": "DASHBOARD", "licenceType": "ALL,UAT" }
+  },
+  {
+    name: 'UAT',
+    url: '/uat/activities',
+    icon: 'fa fa-flask',
+    attributes: { "parentModule": "UAT", "moduleName": "UAT", "licenceType": "ALL,UAT" },
+    children: [
+      {
+        name: 'UAT Activities',
+        url: '/uat/activities',
+        icon: 'fa fa-suitcase',
+        attributes: { "parentModule": "UAT", "moduleName": "UAT ACTIVITIES", "licenceType": "ALL,UAT" }
+      },
+    ]
+  },
+  {
+    name: 'Reports',
+    icon: 'fa fa-folder',
+    url: '/uat/report',
+    attributes: { "parentModule": "UAT", "moduleName": "REPORT", "licenceType": "ALL,UAT" },
+    children: [
+      {
+        name: 'UAT Report',
+        url: '/uat/report',
+        icon: 'fa fa-folder-open',
+        attributes: { "parentModule": "UAT", "moduleName": "SITE ADMIN REPORT", "licenceType": "ALL,UAT" }
+      },
+    ]
+  },
+  // UAT
+
+
+
+
   {
     name: 'Masters',
     url: '/master',
@@ -219,12 +281,7 @@ export const navItems: INavData[] = [
       },
     ]
   },
-  {
-    name: 'My Notifications',
-    url: '/notification',
-    icon: 'icon-info',
-    attributes: { "moduleName": "MY NOTIFICATIONS" }
-  },
+
   {
     name: 'Project',
     url: '/project',
@@ -251,32 +308,19 @@ export const navItems: INavData[] = [
       },
     ]
   },
-  {
-    name: 'UAT',
-    url: '/uat',
-    icon: 'fa fa-flask', 
-    attributes: { "moduleName": "UAT", "licenceType": "ALL,UAT" },
-    children: [
-      {
-        name: 'UAT Activities',
-        url: '/uat/activities',
-        icon: 'fa fa-suitcase',
-        attributes: { "moduleName": "UAT ACTIVITIES", "licenceType": "ALL,UAT" }
-      },
-    ]
-  },
+
   {
     name: 'Reports',
     url: '/report',
     icon: 'fa fa-folder',
     attributes: { "moduleName": "REPORT" },
     children: [
-      {
-        name: 'Admin Report',
-        url: '/report/admin-report',
-        icon: 'fa fa-folder-open',
-        attributes: { "moduleName": "SITE ADMIN REPORT" }
-      },
+      // {
+      //   name: 'Admin Report',
+      //   url: '/report/admin-report',
+      //   icon: 'fa fa-folder-open',
+      //   attributes: { "moduleName": "SITE ADMIN REPORT" }
+      // },
       {
         name: 'Incident Report',
         url: '/report/incident-report',

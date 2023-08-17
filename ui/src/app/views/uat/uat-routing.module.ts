@@ -1,6 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { UATActivityComponent } from './uat-activity.component';
+
+import { UATReportComponent } from './report/uatreport.component';
+
+import { UATActivityComponent } from './activities/uat-activity.component';
+import { UATDashboardComponent } from './dashboard/uatdashboard.component';
+
 
 const routes: Routes = [
   {
@@ -11,7 +16,15 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'activities'
+        redirectTo: 'dashboard'
+      },
+      {
+        path: 'dashboard',
+        component: UATDashboardComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'UAT Dashboard'
+        },
       },      
       {
         path: 'activities',
@@ -19,6 +32,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'UAT Activities'
+        },
+      },
+{
+        path: 'report',
+        component: UATReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'UAT Report'
         },
       },
     ]

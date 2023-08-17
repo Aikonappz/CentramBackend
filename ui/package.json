@@ -49,6 +49,7 @@
     "angular-ui-mask": "^1.8.7",
     "angular2-text-mask": "^9.0.0",
     "bootstrap": "^4.6.0",
+    "bootstrap-icons": "^1.10.5",
     "chart.js": "^2.9.4",
     "ckeditor4-angular": "^2.3.0",
     "classlist.js": "^1.1.20150312",

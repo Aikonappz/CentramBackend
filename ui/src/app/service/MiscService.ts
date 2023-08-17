@@ -113,6 +113,9 @@ export class MiscService {
     modulesService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-module', { "params": request });
     }
+    appModulesService(request?: any): Observable<any> {
+        return this.http.get('/v1/misc/app-modules', { "params": request });
+    }
     getModulesByRole(idRole: number, request?: any): Observable<any> {
         return this.http.get('/v1/misc/all-module-by-role/' + idRole, { "params": request });
     }

@@ -9,7 +9,8 @@ export class AppUtility {
     public static APP_VIEW_DATEPICKER_OP_DATE_FORMAT = "YYYY-MM-DD";
     public static APP_DEFAULT_TIMEZONE = 'Asia/Kolkata';
     public static APP_TIME_FORMAT = 'HH:mm:ss';
-    public static APP_CLIENT_STORAGE_TYPE = 'SESSION';
+    //public static APP_CLIENT_STORAGE_TYPE = 'SESSION';
+    public static APP_CLIENT_STORAGE_TYPE = 'LOCAL';
     public static APP_INCIDENT_DRAFT_KEY = 'incidentDraft';
     public static APP_ASSET_DRAFT_KEY = 'assetDraft';
     public static APP_SESSION_TIMEOUT_KEY = 'appSessionTimeout';
@@ -29,6 +30,7 @@ export class AppUtility {
     public static APP_CHAT_SESSION_ALERT_ENABLED_KEY = 'appChatSessionTimeout';
     public static APP_HAS_ACTIVE_CHAT_SESSION = 'chatSessionActive';
     public static storage = AppUtility.APP_CLIENT_STORAGE_TYPE == "SESSION" ? sessionStorage : localStorage;
+    public static EXPLORE_LANDING_PAGE_PATH = 'explore';
 
     public static EDITOR_CONFIG = {
         readOnly: false,

@@ -67,6 +67,9 @@ public class Module implements Serializable {
     @Column(name = "app_module_icon")
     private String appModuleIcon;
 
+    @Column(name = "app_feature_module")
+    private Boolean appFeatureModule;
+
     @NotNull
     @Column(name = "licence_type")
     @Enumerated(EnumType.ORDINAL)

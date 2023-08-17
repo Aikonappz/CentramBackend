@@ -40,7 +40,7 @@ export class ResetPasswordComponent implements OnInit {
   ngOnInit(): void {
     if (!this.route.snapshot.paramMap.has('id')) {
       this.router.navigate(['/']);
-    }
+    }    
     this.resetId = this.route.snapshot.paramMap.get('id') || '';
     this.angForm = this.fb.group({
       password: new FormControl('', [
@@ -62,7 +62,7 @@ export class ResetPasswordComponent implements OnInit {
       //console.log(this.angForm);
       this.authRequest.username = this.resetId;
       this.authRequest.password = btoa(this.angForm.controls['password'].value);
-      console.log(this.authRequest);
+      //console.log(this.authRequest);
       this.callResetPasswordService();
     } else {
       console.log("Invalid Form!");

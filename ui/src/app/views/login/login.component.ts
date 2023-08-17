@@ -9,6 +9,7 @@ import { LoggedInUser } from '../../model/LoggedInUser';
 import { Permission } from '../../model/Permssion';
 import { ClientStorageService } from '../../service/ClientStorageService';
 import { UserService } from '../../service/UserService';
+import { LoggedInUserService } from '../../service/LoggedInUserService';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class LoginComponent implements OnInit {
   sessionTimeOut: boolean = false;
   authRequest: AuthRequest;
   ssoLink: string = environment.appSSOEndpoint;
+  private loggedInUser: LoggedInUser;
   angForm = new FormGroup({
     email: new FormControl('', [
       Validators.required,
@@ -38,6 +40,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private clientStorageService: ClientStorageService,
+    private loggedInUserService: LoggedInUserService,
   ) {
     this.route.params.subscribe(params => {
       this.sessionTimeOut = this.route.snapshot.paramMap.get('mode') === 'sessionTimeOut' ? true : false;
@@ -98,11 +101,17 @@ export class LoginComponent implements OnInit {
         this.clientStorageService.set(AppUtility.LOGGED_IN_PROFILE, JSON.stringify(data));
         //console.log(this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT));
         let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
-        if (lastVisitedPage != null) {
-          //console.log(lastVisitedPage);
-          this.router.navigate([lastVisitedPage]);
-        } else {
+        this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+        this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
+        if (this.loggedInUser.appManager) {
           this.router.navigate(['/dashboard']);
+        } else {
+          if (lastVisitedPage != null) {
+            //console.log(lastVisitedPage);
+            this.router.navigate([lastVisitedPage]);
+          } else {
+            this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
+          }
         }
         //console.log(JSON.stringify(data));
         //localStorage.setItem(AppUtility.LOGGED_IN_PROFILE_JWT, btoa(data.jwtToken));

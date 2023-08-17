@@ -94,6 +94,7 @@ export class ExploreComponent implements OnInit {
           }
         }
         this.modulesChunkedData = this.chunk(this.modules, 6);
+        console.log(this.modulesChunkedData);
       });
   }
 
