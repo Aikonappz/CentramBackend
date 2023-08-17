@@ -1,0 +1,446 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <tabset>
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT'])" heading="Project UAT Script Upload">
+          <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="uploadSuccess">
+            <h6>UAT Script uploaded successfully!</h6>
+          </div>
+          <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="project">Project</label>
+                  <ng-select [items]="projectList" placeholder="-- Select Project --" formControlName="project"
+                    id="project" project name="project" bindLabel="label" bindValue="id">
+                  </ng-select>
+                  <div *ngIf="f.project.touched && f.project.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.project.errors?.required">
+                      Project is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="moduleId">Module</label>
+                  <ng-select #moduleId (change)="populateSubmodule($event)" [items]="moduleList"
+                    placeholder="-- Select Module --" formControlName="moduleId" id="moduleId" moduleId name="moduleId"
+                    bindLabel="customerModuleName" bindValue="id">
+                  </ng-select>
+                  <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.moduleId.errors?.required">
+                      Module is required.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="subModuleId">Sub
+                    Module</label>
+                  <ng-select [items]="subModuleList" placeholder="-- Select Sub Module --" formControlName="subModuleId"
+                    id="subModuleId" subModuleId name="subModuleId" bindLabel="customerModuleName"
+                    bindValue="id"></ng-select>
+                  <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.subModuleId.errors?.required">
+                      Sub Module is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="uatScript">UAT Scripts </label>
+                  <i class="icon-info"
+                    tooltip="Max file size can be 3 M.B and suported file types are xslx"></i>&nbsp;&nbsp;
+                  <input #uatScript (change)="getUatScriptFileDetails($event)" type="file" id="uatScript"
+                    formControlName="uatScript" name="uatScript">
+                  <div *ngIf="f.uatScript.touched && f.uatScript.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.uatScript.errors?.validAttachments">
+                      Supported file type is xslx.
+                    </div>
+                    <div *ngIf="f.uatScript.errors?.mustBeLessThan2MB">
+                      File size should be less than 3 MB.
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <label class="form-col-form-label required-control-label" for="uatManual">UAT Manual </label>
+                  <i class="icon-info"
+                    tooltip="Max file size can be 3 M.B and suported file types are pdf/doc"></i>&nbsp;&nbsp;
+                  <input #uatManual (change)="getUatManualFileDetails($event)" type="file" id="uatManual"
+                    formControlName="uatManual" name="uatManual">
+                  <div *ngIf="f.uatManual.touched && f.uatManual.invalid" class="alert alert-danger-custom">
+                    <div *ngIf="f.uatManual.errors?.validAttachments">
+                      Supported file types are pdf/doc.
+                    </div>
+                    <div *ngIf="f.uatManual.errors?.mustBeLessThan2MB">
+                      File size should be less than 3 MB.
+                    </div>
+                  </div>
+                </div>
+                <div class="col"></div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="submit" [disabled]="!angForm.valid" class="btn btn-primary btn-sm">
+                Save
+              </button>
+              <button type="button" (click)="resetUploadForm()" class="btn btn-danger btn-sm">
+                Cancel
+              </button>
+              <a class="btn btn-link sample-uat-script-download-btn" href="assets/downloads/uat-scripts.xlsx">
+                <i class="icon-arrow-down-circle"></i>
+                Download Sample Template
+              </a>
+            </div>
+          </form>
+        </tab>
+        <tab *ngIf="hasRoles(['ORG_UAT_CONSULTANT','ORG_PROJECT_STAKEHOLDER'])"
+          heading="Project UAT Script Communication">
+          <div class="card">
+            <form [formGroup]="angSearchForm" (ngSubmit)="searchFormSubmit()" novalidate>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchProject">Project</label>
+                    <ng-select [items]="projectList" #searchProject (change)="projectModifyAction($event)"
+                      placeholder="-- Select Project --" formControlName="searchProject" id="searchProject"
+                      searchProject name="searchProject" bindLabel="label" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="sf.searchProject.touched && sf.searchProject.invalid" class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchProject.errors?.required">
+                        Project is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchModuleId">Module</label>
+                    <ng-select #searchModuleId (change)="populateSearchSubmodule($event)" [items]="moduleList"
+                      placeholder="-- Select Module --" formControlName="searchModuleId" id="searchModuleId"
+                      searchModuleId name="searchModuleId" bindLabel="customerModuleName" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="sf.searchModuleId.touched && sf.searchModuleId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchModuleId.errors?.required">
+                        Module is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchSubModuleId">Sub
+                      Module</label>
+                    <ng-select [items]="searchSubModuleList" #searchSubModuleId (change)="populateProjectUAT($event)"
+                      placeholder="-- Select Sub Module --" formControlName="searchSubModuleId" id="searchSubModuleId"
+                      searchSubModuleId name="searchSubModuleId" bindLabel="customerModuleName"
+                      bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchSubModuleId.touched && sf.searchSubModuleId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchSubModuleId.errors?.required">
+                        Sub Module is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatProjectId">UAT Cycle</label>
+                    <ng-select [items]="projectUats" #searchUatProjectId (change)="populateProjectUATScript($event)"
+                      placeholder="-- Select Project UAT --" formControlName="searchUatProjectId"
+                      id="searchUatProjectId" searchUatProjectId name="searchUatProjectId" bindLabel="label"
+                      bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchUatProjectId.touched && sf.searchUatProjectId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchUatProjectId.errors?.required">
+                        Project UAT Cycle is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatProjectScriptId">UAT
+                      Script</label>
+                    <ng-select [items]="projectUatScripts" placeholder="-- Select Project UAT Script --"
+                      formControlName="searchUatProjectScriptId" id="searchUatProjectScriptId" searchUatProjectScriptId
+                      name="searchUatProjectScriptId" bindLabel="label" bindValue="id"></ng-select>
+                    <div *ngIf="sf.searchUatProjectScriptId.touched && sf.searchUatProjectScriptId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="sf.searchUatProjectScriptId.errors?.required">
+                        Project UAT Script is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05"></div>
+              <div class="card-footer">
+                <button type="submit" [disabled]="!angSearchForm.valid" class="btn btn-primary btn-sm">
+                  <i class="fa fa-search"></i> Search
+                </button>
+                <button type="button" (click)="resetSearchForm()" class="btn btn-danger btn-sm">
+                  Cancel
+                </button>
+              </div>
+            </form>
+            <hr [ngClass]="{'d-none': searched == false}" />
+            <div [ngClass]="{'d-none': searched == false}" class="card">
+              <table mat-table class="script-table" [dataSource]="datasource">
+                <ng-container matColumnDef="uatDescription">
+                  <th class="uatDescriptionHeader" mat-header-cell *matHeaderCellDef> UAT Description </th>
+                  <td class="uatDescriptionBody" mat-cell *matCellDef="let element">
+                    <div>
+                      <b>Scenario - </b> {{element.testScenarioJobId}}
+                    </div>
+                    <hr />
+                    <div>
+                      <b>Step - </b> {{element.step}}
+                    </div>
+                    <hr />
+                    <div>
+                      <b>Action - </b> {{element.action}}
+                    </div>
+                    <hr />
+                    <div>
+                      <b>Expected Result - </b> {{element.expectedResult}}
+                    </div>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actualResultDetail">
+                  <th class="actualResultHeader" mat-header-cell *matHeaderCellDef> Result Detail</th>
+                  <td class="actualResultBody" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div><b>Actual Result - </b>{{element.actualResult==null? 'NA' : element.actualResult}}</div>
+                      <hr />
+                      <div><b>Test Passed - </b>{{element.pass==true? 'Yes' : 'No'}}</div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <textarea class="form-control" [(ngModel)]='element.actualResult' placeholder="Actual Result"
+                        rows="7" cols="30">
+                      </textarea>
+                      <hr />
+                      <ng-select [items]="statusList" placeholder="-- Select Result Status --"
+                        [(ngModel)]='element.pass' bindLabel="label" bindValue="id"></ng-select>
+                    </ng-template>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="retestDetail">
+                  <th class="retestDetailHeader" mat-header-cell *matHeaderCellDef> Retest Detail </th>
+                  <td class="retestDetailBody" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div><b>Retest Date - </b>{{element.retestDate==null? 'NA' : element.retestDate}}</div>
+                      <hr />
+                      <div><b>Re-Test Passed - </b>{{element.retestPass==true? 'Yes' : 'No'}}</div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <input type="date" format="DD-MM-YYYY" class="form-control" placeholder="Retest Date"
+                        [(ngModel)]="element.retestDate">
+                      <hr />
+                      <ng-select [items]="statusList" placeholder="-- Select Result Status --"
+                        [(ngModel)]='element.retestPass' bindLabel="label" bindValue="id"></ng-select>
+                    </ng-template>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="remarks">
+                  <th class="remarksHeader" mat-header-cell *matHeaderCellDef> Remark </th>
+                  <td class="remarksBody" align="center" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div *ngIf="element.remarks!=null">
+                        <button type=" button" class="btn btn-link" (click)="viewRemark(element)">Remarks</button>
+                      </div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <textarea class="form-control" [(ngModel)]='element.remark' placeholder="Remark" rows="7"
+                        cols="30">
+                      </textarea>
+                    </ng-template>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="activity">
+                  <th align="center" class="activityHeader" mat-header-cell *matHeaderCellDef>
+                    <div *ngIf="searchedUatScriptId!=null&&hasRoles(['ORG_PROJECT_STAKEHOLDER'])">
+                      <button type=" button" class="btn btn-warning btn-sm"
+                        (click)="markProjectUatScriptTestComplate()">Mark UAT Script
+                        Complete</button>
+                    </div>
+                  </th>
+                  <td align="center" class="activityBody" mat-cell *matCellDef="let element">
+                    <div class="btn-group action-btn" dropdown>
+                      <button dropdownToggle type="button" class=" btn btn-primary dropdown-toggle">Actions<span
+                          class="caret"></span></button>
+                      <ul *dropdownMenu class="dropdown-menu" role="menu">
+                        <li role="menuitem" *ngIf="!element.editable;">
+                          <a class="dropdown-item" href="javascript:void(0);" id="id-view-{{element.id}}" type="button"
+                            [ngClass]="{
+                   'btn btn-sm btn-primary':true}" (click)="enableEdit(element)"><i class="fa fa-pencil"></i> Edit
+                          </a>
+                        </li>
+                        <li role="menuitem" *ngIf="element.editable;">
+                          <a class="dropdown-item" href="javascript:void(0);" id="id-reopen-{{element.id}}" [ngClass]="{
+                   'btn btn-sm btn-secondary':true}" (click)="saveElement(element)"><i class="fa fa-book
+                          "></i> Save
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;" [ngClass]="{gray: even}">
+                </tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" align="center" colspan="9999">
+                    No data found!
+                  </td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" #MatPaginator1 [pageSize]="10"></mat-paginator>
+            </div>
+          </div>
+        </tab>
+        <tab *ngIf="hasRoles(['ORG_PROJECT_STAKEHOLDER'])" heading="Project UAT Activities">
+          <div class="card">
+            <form [formGroup]="angUatCycleSearchForm" (ngSubmit)="searchUatCycleFormSubmit()" novalidate>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label"
+                      for="searchUatCycleProject">Project</label>
+                    <ng-select [items]="projectList" #searchUatCycleProject
+                      (change)="uatCycleProjectModifyAction($event)" placeholder="-- Select Project --"
+                      formControlName="searchUatCycleProject" id="searchUatCycleProject" searchProject
+                      name="searchUatCycleProject" bindLabel="label" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="suf.searchUatCycleProject.touched && suf.searchUatCycleProject.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="suf.searchUatCycleProject.errors?.required">
+                        Project is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label"
+                      for="searchUatCycleModuleId">Module</label>
+                    <ng-select #searchUatCycleModuleId (change)="uatCyclePopulateSubmodule($event)" [items]="moduleList"
+                      placeholder="-- Select Module --" formControlName="searchUatCycleModuleId"
+                      id="searchUatCycleModuleId" searchModuleId name="searchUatCycleModuleId"
+                      bindLabel="customerModuleName" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="suf.searchUatCycleModuleId.touched && suf.searchUatCycleModuleId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="suf.searchUatCycleModuleId.errors?.required">
+                        Module is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatCycleSubModuleId">Sub
+                      Module</label>
+                    <ng-select [items]="searchSubModuleList" #searchUatCycleSubModuleId
+                      (change)="uatCyclePopulateProjectUAT($event)" placeholder="-- Select Sub Module --"
+                      formControlName="searchUatCycleSubModuleId" id="searchUatCycleSubModuleId"
+                      searchUatCycleSubModuleId name="searchUatCycleSubModuleId" bindLabel="customerModuleName"
+                      bindValue="id"></ng-select>
+                    <div *ngIf="suf.searchUatCycleSubModuleId.touched && suf.searchUatCycleSubModuleId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="suf.searchUatCycleSubModuleId.errors?.required">
+                        Sub Module is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label class="form-col-form-label required-control-label" for="searchUatCycleProjectId">UAT
+                      Cycle</label>
+                    <ng-select [items]="projectUats" placeholder="-- Select Project UAT --"
+                      formControlName="searchUatCycleProjectId" id="searchUatCycleProjectId" searchUatCycleProjectId
+                      name="searchUatCycleProjectId" bindLabel="label" bindValue="id"></ng-select>
+                    <div *ngIf="suf.searchUatCycleProjectId.touched && suf.searchUatCycleProjectId.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="suf.searchUatCycleProjectId.errors?.required">
+                        Project UAT Cycle is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row row-margin-05"></div>
+              <div class="card-footer">
+                <button type="submit" [disabled]="!angUatCycleSearchForm.valid" class="btn btn-primary btn-sm">
+                  <i class="fa fa-search"></i> Search
+                </button>
+                <button type="button" (click)="resetSearchUatCycleForm()" class="btn btn-danger btn-sm">
+                  Cancel
+                </button>
+                <!-- <button *ngIf="searchedUatCycle" [disabled]="!isAllSelected()" type="button"
+                  class="btn btn-sm btn-secondary">Mark
+                  Uat Cycle
+                  Complete</button> -->
+
+                <button (click)="markUatCycleComplete()" *ngIf="searchedUatCycle&&!isUatCycleComplete()" type="button"
+                  class="btn btn-sm btn-secondary">Mark
+                  Uat Cycle
+                  Complete</button>
+              </div>
+            </form>
+            <hr [ngClass]="{'d-none': searchedUatCycle == false}" />
+            <div [ngClass]="{'d-none': searchedUatCycle == false}" class="card">
+              <table class="table-bordered" mat-table class="script-table" [dataSource]="datasourceUatCycle">
+                <!-- <ng-container matColumnDef="select">
+                  <th style="text-align: left;" mat-header-cell *matHeaderCellDef>
+                    <input id="select-all" type="checkbox" (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <input id="select-{{row.id}}" type="checkbox" (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)||row.uatComplete">
+                  </td>
+                </ng-container> -->
+                <ng-container matColumnDef="testCaseId">
+                  <th mat-header-cell *matHeaderCellDef> Test Case Id </th>
+                  <td mat-cell *matCellDef="let element">
+                    <span [ngClass]="{
+                      'badge-closed': element.uatComplete,                      
+                      'badge-sla-breached': !element.uatComplete,                      
+                      'badge':true
+                      }">{{element.testCaseId}}</span>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="testCaseDescription">
+                  <th mat-header-cell *matHeaderCellDef> Test Case Description</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{element.testCaseDescription}}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="testScriptName">
+                  <th mat-header-cell *matHeaderCellDef> Test Script Name </th>
+                  <td mat-cell *matCellDef="let element">
+                    {{element.testScriptName}}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="testScenario">
+                  <th mat-header-cell *matHeaderCellDef> Test Scenario </th>
+                  <td mat-cell *matCellDef="let element">
+                    {{element.testScenario}}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="plannedDate">
+                  <th mat-header-cell *matHeaderCellDef>
+                    Planned Date
+                  </th>
+                  <td align="center" mat-cell *matCellDef="let element">
+                    <span>{{formatDate(element.plannedDate)}}</span>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="uatCycleDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let even = even; columns: uatCycleDisplayedColumns;"
+                  [ngClass]="{gray: even}">
+                </tr>
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" align="center" colspan="9999">
+                    No data found!
+                  </td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" #MatPaginator2 [pageSize]="10"></mat-paginator>
+            </div>
+          </div>
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</div>

@@ -847,15 +847,15 @@ public class UserService implements UserDetailsService {
 
     public void saveAll(List<UserVO> users, BigInteger id) {
         log.info("Pulling user data for {}.", id);
-        Optional<User> optUser = Optional.empty();
+        Optional<User> optDepartment = Optional.empty();
         User user = null;
         if (users.size() > 0) {
             for (UserVO userVO : users) {
                 try {
                     if (userVO.getId() != null) {
-                        optUser = proxyService.getUser(userVO.getId());
-                        if (optUser.isPresent()) {
-                            user = this.convert(optUser.get(), userVO);
+                        optDepartment = proxyService.getUser(userVO.getId());
+                        if (optDepartment.isPresent()) {
+                            user = this.convert(optDepartment.get(), userVO);
                             log.info("Saving user data {}.", user);
                             user = proxyService.saveUser(user);
                         } else {

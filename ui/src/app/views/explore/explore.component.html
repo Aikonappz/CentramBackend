@@ -1,0 +1,19 @@
+<div class="animated fadeIn">
+    <div class="row" *ngFor="let rows of modulesChunkedData">
+        <div class="col-sm-2" *ngFor="let item of rows">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title text-center"> <span [innerHTML]="item.appModuleIcon"></span>
+                    </h1>
+                    <p class="card-text text-center">{{item.customerModuleName}}</p>
+                    <div class=" text-center">
+                        <button [disabled]="!checkPermission(item.name)" (click)="redirectToModule(item.appModulePath)"
+                            type="button" class="btn btn-primary ">
+                            Go <i class="fa fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

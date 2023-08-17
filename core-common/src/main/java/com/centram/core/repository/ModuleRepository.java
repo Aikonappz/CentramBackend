@@ -17,6 +17,9 @@ import java.util.List;
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
 
+    @Query("select m from Module m where 1 = 1 and status = 1 and appModule = true")
+    Page<Module> getAppModules(Pageable pageable);
+
     @Query("select m from Module m where 1 = 1 and status = 1 and " +
             " ( " +
             "   ((:organisationId) is not null and m.organisation.id = (:organisationId)) " +

@@ -33,9 +33,21 @@ public class ModuleService {
     private RedisService redisService;
 
     @Transactional(readOnly = true)
+    public PaginatedList<Module> getAppModules(Pageable pageable) {
+        Page<Module> modulePage = moduleRepository.getAppModules(pageable);
+        modulePage.getContent().forEach(i -> {
+            if (i.getParentModuleId() != null) {
+                Module m = this.getModuleById(i.getParentModuleId());
+                i.setParentModuleName(m.getCustomerModuleName() == null || m.getCustomerModuleName().isEmpty() ? m.getName() : m.getCustomerModuleName());
+            }
+        });
+        return new PaginatedList<Module>(modulePage);
+    }
+
+    @Transactional(readOnly = true)
     public PaginatedList<Module> getModules(String licenseType, BigInteger organisationId, Pageable pageable) {
         Page<Module> modulePage = moduleRepository.findAll(licenseType, organisationId, pageable);
-        modulePage.getContent().stream().forEach(i -> {
+        modulePage.getContent().forEach(i -> {
             if (i.getParentModuleId() != null) {
                 Module m = this.getModuleById(i.getParentModuleId());
                 i.setParentModuleName(m.getCustomerModuleName() == null || m.getCustomerModuleName().equals("") ? m.getName() : m.getCustomerModuleName());

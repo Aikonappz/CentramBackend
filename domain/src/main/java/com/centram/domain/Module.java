@@ -51,8 +51,21 @@ public class Module implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
+    @NotNull
+    @Column(name = "projectModule")
+    private Boolean projectModule;
+
     @Column(name = "app_module")
     private Boolean appModule;
+
+    @Column(name = "app_module_description")
+    private String appModuleDescription;
+
+    @Column(name = "app_module_path")
+    private String appModulePath;
+
+    @Column(name = "app_module_icon")
+    private String appModuleIcon;
 
     @NotNull
     @Column(name = "licence_type")
@@ -94,10 +107,6 @@ public class Module implements Serializable {
     @JoinColumn(name = "organisation_id", nullable = true, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private Organisation organisation;
-
-    @NotNull
-    @Column(name = "projectModule")
-    private Boolean projectModule;
 
     @Transient
     private String parentModuleName;

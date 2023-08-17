@@ -134,7 +134,6 @@ public class MiscApiController {
         return new ResponseEntity<Module>(moduleService.getModuleById(moduleId), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Module>> getModules(
             @NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
@@ -142,6 +141,12 @@ public class MiscApiController {
             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
     ) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, organisationId, pageable), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/app-modules", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<Module>> getAppModules(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        return new ResponseEntity<PaginatedList<Module>>(moduleService.getAppModules(pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/all-asset-model", produces = {"application/json"}, method = RequestMethod.GET)
