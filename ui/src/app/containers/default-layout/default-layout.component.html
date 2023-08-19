@@ -50,7 +50,7 @@
           <i class="fa fa-user"></i>{{loggedInUser.name}}
         </a>
         <div class="dropdown-header small text-center"><strong>Settings</strong></div>
-        <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item small" [routerLink]="['organization/settings']"><i
+        <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item small" [routerLink]="orgSettingsLink"><i
             class="fa fa-wrench"></i> Organization Setting</a>
         <div class="divider"></div>
         <a class="dropdown-item small" [routerLink]="userSettingsLink"><i class="fa fa-wrench"></i> User Setting</a>
@@ -79,7 +79,7 @@
         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
           <!-- <a class="btn" href="#"><i class="icon-speech"></i></a> -->
           <a class="btn" [routerLink]="dashboardLink"><i class="icon-graph"></i> &nbsp;Dashboard</a>
-          <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="['/organization/settings']">
+          <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="orgSettingsLink">
             <i class="icon-settings"></i>&nbsp;Organization Setting</a>
           <a class="btn" [routerLink]="userSettingsLink"><i class="icon-settings"></i> &nbsp;User Settings</a>
         </div>

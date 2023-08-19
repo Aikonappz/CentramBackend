@@ -1,0 +1,205 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add User</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit User</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="firstName">First Name</label>
+                <input type="text" formControlName="firstName" id="firstName" name="firstName" class="form-control"
+                  placeholder="First name" aria-label="First name">
+                <div *ngIf="f.firstName.touched && f.firstName.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.firstName.errors?.required">
+                    First Name is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="lastName">Last Name</label>
+                <input type="text" formControlName="lastName" id="lastName" name="lastName" class="form-control"
+                  placeholder="Last name" aria-label="Last name">
+                <div *ngIf="f.lastName.touched && f.lastName.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.lastName.errors?.required">
+                    Last Name is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="email">Email ID</label>
+                <input type="text" [readonly]="!newEntity" formControlName="email" id="email" name="email"
+                  class="form-control" placeholder="Email ID" aria-label="Email">
+                <div *ngIf="f.email.touched && f.email.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.email.errors?.required">
+                    Email ID is required.
+                  </div>
+                  <div *ngIf="f.email.errors?.email">
+                    Invalid input! Only email allowed.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="contactNo">Contact No</label>
+                <input type="text" formControlName="contactNo" id="contactNo" name="contactNo" class="form-control"
+                  placeholder="Contact No" aria-label="Contact No.">
+                <div *ngIf="f.contactNo.touched && f.contactNo.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.contactNo.errors?.required">
+                    Contact No is required.
+                  </div>
+                  <div *ngIf="f.contactNo.errors?.pattern">
+                    Invalid input! Only phone numbers allowed.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="secContactNo"> Secondary Contact No</label>
+                <input type="text" formControlName="secContactNo" id="secContactNo" name="secContactNo"
+                  class="form-control" placeholder="Secondary Contact No" aria-label="Secondary Contact No.">
+                <div *ngIf="f.secContactNo.touched && f.secContactNo.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.secContactNo.errors?.pattern">
+                    Invalid input! Only phone numbers allowed.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="employeeId">Employee ID</label>
+                <input type="text" formControlName="employeeId" id="employeeId" name="employeeId" class="form-control"
+                  placeholder="Employee ID" aria-label="Employee ID">
+                <!-- <div *ngIf="f.employeeId.touched && f.employeeId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.employeeId.errors?.required">
+                    Employee ID is required.
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label" for="projectCode">Project Code</label>
+                <input type="text" formControlName="projectCode" id="projectCode" name="projectCode"
+                  class="form-control" placeholder="Project Code" aria-label="Project Code">
+                <div *ngIf="f.projectCode.touched && f.projectCode.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projectCode.errors?.required">
+                    Project Code is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="roles">Roles</label>
+                <ng-select [items]="roles" placeholder="-- Select Roles --" formControlName="roles" id="roles"
+                  [multiple]="true" roles name="roles" bindLabel="displayName" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.roles.touched && f.roles.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.roles.errors?.required">
+                    Role is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"> 
+                <label class="form-col-form-label" for="managerId">Manager</label>
+                <ng-select [items]="usrList" placeholder="-- Select Manager Id. --" formControlName="managerId"
+                  id="managerId" managerId name="managerId" bindLabel="employeeId" bindValue="id">
+                </ng-select>
+                <!-- <div *ngIf="f.managerId.touched && f.managerId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.managerId.errors?.required">
+                    Manager ID is required.
+                  </div>
+                </div> -->
+              </div>
+            </div>
+            <div [ngClass]="{'d-none': rolesList.includes('APP_ADMIN'),'row row-margin-05':true}">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="account">Account</label>
+                <ng-select [items]="accounts" #accountId (change)="populateLocaton($event)"
+                  placeholder="-- Select Account --" formControlName="account" id="account" name="account"
+                  bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.account.touched && f.account.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.account.errors?.required">
+                    Account is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="location">Location</label>
+                <ng-select [items]="locations" placeholder="-- Select Location --" formControlName="location"
+                  id="location" location name="location" bindLabel="name" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.location.touched && f.location.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.location.errors?.required">
+                    Location is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="department">Department</label>
+                <ng-select [items]="departments" placeholder="-- Select Department --" formControlName="department"
+                  id="department" department name="department" bindLabel="name" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.department.touched && f.department.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.department.errors?.required">
+                    Department is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div [ngClass]="{'d-none': rolesList.includes('APP_ADMIN'),'row row-margin-05':true}">
+              <div class="col">
+                <label class="form-col-form-label" for="userType">User Type</label>
+                <ng-select [items]="userTypes" placeholder="-- Select User Type --" formControlName="userType"
+                  id="userType" (change)="changeUsertype($event)" #userType name="userType" bindLabel="label"
+                  bindValue="id">
+                </ng-select>
+                <div *ngIf="f.userType.touched && f.userType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.userType.errors?.required">
+                    User Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="d-none vendor-col">
+                  <label class="form-col-form-label " for="vendorId">Vendor</label>
+                  <ng-select [items]="vendorList" placeholder="-- Select Vendor --" formControlName="vendorId"
+                    id="vendorId" vendorId name="vendorId" bindLabel="name" bindValue="id">
+                  </ng-select>
+                </div>
+              </div>
+              <div class="col"></div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label " for="status">Status</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
+                      name="status" id="ACTIVE" [checked]="(user.status == 'ACTIVE')" value="true">
+                    <label class="form-check-label" for="ACTIVE">Active</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                      [checked]="(user.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                      value="false">
+                    <label class="form-check-label" for="INACTIVE">Inactive</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="submit"
+              class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

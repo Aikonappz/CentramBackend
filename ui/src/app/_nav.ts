@@ -48,6 +48,30 @@ export const navItems: INavData[] = [
     ]
   },
   // SUPER ADMIN
+  // ADMIN
+  {
+    name: 'Dashboard',
+    url: '/admin/dashboard',
+    icon: 'icon-speedometer',
+    attributes: { "parentModule": "ADMIN", "moduleName": "DASHBOARD", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+  },
+  {
+    name: 'Users',
+    url: '/admin/user',
+    icon: 'icon-people',
+    attributes: { "parentModule": "ADMIN", "moduleName": "USER", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+  },
+  {
+    name: 'My Notifications',
+    url: '/admin/notification',
+    icon: 'icon-info',
+    attributes: { "parentModule": "ADMIN", "moduleName": "MY NOTIFICATIONS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+  },
+  // ADMIN
+
+
+
+
   // UAT
   {
     name: 'Dashboard',

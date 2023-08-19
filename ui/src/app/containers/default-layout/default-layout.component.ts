@@ -85,6 +85,7 @@ export class DefaultLayoutComponent implements OnInit {
 
   dashboardLink: string = null;
   userSettingsLink: string = null;
+  orgSettingsLink: string = null;
   notificationLink: string = null;
 
   constructor(
@@ -117,7 +118,12 @@ export class DefaultLayoutComponent implements OnInit {
       this.loggedInUser.licenseType = "SUPADMIN";
       this.dashboardLink = "/supadmin/dashboard";
       this.userSettingsLink = "/supadmin/user/settings";
-      this.notificationLink = "/supadmin//notification/view/";
+      this.notificationLink = "/supadmin/notification/view/";
+    } else if (this.loggedInUser.orgAdmin) {
+      this.dashboardLink = "/admin/dashboard";
+      this.userSettingsLink = "/admin/user/settings";
+      this.orgSettingsLink = "/admin/organization/settings";
+      this.notificationLink = "/admin/notification/view/";
     }
     //console.log(this.loggedInUser);
     this.roles = this.loggedInUser.roles;

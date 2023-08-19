@@ -114,6 +114,11 @@ export const routes: Routes = [
         loadChildren: () => import('./views/supadmin/supadmin.module').then(m => m.SuperAdminModule),
       },
       {
+        path: 'admin',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/admin/admin.module').then(m => m.AdminModule),
+      },
+      {
         path: 'dashboard',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)
