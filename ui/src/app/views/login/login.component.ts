@@ -103,16 +103,18 @@ export class LoginComponent implements OnInit {
         let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
         this.loggedInUser = this.loggedInUserService.getLoggedInUser();
         this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
-        if (this.loggedInUser.appManager) {
-          this.router.navigate(['/dashboard']);
-        } else {
-          if (lastVisitedPage != null) {
-            //console.log(lastVisitedPage);
-            this.router.navigate([lastVisitedPage]);
-          } else {
-            this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
-          }
-        }
+        this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
+        this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
+        // if (this.loggedInUser.appManager) {
+        //   this.router.navigate(['/dashboard']);
+        // } else {
+        //   if (lastVisitedPage != null) {
+        //     //console.log(lastVisitedPage);
+        //     this.router.navigate([lastVisitedPage]);
+        //   } else {
+        //     this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
+        //   }
+        // }
         //console.log(JSON.stringify(data));
         //localStorage.setItem(AppUtility.LOGGED_IN_PROFILE_JWT, btoa(data.jwtToken));
         //data.jwtToken = null;

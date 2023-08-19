@@ -5,6 +5,8 @@ export class AdminDashboardVO {
     allLicenceTypeCompanies: number;
     incidentLicenceTypeCompanies: number;
     assetLicenceTypeCompanies: number;
+    projectLicenceTypeCompanies: number;
+    uatLicenceTypeCompanies: number;
 
     constructor() {
         this.totalCompanies = -1;
@@ -13,5 +15,7 @@ export class AdminDashboardVO {
         this.allLicenceTypeCompanies = -1;
         this.incidentLicenceTypeCompanies = -1;
         this.assetLicenceTypeCompanies = -1;
+        this.projectLicenceTypeCompanies = -1;
+        this.uatLicenceTypeCompanies = -1;
     }
 }

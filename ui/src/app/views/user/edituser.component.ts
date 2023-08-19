@@ -105,6 +105,9 @@ export class EditUserComponent implements OnInit {
         vendorId: new FormControl(null, [
           //Validators.required
         ]),
+        account: new FormControl(null, [
+          //Validators.required
+        ]),
         status: new FormControl(true, [
         ]),
         userType: new FormControl('Employee', [
@@ -205,7 +208,21 @@ export class EditUserComponent implements OnInit {
             }
           }
         });
-
+      this.userService
+        .getUsersService()
+        .subscribe((data: any) => {
+          //console.log("load departments");
+          this.users = data.content;
+          this.c = 0;
+          this.usrList = [];
+          for (let indx = 0; indx < this.users.length; indx++) {
+            if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "" && this.users[indx].employeeId != null) {
+              this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
+            }
+          }
+          //this.preapareSelect();
+          //console.log(JSON.stringify(this.usrList));
+        });
       if (!this.loggedInUserService.appManager()) {
         this.miscService
           .accountsService()
@@ -244,21 +261,6 @@ export class EditUserComponent implements OnInit {
             }
           });
       }
-      this.userService
-        .getUsersService()
-        .subscribe((data: any) => {
-          //console.log("load departments");
-          this.users = data.content;
-          this.c = 0;
-          this.usrList = [];
-          for (let indx = 0; indx < this.users.length; indx++) {
-            if (String(this.users[indx].status) == 'ACTIVE' && this.users[indx].employeeId != "" && this.users[indx].employeeId != null) {
-              this.usrList[this.c++] = Object.assign({ "id": this.users[indx].id, "name": this.users[indx].firstName + " " + this.users[indx].lastName, "employeeId": this.users[indx].employeeId });
-            }
-          }
-          //this.preapareSelect();
-          //console.log(JSON.stringify(this.usrList));
-        });
     } else {
       if (this.loggedInUserService.appManager()) {
         this.miscService
@@ -471,9 +473,12 @@ export class EditUserComponent implements OnInit {
       }
       /* process department and location */
       this.user.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
-      for (let i = 0; i < this.accounts.length; i++) {
-        if (this.accounts[i].id == this.angForm.controls['account'].value) {
-          this.user.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+      this.user.account = null;
+      if (this.angForm.controls['account'].value != null) {
+        for (let i = 0; i < this.accounts.length; i++) {
+          if (this.accounts[i].id == this.angForm.controls['account'].value) {
+            this.user.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+          }
         }
       }
       //console.log(this.user);
@@ -520,7 +525,8 @@ export class EditUserComponent implements OnInit {
         this.user.account.id = data.accountId;
         //console.log(JSON.stringify(this.user));
         //console.log(this.user.roles.map(String));
-        this.populateLocaton({ id: this.user.account.id });
+        if (!this.loggedInUser.appManager)
+          this.populateLocaton({ id: this.user.account.id });
         this.angForm.get('firstName').setValue(this.user.firstName);
         this.angForm.get('lastName').setValue(this.user.lastName);
         this.angForm.get('email').setValue(this.user.email);

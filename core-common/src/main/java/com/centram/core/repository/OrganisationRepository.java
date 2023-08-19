@@ -67,7 +67,9 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
             " sum(case when status = 0 then 1 else 0 end) as inactiveCompanies, " +
             " sum(case when license_type = 0 then 1 else 0 end) as allLicenceTypeCompanies, " +
             " sum(case when license_type = 1 then 1 else 0 end) as incidentLicenceTypeCompanies, " +
-            " sum(case when license_type = 2 then 1 else 0 end) as assetLicenceTypeCompanies " +
+            " sum(case when license_type = 2 then 1 else 0 end) as assetLicenceTypeCompanies, " +
+            " sum(case when license_type = 3 then 1 else 0 end) as projectLicenceTypeCompanies, " +
+            " sum(case when license_type = 4 then 1 else 0 end) as uatLicenceTypeCompanies " +
             " from organisation ", nativeQuery = true)
     AdminDashboardVO appAdminDashboardData();
 }

@@ -2,52 +2,52 @@ import { INavData } from '@coreui/angular';
 
 
 export const navItems: INavData[] = [
-  // COMMON FOR SUPER ADMIN OR ORG ADMIN OR WHO HAS PROPER PERMISSIONS
+  // SUPER ADMIN
   {
     name: 'Dashboard',
-    url: '/dashboard',
+    url: '/supadmin/dashboard',
     icon: 'icon-speedometer',
-    attributes: { "commonAccess": true, "moduleName": "DASHBOARD" }
+    attributes: { "parentModule": "SUPADMIN", "moduleName": "DASHBOARD", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Organizations',
-    url: '/organization',
+    url: '/supadmin/organization',
     icon: 'icon-target',
-    attributes: { "commonAccess": true, "moduleName": "ORGANIZATION" }
+    attributes: { "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Users',
-    url: '/user',
+    url: '/supadmin/user',
     icon: 'icon-people',
-    attributes: { "commonAccess": true, "moduleName": "USER" }
+    attributes: { "parentModule": "SUPADMIN", "moduleName": "USER", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Permissions',
-    url: '/permission',
+    url: '/supadmin/permission',
     icon: 'icon-star',
-    attributes: { "commonAccess": true, "moduleName": "ORGANIZATION" }
+    attributes: { "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
   },
   {
     name: 'My Notifications',
-    url: '/notification',
+    url: '/supadmin/notification',
     icon: 'icon-info',
-    attributes: { "commonAccess": true, "moduleName": "MY NOTIFICATIONS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+    attributes: { "parentModule": "SUPADMIN", "moduleName": "MY NOTIFICATIONS", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Reports',
-    url: '/report',
+    url: '/supadmin/report',
     icon: 'fa fa-folder',
-    attributes: { "commonAccess": true, "moduleName": "REPORT" },
+    attributes: { "parentModule": "SUPADMIN", "moduleName": "REPORT", "licenceType": "SUPADMIN" },
     children: [
       {
         name: 'Admin Report',
-        url: '/report/admin-report',
+        url: '/supadmin/report/admin-report',
         icon: 'fa fa-folder-open',
-        attributes: { "commonAccess": true, "moduleName": "SITE ADMIN REPORT" }
+        attributes: { "parentModule": "SUPADMIN", "moduleName": "SITE ADMIN REPORT", "licenceType": "SUPADMIN" }
       },
     ]
   },
-  // COMMON FOR SUPER ADMIN OR ORG ADMIN OR WHO HAS PROPER PERMISSIONS
+  // SUPER ADMIN
   // UAT
   {
     name: 'Dashboard',
@@ -84,15 +84,12 @@ export const navItems: INavData[] = [
     ]
   },
   // UAT
-
-
-
-
+  // ORG ADMIN OR WHO ELSE HAS PERMISSIONS
   {
     name: 'Masters',
     url: '/master',
     icon: 'icon-layers',
-    attributes: { "moduleName": "MASTERS" },
+    attributes: { "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
     children: [
       {
         name: 'Account',
@@ -156,6 +153,7 @@ export const navItems: INavData[] = [
       },
     ]
   },
+  // ORG ADMIN OR WHO ELSE HAS PERMISSIONS
   {
     name: 'Incidents',
     url: '/incident',

@@ -8,4 +8,6 @@ public interface AdminDashboardVO {
     int getAllLicenceTypeCompanies();
     int getIncidentLicenceTypeCompanies();
     int getAssetLicenceTypeCompanies();
+    int getUatLicenceTypeCompanies();
+    int getProjectLicenceTypeCompanies();
 }

@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit {
 
   public siteAdminChart2Labels: Label[] = [];
   public siteAdminChart2Data: MultiDataSet = [];
-  public siteAdminChart2Colors: any[] = [{ backgroundColor: ["#437ff7a8", "#08d620a9", "#f63c6e83",] }];
+  public siteAdminChart2Colors: any[] = [{ backgroundColor: ["#437ff7a8", "#08d620a9", "#f63c6e83", "#b2b429a4", "#584acf83"] }];
 
   public orgAdminChart1Labels: Label[] = [];
   public orgAdminChart1Data: MultiDataSet = [];
@@ -281,6 +281,8 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
+          dataPoints.push(this.adminDashboard.projectLicenceTypeCompanies);
+          dataPoints.push(this.adminDashboard.uatLicenceTypeCompanies);
           // this.admin1DoughnutChartLabels = [
           //   "Total",
           //   "All License Type",
@@ -289,8 +291,10 @@ export class DashboardComponent implements OnInit {
           // ];
           this.siteAdminChart2Labels = [
             "License Type - All",
-            "License Type - Incident",
             "License Type - Asset",
+            "License Type - Incident",
+            "License Type - Project",
+            "License Type - UAT",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -301,7 +305,7 @@ export class DashboardComponent implements OnInit {
               collapsible: true,
               activate: function (event, ui) {
                 var index = $(this).accordion("option", "active");
-                console.log(index);
+                //console.log(index);
               }
             });
             $(".accordion-toggle:eq(0)").trigger('click');
@@ -418,7 +422,7 @@ export class DashboardComponent implements OnInit {
                 collapsible: true,
                 activate: function (event, ui) {
                   var index = $(this).accordion("option", "active");
-                  console.log(index);
+                  //console.log(index);
                 }
               });
               $(".accordion-toggle:eq(0)").trigger('click');
@@ -532,7 +536,7 @@ export class DashboardComponent implements OnInit {
                 collapsible: true,
                 activate: function (event, ui) {
                   var index = $(this).accordion("option", "active");
-                  console.log(index);
+                  //console.log(index);
                 }
               });
               $(".accordion-toggle:eq(0)").trigger('click');
@@ -696,7 +700,7 @@ export class DashboardComponent implements OnInit {
                 collapsible: true,
                 activate: function (event, ui) {
                   var index = $(this).accordion("option", "active");
-                  console.log(index);
+                  //console.log(index);
                 }
               });
               $(".accordion-toggle:eq(0)").trigger('click');
@@ -817,7 +821,7 @@ export class DashboardComponent implements OnInit {
                 collapsible: true,
                 activate: function (event, ui) {
                   var index = $(this).accordion("option", "active");
-                  console.log(index);
+                  //console.log(index);
                 }
               });
               $(".accordion-toggle:eq(0)").trigger('click');
@@ -851,6 +855,8 @@ export class DashboardComponent implements OnInit {
           dataPoints.push(this.adminDashboard.allLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.assetLicenceTypeCompanies);
           dataPoints.push(this.adminDashboard.incidentLicenceTypeCompanies);
+          dataPoints.push(this.adminDashboard.projectLicenceTypeCompanies);
+          dataPoints.push(this.adminDashboard.uatLicenceTypeCompanies);
           // this.admin1DoughnutChartLabels = [
           //   "Total",
           //   "All License Type",
@@ -859,8 +865,10 @@ export class DashboardComponent implements OnInit {
           // ];
           this.siteAdminChart2Labels = [
             "License Type - All",
-            "License Type - Incident",
             "License Type - Asset",
+            "License Type - Incident",
+            "License Type - Project",
+            "License Type - UAT",
           ];
           this.siteAdminChart2Data = [dataPoints];
           $(function () {
@@ -871,7 +879,7 @@ export class DashboardComponent implements OnInit {
               collapsible: true,
               activate: function (event, ui) {
                 var index = $(this).accordion("option", "active");
-                console.log(index);
+                //console.log(index);
               }
             });
             $(".accordion-toggle:eq(0)").trigger('click');
@@ -988,7 +996,7 @@ export class DashboardComponent implements OnInit {
               collapsible: true,
               activate: function (event, ui) {
                 var index = $(this).accordion("option", "active");
-                console.log(index);
+                //console.log(index);
               }
             });
             $(".accordion-toggle:eq(0)").trigger('click');
@@ -1102,7 +1110,7 @@ export class DashboardComponent implements OnInit {
               collapsible: true,
               activate: function (event, ui) {
                 var index = $(this).accordion("option", "active");
-                console.log(index);
+                //console.log(index);
               }
             });
             $(".accordion-toggle:eq(0)").trigger('click');
@@ -1266,7 +1274,7 @@ export class DashboardComponent implements OnInit {
               collapsible: true,
               activate: function (event, ui) {
                 var index = $(this).accordion("option", "active");
-                console.log(index);
+                //console.log(index);
               }
             });
             $(".accordion-toggle:eq(0)").trigger('click');
@@ -1366,7 +1374,7 @@ export class DashboardComponent implements OnInit {
               collapsible: true,
               activate: function (event, ui) {
                 var index = $(this).accordion("option", "active");
-                console.log(index);
+                //console.log(index);
               }
             });
             $(".accordion-toggle:eq(0)").trigger('click');
@@ -1429,12 +1437,16 @@ export class DashboardComponent implements OnInit {
   siteAdminChart2(e: any) {
     if (this.getChartSegmentData(e) === "Total") {
       this.viewSiteAdmin({ "status": "ALL" });
-    } else if (this.getChartSegmentData(e) === "All License Type") {
-      this.viewSiteAdmin({ "status": "ALL", "licenseType": "ALL" })
-    } else if (this.getChartSegmentData(e) === "Asset License Type") {
+    } else if (this.getChartSegmentData(e) === "License Type - All") {
+      this.viewSiteAdmin({ "status": "ALL", })
+    } else if (this.getChartSegmentData(e) === "License Type - Asset") {
       this.viewSiteAdmin({ "status": "ALL", "licenseType": "ASSET" })
-    } else if (this.getChartSegmentData(e) === "Incident License Type") {
+    } else if (this.getChartSegmentData(e) === "License Type - Incident") {
       this.viewSiteAdmin({ "status": "ALL", "licenseType": "INCIDENT" })
+    } else if (this.getChartSegmentData(e) === "License Type - Project") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "PROJECT" })
+    } else if (this.getChartSegmentData(e) === "License Type - UAT") {
+      this.viewSiteAdmin({ "status": "ALL", "licenseType": "UAT" })
     } else {
       this.viewSiteAdmin({ "status": "ALL" });
     }

@@ -28,7 +28,7 @@
       <div id="notification-drop-down-menu" data-lastval="0" data-allvalue="[]" (scroll)="onScroll($event)"
         class="dropdown-menu dropdown-menu-right notification-menu" *dropdownMenu aria-labelledby="simple-dropdown">
         <div class="dropdown-header text-center"><strong>Notifications</strong></div>
-        <a class="dropdown-item" *ngFor="let e of notifications" [routerLink]="'/notification/view/'+e.id">
+        <a class="dropdown-item" *ngFor="let e of notifications" [routerLink]="notificationLink+e.id">
           <i class="fa fa-info"></i> {{e.notificationTitle}}
         </a>
         <!-- <div class="divider"></div> icon-anchor -->
@@ -53,7 +53,7 @@
         <a *ngIf="loggedInUser.orgAdmin" class="dropdown-item small" [routerLink]="['organization/settings']"><i
             class="fa fa-wrench"></i> Organization Setting</a>
         <div class="divider"></div>
-        <a class="dropdown-item small" [routerLink]="['/user/settings']"><i class="fa fa-wrench"></i> User Setting</a>
+        <a class="dropdown-item small" [routerLink]="userSettingsLink"><i class="fa fa-wrench"></i> User Setting</a>
         <!-- <a class="dropdown-item" href="#"><i class="fa fa-usd"></i> Payments<span class="badge badge-dark">42</span></a>
         <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a> -->
         <div class="divider"></div>
@@ -78,10 +78,10 @@
       <li class="breadcrumb-menu d-md-down-none">
         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
           <!-- <a class="btn" href="#"><i class="icon-speech"></i></a> -->
-          <a class="btn" [routerLink]="['/dashboard']"><i class="icon-graph"></i> &nbsp;Dashboard</a>
+          <a class="btn" [routerLink]="dashboardLink"><i class="icon-graph"></i> &nbsp;Dashboard</a>
           <a class="btn" *ngIf="loggedInUser.orgAdmin" [routerLink]="['/organization/settings']">
             <i class="icon-settings"></i>&nbsp;Organization Setting</a>
-          <a class="btn" [routerLink]="['/user/settings']"><i class="icon-settings"></i> &nbsp;User Settings</a>
+          <a class="btn" [routerLink]="userSettingsLink"><i class="icon-settings"></i> &nbsp;User Settings</a>
         </div>
       </li>
     </cui-breadcrumb>

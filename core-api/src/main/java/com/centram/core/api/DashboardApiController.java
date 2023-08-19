@@ -36,7 +36,10 @@ public class DashboardApiController {
     @Autowired
     private DashboardService dashboardService;
 
-
+    /**
+     *
+     * @return
+     */
     @RequestMapping(value = "/app-admin", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal) && (@appSecurityUtilityService.hasAppAdminAccess(authentication.principal) || @appSecurityUtilityService.hasBusinessLeadAccess(authentication.principal))")
     public ResponseEntity<AdminDashboardVO> appAdminDashboard() {

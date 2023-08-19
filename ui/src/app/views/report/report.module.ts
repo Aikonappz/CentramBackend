@@ -5,7 +5,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ReportRoutingModule } from './report-routing.module';
-import { ReportComponent } from './report.component';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AdminReportComponent } from './adminreport.component';
 import { IncidentReportComponent } from './incidentreport.component';
@@ -20,7 +19,6 @@ import { AssetAssignmentReportComponent } from './asset.asignment.report.compone
 
 @NgModule({
   declarations: [
-    ReportComponent,
     AdminReportComponent,
     IncidentReportComponent,
     EscalationReportComponent,

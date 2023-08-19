@@ -83,6 +83,10 @@ export class DefaultLayoutComponent implements OnInit {
   parentModuleList: any[] = [];
   canCommunate: boolean = false;
 
+  dashboardLink: string = null;
+  userSettingsLink: string = null;
+  notificationLink: string = null;
+
   constructor(
     private fb: FormBuilder,
     private service: MiscService,
@@ -108,6 +112,13 @@ export class DefaultLayoutComponent implements OnInit {
     this.currentYear = moment().format('YYYY');
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
+    this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
+    if (this.loggedInUser.appManager) {
+      this.loggedInUser.licenseType = "SUPADMIN";
+      this.dashboardLink = "/supadmin/dashboard";
+      this.userSettingsLink = "/supadmin/user/settings";
+      this.notificationLink = "/supadmin//notification/view/";
+    }
     //console.log(this.loggedInUser);
     this.roles = this.loggedInUser.roles;
     if (this.hasUserRole()) {
@@ -120,7 +131,6 @@ export class DefaultLayoutComponent implements OnInit {
       this.userRoles.push("CATEGORY_ADMIN");
     }
     this.clientStorageService.set(AppUtility.APP_LOGGEDIN_USR_ROLES, this.userRoles);
-    //console.log(JSON.stringify(this.loggedInUser.modulePermissions));
     this.permissions = this.loggedInUser.modulePermissions;
     // this.permissions.forEach(function (itm) {
     //   itm.actions = itm.actionName.split(',');
@@ -129,63 +139,40 @@ export class DefaultLayoutComponent implements OnInit {
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       this.menuAttributes = this.navItems[i].attributes;
-      //console.log(this.menuAttributes);
       let parentModule: string = null;
       let licences: string[] = [];
-      let commonAccess = false;
       if (typeof this.menuAttributes.parentModule !== 'undefined') {
         parentModule = this.menuAttributes.parentModule;
       }
       if (typeof this.menuAttributes.licenceType !== 'undefined') {
         licences = this.menuAttributes.licenceType.split(',');
       }
-      if (typeof this.menuAttributes.commonAccess !== 'undefined') {
-        commonAccess = this.menuAttributes.commonAccess;
-      }
       for (let j in this.permissions) {
-        if (
-          (commonAccess && this.loggedInUser.appManager && this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
-            this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ORG ADMIN OR SUPER ADMIN COMMON PERMISSION CASE
-          ||
-          (!commonAccess && licences.includes(this.loggedInUser.licenseType) && parentModule != null && parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase() &&
-            this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
-            this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ROLE WISE PERMISSION CASE
-
-        ) {
-          //console.log(licences, this.loggedInUser.licenseType);
-          //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
+        if (licences.includes(this.loggedInUser.licenseType) && parentModule != null && parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase() &&
+          this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
+          this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ROLE WISE PERMISSION CASE
+        {
           this.newNavItems[c] = this.navItems[i];
           if (this.navItems[i].hasOwnProperty("children")) {
             let parentId = this.permissions[j].moduleId;
-            //console.log(this.newNavItems[c].children);
             let childMenus = [];
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {
                 this.menuAttributes = this.newNavItems[c].children[sm].attributes;
                 let parentModule: string = null;
                 let licences: string[] = [];
-                let commonAccess = false;
                 if (typeof this.menuAttributes.parentModule !== 'undefined') {
                   parentModule = this.menuAttributes.parentModule;
                 }
                 if (typeof this.menuAttributes.licenceType !== 'undefined') {
                   licences = this.menuAttributes.licenceType.split(',');
                 }
-                if (typeof this.menuAttributes.commonAccess !== 'undefined') {
-                  commonAccess = this.menuAttributes.commonAccess;
-                }
-                if (
-                  (commonAccess && this.loggedInUser.appManager && this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-                    parentId === this.permissions[k].moduleParentId &&
-                    (this.menuAttributes.moduleName === this.permissions[k].moduleName && this.permissions[k].actions.includes('READ'))) // ORG ADMIN OR SUPER ADMIN COMMON PERMISSION CASE
-                  ||
-                  (!commonAccess && licences.includes(this.loggedInUser.licenseType) &&
-                    parentModule != null && parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase() &&
-                    this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-                    parentId === this.permissions[k].moduleParentId &&
-                    (this.menuAttributes.moduleName === this.permissions[k].moduleName && this.permissions[k].actions.includes('READ'))) // ROLE WISE PERMISSION CASE
-                ) {
-                  //console.log(this.newNavItems[c].children[sm]);
+                if (licences.includes(this.loggedInUser.licenseType) &&
+                  parentModule != null && parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase() &&
+                  this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
+                  parentId === this.permissions[k].moduleParentId &&
+                  (this.menuAttributes.moduleName === this.permissions[k].moduleName && this.permissions[k].actions.includes('READ'))) // ROLE WISE PERMISSION CASE
+                {
                   childMenus.push(this.newNavItems[c].children[sm]);
                 }
               }
@@ -195,121 +182,6 @@ export class DefaultLayoutComponent implements OnInit {
           c++;
         }
       }
-
-
-
-
-
-
-
-
-
-
-
-      // if (typeof this.menuAttributes.licenceType !== 'undefined') {
-      //   let licences = this.menuAttributes.licenceType.split(',');
-      //   for (let j in this.permissions) {
-      //     if (
-      //       licences.includes(this.loggedInUser.licenseType) &&
-      //       this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
-      //       this.menuAttributes.moduleName === this.permissions[j].moduleName &&
-      //       this.permissions[j].actions.includes('READ')
-      //     ) {
-      //       //console.log(licences, this.loggedInUser.licenseType);
-      //       //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
-      //       this.newNavItems[c] = this.navItems[i];
-      //       if (this.navItems[i].hasOwnProperty("children")) {
-      //         let parentId = this.permissions[j].moduleId;
-      //         //console.log(this.newNavItems[c].children);
-      //         let childMenus = [];
-      //         for (let sm in this.newNavItems[c].children) {
-      //           for (let k in this.permissions) {
-      //             this.menuAttributes = this.newNavItems[c].children[sm].attributes;
-      //             if (typeof this.menuAttributes.licenceType !== 'undefined') {
-      //               let licences = this.menuAttributes.licenceType.split(',');
-      //               if (
-      //                 licences.includes(this.loggedInUser.licenseType)
-      //                 && this.permissions[k].appModule == true
-      //                 && this.permissions[k].moduleParentId != null
-      //                 && parentId === this.permissions[k].moduleParentId
-      //                 &&
-      //                 (
-      //                   (this.menuAttributes.moduleName === this.permissions[k].moduleName
-      //                     && this.permissions[k].actions.includes('READ'))
-      //                 )
-      //               ) {
-      //                 //console.log(this.newNavItems[c].children[sm]);
-      //                 childMenus.push(this.newNavItems[c].children[sm]);
-      //               }
-      //             } else {
-      //               if (
-      //                 this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-      //                 this.menuAttributes.moduleName === this.permissions[k].moduleName &&
-      //                 this.permissions[k].actions.includes('READ') &&
-      //                 parentId === this.permissions[k].moduleParentId
-      //               ) {
-      //                 //console.log(this.newNavItems[c].children[sm]);
-      //                 childMenus.push(this.newNavItems[c].children[sm]);
-      //               }
-      //             }
-      //           }
-      //         }
-      //         this.newNavItems[c].children = childMenus;
-      //       }
-      //       c++;
-      //     }
-      //   }
-      // } else {
-      //   for (let j in this.permissions) {
-      //     if (
-      //       this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
-      //       this.menuAttributes.moduleName === this.permissions[j].moduleName &&
-      //       this.permissions[j].actions.includes('READ')
-      //     ) {
-      //       //console.log(this.menuAttributes.moduleName + " -- " + this.permissions[j].moduleName);
-      //       this.newNavItems[c] = this.navItems[i];
-      //       if (this.navItems[i].hasOwnProperty("children")) {
-      //         let parentId = this.permissions[j].moduleId;
-      //         //console.log(this.newNavItems[c].children);
-      //         let childMenus = [];
-      //         for (let sm in this.newNavItems[c].children) {
-      //           for (let k in this.permissions) {
-      //             this.menuAttributes = this.newNavItems[c].children[sm].attributes;
-      //             if (typeof this.menuAttributes.licenceType !== 'undefined') {
-      //               let licences = this.menuAttributes.licenceType.split(',');
-      //               if (
-      //                 licences.includes(this.loggedInUser.licenseType)
-      //                 && this.permissions[k].appModule == true
-      //                 && this.permissions[k].moduleParentId != null
-      //                 && parentId === this.permissions[k].moduleParentId
-      //                 &&
-      //                 (
-      //                   (this.menuAttributes.moduleName === this.permissions[k].moduleName
-      //                     && this.permissions[k].actions.includes('READ'))
-      //                 )
-      //               ) {
-      //                 //console.log(this.newNavItems[c].children[sm]);
-      //                 childMenus.push(this.newNavItems[c].children[sm]);
-      //               }
-      //             } else {
-      //               if (
-      //                 this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-      //                 this.menuAttributes.moduleName === this.permissions[k].moduleName &&
-      //                 this.permissions[k].actions.includes('READ') &&
-      //                 parentId === this.permissions[k].moduleParentId
-      //               ) {
-      //                 //console.log(this.newNavItems[c].children[sm]);
-      //                 childMenus.push(this.newNavItems[c].children[sm]);
-      //               }
-      //             }
-      //           }
-      //         }
-      //         this.newNavItems[c].children = childMenus;
-      //       }
-      //       c++;
-      //     }
-      //   }
-      // }
     }
     this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
@@ -328,7 +200,6 @@ export class DefaultLayoutComponent implements OnInit {
     this.initListener();
     this.initInterval();
     this.clientStorageService.set(AppUtility.APP_LAST_ACTION_KEY, Date.now().toString());
-
     this.angFormAssign = this.fb.group({
       parentModule: new FormControl(null, [
         Validators.required,
@@ -343,7 +214,6 @@ export class DefaultLayoutComponent implements OnInit {
         Validators.required,
       ]),
     });
-
     this.parentModuleList.push({ id: 'ASSET', label: 'Asset' });
     this.parentModuleList.push({ id: 'INCIDENT', label: 'Incident' });
     this.permissions = this.loggedInUserService.getModulePermissions();
@@ -1087,7 +957,7 @@ export class DefaultLayoutComponent implements OnInit {
   sideBarEnabled(): boolean {
     let parentPath = this.getUrlParentPath();
     //console.log(parentPath);
-    return parentPath != AppUtility.EXPLORE_LANDING_PAGE_PATH || this.loggedInUser.appManager;
+    return parentPath != AppUtility.EXPLORE_LANDING_PAGE_PATH;
   }
 
   /**

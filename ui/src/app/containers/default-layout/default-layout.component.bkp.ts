@@ -108,6 +108,7 @@ export class DefaultLayoutComponent implements OnInit {
     this.currentYear = moment().format('YYYY');
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
+    this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
     //console.log(this.loggedInUser);
     this.roles = this.loggedInUser.roles;
     if (this.hasUserRole()) {

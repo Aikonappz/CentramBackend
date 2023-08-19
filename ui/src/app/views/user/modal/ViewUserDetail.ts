@@ -42,19 +42,19 @@ import { UserVO } from "../../../model/UserVO";
                         <td><strong>Roles</strong></td>
                         <td>{{usr.roleViewNames.join(',')}}</td>
                     </tr>
-                    <tr>
+                    <tr *ngIf="!isAppAdmin()">
                         <td><strong>Account</strong></td>
                         <td>{{usr.accountName}} - {{usr.accountNo}}</td>
                     </tr>
-                    <tr>
+                    <tr *ngIf="!isAppAdmin()">
                         <td><strong>Location</strong></td>
                         <td>{{usr.location}} - {{usr.locationOfficeName}}</td>
                     </tr>
-                    <tr>
+                    <tr *ngIf="!isAppAdmin()">
                         <td><strong>Department</strong></td>
                         <td>{{usr.department}}</td>
                     </tr>
-                    <tr>
+                    <tr *ngIf="!isAppAdmin()">
                         <td><strong>Organization</strong></td>
                         <td>{{usr.organisation}}</td>
                     </tr>
@@ -76,9 +76,13 @@ export class ViewUserDetail implements OnInit {
     ) {
     }
     ngOnInit() {
+        console.log(JSON.stringify(this.usr));
     }
     ngAfterViewInit() {
     }
     ngAfterContentInit() {
+    }
+    isAppAdmin(): boolean {
+        return this.usr.organisation == null && this.usr.organisationId == null;
     }
 }

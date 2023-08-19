@@ -58,7 +58,7 @@ import { CheckLoggedInOuter } from './service/CheckLoggedInOuter';
 import { UserModule } from './views/user/user.module';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { OrganisationModule } from './views/organisation/organisation.module';
+
 import { SpinnerComponent } from './views/spinner/spinner.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ErrormessageComponent } from './views/errormessage/errormessage.component';
@@ -93,7 +93,6 @@ import { TextMaskModule } from 'angular2-text-mask';
     MatPaginatorModule,
     IconModule,
     IconSetModule.forRoot(),
-    OrganisationModule,
     UserModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,

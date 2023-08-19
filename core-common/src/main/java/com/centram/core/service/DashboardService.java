@@ -49,6 +49,10 @@ public class DashboardService {
     @Autowired
     private PermissionService permissionService;
 
+    /**
+     * Site Super Admin Dashboard Data
+     * @return
+     */
     @Transactional(readOnly = true)
     public AdminDashboardVO appAdminDashboard() {
         return organisationRepository.appAdminDashboardData();

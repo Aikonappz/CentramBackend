@@ -20,7 +20,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: ReportComponent,
+        component: AdminReportComponent,
         pathMatch: 'full',
         data: {
           title: 'Report'

@@ -109,25 +109,21 @@ export const routes: Routes = [
         loadChildren: () => import('./views/explore/explore.module').then(m => m.ExploreModule)
       },
       {
+        path: 'supadmin',
+        resolve: { myData: CheckLoggedIn },
+        loadChildren: () => import('./views/supadmin/supadmin.module').then(m => m.SuperAdminModule),
+      },
+      {
         path: 'dashboard',
         resolve: { myData: CheckLoggedIn },
         loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)
       },
-      {
-        path: 'user',
-        resolve: { myData: CheckLoggedIn },
-        loadChildren: () => import('./views/user/user.module').then(m => m.UserModule),
-      },
-      {
-        path: 'organization',
-        resolve: { myData: CheckLoggedIn },
-        loadChildren: () => import('./views/organisation/organisation.module').then(m => m.OrganisationModule),
-      },
-      {
-        path: 'permission',
-        resolve: { myData: CheckLoggedIn },
-        loadChildren: () => import('./views/permission/permission.module').then(m => m.PermissionModule),
-      },
+      // {
+      //   path: 'user',
+      //   resolve: { myData: CheckLoggedIn },
+      //   loadChildren: () => import('./views/user/user.module').then(m => m.UserModule),
+      // },
+      
       {
         path: 'notification',
         resolve: { myData: CheckLoggedIn },
