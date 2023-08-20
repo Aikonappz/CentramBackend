@@ -26,6 +26,22 @@ import { NotificationViewComponent } from './notification/modal/NotificationView
 import { NotificationComponent } from './notification/notification.component';
 import { AdminReportComponent } from './report/adminreport.component';
 import { OrgSettingsComponent } from './organisation/orgsettings.component';
+import { HolidayCalendarComponent } from './master/holidaycalendar.component';
+import { EditHolidayCalendarComponent } from './master/editholidaycalendar.component';
+import { PriorityComponent } from './master/priority.component';
+import { EditPriorityComponent } from './master/editpriority.component';
+import { DepartmentComponent } from './master/department.component';
+import { EditDepartmentComponent } from './master/editdepartment.component';
+import { LocationComponent } from './master/location.component';
+import { EditLocationComponent } from './master/editlocation.component';
+import { DistributionListComponent } from './master/distributionlist.component';
+import { EditDlComponent } from './master/editdl.component';
+import { VendorComponent } from './master/vendor.component';
+import { EditVendorComponent } from './master/editvendor.component';
+import { AccountComponent } from './master/account.component';
+import { EditAccountComponent } from './master/editaccount.component';
+import { ProjectComponent } from './master/project.component';
+import { EditProjectComponent } from './master/editproject.component';
 
 
 
@@ -47,6 +63,23 @@ import { OrgSettingsComponent } from './organisation/orgsettings.component';
     UserSettingsComponent,
     UploadUserComponent,
     OrgSettingsComponent,
+
+    HolidayCalendarComponent,
+    EditHolidayCalendarComponent,
+    PriorityComponent,
+    EditPriorityComponent,
+    DepartmentComponent,
+    EditDepartmentComponent,
+    LocationComponent,
+    EditLocationComponent,
+    DistributionListComponent,
+    EditDlComponent,
+    VendorComponent,
+    EditVendorComponent,
+    AccountComponent,
+    EditAccountComponent,
+    ProjectComponent,
+    EditProjectComponent,
   ],
   imports: [
     CommonModule,
@@ -85,6 +118,14 @@ import { OrgSettingsComponent } from './organisation/orgsettings.component';
     BsDropdownModule.forRoot(),
     ReactiveFormsModule,
     TabsModule,
+    NgSelectModule,
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TabsModule,
+    BsDropdownModule.forRoot(),
     NgSelectModule,
   ]
 })

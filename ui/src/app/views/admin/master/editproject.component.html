@@ -1,0 +1,135 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add Project</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit Project</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="projectType">Project Type</label>
+                <ng-select [items]="projectTypes" placeholder="-- Select Project Type --" formControlName="projectType"
+                  id="projectType" name="projectType" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.projectType.touched && f.projectType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projectType.errors?.required">
+                    Project Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="name">Project Name</label>
+                <input type="text" formControlName="name" id="name" name="name" class="form-control"
+                  placeholder="Project Name" aria-label="Project Name">
+                <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.name.errors?.required">
+                    Project Name is required.
+                  </div>
+                  <div *ngIf="f.name.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="name">Project Code</label>
+                <input type="text" formControlName="code" oninput="this.value = this.value.toUpperCase()" id="code"
+                  name="code" class="form-control" placeholder="Project Code" aria-label="Project Code">
+                <div *ngIf="f.code.touched && f.code.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.code.errors?.required">
+                    Project Code is required.
+                  </div>
+                  <div *ngIf="f.code.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="watchList">Managers</label>
+                <ng-select [multiple]="true" [items]="managers" placeholder="-- Select Watch List People --"
+                  formControlName="watchList" id="watchList" name="watchList" bindLabel="email" bindValue="email">
+                </ng-select>
+                <div *ngIf="f.watchList.touched && f.watchList.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.watchList.errors?.required">
+                    Manager is required.
+                  </div>
+                  <div *ngIf="f.watchList.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="stakeHolders">Customer</label>
+                <ng-select [multiple]="true" [items]="uatStakeHolders" placeholder="-- Select UAT Stake Holder --"
+                  formControlName="stakeHolders" id="stakeHolders" name="stakeHolders" bindLabel="email"
+                  bindValue="email">
+                </ng-select>
+                <div *ngIf="f.stakeHolders.touched && f.stakeHolders.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.stakeHolders.errors?.required">
+                    Customer is required.
+                  </div>
+                  <div *ngIf="f.stakeHolders.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="consultants">Consultants</label>
+                <ng-select [multiple]="true" [items]="uatConsultants" placeholder="-- Select Consultants --"
+                  formControlName="consultants" id="consultants" name="consultants" bindLabel="email" bindValue="email">
+                </ng-select>
+                <div *ngIf="f.consultants.touched && f.consultants.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.consultants.errors?.required">
+                    Consultant is required.
+                  </div>
+                  <div *ngIf="f.consultants.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>              
+              <div class="col">
+                <label class="col-md-3 col-form-label" for="status">Status</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
+                      name="status" id="ACTIVE" [checked]="(project.status == 'ACTIVE')" value="true">
+                    <label class="form-check-label" for="ACTIVE">Active</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                      [checked]="(project.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                      value="false">
+                    <label class="form-check-label" for="INACTIVE">Inactive</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col d-none">
+                <label class="col-md-3 col-form-label" for="status">Type</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
+                      name="inHouse" value="1">
+                    <label class="form-check-label" for="inHouse">In House</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="submit"
+              class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

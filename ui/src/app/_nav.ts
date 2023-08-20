@@ -62,16 +62,167 @@ export const navItems: INavData[] = [
     attributes: { "parentModule": "ADMIN", "moduleName": "USER", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
   },
   {
+    name: 'Masters',
+    url: '/master',
+    icon: 'icon-layers',
+    attributes: { "parentModule": "ADMIN", "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
+    children: [
+      {
+        name: 'Account',
+        url: '/admin/master/account',
+        icon: 'cil-object-group',
+        attributes: { "parentModule": "ADMIN", "moduleName": "ACCOUNT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+      },
+      {
+        name: 'Department',
+        url: '/admin/master/department',
+        icon: 'icon-puzzle',
+        attributes: { "parentModule": "ADMIN", "moduleName": "DEPARTMENT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+      },
+      {
+        name: 'Location',
+        url: '/admin/master/location',
+        icon: 'icon-location-pin',
+        attributes: { "parentModule": "ADMIN", "moduleName": "LOCATION", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+      },
+      {
+        name: 'Priority -Incident',
+        url: '/admin/master/priority/incident',
+        icon: 'icon-star',
+        attributes: { "parentModule": "ADMIN", "moduleName": "PRIORITY", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Priority -Asset',
+        url: '/admin/master/priority/asset',
+        icon: 'icon-star',
+        attributes: { "parentModule": "ADMIN", "moduleName": "PRIORITY", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Holiday Calendar',
+        url: '/admin/master/calendar',
+        icon: 'icon-calendar',
+        attributes: { "parentModule": "ADMIN", "moduleName": "HOLIDAY CALENDAR", "licenceType": "ALL,INCIDENT,ASSET" }
+      },
+      {
+        name: 'Distribution List',
+        url: '/admin/master/dl',
+        icon: 'icon-list',
+        attributes: { "parentModule": "ADMIN", "moduleName": "DISTRIBUTION LIST", "licenceType": "ALL,INCIDENT,ASSET" }
+      },
+      {
+        name: 'Project Master',
+        url: '/admin/master/project',
+        icon: 'cil-blur-linear',
+        attributes: { "parentModule": "ADMIN", "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT,UAT" }
+      },
+      {
+        name: 'Vendor -Incident',
+        url: '/admin/master/vendor/incident',
+        icon: 'icon-people',
+        attributes: { "parentModule": "ADMIN", "moduleName": "VENDOR", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Vendor -Asset',
+        url: '/admin/master/vendor/asset',
+        icon: 'icon-people',
+        attributes: { "parentModule": "ADMIN", "moduleName": "VENDOR", "licenceType": "ALL,ASSET" }
+      },
+    ]
+  },
+  {
     name: 'My Notifications',
     url: '/admin/notification',
     icon: 'icon-info',
     attributes: { "parentModule": "ADMIN", "moduleName": "MY NOTIFICATIONS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
   },
+  {
+    name: 'Reports',
+    url: '/report',
+    icon: 'fa fa-folder',
+    attributes: { "moduleName": "REPORT" },
+    children: [
+      {
+        name: 'Incident Report',
+        url: '/report/incident-report',
+        class: 'highlighted-yellow',
+        attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Incident Report',
+        url: '/report/incident-report',
+        icon: 'fa fa-file',
+        attributes: { "moduleName": "INCIDENT REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Escalation Report',
+        url: '/report/escalation-report',
+        icon: 'fa fa-file-excel-o',
+        attributes: { "moduleName": "ESCALATION REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Reopened Report',
+        url: '/report/reopen-report',
+        icon: 'fa fa-folder-open',
+        attributes: { "moduleName": "REOPEN REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Aging Report',
+        url: '/report/aging-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "AGING REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      // {
+      //   name: 'Asset Report',
+      //   url: '/report/asset-order-report',
+      //   class: 'highlighted-yellow',
+      //   attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,INCIDENT" }
+      // },
+      // {
+      //   name: 'Order Report',
+      //   url: '/report/asset-order-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      // {
+      //   name: 'Allocation Report',
+      //   url: '/report/asset-allocation-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "ALLOCATION REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      // {
+      //   name: 'Ticket Report',
+      //   url: '/report/asset-ticket-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "TICKETS REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      {
+        name: 'Vendor Report',
+        url: '/report/vendor-report/asset',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Order Report',
+        url: '/report/order-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Tickets Report',
+        url: '/report/asset-tickets-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Assignment Report',
+        url: '/report/asset-assignment-report',
+        icon: 'fa fa-file-text',
+        attributes: { "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
+      },
+    ]
+  },
+
   // ADMIN
-
-
-
-
   // UAT
   {
     name: 'Dashboard',
@@ -108,76 +259,7 @@ export const navItems: INavData[] = [
     ]
   },
   // UAT
-  // ORG ADMIN OR WHO ELSE HAS PERMISSIONS
-  {
-    name: 'Masters',
-    url: '/master',
-    icon: 'icon-layers',
-    attributes: { "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
-    children: [
-      {
-        name: 'Account',
-        url: '/master/account',
-        icon: 'cil-object-group',
-        attributes: { "moduleName": "ACCOUNT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
-      },
-      {
-        name: 'Department',
-        url: '/master/department',
-        icon: 'icon-puzzle',
-        attributes: { "moduleName": "DEPARTMENT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
-      },
-      {
-        name: 'Location',
-        url: '/master/location',
-        icon: 'icon-location-pin',
-        attributes: { "moduleName": "LOCATION", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
-      },
-      {
-        name: 'Priority -Incident',
-        url: '/master/priority/incident',
-        icon: 'icon-star',
-        attributes: { "moduleName": "PRIORITY", "licenceType": "ALL,INCIDENT" }
-      },
-      {
-        name: 'Priority -Asset',
-        url: '/master/priority/asset',
-        icon: 'icon-star',
-        attributes: { "moduleName": "PRIORITY", "licenceType": "ALL,ASSET" }
-      },
-      {
-        name: 'Holiday Calendar',
-        url: '/master/calendar',
-        icon: 'icon-calendar',
-        attributes: { "moduleName": "HOLIDAY CALENDAR", "licenceType": "ALL,INCIDENT,ASSET" }
-      },
-      {
-        name: 'Distribution List',
-        url: '/master/dl',
-        icon: 'icon-list',
-        attributes: { "moduleName": "DISTRIBUTION LIST", "licenceType": "ALL,INCIDENT,ASSET" }
-      },
-      {
-        name: 'Project Master',
-        url: '/master/project',
-        icon: 'cil-blur-linear',
-        attributes: { "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT,UAT" }
-      },
-      {
-        name: 'Vendor -Incident',
-        url: '/master/vendor/incident',
-        icon: 'icon-people',
-        attributes: { "moduleName": "VENDOR", "licenceType": "ALL,INCIDENT" }
-      },
-      {
-        name: 'Vendor -Asset',
-        url: '/master/vendor/asset',
-        icon: 'icon-people',
-        attributes: { "moduleName": "VENDOR", "licenceType": "ALL,ASSET" }
-      },
-    ]
-  },
-  // ORG ADMIN OR WHO ELSE HAS PERMISSIONS
+
   {
     name: 'Incidents',
     url: '/incident',
@@ -337,12 +419,6 @@ export const navItems: INavData[] = [
     icon: 'fa fa-folder',
     attributes: { "moduleName": "REPORT" },
     children: [
-      // {
-      //   name: 'Admin Report',
-      //   url: '/report/admin-report',
-      //   icon: 'fa fa-folder-open',
-      //   attributes: { "moduleName": "SITE ADMIN REPORT" }
-      // },
       {
         name: 'Incident Report',
         url: '/report/incident-report',

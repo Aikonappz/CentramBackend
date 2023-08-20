@@ -1,0 +1,91 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add Priority</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit Priority</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="account">Account</label>
+                <ng-select [items]="accounts" placeholder="-- Select Account --" formControlName="account" id="account"
+                  location name="account" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.account.touched && f.account.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.account.errors?.required">
+                    Account is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="name">Priority Type</label>
+                <ng-select [items]="nameList" placeholder="-- Select Priority Type --" formControlName="name" id="name"
+                  name="name" bindLabel="label" bindValue="id"></ng-select>
+                <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.name.errors?.required">
+                    Priority is required.
+                  </div>
+                  <div *ngIf="f.name.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="sla">Priority SLA.</label>
+                <ng-select [items]="timeList" placeholder="-- Select Priority SLA --" formControlName="sla" id="sla"
+                  name="sla" bindLabel="label" bindValue="id"></ng-select>
+                <div *ngIf="f.sla.touched && f.sla.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.sla.errors?.required">
+                    Priority SLA. is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="description">Priority Description</label>
+                <textarea formControlName="description" ngModel id="description" name="description" rows="4"
+                  class="form-control" placeholder="Priority Description"></textarea>
+                <div *ngIf="f.description.touched && f.description.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.description.errors?.required">
+                    Priority Description is required.
+                  </div>
+                  <div *ngIf="f.description.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row row-margin-05">
+              <div class="col">
+                <label class="col-md-3 col-form-label" for="status">Status</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
+                      name="status" id="ACTIVE" [checked]="(priority.status == 'ACTIVE')" value="true">
+                    <label class="form-check-label" for="ACTIVE">Active</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                      [checked]="(priority.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                      value="false">
+                    <label class="form-check-label" for="INACTIVE">Inactive</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="submit"
+              class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>
