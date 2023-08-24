@@ -21,7 +21,7 @@ import { CategoryAdminDashboardVO } from '../../../model/CategoryAdminDashboardV
 import { LoggedInUserService } from '../../../service/LoggedInUserService';
 import { DashboardService } from '../../../service/DashboardService';
 declare var $: any;
-
+ 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss']

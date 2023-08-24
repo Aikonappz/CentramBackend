@@ -23,6 +23,14 @@ import { EditDepartmentComponent } from './master/editdepartment.component';
 import { DepartmentComponent } from './master/department.component';
 import { EditAccountComponent } from './master/editaccount.component';
 import { AccountComponent } from './master/account.component';
+import { AssetAssignmentReportComponent } from './report/asset.asignment.report.component';
+import { AssetTicketReportComponent } from './report/asset.ticket.report.component';
+import { OrderReportComponent } from './report/order.report.component';
+import { VendorReportComponent } from './report/vendor.report.component';
+import { AgingReportComponent } from './report/agingreport.component';
+import { ReopenReportComponent } from './report/reopenreport.component';
+import { EscalationReportComponent } from './report/escalationreport.component';
+import { IncidentReportComponent } from './report/incidentreport.component';
 
 const routes: Routes = [
   {
@@ -290,6 +298,70 @@ const routes: Routes = [
         data: {
           title: 'Edit Project'
         }
+      },
+      {
+        path: 'report/incident-report',
+        component: IncidentReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/escalation-report',
+        component: EscalationReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/reopen-report',
+        component: ReopenReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/aging-report',
+        component: AgingReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/vendor-report/:licenceType',
+        component: VendorReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Vendor Report'
+        },
+      },
+      {
+        path: 'report/order-report',
+        component: OrderReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Order Report'
+        },
+      },
+      {
+        path: 'report/asset-tickets-report',
+        component: AssetTicketReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Tickets Report'
+        },
+      },
+      {
+        path: 'report/asset-assignment-report',
+        component: AssetAssignmentReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Assignment Report'
+        },
       },
     ]
   }

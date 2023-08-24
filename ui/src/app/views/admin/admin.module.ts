@@ -42,12 +42,19 @@ import { AccountComponent } from './master/account.component';
 import { EditAccountComponent } from './master/editaccount.component';
 import { ProjectComponent } from './master/project.component';
 import { EditProjectComponent } from './master/editproject.component';
+import { IncidentReportComponent } from './report/incidentreport.component';
+import { EscalationReportComponent } from './report/escalationreport.component';
+import { ReopenReportComponent } from './report/reopenreport.component';
+import { AgingReportComponent } from './report/agingreport.component';
+import { VendorReportComponent } from './report/vendor.report.component';
+import { OrderReportComponent } from './report/order.report.component';
+import { AssetTicketReportComponent } from './report/asset.ticket.report.component';
+import { AssetAssignmentReportComponent } from './report/asset.asignment.report.component';
 
 
 
 @NgModule({
   declarations: [
-    AdminReportComponent,
     NotificationComponent,
     NotificationViewComponent,
     SafePipe,
@@ -80,6 +87,16 @@ import { EditProjectComponent } from './master/editproject.component';
     EditAccountComponent,
     ProjectComponent,
     EditProjectComponent,
+
+    AdminReportComponent,
+    IncidentReportComponent,
+    EscalationReportComponent,
+    ReopenReportComponent,
+    AgingReportComponent,
+    VendorReportComponent,
+    OrderReportComponent,
+    AssetTicketReportComponent,
+    AssetAssignmentReportComponent,
   ],
   imports: [
     CommonModule,

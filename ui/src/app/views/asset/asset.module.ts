@@ -28,6 +28,12 @@ import { AssignIncidentComponent } from './modal/AssignIncidentComponent';
 import { OrderedAssetActionComponent } from './in-ordered-asset.component';
 import { PendingAssetApprovalComponent } from './pending-asset-approval.component';
 import { ViewAssetRequestDetail } from './modal/ViewAssetRequestDetail';
+import { ViewUserDashboardDetails } from './dashboard/modal/ViewUserDashboardDetails';
+import { ViewIncidentDetails } from './dashboard/modal/ViewIncidentDetails';
+import { ViewAppAdminDashboardDetails } from './dashboard/modal/ViewAppAdminDashboardDetails';
+import { ViewOrgAdminDashboardUserDetails } from './dashboard/modal/ViewOrgAdminDashboardUserDetails';
+import { ViewOrgAdminDashboardVendorDetails } from './dashboard/modal/ViewOrgAdminDashboardVendorDetails';
+import { AssetDashboardComponent } from './dashboard/asset-dashboard.component';
 
 
 @NgModule({
@@ -50,6 +56,13 @@ import { ViewAssetRequestDetail } from './modal/ViewAssetRequestDetail';
     OrderedAssetActionComponent,
     PendingAssetApprovalComponent,
     ViewAssetRequestDetail,
+
+    AssetDashboardComponent,
+    ViewUserDashboardDetails,
+    ViewIncidentDetails,
+    ViewAppAdminDashboardDetails,
+    ViewOrgAdminDashboardUserDetails,
+    ViewOrgAdminDashboardVendorDetails,
   ],
   imports: [
     CommonModule,

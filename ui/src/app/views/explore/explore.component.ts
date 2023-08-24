@@ -7,6 +7,8 @@ import { DashboardService } from '../../service/DashboardService';
 import { MiscService } from '../../service/MiscService';
 import { Module } from '../../model/Module';
 import { environment } from '../../../environments/environment';
+import { ClientStorageService } from '../../service/ClientStorageService';
+import { AppUtility } from '../../config/AppUtility';
 declare var $: any;
 
 @Component({
@@ -33,7 +35,7 @@ export class ExploreComponent implements OnInit {
     private loggedInUserService: LoggedInUserService,
     private titleService: Title,
     private router: Router,
-    private service: DashboardService,
+    private clientStorageService: ClientStorageService,
     private miscService: MiscService,
   ) {
     router.events.subscribe(event => {
@@ -71,11 +73,12 @@ export class ExploreComponent implements OnInit {
     this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
     this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
     this.appUrl = environment.appUrl;
-    if (!this.loggedInUser.appManager && !this.loggedInUser.orgAdmin) {
+    if (!this.loggedInUser.appManager) {
       this.miscService
         .appModulesService({})
         .subscribe((data: any) => {
           this.modules = []; //data.content;
+          console.log(JSON.stringify(data.content));
           for (let k = 0; k < data.content.length; k++) {
             if (data.content[k].appModule && data.content[k].parentModuleId === null && data.content[k].appFeatureModule === true) {
               this.modules.push(data.content[k]);
@@ -115,6 +118,9 @@ export class ExploreComponent implements OnInit {
    * @param modulePath 
    */
   redirectToModule(modulePath: string) {
+    let paths: string[] = modulePath.split("/");
+    //this.clientStorageService.set(AppUtility.LAST_EXPLORED_MODULE_KEY, paths[0].toLocaleUpperCase());
+    sessionStorage.setItem(AppUtility.LAST_EXPLORED_MODULE_KEY, paths[0].toLocaleUpperCase());
     this.router.navigate([]).then(result => { window.open('/' + modulePath, '_blank'); });
   }
 

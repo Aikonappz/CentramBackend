@@ -31,6 +31,7 @@ export class AppUtility {
     public static APP_HAS_ACTIVE_CHAT_SESSION = 'chatSessionActive';
     public static storage = AppUtility.APP_CLIENT_STORAGE_TYPE == "SESSION" ? sessionStorage : localStorage;
     public static EXPLORE_LANDING_PAGE_PATH = 'explore';
+    public static LAST_EXPLORED_MODULE_KEY = 'lastExporedModule';
 
     public static EDITOR_CONFIG = {
         readOnly: false,

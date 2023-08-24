@@ -26,6 +26,8 @@ export class ClientStorageService {
     }
     public clear(): void {
         this.storage.clear();
+        sessionStorage.clear();
+        localStorage.clear();
     }
     private key(index: number): string {
         return this.storage.key(index);
@@ -33,4 +35,8 @@ export class ClientStorageService {
     private size(): number {
         return this.storage.length;
     }
+
+    // public changeStorageRunTime(storage: string){
+    //     this.storage = storage;
+    // }
 }

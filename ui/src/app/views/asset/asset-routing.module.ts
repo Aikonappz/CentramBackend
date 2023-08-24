@@ -12,6 +12,7 @@ import { IncommingRequestedAssetComponent } from './incomming-requested-asset.co
 import { MyAssetComponent } from './my-asset.component';
 import { OrderedAssetActionComponent } from './in-ordered-asset.component';
 import { PendingAssetApprovalComponent } from './pending-asset-approval.component';
+import { AssetDashboardComponent } from './dashboard/asset-dashboard.component';
 
 const routes: Routes = [
   {
@@ -22,8 +23,16 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'allocated'
+        redirectTo: 'dashboard'
       },
+      {
+        path: 'dashboard',
+        component: AssetDashboardComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'UAT Dashboard'
+        },
+      }, 
       {
         path: 'order',
         component: AssetOrderComponent,

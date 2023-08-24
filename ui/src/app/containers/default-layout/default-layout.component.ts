@@ -86,7 +86,7 @@ export class DefaultLayoutComponent implements OnInit {
   dashboardLink: string = null;
   userSettingsLink: string = null;
   orgSettingsLink: string = null;
-  notificationLink: string = null;
+  notificationLink: string = "/notification/view/";
 
   constructor(
     private fb: FormBuilder,
@@ -118,12 +118,10 @@ export class DefaultLayoutComponent implements OnInit {
       this.loggedInUser.licenseType = "SUPADMIN";
       this.dashboardLink = "/supadmin/dashboard";
       this.userSettingsLink = "/supadmin/user/settings";
-      this.notificationLink = "/supadmin/notification/view/";
     } else if (this.loggedInUser.orgAdmin) {
       this.dashboardLink = "/admin/dashboard";
       this.userSettingsLink = "/admin/user/settings";
       this.orgSettingsLink = "/admin/organization/settings";
-      this.notificationLink = "/admin/notification/view/";
     }
     //console.log(this.loggedInUser);
     this.roles = this.loggedInUser.roles;
@@ -145,8 +143,12 @@ export class DefaultLayoutComponent implements OnInit {
     let c = 0;
     for (let i = 0; i < this.navItems.length; i++) {
       this.menuAttributes = this.navItems[i].attributes;
+      let commonModule: boolean = false;
       let parentModule: string = null;
       let licences: string[] = [];
+      if (typeof this.menuAttributes.commonModule !== 'undefined') {
+        commonModule = this.menuAttributes.commonModule;
+      }
       if (typeof this.menuAttributes.parentModule !== 'undefined') {
         parentModule = this.menuAttributes.parentModule;
       }
@@ -154,7 +156,8 @@ export class DefaultLayoutComponent implements OnInit {
         licences = this.menuAttributes.licenceType.split(',');
       }
       for (let j in this.permissions) {
-        if (licences.includes(this.loggedInUser.licenseType) && parentModule != null && parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase() &&
+        if (
+          (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
           this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
           this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ROLE WISE PERMISSION CASE
         {
@@ -165,16 +168,20 @@ export class DefaultLayoutComponent implements OnInit {
             for (let sm in this.newNavItems[c].children) {
               for (let k in this.permissions) {
                 this.menuAttributes = this.newNavItems[c].children[sm].attributes;
+                let commonModule: boolean = false;
                 let parentModule: string = null;
                 let licences: string[] = [];
+                if (typeof this.menuAttributes.commonModule !== 'undefined') {
+                  commonModule = this.menuAttributes.commonModule;
+                }
                 if (typeof this.menuAttributes.parentModule !== 'undefined') {
                   parentModule = this.menuAttributes.parentModule;
                 }
                 if (typeof this.menuAttributes.licenceType !== 'undefined') {
                   licences = this.menuAttributes.licenceType.split(',');
                 }
-                if (licences.includes(this.loggedInUser.licenseType) &&
-                  parentModule != null && parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase() &&
+                if (
+                  (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
                   this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
                   parentId === this.permissions[k].moduleParentId &&
                   (this.menuAttributes.moduleName === this.permissions[k].moduleName && this.permissions[k].actions.includes('READ'))) // ROLE WISE PERMISSION CASE
@@ -225,6 +232,17 @@ export class DefaultLayoutComponent implements OnInit {
     this.permissions = this.loggedInUserService.getModulePermissions();
     //this.loggedInUser = this.loggedInUserService.getLoggedInUser();
 
+  }
+
+  /**
+   * 
+   * @param parentModule 
+   * @returns 
+   */
+  showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule: string): boolean {
+    let exploredModule = sessionStorage.getItem(AppUtility.LAST_EXPLORED_MODULE_KEY);;
+    return parentModule != null &&
+      ((parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase()) || (exploredModule != null && exploredModule.toLocaleUpperCase() === parentModule.toLocaleUpperCase()));
   }
 
 
@@ -971,8 +989,7 @@ export class DefaultLayoutComponent implements OnInit {
    * @returns 
    */
   getUrlParentPath(): string {
-    let currentUrl = this.router.url;
-    let paths: string[] = currentUrl.split("/");
+    let paths: string[] = this.router.url.split("/");
     let parentPath = paths[1];
     return parentPath;
   }

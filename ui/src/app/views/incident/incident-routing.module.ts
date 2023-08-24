@@ -4,6 +4,11 @@ import { AgentIncidentComponent } from './agentincident.component';
 import { AssignedIncidentComponent } from './assignedincident.component';
 import { EditIncidentComponent } from './editincident.component';
 import { UserIncidentComponent } from './userincident.component';
+import { IncidentDashboardComponent } from './dashboard/incident-dashboard.component';
+import { IncidentReportComponent } from './report/incidentreport.component';
+import { EscalationReportComponent } from './report/escalationreport.component';
+import { ReopenReportComponent } from './report/reopenreport.component';
+import { AgingReportComponent } from './report/agingreport.component';
 
 const routes: Routes = [
   {
@@ -14,8 +19,16 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'user/all'
+        redirectTo: 'dashboard'
       },
+      {
+        path: 'dashboard',
+        component: IncidentDashboardComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'UAT Dashboard'
+        },
+      }, 
       {
         path: 'user/all',
         component: UserIncidentComponent,
@@ -55,6 +68,38 @@ const routes: Routes = [
         data: {
           title: 'Edit Incident'
         }
+      },
+      {
+        path: 'report/incident-report',
+        component: IncidentReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/escalation-report',
+        component: EscalationReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/reopen-report',
+        component: ReopenReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
+      },
+      {
+        path: 'report/aging-report',
+        component: AgingReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Incident Report'
+        },
       },
     ]
   }

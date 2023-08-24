@@ -18,6 +18,19 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { AddTimeEntryComponent } from './modal/AddTimeEntryComponent';
 import { ViewTimeEntryComponent } from './modal/ViewTimeEntryComponent';
 
+import { ViewUserDashboardDetails } from './dashboard/modal/ViewUserDashboardDetails';
+import { ViewIncidentDetails } from './dashboard/modal/ViewIncidentDetails';
+import { ViewAppAdminDashboardDetails } from './dashboard/modal/ViewAppAdminDashboardDetails';
+import { ViewOrgAdminDashboardUserDetails } from './dashboard/modal/ViewOrgAdminDashboardUserDetails';
+import { ViewOrgAdminDashboardVendorDetails } from './dashboard/modal/ViewOrgAdminDashboardVendorDetails';
+import { IncidentDashboardComponent } from './dashboard/incident-dashboard.component';
+import { ChartsModule } from 'ng2-charts';
+import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import { IncidentReportComponent } from './report/incidentreport.component';
+import { EscalationReportComponent } from './report/escalationreport.component';
+import { ReopenReportComponent } from './report/reopenreport.component';
+import { AgingReportComponent } from './report/agingreport.component';
+
 @NgModule({
   declarations: [
     UserIncidentComponent,
@@ -27,6 +40,16 @@ import { ViewTimeEntryComponent } from './modal/ViewTimeEntryComponent';
     AssignedIncidentComponent,
     AddTimeEntryComponent,
     ViewTimeEntryComponent,
+    IncidentDashboardComponent,
+    ViewUserDashboardDetails,
+    ViewIncidentDetails,
+    ViewAppAdminDashboardDetails,
+    ViewOrgAdminDashboardUserDetails,
+    ViewOrgAdminDashboardVendorDetails,
+    IncidentReportComponent,
+    EscalationReportComponent,
+    ReopenReportComponent,
+    AgingReportComponent,
   ],
   imports: [
     CommonModule,
@@ -41,6 +64,8 @@ import { ViewTimeEntryComponent } from './modal/ViewTimeEntryComponent';
     TooltipModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgSelectModule,
+    ChartsModule,
+    ButtonsModule.forRoot(),
   ]
 })
 export class IncidentModule { }

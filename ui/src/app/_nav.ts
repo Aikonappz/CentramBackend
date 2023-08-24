@@ -28,12 +28,6 @@ export const navItems: INavData[] = [
     attributes: { "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
   },
   {
-    name: 'My Notifications',
-    url: '/supadmin/notification',
-    icon: 'icon-info',
-    attributes: { "parentModule": "SUPADMIN", "moduleName": "MY NOTIFICATIONS", "licenceType": "SUPADMIN" }
-  },
-  {
     name: 'Reports',
     url: '/supadmin/report',
     icon: 'fa fa-folder',
@@ -48,7 +42,7 @@ export const navItems: INavData[] = [
     ]
   },
   // SUPER ADMIN
-  // ADMIN
+  // ORG ADMIN
   {
     name: 'Dashboard',
     url: '/admin/dashboard',
@@ -63,7 +57,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Masters',
-    url: '/master',
+    url: '/admin/master',
     icon: 'icon-layers',
     attributes: { "parentModule": "ADMIN", "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
     children: [
@@ -130,46 +124,34 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'My Notifications',
-    url: '/admin/notification',
-    icon: 'icon-info',
-    attributes: { "parentModule": "ADMIN", "moduleName": "MY NOTIFICATIONS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
-  },
-  {
     name: 'Reports',
-    url: '/report',
+    url: '/admin/report',
     icon: 'fa fa-folder',
-    attributes: { "moduleName": "REPORT" },
+    attributes: { "parentModule": "ADMIN", "moduleName": "REPORT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
     children: [
       {
         name: 'Incident Report',
-        url: '/report/incident-report',
-        class: 'highlighted-yellow',
-        attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
-      },
-      {
-        name: 'Incident Report',
-        url: '/report/incident-report',
+        url: '/admin/report/incident-report',
         icon: 'fa fa-file',
-        attributes: { "moduleName": "INCIDENT REPORT", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "INCIDENT REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Escalation Report',
-        url: '/report/escalation-report',
+        url: '/admin/report/escalation-report',
         icon: 'fa fa-file-excel-o',
-        attributes: { "moduleName": "ESCALATION REPORT", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "ESCALATION REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Reopened Report',
-        url: '/report/reopen-report',
+        url: '/admin/report/reopen-report',
         icon: 'fa fa-folder-open',
-        attributes: { "moduleName": "REOPEN REPORT", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "REOPEN REPORT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Aging Report',
-        url: '/report/aging-report',
+        url: '/admin/report/aging-report',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "AGING REPORT", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "AGING REPORT", "licenceType": "ALL,INCIDENT" }
       },
       // {
       //   name: 'Asset Report',
@@ -197,32 +179,31 @@ export const navItems: INavData[] = [
       // },
       {
         name: 'Vendor Report',
-        url: '/report/vendor-report/asset',
+        url: '/admin/report/vendor-report/asset',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Order Report',
-        url: '/report/order-report',
+        url: '/admin/report/order-report',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Tickets Report',
-        url: '/report/asset-tickets-report',
+        url: '/admin/report/asset-tickets-report',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Assignment Report',
-        url: '/report/asset-assignment-report',
+        url: '/admin/report/asset-assignment-report',
         icon: 'fa fa-file-text',
-        attributes: { "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
       },
     ]
   },
-
-  // ADMIN
+  // ORG ADMIN
   // UAT
   {
     name: 'Dashboard',
@@ -259,132 +240,246 @@ export const navItems: INavData[] = [
     ]
   },
   // UAT
-
+  // INCIDENT
+  {
+    name: 'Dashboard',
+    url: '/incident/dashboard',
+    icon: 'icon-speedometer',
+    attributes: { "parentModule": "INCIDENT", "moduleName": "DASHBOARD", "licenceType": "ALL,INCIDENT" }
+  },
   {
     name: 'Incidents',
     url: '/incident',
     icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "INCIDENT", "licenceType": "ALL,INCIDENT" },
+    attributes: { "parentModule": "INCIDENT", "moduleName": "INCIDENT", "licenceType": "ALL,INCIDENT" },
     children: [
       {
         name: 'Employee Access',
         title: true,
-        url: '/incident/user-route',
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "INCIDENT", "moduleName": "INCIDENT USER", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Create an Incident',
         url: '/incident/user/add/new',
         icon: 'fa fa-plus',
-        attributes: { "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "INCIDENT", "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'My Incidents',
         url: '/incident/user/all',
         icon: 'fa fa-ticket',
-        attributes: { "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "INCIDENT", "moduleName": "MY INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Agent Access',
         title: true,
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "INCIDENT AGENT", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "INCIDENT", "moduleName": "INCIDENT AGENT", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'My Group Incidents',
         url: '/incident/agent/all',
         icon: 'fa fa-ticket',
-        attributes: { "moduleName": "MY GROUP INCIDENTS", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "INCIDENT", "moduleName": "MY GROUP INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
       {
         name: 'Assigned Incidents',
         url: '/incident/agent/mine',
         icon: 'fa fa-space-shuttle',
-        attributes: { "moduleName": "MY GROUP INCIDENTS", "licenceType": "ALL,INCIDENT" }
+        attributes: { "parentModule": "INCIDENT", "moduleName": "MY GROUP INCIDENTS", "licenceType": "ALL,INCIDENT" }
       },
     ]
+  },
+  {
+    name: 'Reports',
+    icon: 'fa fa-folder',
+    url: '/incident/report',
+    attributes: { "parentModule": "INCIDENT", "moduleName": "REPORT", "licenceType": "ALL,INCIDENT" },
+    children: [
+      {
+        name: 'Incident Report',
+        url: '/incident/report/incident-report',
+        icon: 'fa fa-file-text',
+        attributes: { "parentModule": "INCIDENT", "moduleName": "INCIDENT REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Escalation Report',
+        url: '/incident/report/escalation-report',
+        icon: 'fa fa-file-excel-o',
+        attributes: { "parentModule": "INCIDENT", "moduleName": "ESCALATION REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Reopened Report',
+        url: '/incident/report/reopen-report',
+        icon: 'fa fa-folder-open',
+        attributes: { "parentModule": "INCIDENT", "moduleName": "REOPEN REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+      {
+        name: 'Aging Report',
+        url: '/incident/report/aging-report',
+        icon: 'fa fa-file-text',
+        attributes: { "parentModule": "INCIDENT", "moduleName": "AGING REPORT", "licenceType": "ALL,INCIDENT" }
+      },
+    ]
+  },
+  // INCIDENT
+  // ASSET
+  {
+    name: 'Dashboard',
+    url: '/asset/dashboard',
+    icon: 'icon-speedometer',
+    attributes: { "parentModule": "ASSET", "moduleName": "DASHBOARD", "licenceType": "ALL,ASSET" }
   },
   {
     name: 'Asset',
     url: '/asset',
     icon: 'fa fa-cubes',
-    attributes: { "moduleName": "ASSET", "licenceType": "ALL,ASSET" },
+    attributes: { "parentModule": "ASSET", "moduleName": "ASSET", "licenceType": "ALL,ASSET" },
     children: [
       {
         name: 'Admin Access',
         title: true,
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "ASSET ADMIN", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ASSET ADMIN", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Order an Asset',
         url: '/asset/order',
         icon: 'fa fa-plus',
-        attributes: { "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Ordered Assets',
         url: '/asset/ordered',
         icon: 'fa fa-indent',
-        attributes: { "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ORDER ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Inventory Master',
         url: '/asset/inventory',
         icon: 'fa fa-tasks',
-        attributes: { "moduleName": "MANAGE ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "MANAGE ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Pending Approvals',
         url: '/asset/order/incommig',
         icon: 'fa fa-outdent',
-        attributes: { "moduleName": "ORDERED ASSET ACTION", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ORDERED ASSET ACTION", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Employee Access',
         title: true,
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "ASSET USER", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ASSET USER", "licenceType": "ALL,ASSET" }
       },
       {
         name: "Request Asset",
         url: '/asset/user/add/new',
         icon: 'fa fa-plus-square',
-        attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: "My Assets",
         url: '/asset/allocated',
         icon: 'fa fa-suitcase',
-        attributes: { "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "MY ASSET", "licenceType": "ALL,ASSET" }
       },
       {
         name: "Asset Tickets",
         url: '/asset/requested/outgoing',
         icon: 'fa fa-paper-plane',
-        attributes: { "moduleName": "MY ASSET REQUEST", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "MY ASSET REQUEST", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Pending Approvals',
         url: '/asset/approval/pending',
         icon: 'fa fa-angle-left',
-        attributes: { "moduleName": "ASSET REQUEST APPROVAL", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ASSET REQUEST APPROVAL", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Agent Access',
         title: true,
         class: 'highlighted-yellow',
-        attributes: { "moduleName": "ASSET AGENT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ASSET AGENT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Tickets',
         url: '/asset/requested/incomming',
         icon: 'fa fa-angle-left',
-        attributes: { "moduleName": "REQUESTED ASSET", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "REQUESTED ASSET", "licenceType": "ALL,ASSET" }
       },
     ]
   },
+  {
+    name: 'Reports',
+    icon: 'fa fa-folder',
+    url: '/asset/report',
+    attributes: { "parentModule": "ASSET", "moduleName": "REPORT", "licenceType": "ALL,ASSET" },
+    children: [
+      // {
+      //   name: 'Asset Report',
+      //   url: '/report/asset-order-report',
+      //   class: 'highlighted-yellow',
+      //   attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,INCIDENT" }
+      // },
+      // {
+      //   name: 'Order Report',
+      //   url: '/report/asset-order-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      // {
+      //   name: 'Allocation Report',
+      //   url: '/report/asset-allocation-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "ALLOCATION REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      // {
+      //   name: 'Ticket Report',
+      //   url: '/report/asset-ticket-report',
+      //   icon: 'fa fa-file-text',
+      //   attributes: { "moduleName": "TICKETS REPORT", "licenceType": "ALL,ASSET" }
+      // },
+      {
+        name: 'Vendor Report',
+        url: '/asset/report/vendor-report/asset',
+        icon: 'fa fa-file-text',
+        attributes: { "parentModule": "ADMIN", "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Order Report',
+        url: '/asset/report/order-report',
+        icon: 'fa fa-file-text',
+        attributes: { "parentModule": "ADMIN", "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Tickets Report',
+        url: '/asset/report/asset-tickets-report',
+        icon: 'fa fa-file-text',
+        attributes: { "parentModule": "ADMIN", "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
+      },
+      {
+        name: 'Asset Assignment Report',
+        url: '/asset/report/asset-assignment-report',
+        icon: 'fa fa-file-text',
+        attributes: { "parentModule": "ADMIN", "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
+      },
+    ]
+  },
+  // INCIDENT
+
+
+
+  // NOTIFICATIONS COMMON FOR ALL
+  {
+    name: 'My Notifications',
+    url: '/notification',
+    icon: 'icon-info',
+    attributes: { "moduleName": "MY NOTIFICATIONS", "commonModule": true }
+  },
+  // NOTIFICATIONS COMMON FOR ALL
+
 
   {
     name: 'Project',
@@ -501,7 +596,6 @@ export const navItems: INavData[] = [
   },
 ];
 
-//attributes: { "moduleName": "ASSET ASIGNENT REPORT", "licenceType": "ALL,ASSET" }
 /*export const navItems: INavData[] = [
   {
     name: 'Dashboard',

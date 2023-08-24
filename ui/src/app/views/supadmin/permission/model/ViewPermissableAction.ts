@@ -15,12 +15,13 @@ import { Action } from "../../../../model/Action";
     <div class="row">
         <div class="col-sm-12">
             <div class="card ">
+            <div class="card-body">
                 <table class="table table-bordered">
                     <tr *ngFor="let item of permisableActions;">
                         <td>{{item.name}}</td>
                     </tr>
                 </table>
-            </div>
+                </div> </div>
         </div>
     </div>
 </div>`

@@ -280,7 +280,7 @@ public class MiscApiController {
 
     @RequestMapping(value = "/all-priority", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PRIORITY,MY INCIDENTS,MY GROUP INCIDENTS,REPORT,','READ,WRITE|SEARCH,WRITE|SEARCH,READ',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
-    public ResponseEntity<PaginatedList<Priority>> getPriorities(@PathVariable(name = "accountId", required = false) BigInteger accountId, @RequestParam(value = "priorityType", defaultValue = "INCIDENT", required = false) String priorityType, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+    public ResponseEntity<PaginatedList<Priority>> getPriorities(@RequestParam(name = "accountId", required = false) BigInteger accountId, @RequestParam(value = "priorityType", defaultValue = "INCIDENT", required = false) String priorityType, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Priority>>(priorityService.getPriorities(accountId, priorityType, pageable), HttpStatus.OK);
     }
 
