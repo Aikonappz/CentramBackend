@@ -34,6 +34,10 @@ import { ViewAppAdminDashboardDetails } from './dashboard/modal/ViewAppAdminDash
 import { ViewOrgAdminDashboardUserDetails } from './dashboard/modal/ViewOrgAdminDashboardUserDetails';
 import { ViewOrgAdminDashboardVendorDetails } from './dashboard/modal/ViewOrgAdminDashboardVendorDetails';
 import { AssetDashboardComponent } from './dashboard/asset-dashboard.component';
+import { VendorReportComponent } from './report/vendor.report.component';
+import { OrderReportComponent } from './report/order.report.component';
+import { AssetTicketReportComponent } from './report/asset.ticket.report.component';
+import { AssetAssignmentReportComponent } from './report/asset.asignment.report.component';
 
 
 @NgModule({
@@ -63,6 +67,11 @@ import { AssetDashboardComponent } from './dashboard/asset-dashboard.component';
     ViewAppAdminDashboardDetails,
     ViewOrgAdminDashboardUserDetails,
     ViewOrgAdminDashboardVendorDetails,
+
+    VendorReportComponent,
+    OrderReportComponent,
+    AssetTicketReportComponent,
+    AssetAssignmentReportComponent,
   ],
   imports: [
     CommonModule,

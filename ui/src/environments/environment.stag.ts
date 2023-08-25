@@ -1,13 +1,15 @@
 export const environment = {
   production: false,
-  appUrl: 'https://www.google.com',
+  appUrl: 'http://www.centram.live',
   appBrandName: 'Centram',
   appDevName: 'Centram Dev',
   appLandingPage: '/',
   appName: 'Centram',
-  appServiceEndpoint: 'http://3.111.47.178:7001/api',
-  appWSServiceEndpoint: 'http://3.111.47.178:7001/app-ws-notification',
+  appSSOEndpoint: 'https://api.centram.live/login-sso',
+  appServiceEndpoint: 'https://api.centram.live/api',
+  appWSServiceEndpoint: 'https://api.centram.live/app-ws-notification',
   appWSNotificationTopic: '/topic/notification',
+  appWSChatTopic: '/topic/chat',
   appWSCred: {
     "app_ws_client_shared_user": "YXBwQ2VudHJhbVdzVXNlcg==",
     "app_ws_client_shared_pass": "YXBwQ2VudHJhbVdzVXNlckAjOTA4Nw=="

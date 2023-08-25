@@ -81,7 +81,7 @@ export class DeallocateAsset implements OnInit {
 
   get uf() { return this.angForm.controls; }
 
-  allocateAsset(id: string) {
+  allocateAsset(id: number) {
     console.log(id,);
     if (this.angForm.valid) {
       this.service

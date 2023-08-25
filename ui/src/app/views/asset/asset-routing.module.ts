@@ -13,6 +13,10 @@ import { MyAssetComponent } from './my-asset.component';
 import { OrderedAssetActionComponent } from './in-ordered-asset.component';
 import { PendingAssetApprovalComponent } from './pending-asset-approval.component';
 import { AssetDashboardComponent } from './dashboard/asset-dashboard.component';
+import { VendorReportComponent } from './report/vendor.report.component';
+import { OrderReportComponent } from './report/order.report.component';
+import { AssetTicketReportComponent } from './report/asset.ticket.report.component';
+import { AssetAssignmentReportComponent } from './report/asset.asignment.report.component';
 
 const routes: Routes = [
   {
@@ -143,6 +147,38 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'My Assets'
+        },
+      },
+      {
+        path: 'report/vendor-report/:licenceType',
+        component: VendorReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Vendor Report'
+        },
+      },
+      {
+        path: 'report/order-report',
+        component: OrderReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Order Report'
+        },
+      },
+      {
+        path: 'report/asset-tickets-report',
+        component: AssetTicketReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Tickets Report'
+        },
+      },
+      {
+        path: 'report/asset-assignment-report',
+        component: AssetAssignmentReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Asset Assignment Report'
         },
       },
     ]

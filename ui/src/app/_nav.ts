@@ -445,32 +445,29 @@ export const navItems: INavData[] = [
         name: 'Vendor Report',
         url: '/asset/report/vendor-report/asset',
         icon: 'fa fa-file-text',
-        attributes: { "parentModule": "ADMIN", "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "VENDOR REPORT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Order Report',
         url: '/asset/report/order-report',
         icon: 'fa fa-file-text',
-        attributes: { "parentModule": "ADMIN", "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ORDER REPORT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Tickets Report',
         url: '/asset/report/asset-tickets-report',
         icon: 'fa fa-file-text',
-        attributes: { "parentModule": "ADMIN", "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ASSET TICKET REPORT", "licenceType": "ALL,ASSET" }
       },
       {
         name: 'Asset Assignment Report',
         url: '/asset/report/asset-assignment-report',
         icon: 'fa fa-file-text',
-        attributes: { "parentModule": "ADMIN", "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
+        attributes: { "parentModule": "ASSET", "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
       },
     ]
   },
-  // INCIDENT
-
-
-
+  // ASSET
   // NOTIFICATIONS COMMON FOR ALL
   {
     name: 'My Notifications',
