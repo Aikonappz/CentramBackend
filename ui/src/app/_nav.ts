@@ -7,31 +7,31 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/supadmin/dashboard',
     icon: 'icon-speedometer',
-    attributes: { "parentModule": "SUPADMIN", "moduleName": "DASHBOARD", "licenceType": "SUPADMIN" }
+    attributes: { "order": 1, "parentModule": "SUPADMIN", "moduleName": "DASHBOARD", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Organizations',
     url: '/supadmin/organization',
     icon: 'icon-target',
-    attributes: { "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
+    attributes: { "order": 2, "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Users',
     url: '/supadmin/user',
     icon: 'icon-people',
-    attributes: { "parentModule": "SUPADMIN", "moduleName": "USER", "licenceType": "SUPADMIN" }
+    attributes: { "order": 3, "parentModule": "SUPADMIN", "moduleName": "USER", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Permissions',
     url: '/supadmin/permission',
     icon: 'icon-star',
-    attributes: { "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
+    attributes: { "order": 4, "parentModule": "SUPADMIN", "moduleName": "ORGANIZATION", "licenceType": "SUPADMIN" }
   },
   {
     name: 'Reports',
     url: '/supadmin/report',
     icon: 'fa fa-folder',
-    attributes: { "parentModule": "SUPADMIN", "moduleName": "REPORT", "licenceType": "SUPADMIN" },
+    attributes: { "order": 5, "parentModule": "SUPADMIN", "moduleName": "REPORT", "licenceType": "SUPADMIN" },
     children: [
       {
         name: 'Admin Report',
@@ -47,19 +47,19 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/admin/dashboard',
     icon: 'icon-speedometer',
-    attributes: { "parentModule": "ADMIN", "moduleName": "DASHBOARD", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+    attributes: { "order": 1, "parentModule": "ADMIN", "moduleName": "DASHBOARD", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
   },
   {
     name: 'Users',
     url: '/admin/user',
     icon: 'icon-people',
-    attributes: { "parentModule": "ADMIN", "moduleName": "USER", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+    attributes: { "order": 2, "parentModule": "ADMIN", "moduleName": "USER", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
   },
   {
     name: 'Masters',
     url: '/admin/master',
     icon: 'icon-layers',
-    attributes: { "parentModule": "ADMIN", "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
+    attributes: { "order": 3, "parentModule": "ADMIN", "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
     children: [
       {
         name: 'Account',
@@ -127,7 +127,7 @@ export const navItems: INavData[] = [
     name: 'Reports',
     url: '/admin/report',
     icon: 'fa fa-folder',
-    attributes: { "parentModule": "ADMIN", "moduleName": "REPORT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
+    attributes: { "order": 4, "parentModule": "ADMIN", "moduleName": "REPORT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
     children: [
       {
         name: 'Incident Report',
@@ -209,13 +209,27 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/uat/dashboard',
     icon: 'icon-speedometer',
-    attributes: { "parentModule": "UAT", "moduleName": "DASHBOARD", "licenceType": "ALL,UAT" }
+    attributes: { "order": 1, "parentModule": "UAT", "moduleName": "DASHBOARD", "licenceType": "ALL,UAT" }
+  },
+  {
+    name: 'Masters',
+    url: '/uat/master',
+    icon: 'icon-layers',
+    attributes: { "order": 2, "parentModule": "UAT", "moduleName": "MASTERS", "licenceType": "UAT" },
+    children: [
+      {
+        name: 'Project Master',
+        url: '/uat/master/project',
+        icon: 'cil-blur-linear',
+        attributes: { "parentModule": "UAT", "moduleName": "PROJECT_MASTER", "licenceType": "UAT" }
+      },
+    ]
   },
   {
     name: 'UAT',
     url: '/uat/activities',
     icon: 'fa fa-flask',
-    attributes: { "parentModule": "UAT", "moduleName": "UAT", "licenceType": "ALL,UAT" },
+    attributes: { "order": 3, "parentModule": "UAT", "moduleName": "UAT", "licenceType": "ALL,UAT" },
     children: [
       {
         name: 'UAT Activities',
@@ -229,7 +243,7 @@ export const navItems: INavData[] = [
     name: 'Reports',
     icon: 'fa fa-folder',
     url: '/uat/report',
-    attributes: { "parentModule": "UAT", "moduleName": "REPORT", "licenceType": "ALL,UAT" },
+    attributes: { "order": 4, "parentModule": "UAT", "moduleName": "REPORT", "licenceType": "ALL,UAT" },
     children: [
       {
         name: 'UAT Report',

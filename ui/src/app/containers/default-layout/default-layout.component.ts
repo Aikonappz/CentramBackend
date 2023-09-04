@@ -196,7 +196,19 @@ export class DefaultLayoutComponent implements OnInit {
         }
       }
     }
-    this.navItems = this.newNavItems;
+    this.navItems = this.newNavItems.sort((a, b) => {
+      if (typeof a.attributes.order !== 'undefined' && typeof b.attributes.order !== 'undefined') {
+        if (a.attributes.order < b.attributes.order) {
+          return -1;
+        } else if (a.attributes.order > b.attributes.order) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+      return 0;
+    });
+    //this.navItems = this.newNavItems;
     //console.log(JSON.stringify(this.newNavItems));
     //ask to allow automatic notification
     this.pushNotifications.requestPermission();

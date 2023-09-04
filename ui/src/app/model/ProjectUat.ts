@@ -16,3 +16,8 @@ export class ProjectUat extends Base {
     user: UserVO;
     uatCycleComplete: boolean;
 }
+
+export interface ProjectUatList {
+    content: ProjectUat[];
+    totalElements: number;
+}

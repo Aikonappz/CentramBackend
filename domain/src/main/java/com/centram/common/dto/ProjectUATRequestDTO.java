@@ -1,5 +1,6 @@
 package com.centram.common.dto;
 
+import com.centram.domain.enumarator.Technology;
 import lombok.*;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class ProjectUATRequestDTO implements Serializable {
     private static final long serialVersionUID = -6360757448965142736L;
+    private Technology technology;
     private BigInteger projectId;
     private BigInteger moduleId;
     private BigInteger subModuleId;

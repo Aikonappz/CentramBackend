@@ -18,6 +18,12 @@ import java.util.Set;
 @Repository
 public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteger> {
 
+    @Query("select pu from ProjectUat pu where pu.uploadedBy.id = (:loggedInUser) ")
+    Page<ProjectUat> uploadedScripts(
+            @Param("loggedInUser") BigInteger loggedInUser,
+            @Param("pageable") Pageable pageable
+    );
+
     @Query("select pu from ProjectUat pu where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId)")
     List<ProjectUat> getByProjectIdAndModuleIdAndSubModuleId(@Param("projectId") BigInteger projectId, @Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId);
 

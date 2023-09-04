@@ -16,4 +16,4 @@ export class ProjectUatScript extends Base {
 export interface ProjectUatScriptList {
     content: ProjectUatScript[];
     totalElements: number;
-  }
+}

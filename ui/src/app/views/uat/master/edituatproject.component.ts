@@ -17,11 +17,11 @@ import * as moment from 'moment';
 declare var $: any;
 
 @Component({
-  selector: 'app-editproject',
-  templateUrl: './editproject.component.html',
-  styleUrls: ['./editproject.component.scss']
+  selector: 'app-edituatproject',
+  templateUrl: './edituatproject.component.html',
+  styleUrls: ['./edituatproject.component.scss']
 })
-export class EditProjectComponent implements OnInit {
+export class EditUATProjectComponent implements OnInit {
   moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
@@ -268,7 +268,7 @@ export class EditProjectComponent implements OnInit {
       .saveProjectService(this.project)
       .subscribe((data: any) => {
         //console.log(data);
-        this.router.navigate(['/admin/master/project']);
+        this.router.navigate(['/uat/master/project']);
       });
   }
 

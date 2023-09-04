@@ -78,7 +78,7 @@ export class ExploreComponent implements OnInit {
         .appModulesService({})
         .subscribe((data: any) => {
           this.modules = []; //data.content;
-          console.log(JSON.stringify(data.content));
+          //console.log(JSON.stringify(data.content));
           for (let k = 0; k < data.content.length; k++) {
             if (data.content[k].appModule && data.content[k].parentModuleId === null && data.content[k].appFeatureModule === true) {
               this.modules.push(data.content[k]);

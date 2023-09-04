@@ -11,11 +11,11 @@ import { LoggedInUserService } from '../../../service/LoggedInUserService';
 import { MiscService } from '../../../service/MiscService';
 
 @Component({
-  selector: 'app-project',
-  templateUrl: './project.component.html',
-  styleUrls: ['./project.component.scss']
+  selector: 'app-uatproject',
+  templateUrl: './uatproject.component.html',
+  styleUrls: ['./uatproject.component.scss']
 })
-export class ProjectComponent implements OnInit {
+export class UATProjectComponent implements OnInit {
   moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['projectDetail', 'stakeHolders', 'consultants', 'managers', 'status', 'action'];
@@ -74,11 +74,11 @@ export class ProjectComponent implements OnInit {
   }
 
   edit(dl: DistributionList) {
-    this.router.navigate(['/admin/master/project/edit/' + dl.id]);
+    this.router.navigate(['/uat/master/project/edit/' + dl.id]);
   }
 
   add() {
-    this.router.navigate(['/admin/master/project/add']);
+    this.router.navigate(['/uat/master/project/add']);
   }
 
   updateStatus(vendor: Vendor) {

@@ -107,10 +107,12 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
         this.accountName = (user.getAccount() != null) ? user.getAccount().getName() : null;
         this.accountNo = (user.getAccount() != null) ? user.getAccount().getAccountNo() : null;
         this.vendor = (user.getVendor() != null) ? user.getVendor().getName() : null;
-        if(user.getLocation() != null){
+        if (user.getLocation() != null) {
             Location loc = user.getLocation();
-            Duration duration = Duration.between(loc.getOpsStartTime(), loc.getOpsEndTime());
-            this.locationOpsTime = String.valueOf(duration.toHours());
+            if (loc.getOpsStartTime() != null && loc.getOpsEndTime() != null) {
+                Duration duration = Duration.between(loc.getOpsStartTime(), loc.getOpsEndTime());
+                this.locationOpsTime = String.valueOf(duration.toHours());
+            }
         }
     }
 

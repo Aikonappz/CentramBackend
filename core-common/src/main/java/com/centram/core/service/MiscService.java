@@ -50,6 +50,10 @@ public class MiscService {
     private final String dtFormat = "dd/MM/yyyy";
     @Value("${app.default.asset.prefix}")
     public String appDefaultAssetPrefix;
+
+    @Value("${app.base.url}")
+    private String appBaseUrl;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -1646,7 +1650,7 @@ public class MiscService {
         emailValues.put("subModuleName", subModule.getCustomerModuleName());
         emailValues.put("uatScriptID", projectUatScript.getTestCaseId());
         emailValues.put("uatScriptName", projectUatScript.getTestScriptName());
-        emailValues.put("plannedDate", projectUatScript.getPlannedDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+        emailValues.put("technology", projectUat.getTechnology().name());
         emailValues.put("step", projectUatScriptDetail.getStep());
         emailValues.put("action", projectUatScriptDetail.getAction());
         emailValues.put("expectedResult", projectUatScriptDetail.getExpectedResult());
@@ -1750,6 +1754,51 @@ public class MiscService {
         }
         //log.info(objectMapper.writeValueAsString(projectUatScript));
         appEmailService.notifyUatActivities(projectUATVO);
+    }
+
+    @Async("asyncExecutor")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public void notifyUatProjectCreation(LoggedInUser loggedInUser, final Project project) throws JsonProcessingException, InterruptedException {
+        Map<String, Object> emailValues = new LinkedHashMap<String, Object>();
+        emailValues.put("projectDetail", project.getName() + " [" + project.getCode() + "]");
+        emailValues.put("projectMasterLink", appBaseUrl.concat("/admin/master/project"));
+        emailValues.put("uatLink", appBaseUrl.concat("/uat/activities"));
+        //manager
+        emailValues.put("title", "managerTitle");
+        emailValues.put("body", "managerBody");
+        emailValues.put("recipient", "Project Managers");
+        emailValues.put("to", project.getWatchList().toArray(new String[0]));
+        List<UserVO> users = userService.getUsersByEmails(project.getWatchList(), loggedInUser.getOrganisationId());
+        List<Notification> notifications = new ArrayList<Notification>();
+        for (UserVO userVO : users) {
+            notifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        emailValues.put("notify", notifications);
+        appEmailService.notifyUatProjectCreation(emailValues);
+        //customer
+        emailValues.put("title", "customerTitle");
+        emailValues.put("body", "customerBody");
+        emailValues.put("recipient", "Customers");
+        emailValues.put("to", project.getStakeHolders().toArray(new String[0]));
+        users = userService.getUsersByEmails(project.getStakeHolders(), loggedInUser.getOrganisationId());
+        notifications = new ArrayList<Notification>();
+        for (UserVO userVO : users) {
+            notifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        emailValues.put("notify", notifications);
+        appEmailService.notifyUatProjectCreation(emailValues);
+        //consultant
+        emailValues.put("title", "consultantTitle");
+        emailValues.put("body", "consultantBody");
+        emailValues.put("recipient", "Project Managers");
+        emailValues.put("to", project.getWatchList().toArray(new String[0]));
+        users = userService.getUsersByEmails(project.getConsultants(), loggedInUser.getOrganisationId());
+        notifications = new ArrayList<Notification>();
+        for (UserVO userVO : users) {
+            notifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        }
+        emailValues.put("notify", notifications);
+        appEmailService.notifyUatProjectCreation(emailValues);
     }
 
 }

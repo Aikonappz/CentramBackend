@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { ApiHttpService } from './ApiHttpService';
-import { ProjectUat } from '../model/ProjectUat';
+import { ProjectUat, ProjectUatList } from '../model/ProjectUat';
 import { ProjectUatScript, ProjectUatScriptList } from '../model/ProjectUatScript';
 import { ProjectUatScriptDetail, ProjectUatScriptDetailList } from '../model/ProjectUatScriptDetail';
 
@@ -21,6 +21,9 @@ export class ProjectUatService {
         return this.http.get('/v1/project-uat/uat-scripts', { "params": request });
     }
     getProjectUatScriptDetails(request?: any): Observable<ProjectUatScriptDetailList> {
+        if (request.projectUATScriptId == null || typeof request.projectUATScriptId == 'undefined') {
+            request.projectUATScriptId = -1;
+        }
         return this.http.get('/v1/project-uat/uat-script-detail', { "params": request });
     }
     saveProjectUatScriptDetail(projectUatScriptDetail: ProjectUatScriptDetail, request?: any): Observable<any> {
@@ -34,5 +37,8 @@ export class ProjectUatService {
     }
     markUATCycleComplete(projectUatId: number, request?: any): Observable<ProjectUat> {
         return this.http.put('/v1/project-uat/mark-project-uat-complete/' + projectUatId, { "params": request });
+    }
+    getUploadedUatScripts(request?: any): Observable<ProjectUatList> {
+        return this.http.get('/v1/project-uat/uploaded-scripts', { "params": request });
     }
 }

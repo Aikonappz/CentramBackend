@@ -48,9 +48,17 @@ public class UATApiController {
     @JsonView(Views.BasicView.class)
     @RequestMapping(value = "/upload-script", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<ProjectUat> uploadScripts(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("projectUATRequestDTO") ProjectUATRequestDTO projectUATRequestDTO) throws IOException {
+    public ResponseEntity<ProjectUat> uploadScript(@RequestPart(name = "file", required = true) MultipartFile multipartFile, @RequestPart("projectUATRequestDTO") ProjectUATRequestDTO projectUATRequestDTO) throws IOException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<ProjectUat>(projectUatService.uploadScripts(loggedInUser, multipartFile, projectUATRequestDTO), HttpStatus.OK);
+    }
+
+    @JsonView(Views.BasicView.class)
+    @RequestMapping(value = "/uploaded-scripts", method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','READ|WRITE',authentication.principal)")
+    public ResponseEntity<PaginatedList<ProjectUat>> uploadedScripts(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<ProjectUat>>(projectUatService.uploadedScripts(loggedInUser.getUserId(), pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/uat-cycles", produces = {"application/json"}, method = RequestMethod.GET)

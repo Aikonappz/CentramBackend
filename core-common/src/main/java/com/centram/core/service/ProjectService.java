@@ -7,11 +7,14 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectAllocationDetailRepository;
 import com.centram.core.repository.ProjectRepository;
+import com.centram.domain.Module;
 import com.centram.domain.Project;
 import com.centram.domain.enumarator.ProjectType;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,12 @@ public class ProjectService {
 
     @Autowired
     private ProjectAllocationDetailRepository projectAllocationDetailRepository;
+
+    @Autowired
+    private MiscService miscService;
+
+    @Autowired
+    private ModuleService moduleService;
 
 
     /**
@@ -93,7 +102,16 @@ public class ProjectService {
         } else {
             hasFilter = false;
         }
-        return new PaginatedList<Project>(projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectType.ordinal(), organisationId, pageable));
+        Page<Project> projectPage = projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectType.ordinal(), organisationId, pageable);
+        projectPage.getContent().forEach(i -> {
+            if (i.getModuleId() != null && i.getSubModuleId() != null) {
+                Module module = moduleService.getModuleById(i.getModuleId());
+                i.setModuleName(module.getCustomerModuleName());
+                module = moduleService.getModuleById(i.getSubModuleId());
+                i.setSubModuleName(module.getCustomerModuleName());
+            }
+        });
+        return new PaginatedList<Project>(projectPage);
     }
 
     /**
@@ -103,8 +121,12 @@ public class ProjectService {
      * @return
      */
     @Transactional
-    public Project save(BigInteger organisationId, Project project) {
-        project.setOrganisation(organisationService.getOrganisationById(organisationId));
-        return projectRepository.save(project);
+    public Project save(LoggedInUser loggedInUser, Project project) throws JsonProcessingException, InterruptedException {
+        project.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+        project = projectRepository.save(project);
+        if (project.getUat() && project.getId() == null) {
+            miscService.notifyUatProjectCreation(loggedInUser, project);
+        }
+        return project;
     }
 }

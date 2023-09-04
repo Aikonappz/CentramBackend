@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -22,6 +23,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 @Service
 public class MediaService {
@@ -61,8 +64,7 @@ public class MediaService {
     }
 
     @Transactional(readOnly = false)
-    public List<MediaFile> uploadMediaFile(BigInteger entityId, EntityType entityType, MediaType mediaType, String chatRoomId, MultipartFile[] multipartFiles) {
-        LoggedInUser loggedInUserDTO = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public List<MediaFile> uploadMediaFile(BigInteger entityId, EntityType entityType, MediaType mediaType, String chatRoomId, MultipartFile[] multipartFiles, LoggedInUser loggedInUserDTO) {
         if (multipartFiles.length > 0) {
             try {
                 List<MediaFile> mediaFileList = new ArrayList<MediaFile>();
@@ -89,4 +91,5 @@ public class MediaService {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
     }
+
 }

@@ -9,11 +9,13 @@ import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectUatRepository;
 import com.centram.core.repository.ProjectUatScriptDetailRepository;
 import com.centram.core.repository.ProjectUatScriptRepository;
+import com.centram.domain.Module;
 import com.centram.domain.*;
+import com.centram.domain.enumarator.EntityType;
+import com.centram.domain.enumarator.MediaType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -39,6 +41,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static org.apache.poi.hssf.usermodel.HSSFDateUtil.isCellDateFormatted;
 
 @Service
 public class ProjectUatService {
@@ -67,6 +71,12 @@ public class ProjectUatService {
 
     @Autowired
     private MiscService miscService;
+
+    @Autowired
+    private MediaService mediaService;
+
+    @Autowired
+    private ModuleService moduleService;
 
     /**
      * @param projectUatId
@@ -150,8 +160,23 @@ public class ProjectUatService {
      */
     @Transactional(readOnly = true)
     public PaginatedList<ProjectUatScriptDetail> findByProjectUATScriptId(BigInteger projectUATScriptId, Pageable pageable) {
+        if (projectUATScriptId.compareTo(BigInteger.valueOf(-1)) == 0) {
+            return new PaginatedList<ProjectUatScriptDetail>(Page.empty());
+        }
         Page<ProjectUatScriptDetail> page = projectUatRepository.findByProjectUATScriptId(projectUATScriptId, pageable);
-        return new PaginatedList<ProjectUatScriptDetail>(page);
+        List<ProjectUatScriptDetail> projectUatScriptDetails = page.getContent();
+        for (int k = 0; k < projectUatScriptDetails.size(); k++) {
+            if (k == 0) {
+                projectUatScriptDetails.get(k).setPreviousStepPassed(true);
+            } else {
+                if (projectUatScriptDetails.get(k - 1).getPass()) {
+                    projectUatScriptDetails.get(k).setPreviousStepPassed(true);
+                } else {
+                    break;
+                }
+            }
+        }
+        return new PaginatedList<ProjectUatScriptDetail>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), projectUatScriptDetails);
     }
 
     /**
@@ -163,6 +188,25 @@ public class ProjectUatService {
     @Transactional(readOnly = true)
     public List<ProjectUat> getProjectUats(BigInteger projectId, BigInteger moduleId, BigInteger subModuleId) {
         return projectUatRepository.getByProjectIdAndModuleIdAndSubModuleId(projectId, moduleId, subModuleId);
+    }
+
+    /**
+     * @param userId
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<ProjectUat> uploadedScripts(BigInteger userId, Pageable pageable) {
+        Page<ProjectUat> page = projectUatRepository.uploadedScripts(userId, pageable);
+        page.getContent().forEach(i -> {
+            Module module = moduleService.getModule(i.getModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            module = moduleService.getModule(i.getSubModuleId());
+            i.setSubModuleName(module.getCustomerModuleName());
+            i.setUatScript(mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, i.getId()));
+            i.setUatManual(mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_MANUAL, i.getId()));
+        });
+        return new PaginatedList<ProjectUat>(page);
     }
 
     /**
@@ -188,7 +232,7 @@ public class ProjectUatService {
             }
             String filePath = appDataFilePath + File.separator + multipartFile.getOriginalFilename();
             Files.copy(multipartFile.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
-            return this.processUATExcel(filePath, loggedInUser, projectUATRequestDTO, multipartFile.getOriginalFilename());
+            return this.processUATExcel(filePath, loggedInUser, projectUATRequestDTO, multipartFile.getOriginalFilename(), multipartFile);
         } catch (IOException e) {
             log.error("FILE_UPLOAD_ISSUE {}", e.getMessage());
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
@@ -203,7 +247,7 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = false)
-    private ProjectUat processUATExcel(String filePath, LoggedInUser loggedInUser, ProjectUATRequestDTO projectUATRequestDTO, String fileName) {
+    private ProjectUat processUATExcel(String filePath, LoggedInUser loggedInUser, ProjectUATRequestDTO projectUATRequestDTO, String fileName, MultipartFile multipartFile) {
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -223,6 +267,7 @@ public class ProjectUatService {
             projectUat.setProject(projectService.getById(projectUATRequestDTO.getProjectId()));
             projectUat.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
             projectUat.setUploadedBy(new User(userService.getUserById(loggedInUser.getUserId())));
+            projectUat.setTechnology(projectUATRequestDTO.getTechnology());
             projectUat.setModuleId(projectUATRequestDTO.getModuleId());
             projectUat.setSubModuleId(projectUATRequestDTO.getSubModuleId());
             projectUat.setProjectUatScripts(new LinkedHashSet<ProjectUatScript>());
@@ -250,6 +295,7 @@ public class ProjectUatService {
                         cell = cellIterator.next();
                         cellValue = this.getCellValue(cell);
                         if (cell.getAddress().getColumn() == 0) {
+                            //Test Case ID
                             if (rw == 1) {
                                 if (cellValue.trim().isEmpty()) {
                                     log.error("Error value - {}", cellValue);
@@ -258,6 +304,7 @@ public class ProjectUatService {
                                 projectUatScript.setTestCaseId(cellValue);
                             }
                         } else if (cell.getAddress().getColumn() == 1) {
+                            //Test Case Description
                             if (rw == 1) {
                                 if (cellValue.trim().isEmpty()) {
                                     log.error("Error value - {}", cellValue);
@@ -266,64 +313,55 @@ public class ProjectUatService {
                                 projectUatScript.setTestCaseDescription(cellValue);
                             }
                         } else if (cell.getAddress().getColumn() == 2) {
+                            //Test Scenario
                             if (rw == 1) {
                                 if (cellValue.trim().isEmpty()) {
                                     log.error("Error value - {}", cellValue);
                                     throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), " should have Test Scenario!"));
                                 }
                                 projectUatScript.setTestScenario(cellValue);
+                                projectUat.getProjectUatScripts().add(projectUatScript);
                             }
                         } else if (cell.getAddress().getColumn() == 3) {
-                            if (!cellValue.trim().isEmpty()) {
-                                projectUatScriptDetail.setTestScenarioJobId(cellValue);
-                            } else {
-                                projectUatScriptDetail.setTestScenarioJobId(null);
-                            }
-                        } else if (cell.getAddress().getColumn() == 4) {
-                            if (rw == 1) {
-                                try {
-                                    HSSFDateUtil.isCellDateFormatted(cell);
-                                    projectUatScript.setPlannedDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                                    projectUat.getProjectUatScripts().add(projectUatScript);
-                                } catch (Exception e) {
-                                    log.error("Error value - {}", cellValue);
-                                    throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), " should have Planned Date!"));
-                                }
-                            }
-                        } else if (cell.getAddress().getColumn() == 5) {
+                            //Step
                             if (cellValue.trim().isEmpty()) {
                                 log.error("Error value - {}", cellValue);
                                 throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Step is mandatory!"));
                             }
                             projectUatScriptDetail.setStep(Double.valueOf(cellValue));
-                        } else if (cell.getAddress().getColumn() == 6) {
+                        } else if (cell.getAddress().getColumn() == 4) {
+                            //Action
                             if (cellValue.trim().isEmpty()) {
                                 log.error("Error value - {}", cellValue);
                                 throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Action is mandatory!"));
                             }
                             projectUatScriptDetail.setAction(cellValue);
-                        } else if (cell.getAddress().getColumn() == 7) {
+                        } else if (cell.getAddress().getColumn() == 5) {
+                            //Expected Result
                             if (cellValue.trim().isEmpty()) {
                                 log.error("Error value - {}", cellValue);
                                 throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Expected Result is mandatory!"));
                             }
                             projectUatScriptDetail.setExpectedResult(cellValue);
-                        } else if (cell.getAddress().getColumn() == 8) {
+                        } else if (cell.getAddress().getColumn() == 6) {
+                            //Actual Result
                             if (!cellValue.trim().isEmpty()) {
                                 projectUatScriptDetail.setActualResult(cellValue);
                             } else {
                                 projectUatScriptDetail.setActualResult(null);
                             }
-                        } else if (cell.getAddress().getColumn() == 9) {
+                        } else if (cell.getAddress().getColumn() == 7) {
+                            //Pass/Fail
                             if (!cellValue.trim().isEmpty()) {
                                 projectUatScriptDetail.setPass(cellValue.equalsIgnoreCase("Pass"));
                             } else {
                                 projectUatScriptDetail.setPass(false);
                             }
-                        } else if (cell.getAddress().getColumn() == 10) {
+                        } else if (cell.getAddress().getColumn() == 8) {
+                            // Retest Date
                             if (!cellValue.trim().isEmpty()) {
                                 try {
-                                    HSSFDateUtil.isCellDateFormatted(cell);
+                                    isCellDateFormatted(cell);
                                     projectUatScriptDetail.setRetestDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                                 } catch (Exception e) {
                                     log.error("Error value - {}", cellValue);
@@ -332,13 +370,15 @@ public class ProjectUatService {
                             } else {
                                 projectUatScriptDetail.setRetestDate(null);
                             }
-                        } else if (cell.getAddress().getColumn() == 11) {
+                        } else if (cell.getAddress().getColumn() == 9) {
+                            //Retest Pass/Fail
                             if (!cellValue.trim().isEmpty()) {
                                 projectUatScriptDetail.setRetestPass(cellValue.equalsIgnoreCase("Pass"));
                             } else {
                                 projectUatScriptDetail.setRetestPass(false);
                             }
-                        } else if (cell.getAddress().getColumn() == 12) {
+                        } else if (cell.getAddress().getColumn() == 10) {
+                            //Remarks
                             if (!cellValue.trim().isEmpty()) {
                                 UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue);
                                 projectUatScriptDetail.setRemarks(new LinkedHashSet<UATRemark>() {{
@@ -355,9 +395,10 @@ public class ProjectUatService {
                     rw++;
                 }
             }
-            file.close();
             log.debug("projectUat => {} ", objectMapper.writeValueAsString(projectUat));
             projectUat = projectUatRepository.save(projectUat);
+            mediaService.uploadMediaFile(projectUat.getId(), EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, "NA", new MultipartFile[]{multipartFile}, loggedInUser);
+            file.close();
             miscService.notifyUatScriptUpload(loggedInUser, projectUat);
             return projectUat;
         } catch (IOException | InterruptedException e) {

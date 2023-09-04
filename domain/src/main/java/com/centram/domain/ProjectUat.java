@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.enumarator.Technology;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -39,13 +40,12 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
-    @Valid
     @NotNull
-    @OneToOne
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "project_id", nullable = false, referencedColumnName = "id")
+    @Valid
+    @Column(name = "technology", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
-    private Project project;
+    private Technology technology;
 
     @NotNull
     @Valid
@@ -58,6 +58,14 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @Column(name = "sub_module_id", nullable = false)
     @JsonView(Views.BasicView.class)
     private BigInteger subModuleId;
+
+    @Valid
+    @NotNull
+    @OneToOne
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "project_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
+    private Project project;
 
     @NotNull
     @Valid
@@ -91,6 +99,22 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @Column(name = "uat_cycle_complete", nullable = false)
     @JsonView(Views.BasicView.class)
     private Boolean uatCycleComplete = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String moduleName;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String subModuleName;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private MediaFile uatScript;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private MediaFile uatManual;
 
     public ProjectUat(@NotNull BigInteger id) {
         this.id = id;

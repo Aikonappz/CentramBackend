@@ -793,4 +793,45 @@ public class AppEmailService {
         emailService.sendMail(mailMap);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+    public void notifyUatProjectCreation(Map<String, Object> emailValues) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "UAT_PROJECT_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("UAT_PROJECT_EMAIL_TEMPLATE")).findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(emailValues.get("title")).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(emailValues.get("body")).toString();
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH, emailValues);
+        mailSubject = templateEngine.process(mailSubject, context);
+        context = new Context(Locale.ENGLISH, emailValues);
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", emailValues.get("recipient").toString().concat(","));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", emailValues.get("to"));
+        mailMap.put("cc", new String[]{});
+        mailMap.put("bcc", new String[]{});
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        //log.info("INCIDENT/ASSET EMAIL TITLE: {}", mailSubject);
+        //log.info("INCIDENT/ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        if (emailValues.get("notify") != null && emailValues.containsKey("notify")) {
+            List<Notification> allNotifications = (List<Notification>) emailValues.get("notify");
+            List<Notification> notifications = new ArrayList<Notification>();
+            for (Notification notification : allNotifications) {
+                notification.setNotificationTitle(mailSubject);
+                notification.setNotificationBody(mailBody);
+                notifications.add(notification);
+            }
+            notificationService.save(notifications);
+        }
+        emailService.sendMail(mailMap);
+    }
 }

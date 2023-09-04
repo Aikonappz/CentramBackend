@@ -13,6 +13,13 @@ export class Project extends Base {
     inHouse: boolean;
     status: any;
     organisation: Organisation;
+    start: any;
+    end: any;
+    technology: any;
+    moduleId: number;
+    moduleName:string;
+    subModuleId: number;
+    subModuleName:string;
 
     constructor() {
         super();
@@ -26,6 +33,11 @@ export class Project extends Base {
         this.consultants = [];
         this.status = 'ACTIVE';
         this.inHouse = true;
+        this.technology = null;
+        this.moduleId = null;
+        this.subModuleId = null;
+        this.start = null;
+        this.end = null;
         this.organisation = new Organisation();
     }
 }

@@ -26,9 +26,9 @@ public interface ProjectRepository extends JpaRepository<Project, BigInteger> {
 
     @Query("select p from Project p join p.organisation org where org.id = (:organisationId) and " +
             "  ( " +
-            "    ((:projectType) = 2 and 1 = 1) " +
+            "    ((:projectType) = 0 and 1 = 1) " +
             "    OR " +
-            "    ((:projectType) <> 2 and p.projectType = (:projectType)) " +
+            "    ((:projectType) <> 0 and p.projectType = (:projectType)) " +
             "  )" +
             "  and " +
             "  ( " +

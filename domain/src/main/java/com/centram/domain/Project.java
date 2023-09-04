@@ -4,6 +4,7 @@ import com.centram.common.view.Views;
 import com.centram.domain.converter.StringCommaSeparatedToListConverter;
 import com.centram.domain.enumarator.ProjectType;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.Technology;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -37,6 +39,7 @@ import java.util.List;
 @Audited
 public class Project extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575312184473432054L;
+
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +47,31 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private BigInteger id;
 
+    @NotNull
+    @Column(name = "technology")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private Technology technology;
+
+    @NotNull
+    @Valid
+    @Column(name = "module_id", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private BigInteger moduleId;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String moduleName;
+
+    @NotNull
+    @Valid
+    @Column(name = "sub_module_id", nullable = false)
+    @JsonView(Views.BasicView.class)
+    private BigInteger subModuleId;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String subModuleName;
 
     @NotNull
     @Valid
@@ -64,6 +92,17 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private String code;
 
+    @NotNull
+    @Valid
+    @Column(name = "uat_start", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime start;
+
+    @NotNull
+    @Valid
+    @Column(name = "uat_end", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime end;
 
     @Valid
     @Lob
@@ -91,6 +130,12 @@ public class Project extends BaseEntity implements Serializable {
     @Column(name = "in_house")
     @JsonView(Views.BasicView.class)
     private Boolean inHouse;
+
+    @NotNull
+    @Valid
+    @Column(name = "uat")
+    @JsonView(Views.BasicView.class)
+    private Boolean uat = true;
 
 
     @Valid

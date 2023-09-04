@@ -18,7 +18,7 @@ import { MiscService } from '../../../service/MiscService';
 export class ProjectComponent implements OnInit {
   moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['projectDetail', 'stakeHolders', 'consultants', 'managers', 'status', 'action'];
+  displayedColumns = ['projectType', 'name', 'code', 'managers', 'status', 'action'];
   datasource: ProjectDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   type: string;
@@ -106,10 +106,6 @@ export class ProjectComponent implements OnInit {
     // });
     //console.log(strArray.join(",").split(",,").join(","));
     return str.join('<br/>');
-  }
-
-  getTechnology(technology: any) {
-    console.log(technology);
   }
 
 }

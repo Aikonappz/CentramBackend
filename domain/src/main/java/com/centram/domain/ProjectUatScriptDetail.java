@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 /**
  * ProjectUatDetail
@@ -38,11 +37,6 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     @JsonView(Views.BasicView.class)
     private BigInteger id;
-
-    @Valid
-    @Column(name = "test_scenario_job_id", nullable = true)
-    @JsonView(Views.BasicView.class)
-    private String testScenarioJobId;
 
     @NotNull
     @Valid
@@ -90,6 +84,10 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     @Convert(converter = UATRemarkConverter.class)
     private LinkedHashSet<UATRemark> remarks;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean previousStepPassed = false;
 
     public ProjectUatScriptDetail(@NotNull BigInteger id) {
         this.id = id;

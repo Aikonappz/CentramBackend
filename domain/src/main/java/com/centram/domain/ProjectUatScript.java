@@ -28,7 +28,7 @@ import java.util.Set;
 @Entity
 @Table(name = "project_uat_script", indexes = {@Index(name = "project_uat_script_project_uat_id_index", columnList = "project_uat_id", unique = false),})
 @Audited
-public class ProjectUatScript extends BaseEntity implements Serializable {
+public class    ProjectUatScript extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -4081362839129406536L;
 
@@ -62,10 +62,6 @@ public class ProjectUatScript extends BaseEntity implements Serializable {
     @Column(name = "test_scenario", nullable = false, columnDefinition = "TEXT")
     @JsonView(Views.BasicView.class)
     private String testScenario;
-
-    @Column(name = "planned_date", nullable = false, updatable = false)
-    @JsonView(Views.BasicView.class)
-    private LocalDate plannedDate;
 
     @Valid
     @NotNull

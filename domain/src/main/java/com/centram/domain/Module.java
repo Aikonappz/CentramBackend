@@ -4,6 +4,7 @@ import com.centram.common.view.Views;
 import com.centram.domain.converter.StringCommaSeparatedToListConverter;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.Technology;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -113,6 +114,11 @@ public class Module implements Serializable {
 
     @Transient
     private String parentModuleName;
+
+    @NotNull
+    @Column(name = "technology")
+    @Enumerated(EnumType.ORDINAL)
+    private Technology technology;
 
     public Module(BigInteger id) {
         this.id = id;

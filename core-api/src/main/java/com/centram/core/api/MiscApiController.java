@@ -534,9 +534,9 @@ public class MiscApiController {
     @RequestMapping(value = "/project", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER','WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity<Project> saveProject(@Valid @RequestBody Project body) {
+    public ResponseEntity<Project> saveProject(@Valid @RequestBody Project body) throws JsonProcessingException, InterruptedException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<Project>(projectService.save(loggedInUser.getOrganisationId(), body), HttpStatus.OK);
+        return new ResponseEntity<Project>(projectService.save(loggedInUser, body), HttpStatus.OK);
     }
 
     /**

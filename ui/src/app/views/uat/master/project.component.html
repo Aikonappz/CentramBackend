@@ -25,31 +25,28 @@
                 </div>
                 <div class="card-body">
                     <table mat-table [dataSource]="datasource">
-                        <ng-container matColumnDef="projectDetail">
+                        <ng-container matColumnDef="projectType">
                             <th mat-header-cell *matHeaderCellDef> Project Type </th>
                             <td mat-cell *matCellDef="let element">
-                                <div>{{element.projectType}}</div>
-                                <div>{{element.technology}}</div>
-                                <div>{{element.moduleName}}/{{element.subModuleName}}</div>
-                                <div>{{element.name}} [ {{element.code}}]</div>
+                                {{element.projectType}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef> Project Name </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.name}}
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="code">
+                            <th mat-header-cell *matHeaderCellDef> Project Code </th>
+                            <td mat-cell *matCellDef="let element">
+                                {{element.code}}
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="managers">
                             <th mat-header-cell *matHeaderCellDef> Managers </th>
                             <td mat-cell *matCellDef="let element">
                                 <div [innerHtml]="formateManager(element.watchList)"></div>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="stakeHolders">
-                            <th mat-header-cell *matHeaderCellDef> Customers </th>
-                            <td mat-cell *matCellDef="let element">
-                                <div [innerHtml]="formateManager(element.stakeHolders)"></div>
-                            </td>
-                        </ng-container>
-                        <ng-container matColumnDef="consultants">
-                            <th mat-header-cell *matHeaderCellDef> Consultants </th>
-                            <td mat-cell *matCellDef="let element">
-                                <div [innerHtml]="formateManager(element.consultants)"></div>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="status">

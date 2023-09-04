@@ -13,6 +13,7 @@ export class ProjectUatScriptDetail extends Base {
   remarks: any[] = [];
   remark: string;
   editable: boolean = false;
+  previousStepPassed: boolean = false;
 }
 export interface ProjectUatScriptDetailList {
   content: ProjectUatScriptDetail[];

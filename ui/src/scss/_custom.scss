@@ -254,6 +254,10 @@ body {
   margin-top: 0.5em;
 }
 
+.row-margin-bottom-20 {
+  margin-bottom: 2.0em;
+}
+
 .row-margin-10 {
   margin-top: 1.0em;
 }
@@ -1117,4 +1121,10 @@ a.chat-close {
 .modal-extra-large {
   max-width: 80% !important;
   max-height: 80% !important;
+}
+
+
+.table thead th {
+  vertical-align: middle !important;
+  border-bottom: 2px solid #c8ced3 !important;
 }

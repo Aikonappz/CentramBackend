@@ -272,13 +272,6 @@ export class EditProjectComponent implements OnInit {
       });
   }
 
-
-
-  getkey(obj, value) {
-    const keyIndex = Object.values(obj).indexOf(value);
-    return Object.keys(obj)[keyIndex]
-  }
-
   callVendorService(id: number) {
     this.miscService
       .projectService(id)
@@ -294,29 +287,16 @@ export class EditProjectComponent implements OnInit {
         this.project.consultants = data.consultants;
         this.project.projectType = data.projectType;
         this.project.inHouse = data.inHouse;
-        this.project.technology = data.technology;
-        this.project.start = data.start;
-        this.project.end = data.end;
-        this.project.moduleId = data.moduleId;
-        this.project.subModuleId = data.subModuleId;
-
         //console.log(JSON.stringify(this.user));
         //this.populateSubmodule(moduleId);
-        this.angForm.get('technology').setValue(this.getkey(Technology, this.project.technology));
-        this.populateModule({ value: this.project.technology });
-        this.angForm.get('start').setValue(moment(this.project.start).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
-        this.angForm.get('end').setValue(moment(this.project.end).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT));
         this.angForm.get('projectType').setValue(this.project.projectType);
         this.angForm.get('inHouse').setValue(this.project.inHouse);
         this.angForm.get('name').setValue(this.project.name);
         this.angForm.get('code').setValue(this.project.code);
-        this.angForm.get('moduleId').setValue(this.project.moduleId);
-        this.populateSubmodule({ id: this.project.moduleId });
         this.statusFlag = String(this.project.status) == 'ACTIVE' ? true : false;
         this.angForm.get('watchList').setValue(this.project.watchList.map(String));
         this.angForm.get('stakeHolders').setValue(this.project.stakeHolders.map(String));
         this.angForm.get('consultants').setValue(this.project.consultants.map(String));
-        this.angForm.get('subModuleId').setValue(this.project.subModuleId);
         //this.angForm.markAllAsTouched();
       });
   }

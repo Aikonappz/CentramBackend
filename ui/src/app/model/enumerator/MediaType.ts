@@ -6,4 +6,5 @@ export enum MediaType {
     ASSET_REQUEST,
     CHAT_COMMUNICATION,
     PROJECT_UAT_MANUAL,
+    PROJECT_UAT_SCRIPT,
 }
