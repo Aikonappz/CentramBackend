@@ -54,6 +54,7 @@ import { UATProjectComponent } from './master/uatproject.component';
     BsDropdownModule.forRoot(),
     TabsModule,
     TextMaskModule,
+    ChartsModule,
     NgxMaskModule.forRoot(),
   ]
 })

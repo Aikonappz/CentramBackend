@@ -35,6 +35,7 @@ import { MediaType } from '../../../model/enumerator/MediaType';
 import { EntityType } from '../../../model/enumerator/EntityType';
 import { Technology } from '../../../model/enumerator/Technology';
 import { ProjectUatDataSource } from '../../../service/datasource/ProjectUatDataSource';
+import { ConfirmAlert } from '../../../containers/default-layout/modal/ConfirmAlert';
 declare var $: any;
 
 @Component({
@@ -82,10 +83,9 @@ export class UATActivityComponent implements OnInit {
   private projectUatScriptDetailSource: ProjectUatScriptDetailSource;
   @ViewChild('projectUatScriptDetailPaginator') projectUatScriptDetailPaginator: MatPaginator;
 
-  //uatCycleDisplayedColumns = ['select', 'testCaseId', 'testScriptName', 'testCaseDescription', 'testScenario', 'plannedDate'];
-  uatCycleDisplayedColumns = ['testCaseId', 'testScriptName', 'testCaseDescription', 'testScenario', 'plannedDate'];
-  datasourceUatCycle: ProjectUatScriptDataSource;
-  @ViewChild('MatPaginator2') uatCyclePaginator: MatPaginator;
+  projectUatScriptDisplayedColumns = ['testCaseId', 'testCaseDescription', 'status'];
+  projectUatScriptDataSource: ProjectUatScriptDataSource;
+  @ViewChild('projectUatScriptPaginator') projectUatScriptPaginator: MatPaginator;
   selection = new SelectionModel<ProjectUatScript>(true, []);
 
   constructor(
@@ -114,11 +114,22 @@ export class UATActivityComponent implements OnInit {
     this.miscService.projectsService()
       .subscribe((result: ProjectList) => {
         this.projectList = [];
-        for (let k = 0; k < result.content.length; k++) {
-          this.projectList.push(result.content[k]);
-        }
-        for (let k = 0; k < this.projectList.length; k++) {
-          this.projectList[k].label = this.projectList[k].name + " [" + this.projectList[k].code + "]";
+        if (this.isConsultant()) {
+          for (let k = 0; k < result.content.length; k++) {
+            if (result.content[k].consultants.includes(this.loggedInUser.email))
+              this.projectList.push(result.content[k]);
+          }
+          for (let k = 0; k < this.projectList.length; k++) {
+            this.projectList[k].label = this.projectList[k].name + " [" + this.projectList[k].code + "]";
+          }
+        } else if (this.isCustomer()) {
+          for (let k = 0; k < result.content.length; k++) {
+            if (result.content[k].stakeHolders.includes(this.loggedInUser.email))
+              this.projectList.push(result.content[k]);
+          }
+          for (let k = 0; k < this.projectList.length; k++) {
+            this.projectList[k].label = this.projectList[k].name + " [" + this.projectList[k].code + "]";
+          }
         }
         this.allProjectList = this.projectList;
       });
@@ -183,13 +194,16 @@ export class UATActivityComponent implements OnInit {
     }
     if (this.isCustomer()) {
       this.angUatCycleSearchForm = this.fb.group({
-        searchUatCycleProject: new FormControl(null, [
+        searchUatCycleTechnology: new FormControl(null, [
           Validators.required,
         ]),
         searchUatCycleModuleId: new FormControl(null, [
           Validators.required,
         ]),
         searchUatCycleSubModuleId: new FormControl(null, [
+          Validators.required,
+        ]),
+        searchUatCycleProject: new FormControl(null, [
           Validators.required,
         ]),
         searchUatCycleProjectId: new FormControl(null, [
@@ -289,8 +303,8 @@ export class UATActivityComponent implements OnInit {
     this.projectUatScriptDetailSource = new ProjectUatScriptDetailSource(this.projectUatService);
     this.projectUatScriptDetailSource.load(0, 10, this.uatCommunicationSearchedParam);
 
-    this.datasourceUatCycle = new ProjectUatScriptDataSource(this.projectUatService);
-    this.datasourceUatCycle.load(0, 10, this.uatCommunicationSearchedParam);
+    this.projectUatScriptDataSource = new ProjectUatScriptDataSource(this.projectUatService);
+    this.projectUatScriptDataSource.load(0, 10, this.uatCommunicationSearchedParam);
 
     if (this.isConsultant()) {
       this.projectUatDataSource = new ProjectUatDataSource(this.projectUatService);
@@ -313,14 +327,14 @@ export class UATActivityComponent implements OnInit {
       )
       .subscribe();
     if (this.isCustomer()) {
-      this.datasourceUatCycle.counter$
+      this.projectUatScriptDataSource.counter$
         .pipe(
           tap((count) => {
-            this.uatCyclePaginator.length = count;
+            this.projectUatScriptPaginator.length = count;
           })
         )
         .subscribe();
-      this.uatCyclePaginator.page
+      this.projectUatScriptPaginator.page
         .pipe(
           tap(() => this.uatCycleloadData())
         )
@@ -377,44 +391,6 @@ export class UATActivityComponent implements OnInit {
     }
   }
 
-
-
-
-  searchUatCycleFormSubmit() {
-    if (this.angUatCycleSearchForm.valid) {
-      //console.log(this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value);
-      this.uatCommunicationSearchedParam = { "projectUatId": this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value };
-      this.uatCycleloadData();
-      this.searchedUatCycle = true;
-      this.searchedUatCycleId = this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value;
-      //console.log(this.isUatCycleComplete());
-    } else {
-      console.log("Invalid Form!");
-    }
-  }
-
-  isUatCycleComplete() {
-    for (let k = 0; k < this.projectUats.length; k++) {
-      if (this.projectUats[k].id == this.searchedUatCycleId && this.projectUats[k].uatCycleComplete) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  markUatCycleComplete() {
-    let res = window.confirm("Are you sure?")
-    if (res) {
-      this.projectUatService
-        .markUATCycleComplete(this.searchedUatCycleId)
-        .subscribe((data: ProjectUat) => {
-          //console.log("updated data", JSON.stringify(data));
-          this.searchedUatCycle = false;
-          this.angUatCycleSearchForm.reset();
-        });
-    }
-  }
-
   /**
    * 
    * @param req 
@@ -423,14 +399,12 @@ export class UATActivityComponent implements OnInit {
     this.projectUatDataSource.load(this.projectUatScriptDetailPaginator.pageIndex, this.projectUatScriptDetailPaginator.pageSize, req);
   }
 
-  uatCycleloadData(req = {}) {
-    this.datasourceUatCycle.load(this.projectUatScriptDetailPaginator.pageIndex, this.projectUatScriptDetailPaginator.pageSize, this.uatCommunicationSearchedParam);
-  }
+
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.datasourceUatCycle.data.length;
+    const numRows = this.projectUatScriptDataSource.data.length;
     return numSelected === numRows;
   }
 
@@ -438,7 +412,7 @@ export class UATActivityComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.datasourceUatCycle.data.forEach(row => {
+      this.projectUatScriptDataSource.data.forEach(row => {
         //console.log(row);
         this.selection.select(row);
       });
@@ -504,99 +478,6 @@ export class UATActivityComponent implements OnInit {
       });
   }
 
-
-
-
-
-
-
-  /**
-   * 
-   */
-  @ViewChild("searchUatCycleProject") searchUatCycleProject;
-  uatCycleProjectModifyAction(searchUatCycleProject) {
-    //console.log(moduleId);
-    this.searchSubModuleList = [];
-    this.projectUatScriptList = [];
-    this.projectUats = [];
-    this.angUatCycleSearchForm.get('searchUatCycleModuleId').setValue(null);
-    this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
-    this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
-  }
-
-  /**
-  * 
-  */
-  @ViewChild("searchUatCycleModuleId") searchUatCycleModuleId;
-  uatCyclePopulateSubmodule(searchUatCycleModuleId) {
-    //console.log(moduleId);
-    if (typeof searchUatCycleModuleId !== 'undefined') {
-      this.searchSubModuleList = [];
-      for (let i = 0; i < this.projectModules.length; i++) {
-        if (this.projectModules[i].projectModule == true && this.projectModules[i].parentModuleId == searchUatCycleModuleId.id) {
-          this.searchSubModuleList.push(this.projectModules[i]);
-        }
-      }
-      this.projectUatScriptList = [];
-      this.projectUats = [];
-      this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
-      this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
-    } else {
-      this.searchSubModuleList = [];
-      this.projectUatScriptList = [];
-      this.projectUats = [];
-      this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
-      this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
-    }
-  }
-
-  @ViewChild("searchUatCycleSubModuleId") searchUatCycleSubModuleId;
-  uatCyclePopulateProjectUAT(searchUatCycleSubModuleId) {
-    //console.log(moduleId);
-    if (typeof searchUatCycleSubModuleId !== 'undefined') {
-      // console.log(
-      //   this.angSearchForm.controls['searchProject'].value,
-      //   this.angSearchForm.controls['searchModuleId'].value,
-      //   this.angSearchForm.controls['searchSubModuleId'].value
-      // );
-      if (
-        this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value != "" &&
-        this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value != "" &&
-        this.angUatCycleSearchForm.controls['searchUatCycleProject'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleProject'].value != ""
-      ) {
-        this.projectUatService
-          .getProjectUats({
-            projectId: this.angUatCycleSearchForm.controls['searchUatCycleProject'].value,
-            moduleId: this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value,
-            subModuleId: this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value,
-          })
-          .subscribe((data: ProjectUat[]) => {
-            this.projectUats = data;
-            for (let k = 0; k < this.projectUats.length; k++) {
-              if (this.projectUats[k].uatCycleComplete == false) {
-                this.projectUats[k].label = this.projectUats[k].uatCycleName;
-              } else {
-                this.projectUats[k].label = this.projectUats[k].uatCycleName + " - Complete";
-              }
-            }
-            this.projectUatScriptList = [];
-            this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
-          });
-      }
-    } else {
-      this.projectUats = [];
-      this.projectUatScriptList = [];
-      this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
-    }
-  }
-
-
-
-
-
-
-
-
   /**
    * 
    * @param projectUatScriptDetail 
@@ -606,38 +487,7 @@ export class UATActivityComponent implements OnInit {
     this.clientStorageService.set(projectUatScriptDetail.id.toString(), JSON.stringify(projectUatScriptDetail));
   }
 
-  /**
-   * 
-   * @param projectUatScriptDetail 
-   */
-  saveElement(projectUatScriptDetail: ProjectUatScriptDetail) {
-    if (projectUatScriptDetail.remark != null) {
-      if (projectUatScriptDetail.remarks == null) {
-        projectUatScriptDetail.remarks = [];
-      }
-      projectUatScriptDetail.remarks.push(
-        { name: this.loggedInUser.name, email: this.loggedInUser.email, comment: projectUatScriptDetail.remark, }
-      );
-    }
-    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false && projectUatScriptDetail.retestDate != null && projectUatScriptDetail.retestDate != "") {
-      projectUatScriptDetail.retestDate = moment(projectUatScriptDetail.retestDate).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
-    }
-    //console.log(this.clientStorageService.get(projectUatScriptDetail.id.toString()));
-    //console.log(JSON.stringify(projectUatScriptDetail));
-    //console.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));    
-    if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail))) {
-      this.projectUatService
-        .saveProjectUatScriptDetail(projectUatScriptDetail)
-        .subscribe((data: any) => {
-          this.clientStorageService.remove(projectUatScriptDetail.id.toString());
-          projectUatScriptDetail.remark = null;
-          projectUatScriptDetail.editable = false;
-          //console.log("updated data", JSON.stringify(data));
-        });
-    } else {
-      projectUatScriptDetail.editable = false;
-    }
-  }
+
 
   /**
    * 
@@ -657,22 +507,6 @@ export class UATActivityComponent implements OnInit {
     this.modalRef = this.modalService.show(RemarkViewer,
       Object.assign({}, config, { initialState })
     );
-  }
-
-  /**
-   * marking ProjectUat script as complete
-   */
-  markProjectUatScriptTestComplate() {
-    let res = window.confirm("Are you sure?")
-    if (res) {
-      this.projectUatService
-        .markProjectUatScriptComplete(this.searchedUatScriptId)
-        .subscribe((data: ProjectUatScript) => {
-          //console.log("updated data", JSON.stringify(data));
-          this.searched = false;
-          this.uatCommunicationSearchForm.reset();
-        });
-    }
   }
 
   /**
@@ -1043,6 +877,264 @@ export class UATActivityComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  /**
+   * 
+   * @param projectUatScriptDetail 
+   */
+  saveElement(projectUatScriptDetail: ProjectUatScriptDetail) {
+    if (projectUatScriptDetail.remark != null) {
+      if (projectUatScriptDetail.remarks == null) {
+        projectUatScriptDetail.remarks = [];
+      }
+      projectUatScriptDetail.remarks.push(
+        { name: this.loggedInUser.name, email: this.loggedInUser.email, comment: projectUatScriptDetail.remark, }
+      );
+    }
+    if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false && projectUatScriptDetail.retestDate != null && projectUatScriptDetail.retestDate != "") {
+      projectUatScriptDetail.retestDate = moment(projectUatScriptDetail.retestDate).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
+    }
+    //console.log(this.clientStorageService.get(projectUatScriptDetail.id.toString()));
+    //console.log(JSON.stringify(projectUatScriptDetail));
+    //console.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));    
+    if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail))) {
+      this.projectUatService
+        .saveProjectUatScriptDetail(projectUatScriptDetail)
+        .subscribe((data: any) => {
+          this.clientStorageService.remove(projectUatScriptDetail.id.toString());
+          projectUatScriptDetail.remark = null;
+          projectUatScriptDetail.editable = false;
+          //console.log("updated data", JSON.stringify(data));
+          this.loadData();
+          this.searched = true;
+        });
+    } else {
+      projectUatScriptDetail.editable = false;
+    }
+  }
+
+  /**
+   * marking ProjectUat script as complete
+   */
+  markProjectUatScriptTestComplate() {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-bg',
+    };
+    const initialState = {
+      msg: "Are you sure?",
+    };
+    this.modalRef = this.modalService.show(ConfirmAlert, Object.assign({}, config, { initialState }));
+
+    this.modalRef.content.onClose.subscribe(res => {
+      //console.log('results', result);
+      if (res) {
+        this.projectUatService
+          .markProjectUatScriptComplete(this.searchedUatScriptId)
+          .subscribe((data: ProjectUatScript) => {
+            //console.log("updated data", JSON.stringify(data));
+            this.searched = false;
+            this.uatCommunicationSearchForm.reset();
+          });
+      }
+    });
+  }
+
+  /**
+ * 
+ */
+  @ViewChild("searchUatCycleTechnology") searchUatCycleTechnology;
+  populateSearchUatCycleModule(searchUatCycleTechnology) {
+    //console.log(technology);
+    if (typeof searchUatCycleTechnology !== 'undefined') {
+      this.moduleList = [];
+      for (let i = 0; i < this.projectModules.length; i++) {
+        if (this.projectModules[i].projectModule == true && this.projectModules[i].technology == searchUatCycleTechnology.value) {
+          this.moduleList.push(this.projectModules[i]);
+        }
+      }
+    } else {
+      this.moduleList = [];
+    }
+    this.angUatCycleSearchForm.get('searchUatCycleModuleId').setValue(null);
+    this.searchSubModuleList = [];
+    this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
+    this.projectList = [];
+    this.angUatCycleSearchForm.get('searchUatCycleProject').setValue(null);
+    this.projectUats = [];
+    this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    this.searchUatCycle();
+  }
+
+  /**
+  * 
+  */
+  @ViewChild("searchUatCycleModuleId") searchUatCycleModuleId;
+  uatCyclePopulateSubmodule(searchUatCycleModuleId) {
+    //console.log(moduleId);
+    if (typeof searchUatCycleModuleId !== 'undefined') {
+      this.searchSubModuleList = [];
+      for (let i = 0; i < this.projectModules.length; i++) {
+        if (this.projectModules[i].projectModule == true && this.projectModules[i].parentModuleId == searchUatCycleModuleId.id) {
+          this.searchSubModuleList.push(this.projectModules[i]);
+        }
+      }
+    } else {
+      this.searchSubModuleList = [];
+    }
+    this.projectUatScriptList = [];
+    this.projectUats = [];
+    this.projectList = [];
+    this.angUatCycleSearchForm.get('searchUatCycleSubModuleId').setValue(null);
+    this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    this.angUatCycleSearchForm.get('searchUatCycleProject').setValue(null);
+    this.searchUatCycle();
+  }
+
+
+  @ViewChild("searchUatCycleSubModuleId") searchUatCycleSubModuleId;
+  uatCyclePopulateProjectUAT(searchUatCycleSubModuleId) {
+    if (typeof searchUatCycleSubModuleId !== 'undefined') {
+      this.projectList = [];
+      //console.log(Technology[this.angForm.controls['technology'].value], this.angForm.controls['moduleId'].value, this.angForm.controls['subModuleId'].value);
+      for (let k = 0; k < this.allProjectList.length; k++) {
+        if (Technology[this.angUatCycleSearchForm.controls['searchUatCycleTechnology'].value] == this.allProjectList[k].technology
+          && this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value == this.allProjectList[k].moduleId
+          && this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value == this.allProjectList[k].subModuleId) {
+          this.projectList.push(this.allProjectList[k]);
+        }
+      }
+    } else {
+      this.projectList = [];
+    }
+    this.angUatCycleSearchForm.get('searchUatCycleProject').setValue(null);
+    this.projectUats = [];
+    this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    this.searchUatCycle();
+  }
+
+
+  /**
+   * 
+   */
+  @ViewChild("searchUatCycleProject") searchUatCycleProject;
+  uatCycleProjectModifyAction(searchUatCycleProject) {
+    if (typeof searchUatCycleProject !== 'undefined') {
+      if (
+        this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value != "" &&
+        this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value != "" &&
+        this.angUatCycleSearchForm.controls['searchUatCycleProject'].value != null && this.angUatCycleSearchForm.controls['searchUatCycleProject'].value != ""
+      ) {
+        this.projectUatService
+          .getProjectUats({
+            projectId: this.angUatCycleSearchForm.controls['searchUatCycleProject'].value,
+            moduleId: this.angUatCycleSearchForm.controls['searchUatCycleModuleId'].value,
+            subModuleId: this.angUatCycleSearchForm.controls['searchUatCycleSubModuleId'].value,
+          })
+          .subscribe((data: ProjectUat[]) => {
+            this.projectUats = data;
+            for (let k = 0; k < this.projectUats.length; k++) {
+              if (this.projectUats[k].uatCycleComplete == false) {
+                this.projectUats[k].label = this.projectUats[k].uatCycleName;
+              } else {
+                this.projectUats[k].label = this.projectUats[k].uatCycleName + " - Complete";
+              }
+            }
+          });
+      } else {
+        this.projectUats = [];
+      }
+    } else {
+      this.projectUats = [];
+    }
+    this.angUatCycleSearchForm.get('searchUatCycleProjectId').setValue(null);
+    this.searchUatCycle();
+  }
+
+  @ViewChild("searchUatCycleProjectId") searchUatCycleProjectId;
+  uatCycleProjectIdModifyAction(searchUatCycleProject) {
+    this.searchUatCycle();
+  }
+
+  /**
+   * 
+   * @param req 
+   */
+  uatCycleloadData(req = {}) {
+    this.projectUatScriptDataSource.load(this.projectUatScriptDetailPaginator.pageIndex, this.projectUatScriptDetailPaginator.pageSize, this.uatCommunicationSearchedParam);
+  }
+
+  /**
+   * 
+   */
+  searchUatCycle() {
+    //console.log(this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value);
+    this.uatCommunicationSearchedParam = { "projectUatId": this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value };
+    this.uatCycleloadData();
+    this.searchedUatCycle = true;
+    this.searchedUatCycleId = this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value;
+    //console.log(this.isUatCycleComplete());
+  }
+
+  /**
+   * 
+   * @returns 
+   */
+  isUatCycleComplete(): boolean {
+    for (let k = 0; k < this.projectUats.length; k++) {
+      if (this.projectUats[k].id == this.searchedUatCycleId && this.projectUats[k].uatCycleComplete) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * 
+   * @returns 
+   */
+  canMarkComplete(): boolean {
+    for (let k = 0; k < this.projectUats.length; k++) {
+      if (this.projectUats[k].id == this.searchedUatCycleId && this.projectUats[k].canMarkComplete) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  /**
+   * 
+   */
+  markUatCycleComplete() {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-bg',
+    };
+    const initialState = {
+      msg: "Are you sure?",
+    };
+    this.modalRef = this.modalService.show(ConfirmAlert, Object.assign({}, config, { initialState }));
+
+    this.modalRef.content.onClose.subscribe(res => {
+      //console.log('results', result);
+      if (res) {
+        this.projectUatService
+          .markUATCycleComplete(this.searchedUatCycleId)
+          .subscribe((data: ProjectUat) => {
+            //console.log("updated data", JSON.stringify(data));
+            this.searchedUatCycle = false;
+            this.angUatCycleSearchForm.reset();
+          });
+      }
+    });
   }
 
 }

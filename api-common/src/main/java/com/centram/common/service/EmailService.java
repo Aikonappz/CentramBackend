@@ -57,6 +57,8 @@ public class EmailService {
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new MailParseException(e);
         }
+        // TODO : have to check before deploy
+        sendEmail = false;
         if (to.length > 0 && sendEmail) {
             javaMailSender.send(message);
         }

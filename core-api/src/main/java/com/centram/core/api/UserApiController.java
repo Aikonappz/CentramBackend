@@ -114,8 +114,9 @@ public class UserApiController {
      * @return
      */
     @RequestMapping(value = "/sign-out", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<CommonResponse> logout() {
-        return new ResponseEntity<CommonResponse>(userService.signOut(), HttpStatus.OK);
+    public ResponseEntity logout() {
+        userService.signOut();
+        return ResponseEntity.ok(null);
     }
 
     /**

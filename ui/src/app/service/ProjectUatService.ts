@@ -33,6 +33,9 @@ export class ProjectUatService {
         return this.http.put('/v1/project-uat/mark-project-uat-script-complete/' + uatScriptId, { "params": request });
     }
     getAllProjectUatScripts(request?: any): Observable<ProjectUatScriptList> {
+        if (request.projectUatId == null || typeof request.projectUatId == 'undefined') {
+            request.projectUatId = -1;
+        }
         return this.http.get('/v1/project-uat/uat-script', { "params": request });
     }
     markUATCycleComplete(projectUatId: number, request?: any): Observable<ProjectUat> {

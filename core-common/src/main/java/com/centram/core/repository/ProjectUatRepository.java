@@ -1,6 +1,8 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.vo.CategoryAdminDashboardVO;
+import com.centram.common.vo.IncidentPriorityVO;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
@@ -12,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -49,4 +52,11 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
     ProjectUat findByProjectUATScriptDetailId(
             @Param("projectUATScriptDetailId") BigInteger projectUATScriptDetailId
     );
+
+    @Query(value = " select p from ProjectUat p where p.createdDate BETWEEN (:start) and (:end) order by 1 asc ")
+    List<ProjectUat> uatDashboard(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
 }

@@ -204,21 +204,22 @@ public class UserService implements UserDetailsService {
      * @return
      */
     @Transactional(readOnly = false)
-    public CommonResponse signOut() {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String userName = jwtTokenUtil.getUsernameFromToken(loggedInUser.getAuthToken().replaceAll("(?i)".concat(jwtTokenPrefix), ""));
-        CommonResponse commonResponse = null;
-        if (redisTemplate.delete(userName)) {
-            UserAuth userAuth = userAuthService.getById(loggedInUser.getUserAuthId());
-            userAuth.setSignOutAt(LocalDateTime.now());
-            userAuthService.save(userAuth);
-            commonResponse = new CommonResponse(Boolean.TRUE, "LOGGED_OUT_SUCCESS");
-            SecurityContextHolder.clearContext();
-        } else {
-            commonResponse = new CommonResponse(Boolean.FALSE, "LOGGED_OUT_FAILED");
+    public void signOut() {
+        try {
+            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (loggedInUser != null) {
+                String userName = jwtTokenUtil.getUsernameFromToken(loggedInUser.getAuthToken().replaceAll("(?i)".concat(jwtTokenPrefix), ""));
+                if (redisTemplate.delete(userName)) {
+                    UserAuth userAuth = userAuthService.getById(loggedInUser.getUserAuthId());
+                    userAuth.setSignOutAt(LocalDateTime.now());
+                    userAuthService.save(userAuth);
+                    SecurityContextHolder.clearContext();
+                    log.info("Sign Out Successful!");
+                }
+            }
+        } catch (ClassCastException e) {
+            log.error("Unnecessary Sign Out Call!");
         }
-
-        return commonResponse;
     }
 
     /**

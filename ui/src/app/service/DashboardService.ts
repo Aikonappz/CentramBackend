@@ -6,6 +6,7 @@ import { OrgAdminDashboardVO } from '../model/OrgAdminDashboardVO';
 import { UserDashboardVO } from '../model/UserDashboardVO';
 import { AgentDashboardVO } from '../model/AgentDashboardVO';
 import { CategoryAdminDashboardVO } from '../model/CategoryAdminDashboardVO';
+import { UATDashboardVO } from '../model/UATDashboardVO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -26,5 +27,8 @@ export class DashboardService {
     }
     categoryAdminDashboard(request?: any): Observable<CategoryAdminDashboardVO> {
         return this.http.get('/v1/dashboard/category-admin', { "params": request });
+    }
+    uatDashboard(request?: any): Observable<UATDashboardVO> {
+        return this.http.get('/v1/dashboard/uat', { "params": request });
     }
 }

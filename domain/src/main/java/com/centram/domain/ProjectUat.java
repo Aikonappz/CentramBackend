@@ -116,6 +116,14 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private MediaFile uatManual;
 
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean canMarkComplete = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String status;
+
     public ProjectUat(@NotNull BigInteger id) {
         this.id = id;
     }

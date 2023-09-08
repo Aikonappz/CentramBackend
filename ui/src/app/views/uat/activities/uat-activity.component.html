@@ -311,7 +311,7 @@
                   <th class="retestDetailHeader" mat-header-cell *matHeaderCellDef> Retest Detail </th>
                   <td class="retestDetailBody" mat-cell *matCellDef="let element">
                     <div *ngIf="retestNotEditable(element); else editingTemplate">
-                      <div><b><u>Re-test Date</u> - </b>{{element.retestDate==null? 'NA' : element.retestDate}}</div>
+                      <div><b><u>Re-test Date </u> - </b>{{element.retestDate==null? 'NA' : element.retestDate}}</div>
                       <hr />
                       <div><b><u>Re-Test Passed</u> - </b>{{element.retestPass==true? 'Yes' : 'No'}}</div>
                     </div>
@@ -379,21 +379,21 @@
         </tab>
         <tab *ngIf="isCustomer()" heading="Project UAT Activities">
           <div class="card">
-            <form [formGroup]="angUatCycleSearchForm" (ngSubmit)="searchUatCycleFormSubmit()" novalidate>
+            <form [formGroup]="angUatCycleSearchForm" (ngSubmit)="searchUatCycle()" novalidate>
               <div class="card-body">
                 <div class="row">
                   <div class="col">
                     <label class="form-col-form-label required-control-label"
-                      for="searchUatCycleProject">Project</label>
-                    <ng-select [items]="projectList" #searchUatCycleProject
-                      (change)="uatCycleProjectModifyAction($event)" placeholder="-- Select Project --"
-                      formControlName="searchUatCycleProject" id="searchUatCycleProject" searchProject
-                      name="searchUatCycleProject" bindLabel="label" bindValue="id">
+                      for="searchUatCycleTechnology">Technology</label>
+                    <ng-select #searchUatCycleTechnology (change)="populateSearchUatCycleModule($event)"
+                      [items]="technologyList" placeholder="-- Select Technology --"
+                      formControlName="searchUatCycleTechnology" id="searchUatCycleTechnology" searchUatCycleTechnology
+                      name="searchUatCycleTechnology" bindLabel="value" bindValue="key">
                     </ng-select>
-                    <div *ngIf="suf.searchUatCycleProject.touched && suf.searchUatCycleProject.invalid"
+                    <div *ngIf="sf.searchTechnology.touched && sf.searchTechnology.invalid"
                       class="alert alert-danger-custom">
-                      <div *ngIf="suf.searchUatCycleProject.errors?.required">
-                        Project is required.
+                      <div *ngIf="sf.searchTechnology.errors?.required">
+                        Technology is required.
                       </div>
                     </div>
                   </div>
@@ -428,11 +428,27 @@
                     </div>
                   </div>
                   <div class="col">
+                    <label class="form-col-form-label required-control-label"
+                      for="searchUatCycleProject">Project</label>
+                    <ng-select [items]="projectList" #searchUatCycleProject
+                      (change)="uatCycleProjectModifyAction($event)" placeholder="-- Select Project --"
+                      formControlName="searchUatCycleProject" id="searchUatCycleProject" searchProject
+                      name="searchUatCycleProject" bindLabel="label" bindValue="id">
+                    </ng-select>
+                    <div *ngIf="suf.searchUatCycleProject.touched && suf.searchUatCycleProject.invalid"
+                      class="alert alert-danger-custom">
+                      <div *ngIf="suf.searchUatCycleProject.errors?.required">
+                        Project is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
                     <label class="form-col-form-label required-control-label" for="searchUatCycleProjectId">UAT
                       Cycle</label>
-                    <ng-select [items]="projectUats" placeholder="-- Select Project UAT --"
-                      formControlName="searchUatCycleProjectId" id="searchUatCycleProjectId" searchUatCycleProjectId
-                      name="searchUatCycleProjectId" bindLabel="label" bindValue="id"></ng-select>
+                    <ng-select [items]="projectUats" placeholder="-- Select Project UAT --" #searchUatCycleProjectId
+                      (change)="uatCycleProjectIdModifyAction($event)" formControlName="searchUatCycleProjectId"
+                      id="searchUatCycleProjectId" searchUatCycleProjectId name="searchUatCycleProjectId"
+                      bindLabel="label" bindValue="id"></ng-select>
                     <div *ngIf="suf.searchUatCycleProjectId.touched && suf.searchUatCycleProjectId.invalid"
                       class="alert alert-danger-custom">
                       <div *ngIf="suf.searchUatCycleProjectId.errors?.required">
@@ -442,28 +458,17 @@
                   </div>
                 </div>
               </div>
-              <div class="row row-margin-05"></div>
-              <div class="card-footer">
-                <button type="submit" [disabled]="!angUatCycleSearchForm.valid" class="btn btn-primary btn-sm">
-                  <i class="fa fa-search"></i> Search
-                </button>
-                <button type="button" (click)="resetSearchUatCycleForm()" class="btn btn-danger btn-sm">
-                  Cancel
-                </button>
-                <!-- <button *ngIf="searchedUatCycle" [disabled]="!isAllSelected()" type="button"
-                  class="btn btn-sm btn-secondary">Mark
-                  Uat Cycle
-                  Complete</button> -->
-
-                <button (click)="markUatCycleComplete()" *ngIf="searchedUatCycle&&!isUatCycleComplete()" type="button"
-                  class="btn btn-sm btn-secondary">Mark
-                  Uat Cycle
-                  Complete</button>
+              <div class="row row-margin-05">
+                <div class="col">
+                  <button (click)="markUatCycleComplete()"
+                    *ngIf="searchedUatCycle&&!isUatCycleComplete()&&canMarkComplete()" type="button"
+                    class="btn btn-sm btn-secondary">Mark Uat Cycle Complete</button>
+                </div>
               </div>
             </form>
-            <hr [ngClass]="{'d-none': searchedUatCycle == false}" />
-            <div [ngClass]="{'d-none': searchedUatCycle == false}" class="card">
-              <table class="table-bordered" mat-table class="script-table" [dataSource]="datasourceUatCycle">
+            <hr />
+            <div class="card">
+              <table class="table-bordered" mat-table class="script-table" [dataSource]="projectUatScriptDataSource">
                 <!-- <ng-container matColumnDef="select">
                   <th style="text-align: left;" mat-header-cell *matHeaderCellDef>
                     <input id="select-all" type="checkbox" (change)="$event ? masterToggle() : null"
@@ -480,8 +485,9 @@
                   <th mat-header-cell *matHeaderCellDef> Test Case Id </th>
                   <td mat-cell *matCellDef="let element">
                     <span [ngClass]="{
-                      'badge-closed': element.uatComplete,                      
-                      'badge-sla-breached': !element.uatComplete,                      
+                      'badge-closed': element.status =='Completed',                      
+                      'badge-sla-breached': element.status =='Not Started',   
+                      'badge-sla-about-to-breach' : element.status =='In Progress',                     
                       'badge':true
                       }">{{element.testCaseId}}</span>
                   </td>
@@ -492,28 +498,21 @@
                     {{element.testCaseDescription}}
                   </td>
                 </ng-container>
-                <ng-container matColumnDef="testScriptName">
-                  <th mat-header-cell *matHeaderCellDef> Test Script Name </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{element.testScriptName}}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="testScenario">
-                  <th mat-header-cell *matHeaderCellDef> Test Scenario </th>
-                  <td mat-cell *matCellDef="let element">
-                    {{element.testScenario}}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="plannedDate">
+                <ng-container matColumnDef="status">
                   <th mat-header-cell *matHeaderCellDef>
-                    Planned Date
+                    Status
                   </th>
                   <td align="center" mat-cell *matCellDef="let element">
-                    <span>{{formatDate(element.plannedDate)}}</span>
+                    <span [ngClass]="{
+                    'badge-closed': element.status =='Completed',                      
+                    'badge-sla-breached': element.status =='Not Started',   
+                    'badge-sla-about-to-breach' : element.status =='In Progress',                     
+                    'badge':true
+                    }">{{element.status}}</span>
                   </td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="uatCycleDisplayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; let even = even; columns: uatCycleDisplayedColumns;"
+                <tr mat-header-row *matHeaderRowDef="projectUatScriptDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; let even = even; columns: projectUatScriptDisplayedColumns;"
                   [ngClass]="{gray: even}">
                 </tr>
                 <tr class="mat-row" *matNoDataRow>
@@ -522,7 +521,8 @@
                   </td>
                 </tr>
               </table>
-              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" #MatPaginator2 [pageSize]="10"></mat-paginator>
+              <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" #projectUatScriptPaginator
+                [pageSize]="10"></mat-paginator>
             </div>
           </div>
         </tab>

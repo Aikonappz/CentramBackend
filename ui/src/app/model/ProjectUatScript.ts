@@ -11,6 +11,7 @@ export class ProjectUatScript extends Base {
     uatComplete: boolean;
     projectUatScriptDetails: ProjectUatScriptDetail[];
     label: string;
+    status: string;
 }
 
 export interface ProjectUatScriptList {

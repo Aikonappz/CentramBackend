@@ -1,3 +1,74 @@
 <div class="animated fadeIn">
-  <h1>UAT DAHSBOARD</h1>
+  <tabset>
+    <tab heading="UAT">
+      <div class="card">
+        <div class="card-body">
+          <div id="dataSets-app-admin" class="row-margin-05">
+            <h3 class="accordion-toggle"><b>UAT Cycles By Status</b>
+            </h3>
+            <div>
+              <div class="row">
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #437ff7a8">
+                    <div class="card-body pb-0">
+                      <button type="button" class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{uatDashboardVO.total}}</div>
+                      <div>Total UAT Cycle</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #08d620a9">
+                    <div class="card-body pb-0">
+                      <button type="button" class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{uatDashboardVO.notStarted}}</div>
+                      <div>Not Started UAT Cycle</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #f63c6e83">
+                    <div class="card-body pb-0">
+                      <button type="button" class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{uatDashboardVO.inProgress}}</div>
+                      <div>In Progress UAT Cycle</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #8939f283">
+                    <div class="card-body pb-0">
+                      <button type="button" class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{uatDashboardVO.completed}}</div>
+                      <div>Completed UAT Cycle</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+              </div>
+              <div class="row">
+                <!-- <canvas baseChart width="5" height="1" (chartHover)="chartHovered($event)"
+                  (chartClick)="siteAdminChart1($event)" [colors]="colors" [data]="dataSets"
+                  [labels]="lables" [chartType]="chartType" [options]="chartOptions" [legend]="true">
+                </canvas> -->
+                <canvas baseChart width="5" height="1" [colors]="colors" [data]="dataSets" [labels]="lables"
+                  [chartType]="chartType" [options]="chartOptions" [legend]="true">
+                </canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </tab>
+  </tabset>
 </div>

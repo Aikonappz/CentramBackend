@@ -149,7 +149,21 @@ public class ProjectUatService {
      */
     @Transactional(readOnly = true)
     public PaginatedList<ProjectUatScript> getProjectUatScripts(BigInteger projectUatId, Pageable pageable) {
+        if (projectUatId.compareTo(BigInteger.valueOf(-1)) == 0) {
+            return new PaginatedList<ProjectUatScript>(Page.empty());
+        }
         Page<ProjectUatScript> page = projectUatRepository.getProjectUatScripts(projectUatId, pageable);
+        page.getContent().forEach(i -> {
+            long noOftestCase = i.getProjectUatScriptDetails().size();
+            long noOftestCasePassed = i.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count();
+            if (i.getUatComplete() && noOftestCase == noOftestCasePassed) {
+                i.setStatus("Completed");
+            } else if (noOftestCasePassed == 0) {
+                i.setStatus("Not Started");
+            } else {
+                i.setStatus("In Progress");
+            }
+        });
         return new PaginatedList<ProjectUatScript>(page);
     }
 
@@ -187,7 +201,16 @@ public class ProjectUatService {
      */
     @Transactional(readOnly = true)
     public List<ProjectUat> getProjectUats(BigInteger projectId, BigInteger moduleId, BigInteger subModuleId) {
-        return projectUatRepository.getByProjectIdAndModuleIdAndSubModuleId(projectId, moduleId, subModuleId);
+        List<ProjectUat> projectUats = projectUatRepository.getByProjectIdAndModuleIdAndSubModuleId(projectId, moduleId, subModuleId);
+        projectUats.stream().forEach(i->{
+            long noOfScript = i.getProjectUatScripts().size();
+            long noOftestCasePassed = i.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
+            if(noOfScript==noOftestCasePassed){
+                i.setCanMarkComplete(true);
+            }
+        });
+
+        return  projectUats;
     }
 
     /**

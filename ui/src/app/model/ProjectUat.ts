@@ -11,10 +11,11 @@ export class ProjectUat extends Base {
     uatCycleName: string;
     label: string;
     subModuleId: number;
-    projectUatScripts: ProjectUatScript[];    
+    projectUatScripts: ProjectUatScript[];
     organisation: Organisation;
     user: UserVO;
     uatCycleComplete: boolean;
+    canMarkComplete: boolean;
 }
 
 export interface ProjectUatList {

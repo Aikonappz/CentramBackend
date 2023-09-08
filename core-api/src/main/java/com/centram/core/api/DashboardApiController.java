@@ -57,7 +57,6 @@ public class DashboardApiController {
     @RequestMapping(value = "/user", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
     public ResponseEntity<UserDashboardVO> userDashboard(
-            
             @RequestParam(value = "currentDate", defaultValue = "", required = true)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
     ) {
@@ -68,7 +67,6 @@ public class DashboardApiController {
     @RequestMapping(value = "/agent", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
     public ResponseEntity<AgentDashboardVO> agentDashboard(
-            
             @RequestParam(value = "currentDate", defaultValue = "", required = true)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
     ) {
@@ -79,10 +77,18 @@ public class DashboardApiController {
     @RequestMapping(value = "/category-admin", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
     public ResponseEntity<CategoryAdminDashboardVO> categoryAdminDashboard(
-            
             @RequestParam(value = "currentDate", defaultValue = "", required = true)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
     ) {
         return new ResponseEntity<CategoryAdminDashboardVO>(dashboardService.categoryAdminDashboard(currentDate), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/uat", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
+    public ResponseEntity<UATDashboardVO> uatDashboard(
+            @RequestParam(value = "currentDate", defaultValue = "", required = true)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    ) {
+        return new ResponseEntity<UATDashboardVO>(dashboardService.uatDashboard(currentDate), HttpStatus.OK);
     }
 }
