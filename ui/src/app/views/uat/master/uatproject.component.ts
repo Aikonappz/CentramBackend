@@ -99,7 +99,7 @@ export class UATProjectComponent implements OnInit {
     this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
   }
 
-  formateManager(str: String[]) {
+  format(str: String[]) {
     // var strArray = 
     // strArray = strArray.filter((item) => {
     //   return item !== '';

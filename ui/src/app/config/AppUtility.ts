@@ -24,8 +24,8 @@ export class AppUtility {
     public static APP_CHAT_ACTIVITY_CHECK_INTERVAL = 1000;
     public static APP_CHAT_SESSION_WARNING_INTERVAL = 55;
     public static APP_CHAT_SESSION_END_INTERVAL = 60;
-    public static APP_LOGOUT_WARNING_INTERVAL = 1;
-    public static APP_NON_ACTIVITY_LOGOUT_INTERVAL = 2;
+    public static APP_LOGOUT_WARNING_INTERVAL = 10;
+    public static APP_NON_ACTIVITY_LOGOUT_INTERVAL = 20;
     public static MAX_PAGE_SIZE = 2147483647;
     public static APP_CHAT_SESSION_ALERT_ENABLED_KEY = 'appChatSessionTimeout';
     public static APP_HAS_ACTIVE_CHAT_SESSION = 'chatSessionActive';

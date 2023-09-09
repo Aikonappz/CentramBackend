@@ -305,7 +305,7 @@ export class DefaultLayoutComponent implements OnInit {
       const now = Date.now();
       const timeleft = this.getLastAction() + AppUtility.APP_NON_ACTIVITY_LOGOUT_INTERVAL * 60 * 1000;
       const warningTimeleft = this.getLastAction() + AppUtility.APP_LOGOUT_WARNING_INTERVAL * 60 * 1000;
-      console.log(warningTimeleft);
+      //console.log(warningTimeleft);
       const diff = timeleft - now;
       const isTimeout = diff < 0;
       //console.log("timeleft => " + timeleft);

@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.UatScriptReportDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
@@ -11,6 +12,7 @@ import com.centram.domain.Organisation;
 import com.centram.domain.Vendor;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
+import com.centram.domain.enumarator.Technology;
 import com.centram.domain.enumarator.VendorType;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 
@@ -181,6 +184,40 @@ public class ReportApiController {
     public ResponseEntity<Resource> assetAssignmentReportDownload(@RequestParam(value = "incidentType", defaultValue = "INCIDENT", required = false) String incidentType, @RequestParam(value = "assigned", defaultValue = "-1", required = false) Integer assigned, @RequestParam(value = "deallocated", defaultValue = "-1", required = false) Integer deallocated, @RequestParam(value = "serialNo", defaultValue = "", required = false) String serialNo, @RequestParam(value = "approved", defaultValue = "-1", required = false) Integer approved, @RequestParam(value = "incidentNo", defaultValue = "", required = false) String incidentNo, @RequestParam(value = "assignedUserId", defaultValue = "", required = false) String assignedUserId, @RequestParam(value = "raisedUserId", defaultValue = "", required = false) String raisedUserId, @RequestParam(value = "priorityId", defaultValue = "", required = false) String priorityId, @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId, @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId, @RequestParam(value = "title", defaultValue = "", required = false) String title, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status) {
         final InputStreamResource resource = new InputStreamResource(reportService.assetAssignmentReportDownload(incidentType, assigned, deallocated, serialNo, approved, incidentNo, moduleId, subModuleId, priorityId, assignedUserId, raisedUserId, title, status));
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "asset-assignment-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
+    }
+
+    @RequestMapping(value = "/uat", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REPORT,UAT REPORT','READ,READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<UatScriptReportDTO>> uatReport(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
+            @RequestParam(value = "technology", defaultValue = "SAP_SUCCESS_FACTORS", required = false) String technology,
+            @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
+            @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
+            @RequestParam(value = "projectId", defaultValue = "", required = false) String projectId,
+            @RequestParam(value = "projectUatId", defaultValue = "", required = false) String projectUatId,
+            @RequestParam(value = "projectUatScriptId", defaultValue = "", required = false) String projectUatScriptId,
+            @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<UatScriptReportDTO>>(reportService.uatReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId,  pageable), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/uat/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REPORT,UAT REPORT','READ,READ',authentication.principal)")
+    public ResponseEntity<Resource> uatReportDownload(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
+            @RequestParam(value = "technology", defaultValue = "SAP_SUCCESS_FACTORS", required = false) String technology,
+            @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
+            @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
+            @RequestParam(value = "projectId", defaultValue = "", required = false) String projectId,
+            @RequestParam(value = "projectUatId", defaultValue = "", required = false) String projectUatId,
+            @RequestParam(value = "projectUatScriptId", defaultValue = "", required = false) String projectUatScriptId,
+            @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+
+        final InputStreamResource resource = new InputStreamResource(reportService.uatReportDownload( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId,  pageable));
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "uat-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
 }

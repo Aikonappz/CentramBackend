@@ -1,11 +1,14 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.dto.UatScriptReportDTO;
 import com.centram.common.vo.CategoryAdminDashboardVO;
 import com.centram.common.vo.IncidentPriorityVO;
+import com.centram.domain.Incident;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
+import com.centram.domain.enumarator.Technology;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,5 +61,53 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    @Query(value = "select new com.centram.common.dto.UatScriptReportDTO(pu, pus) from ProjectUat pu join pu.projectUatScripts pus " +
+            " where (pu.createdDate between (:start) and (:end)) and pu.technology = (:technology) and " +
+            " ( " +
+            "   ((:moduleId) is not null and pu.moduleId = (:moduleId)) " +
+            "   OR " +
+            "   ((:moduleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:subModuleId) is not null and pu.subModuleId = (:subModuleId)) " +
+            "   OR " +
+            "   ((:subModuleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:projectId) is not null and pu.project.id = (:projectId)) " +
+            "   OR " +
+            "   ((:projectId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:projectUatId) is not null and pu.id = (:projectUatId)) " +
+            "   OR " +
+            "   ((:projectUatId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:uploadedByUserId) is not null and pu.uploadedBy.id = (:uploadedByUserId)) " +
+            "   OR " +
+            "   ((:uploadedByUserId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:projectUatScriptId) is not null and pus.id = (:projectUatScriptId)) " +
+            "   OR " +
+            "   ((:projectUatScriptId) is null) " +
+            " ) "
+           )
+    Page<UatScriptReportDTO> uatReport(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("technology") Technology technology,
+            @Param("moduleId") BigInteger moduleId,
+            @Param("subModuleId") BigInteger subModuleId,
+            @Param("projectId") BigInteger projectId,
+            @Param("projectUatId") BigInteger projectUatId,
+            @Param("projectUatScriptId") BigInteger projectUatScriptId,
+            @Param("uploadedByUserId") BigInteger uploadedByUserId,
+            Pageable pageable
+    );
+
+
 
 }

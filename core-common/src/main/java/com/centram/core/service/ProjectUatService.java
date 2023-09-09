@@ -3,6 +3,7 @@ package com.centram.core.service;
 
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.ProjectUATRequestDTO;
+import com.centram.common.dto.UatScriptReportDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
@@ -13,6 +14,7 @@ import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.MediaType;
+import com.centram.domain.enumarator.Technology;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
@@ -205,9 +207,10 @@ public class ProjectUatService {
         projectUats.stream().forEach(i->{
             long noOfScript = i.getProjectUatScripts().size();
             long noOftestCasePassed = i.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
-            if(noOfScript==noOftestCasePassed){
+            i.setCanMarkComplete(true);
+            /*if(noOfScript==noOftestCasePassed){
                 i.setCanMarkComplete(true);
-            }
+            }*/
         });
 
         return  projectUats;
@@ -463,5 +466,24 @@ public class ProjectUatService {
             put("row", cell.getAddress().getRow() + 1);
             put("errorMessage", errorMessage);
         }};
+    }
+
+    /**
+     *
+     * @param start
+     * @param end
+     * @param technology
+     * @param moduleId
+     * @param subModuleId
+     * @param projectId
+     * @param projectUatId
+     * @param projectUatScriptId
+     * @param uploadedByUserId
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Page<UatScriptReportDTO> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger projectUatScriptId, BigInteger uploadedByUserId, Pageable pageable) {
+        return projectUatRepository.uatReport( start, end, technology,  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId,  pageable);
     }
 }

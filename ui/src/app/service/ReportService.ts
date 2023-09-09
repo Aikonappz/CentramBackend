@@ -59,4 +59,10 @@ export class ReportService {
     downloadAssetAssignmentReport(request?: any): Observable<any> {
         return this.http.get('/v1/report/asset/assignment/download', { "params": request, responseType: 'blob' });
     }
+    uatReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/uat', { "params": request });
+    }
+    downloadUatReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/uat/download', { "params": request, responseType: 'blob' });
+    }
 }

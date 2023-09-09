@@ -309,7 +309,7 @@ export class UATActivityComponent implements OnInit {
     if (this.isConsultant()) {
       this.projectUatDataSource = new ProjectUatDataSource(this.projectUatService);
       this.projectUatDataSource.load(0, 10, {});
-      this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
+      //this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
     }
   }
 
@@ -821,17 +821,17 @@ export class UATActivityComponent implements OnInit {
     this.uatCommunicationSearchedParam = { projectUATScriptId: this.uatCommunicationSearchForm.controls['searchUatProjectScriptId'].value, };
     if (this.isScriptUATComplete()) {
       this.searchedUatScriptComplete = true;
-      if (this.isConsultant()) {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks',];
-      } else {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
-      }
+      // if (this.isConsultant()) {
+      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks',];
+      // } else {
+      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+      // }
     } else {
-      if (this.isConsultant()) {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
-      } else {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
-      }
+      // if (this.isConsultant()) {
+      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
+      // } else {
+      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+      // }
     }
     this.loadData();
     this.searched = true;
@@ -873,7 +873,19 @@ export class UATActivityComponent implements OnInit {
    * @returns 
    */
   retestNotEditable(element: ProjectUatScriptDetail): boolean {
-    if (!element.editable || element.pass) {
+    if (!element.editable || element.pass || this.isConsultant()) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 
+   * @param element 
+   * @returns 
+   */
+  resultNotEditable(element: ProjectUatScriptDetail): boolean {
+    if (!element.editable || this.isConsultant()) {
       return true;
     }
     return false;

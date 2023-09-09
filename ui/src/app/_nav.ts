@@ -249,7 +249,7 @@ export const navItems: INavData[] = [
         name: 'UAT Report',
         url: '/uat/report',
         icon: 'fa fa-folder-open',
-        attributes: { "parentModule": "UAT", "moduleName": "SITE ADMIN REPORT", "licenceType": "ALL,UAT" }
+        attributes: { "parentModule": "UAT", "moduleName": "UAT REPORT", "licenceType": "ALL,UAT" }
       },
     ]
   },
