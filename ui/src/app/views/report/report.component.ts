@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
+import { AppUtility } from '../../config/AppUtility';
 
 @Component({
   selector: 'app-report',
@@ -48,7 +49,7 @@ export class ReportComponent implements OnInit {
     } else if (this.roles.includes('ORG_ADMIN') || this.hasAgentRole() || this.hasCategoryAdminRole()) {
       this.router.navigate(['/report/incident-report']);
     } else if (this.hasUserRole()) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
     }
   }
 

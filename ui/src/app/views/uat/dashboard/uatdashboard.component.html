@@ -11,7 +11,8 @@
                 <div class="col-sm-2">
                   <div class="card text-black " style="background-color: #437ff7a8">
                     <div class="card-body pb-0">
-                      <button type="button" class="btn btn-transparent p-0 float-right">
+                      <button type="button" (click)='viewUat({status:"total"})'
+                        class="btn btn-transparent p-0 float-right">
                         <i class="icon-eye"></i>
                       </button>
                       <div class="text-value">{{uatDashboardVO.total}}</div>
@@ -23,10 +24,12 @@
                 <div class="col-sm-2">
                   <div class="card text-black " style="background-color: #08d620a9">
                     <div class="card-body pb-0">
-                      <button type="button" class="btn btn-transparent p-0 float-right">
+                      <button type="button" (click)='viewUat({status:"notStarted"})'
+                        class="btn btn-transparent p-0 float-right">
                         <i class="icon-eye"></i>
                       </button>
-                      <div class="text-value">{{uatDashboardVO.notStarted}}</div>
+                      <div class="text-value">{{uatDashboardVO.notStarted}}
+                      </div>
                       <div>Not Started UAT Cycle</div>
                     </div>
                   </div>
@@ -35,10 +38,12 @@
                 <div class="col-sm-2">
                   <div class="card text-black " style="background-color: #f63c6e83">
                     <div class="card-body pb-0">
-                      <button type="button" class="btn btn-transparent p-0 float-right">
+                      <button type="button" (click)='viewUat({status:"inProgress"})'
+                        class="btn btn-transparent p-0 float-right">
                         <i class="icon-eye"></i>
                       </button>
-                      <div class="text-value">{{uatDashboardVO.inProgress}}</div>
+                      <div class="text-value">{{uatDashboardVO.inProgress}}
+                      </div>
                       <div>In Progress UAT Cycle</div>
                     </div>
                   </div>
@@ -46,7 +51,8 @@
                 <div class="col-sm-2">
                   <div class="card text-black " style="background-color: #8939f283">
                     <div class="card-body pb-0">
-                      <button type="button" class="btn btn-transparent p-0 float-right">
+                      <button type="button" (click)='viewUat({status:"completed"})'
+                        class="btn btn-transparent p-0 float-right">
                         <i class="icon-eye"></i>
                       </button>
                       <div class="text-value">{{uatDashboardVO.completed}}</div>
@@ -61,8 +67,9 @@
                   (chartClick)="siteAdminChart1($event)" [colors]="colors" [data]="dataSets"
                   [labels]="lables" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                 </canvas> -->
-                <canvas baseChart width="5" height="1" [colors]="colors" [data]="dataSets" [labels]="lables"
-                  [chartType]="chartType" [options]="chartOptions" [legend]="true">
+                <canvas baseChart width="5" height="1" [colors]="colors" (chartClick)="uatChart($event)"
+                  (chartHover)="chartHovered($event)" [data]="dataSets" [labels]="lables" [chartType]="uatChartType"
+                  [options]="uatChartOptions" [legend]="true">
                 </canvas>
               </div>
             </div>

@@ -215,9 +215,10 @@ public class ReportApiController {
             @RequestParam(value = "projectUatId", defaultValue = "", required = false) String projectUatId,
             @RequestParam(value = "projectUatScriptId", defaultValue = "", required = false) String projectUatScriptId,
             @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
+            @RequestParam(value = "status", defaultValue = "",  required = false) String status,
             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
 
-        final InputStreamResource resource = new InputStreamResource(reportService.uatReportDownload( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId,  pageable));
+        final InputStreamResource resource = new InputStreamResource(reportService.uatReportDownload( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId, status, pageable));
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "uat-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 

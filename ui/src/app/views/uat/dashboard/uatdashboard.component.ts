@@ -11,6 +11,7 @@ import { AdminDashboardVO } from '../../../model/AdminDashboardVO';
 import { UATDashboardVO } from '../../../model/UATDashboardVO';
 import { Label, MultiDataSet } from 'ng2-charts';
 import { ChartType } from 'chart.js';
+import { ViewUATDashboardDetails } from './modal/ViewUATDashboardDetails';
 declare var $: any;
 
 @Component({
@@ -21,12 +22,23 @@ export class UATDashboardComponent implements OnInit {
   roles: string[];
   loggedInUser: LoggedInUser;
   uatDashboardVO: UATDashboardVO = new UATDashboardVO();
-  public chartType: ChartType = 'horizontalBar';
-  public chartOptions: any;
+  public uatChartType: ChartType = 'horizontalBar';
+  public uatChartOptions: any = {
+    responsive: true, iboxWidth: 1, legend: { display: false }, scales: {
+      xAxes: [{
+        type: "linear",
+        beginAtZero: true,
+        ticks: {
+          max: Math.ceil(10 * 1.05),
+          precision: 0
+        }
+      }]
+    }
+  };
   public lables: Label[] = ["Total", "Not Started", "In Progress", "Complete"];
   public dataSets: MultiDataSet = [];
   public colors: any[] = [{ backgroundColor: ["#437ff7a8", "#08d620a9", "#f63c6e83", "#8939f283"] }];
-
+  modalRef: BsModalRef;
 
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -69,7 +81,7 @@ export class UATDashboardComponent implements OnInit {
         dataPoints.push(this.uatDashboardVO.inProgress);
         dataPoints.push(this.uatDashboardVO.completed);
         this.dataSets = [dataPoints];
-        this.chartOptions = {
+        this.uatChartOptions = {
           responsive: true, iboxWidth: 1, legend: { display: false }, scales: {
             xAxes: [{
               type: "linear",
@@ -80,7 +92,7 @@ export class UATDashboardComponent implements OnInit {
               }
             }]
           }
-        }
+        };
         $(function () {
           $("#dataSets-app-admin").accordion({
             //icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
@@ -137,6 +149,51 @@ export class UATDashboardComponent implements OnInit {
     // this.modalRef = this.modalService.show(ViewAppAdminDashboardDetails,
     //   Object.assign({}, config, { initialState })
     // );
+  }
+
+  viewUat(element: any) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-xl',
+    };
+    const initialState = {
+      params: element
+    };
+    this.modalRef = this.modalService.show(ViewUATDashboardDetails,
+      Object.assign({}, config, { initialState })
+    );
+  }
+
+  uatChart(e: any) {
+    if (this.getChartSegmentData(e) == "Total") {
+      this.viewUat({ status: "total" });
+    } else if (this.getChartSegmentData(e) == "Not Started") {
+      this.viewUat({ status: "notStarted" });
+    } else if (this.getChartSegmentData(e) == "In Progress") {
+      this.viewUat({ status: "inProgress" });
+    } else if (this.getChartSegmentData(e) == "Complete") {
+      this.viewUat({ status: "completed" });
+    }
+  }
+
+  getChartSegmentData(e: any) {
+    if (e.active.length > 0) {
+      const chart = e.active[0]._chart;
+      const activePoints = chart.getElementAtEvent(e.event);
+      if (activePoints.length > 0) {
+        // get the internal index of slice in pie chart
+        const clickedElementIndex = activePoints[0]._index;
+        const label = chart.data.labels[clickedElementIndex];
+        // get value by index
+        const value = chart.data.datasets[0].data[clickedElementIndex];
+        //console.log(chart.data);
+        //console.log(clickedElementIndex, label, value);
+        return label;
+      }
+    }
   }
 
 }

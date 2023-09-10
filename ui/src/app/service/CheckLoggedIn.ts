@@ -26,7 +26,7 @@ export class CheckLoggedIn implements Resolve<any> {
             /*console.log(this.location.path());
             console.log(this.location.prepareExternalUrl('/'));
             console.log(this.locationStrategy.getBaseHref());*/
-            this.clientStorageService.set(AppUtility.LOGGED_IN_LAST_VISIT, this.location.path());
+            //this.clientStorageService.set(AppUtility.LOGGED_IN_LAST_VISIT, this.location.path());
             this.router.navigate(['/sign-in']);
             return false;
         }

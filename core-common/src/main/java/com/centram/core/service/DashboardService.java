@@ -190,7 +190,7 @@ public class DashboardService {
         LocalDateTime startDateTime = endDateTime.minusDays(90).toLocalDate().atStartOfDay();
         UATDashboardVO uatDashboardVO = new UATDashboardVO();
         List<String> roleNames = roleService.getByIds(loggedInUser.getRoles());
-        List<ProjectUat> projectUats = projectUatRepository.uatDashboard(startDateTime, endDateTime);
+        List<ProjectUat> projectUats = projectUatRepository.uatDashboard(startDateTime, endDateTime, loggedInUser.getOrganisationId());
         if (!roleNames.contains("ORG_ADMIN") && roleNames.contains("ORG_UAT_CONSULTANT")) {
             projectUats = projectUats.stream().filter(i -> {
                 return i.getProject().getConsultants().contains(loggedInUser.getEmail());
@@ -216,19 +216,16 @@ public class DashboardService {
         long noOfUatScriptCompleted = 0;
         long noOfUatScriptInProgress = 0;
         long noOfUatScriptNotStarted = 0;
-        long sizeOfScript = 0;
-        long completedScript = 0;
         for (ProjectUat projectUat : projectUats) {
-            sizeOfScript = projectUat.getProjectUatScripts().size();
-            noOfUatScript += sizeOfScript;
-            completedScript = projectUat.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
-            noOfUatScriptCompleted += completedScript;
-
-
-            if (completedScript == 0) {
-                noOfUatScriptNotStarted += sizeOfScript;
-            } else if (completedScript < sizeOfScript) {
-                noOfUatScriptInProgress += completedScript;
+            for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
+                noOfUatScript++;
+                if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count()) {
+                    noOfUatScriptCompleted++;
+                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(ProjectUatScriptDetail::getPass)) {
+                    noOfUatScriptNotStarted++;
+                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(ProjectUatScriptDetail::getPass)) {
+                    noOfUatScriptInProgress++;
+                }
             }
         }
         uatDashboardVO.setTotal(noOfUatScript);

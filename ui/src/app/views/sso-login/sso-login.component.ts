@@ -82,13 +82,14 @@ export class SSOLoginComponent implements OnInit {
           }
           this.clientStorageService.set(AppUtility.LOGGED_IN_PROFILE, JSON.stringify(data));
           //console.log(this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT));
-          let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
-          if (lastVisitedPage != null) {
+          //let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
+          /*if (lastVisitedPage != null) {
             //console.log(lastVisitedPage);
             this.router.navigate([lastVisitedPage]);
           } else {
             this.router.navigate(['/dashboard']);
-          }
+          }*/
+          this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
           this.hasError = false;
           //console.log(JSON.stringify(data));
           //localStorage.setItem(AppUtility.LOGGED_IN_PROFILE_JWT, btoa(data.jwtToken));

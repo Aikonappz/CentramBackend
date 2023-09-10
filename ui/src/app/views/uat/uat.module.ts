@@ -21,6 +21,7 @@ import { UATReportComponent } from './report/uatreport.component';
 import { UATDashboardComponent } from './dashboard/uatdashboard.component';
 import { EditUATProjectComponent } from './master/edituatproject.component';
 import { UATProjectComponent } from './master/uatproject.component';
+import { ViewUATDashboardDetails } from './dashboard/modal/ViewUATDashboardDetails';
 
 
 
@@ -32,6 +33,7 @@ import { UATProjectComponent } from './master/uatproject.component';
     UATReportComponent,
     UATProjectComponent,
     EditUATProjectComponent,
+    ViewUATDashboardDetails,
   ],
   imports: [
     CommonModule,

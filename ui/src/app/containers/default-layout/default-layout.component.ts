@@ -113,138 +113,145 @@ export class DefaultLayoutComponent implements OnInit {
     this.appDevName = environment.appDevName;
     this.currentYear = moment().format('YYYY');
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
-    this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
-    this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
-    if (this.loggedInUser.appManager) {
-      this.loggedInUser.licenseType = "SUPADMIN";
-      this.dashboardLink = "/supadmin/dashboard";
-      this.userSettingsLink = "/supadmin/user/settings";
-    } else if (this.loggedInUser.orgAdmin) {
-      this.dashboardLink = "/admin/dashboard";
-      this.userSettingsLink = "/admin/user/settings";
-      this.orgSettingsLink = "/admin/organization/settings";
-    }
-    //console.log(this.loggedInUser);
-    this.roles = this.loggedInUser.roles;
-    if (this.hasUserRole()) {
-      this.userRoles.push("EMP");
-    }
-    if (this.hasAgentRole()) {
-      this.userRoles.push("AGENT");
-    }
-    if (this.hasCategoryAdminRole()) {
-      this.userRoles.push("CATEGORY_ADMIN");
-    }
-    this.clientStorageService.set(AppUtility.APP_LOGGEDIN_USR_ROLES, this.userRoles);
-    this.permissions = this.loggedInUser.modulePermissions;
-    // this.permissions.forEach(function (itm) {
-    //   itm.actions = itm.actionName.split(',');
-    // });
-    //console.log(JSON.stringify(this.permissions));
-    let c = 0;
-    for (let i = 0; i < this.navItems.length; i++) {
-      this.menuAttributes = this.navItems[i].attributes;
-      let commonModule: boolean = false;
-      let parentModule: string = null;
-      let licences: string[] = [];
-      if (typeof this.menuAttributes.commonModule !== 'undefined') {
-        commonModule = this.menuAttributes.commonModule;
+    if (this.loggedInUser != null && this.loggedInUser.jwtToken != null && this.loggedInUser.jwtToken.replace(/\s/g, "") != "") {
+      this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
+      this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
+      if (this.loggedInUser.appManager) {
+        this.loggedInUser.licenseType = "SUPADMIN";
+        this.dashboardLink = "/supadmin/dashboard";
+        this.userSettingsLink = "/supadmin/user/settings";
+      } else if (this.loggedInUser.orgAdmin) {
+        this.dashboardLink = "/admin/dashboard";
+        this.userSettingsLink = "/admin/user/settings";
+        this.orgSettingsLink = "/admin/organization/settings";
+      } else {
+        let module = sessionStorage.getItem(AppUtility.LAST_EXPLORED_MODULE_KEY);
+        if (module != null && module !== 'undefined') {
+          this.dashboardLink = "/" + module.toLocaleLowerCase() + "/dashboard";
+        }
+        this.userSettingsLink = "/admin/user/settings";
       }
-      if (typeof this.menuAttributes.parentModule !== 'undefined') {
-        parentModule = this.menuAttributes.parentModule;
+      //console.log(this.loggedInUser);
+      this.roles = this.loggedInUser.roles;
+      if (this.hasUserRole()) {
+        this.userRoles.push("EMP");
       }
-      if (typeof this.menuAttributes.licenceType !== 'undefined') {
-        licences = this.menuAttributes.licenceType.split(',');
+      if (this.hasAgentRole()) {
+        this.userRoles.push("AGENT");
       }
-      for (let j in this.permissions) {
-        if (
-          (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
-          this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
-          this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ROLE WISE PERMISSION CASE
-        {
-          this.newNavItems[c] = this.navItems[i];
-          if (this.navItems[i].hasOwnProperty("children")) {
-            let parentId = this.permissions[j].moduleId;
-            let childMenus = [];
-            for (let sm in this.newNavItems[c].children) {
-              for (let k in this.permissions) {
-                this.menuAttributes = this.newNavItems[c].children[sm].attributes;
-                let commonModule: boolean = false;
-                let parentModule: string = null;
-                let licences: string[] = [];
-                if (typeof this.menuAttributes.commonModule !== 'undefined') {
-                  commonModule = this.menuAttributes.commonModule;
-                }
-                if (typeof this.menuAttributes.parentModule !== 'undefined') {
-                  parentModule = this.menuAttributes.parentModule;
-                }
-                if (typeof this.menuAttributes.licenceType !== 'undefined') {
-                  licences = this.menuAttributes.licenceType.split(',');
-                }
-                if (
-                  (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
-                  this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
-                  parentId === this.permissions[k].moduleParentId &&
-                  (this.menuAttributes.moduleName === this.permissions[k].moduleName && this.permissions[k].actions.includes('READ'))) // ROLE WISE PERMISSION CASE
-                {
-                  childMenus.push(this.newNavItems[c].children[sm]);
+      if (this.hasCategoryAdminRole()) {
+        this.userRoles.push("CATEGORY_ADMIN");
+      }
+      this.clientStorageService.set(AppUtility.APP_LOGGEDIN_USR_ROLES, this.userRoles);
+      this.permissions = this.loggedInUser.modulePermissions;
+      // this.permissions.forEach(function (itm) {
+      //   itm.actions = itm.actionName.split(',');
+      // });
+      //console.log(JSON.stringify(this.permissions));
+      let c = 0;
+      for (let i = 0; i < this.navItems.length; i++) {
+        this.menuAttributes = this.navItems[i].attributes;
+        let commonModule: boolean = false;
+        let parentModule: string = null;
+        let licences: string[] = [];
+        if (typeof this.menuAttributes.commonModule !== 'undefined') {
+          commonModule = this.menuAttributes.commonModule;
+        }
+        if (typeof this.menuAttributes.parentModule !== 'undefined') {
+          parentModule = this.menuAttributes.parentModule;
+        }
+        if (typeof this.menuAttributes.licenceType !== 'undefined') {
+          licences = this.menuAttributes.licenceType.split(',');
+        }
+        for (let j in this.permissions) {
+          if (
+            (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
+            this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
+            this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ROLE WISE PERMISSION CASE
+          {
+            this.newNavItems[c] = this.navItems[i];
+            if (this.navItems[i].hasOwnProperty("children")) {
+              let parentId = this.permissions[j].moduleId;
+              let childMenus = [];
+              for (let sm in this.newNavItems[c].children) {
+                for (let k in this.permissions) {
+                  this.menuAttributes = this.newNavItems[c].children[sm].attributes;
+                  let commonModule: boolean = false;
+                  let parentModule: string = null;
+                  let licences: string[] = [];
+                  if (typeof this.menuAttributes.commonModule !== 'undefined') {
+                    commonModule = this.menuAttributes.commonModule;
+                  }
+                  if (typeof this.menuAttributes.parentModule !== 'undefined') {
+                    parentModule = this.menuAttributes.parentModule;
+                  }
+                  if (typeof this.menuAttributes.licenceType !== 'undefined') {
+                    licences = this.menuAttributes.licenceType.split(',');
+                  }
+                  if (
+                    (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
+                    this.permissions[k].appModule == true && this.permissions[k].moduleParentId != null &&
+                    parentId === this.permissions[k].moduleParentId &&
+                    (this.menuAttributes.moduleName === this.permissions[k].moduleName && this.permissions[k].actions.includes('READ'))) // ROLE WISE PERMISSION CASE
+                  {
+                    childMenus.push(this.newNavItems[c].children[sm]);
+                  }
                 }
               }
+              this.newNavItems[c].children = childMenus;
             }
-            this.newNavItems[c].children = childMenus;
+            c++;
           }
-          c++;
         }
       }
+      this.navItems = this.newNavItems.sort((a, b) => {
+        if (typeof a.attributes.order !== 'undefined' && typeof b.attributes.order !== 'undefined') {
+          if (a.attributes.order < b.attributes.order) {
+            return -1;
+          } else if (a.attributes.order > b.attributes.order) {
+            return 1;
+          } else {
+            return 0;
+          }
+        }
+        return 0;
+      });
+      //this.navItems = this.newNavItems;
+      //console.log(JSON.stringify(this.newNavItems));
+      //ask to allow automatic notification
+      this.pushNotifications.requestPermission();
+      this.unreadNotifications = 0;
+      this.service.notificationsService({ status: "PUSHED", }).subscribe((data: NotificationList) => {
+        if (typeof data.content != "undefined" && data.content.length > 0) {
+          data.content = data.content.concat(this.notifications);
+          this.notifications = data.content;
+          this.unreadNotifications = this.notifications.length;
+        }
+      });
+      //console.log("AutoLogoutService created....");
+      this.check();
+      this.initListener();
+      this.initInterval();
+      this.clientStorageService.set(AppUtility.APP_LAST_ACTION_KEY, Date.now().toString());
+      this.angFormAssign = this.fb.group({
+        parentModule: new FormControl(null, [
+          Validators.required,
+        ]),
+        moduleId: new FormControl(null, [
+          Validators.required,
+        ]),
+        subModuleId: new FormControl(null, [
+          Validators.required,
+        ]),
+        message: new FormControl(null, [
+          Validators.required,
+        ]),
+      });
+      this.parentModuleList.push({ id: 'ASSET', label: 'Asset' });
+      this.parentModuleList.push({ id: 'INCIDENT', label: 'Incident' });
+      this.permissions = this.loggedInUserService.getModulePermissions();
+      //this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     }
-    this.navItems = this.newNavItems.sort((a, b) => {
-      if (typeof a.attributes.order !== 'undefined' && typeof b.attributes.order !== 'undefined') {
-        if (a.attributes.order < b.attributes.order) {
-          return -1;
-        } else if (a.attributes.order > b.attributes.order) {
-          return 1;
-        } else {
-          return 0;
-        }
-      }
-      return 0;
-    });
-    //this.navItems = this.newNavItems;
-    //console.log(JSON.stringify(this.newNavItems));
-    //ask to allow automatic notification
-    this.pushNotifications.requestPermission();
-    this.unreadNotifications = 0;
-    this.service.notificationsService({ status: "PUSHED", }).subscribe((data: NotificationList) => {
-      if (typeof data.content != "undefined" && data.content.length > 0) {
-        data.content = data.content.concat(this.notifications);
-        this.notifications = data.content;
-        this.unreadNotifications = this.notifications.length;
-      }
-    });
-    //console.log("AutoLogoutService created....");
-    this.check();
-    this.initListener();
-    this.initInterval();
-    this.clientStorageService.set(AppUtility.APP_LAST_ACTION_KEY, Date.now().toString());
-    this.angFormAssign = this.fb.group({
-      parentModule: new FormControl(null, [
-        Validators.required,
-      ]),
-      moduleId: new FormControl(null, [
-        Validators.required,
-      ]),
-      subModuleId: new FormControl(null, [
-        Validators.required,
-      ]),
-      message: new FormControl(null, [
-        Validators.required,
-      ]),
-    });
-    this.parentModuleList.push({ id: 'ASSET', label: 'Asset' });
-    this.parentModuleList.push({ id: 'INCIDENT', label: 'Incident' });
-    this.permissions = this.loggedInUserService.getModulePermissions();
-    //this.loggedInUser = this.loggedInUserService.getLoggedInUser();
-
   }
 
   /**

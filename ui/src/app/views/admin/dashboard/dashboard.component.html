@@ -113,8 +113,9 @@
                   (chartClick)="siteAdminChart1($event)" [colors]="colors" [data]="dataSets"
                   [labels]="lables" [chartType]="chartType" [options]="chartOptions" [legend]="true">
                 </canvas> -->
-                <canvas baseChart width="5" height="1" [colors]="colors" [data]="dataSets" [labels]="lables"
-                  [chartType]="uatChartType" [options]="uatChartOptions" [legend]="true">
+                <canvas baseChart width="5" height="1" [colors]="colors" [data]="dataSets"
+                  (chartClick)="uatChart($event)" [labels]="lables" [chartType]="uatChartType"
+                  (chartHover)="chartHovered($event)" [options]="uatChartOptions" [legend]="true">
                 </canvas>
               </div>
             </div>

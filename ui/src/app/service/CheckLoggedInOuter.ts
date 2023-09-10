@@ -23,13 +23,14 @@ export class CheckLoggedInOuter implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         this.loggedInUser = this.loggedInUserService.getLoggedInUser();
         if (this.loggedInUser != null && this.loggedInUser.jwtToken != null && this.loggedInUser.jwtToken.replace(/\s/g, "") != "") {
-            let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
+            /*let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
             if (lastVisitedPage != null) {
                 console.log(lastVisitedPage);
-                this.router.navigate([lastVisitedPage]);
+                //this.router.navigate([lastVisitedPage]);
             } else {
-                this.router.navigate(['/dashboard']);
-            }
+                this.router.navigate(['/explore']);
+            }*/
+            this.router.navigate(['/' + AppUtility.EXPLORE_LANDING_PAGE_PATH]);
             return true;
         } else {
             //window.alert("not logged in");

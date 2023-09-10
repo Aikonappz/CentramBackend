@@ -56,10 +56,11 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             @Param("projectUATScriptDetailId") BigInteger projectUATScriptDetailId
     );
 
-    @Query(value = " select p from ProjectUat p where p.createdDate BETWEEN (:start) and (:end) order by 1 asc ")
+    @Query(value = " select p from ProjectUat p where p.createdDate BETWEEN (:start) and (:end) and p.organisation.id = (:organisationId) order by 1 asc ")
     List<ProjectUat> uatDashboard(
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+            @Param("organisationId") BigInteger organisationId
     );
 
     @Query(value = "select new com.centram.common.dto.UatScriptReportDTO(pu, pus) from ProjectUat pu join pu.projectUatScripts pus " +

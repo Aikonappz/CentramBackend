@@ -447,15 +447,32 @@ public class ReportService {
             module = moduleService.getModuleById(i.getSubModuleId());
             i.setSubModule(module.getCustomerModuleName());
         });
-        return new PaginatedList<UatScriptReportDTO>(page);
+        List<UatScriptReportDTO> uatScriptReportDTOS = new LinkedList<UatScriptReportDTO>();
+        uatScriptReportDTOS = page.getContent();
+        if (!status.isEmpty()) {
+            if (status.equalsIgnoreCase("completed")) {
+                uatScriptReportDTOS = uatScriptReportDTOS.stream().filter(i -> {
+                    return i.getStatus().equalsIgnoreCase("Completed");
+                }).collect(Collectors.toList());
+            } else if (status.equalsIgnoreCase("notStarted")) {
+                uatScriptReportDTOS = uatScriptReportDTOS.stream().filter(i -> {
+                    return i.getStatus().equalsIgnoreCase("Not Started");
+                }).collect(Collectors.toList());
+            } else if (status.equalsIgnoreCase("inProgress")) {
+                uatScriptReportDTOS = uatScriptReportDTOS.stream().filter(i -> {
+                    return i.getStatus().equalsIgnoreCase("In Progress");
+                }).collect(Collectors.toList());
+            }
+        }
+        return new PaginatedList<UatScriptReportDTO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), uatScriptReportDTOS);
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream uatReportDownload(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, Pageable pageable) {
+    public ByteArrayInputStream uatReportDownload(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
-        PaginatedList<UatScriptReportDTO> page = this.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, projectUatScriptId, uploadedByUserId, Pageable.unpaged());
+        PaginatedList<UatScriptReportDTO> page = this.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, projectUatScriptId, uploadedByUserId, status, Pageable.unpaged());
         List<UatScriptReportDTO> uatScriptReportDTOS = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList("Sl.No", "Technology", "Module", "Sub Module", "Project Type", "Project Name", "Project Code", "Project Manager", "Consultant Responsible", "Test Case ID", "Test Case Description", "Status", "Currently with", "Age (days)");

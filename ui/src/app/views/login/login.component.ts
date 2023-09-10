@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit {
         }
         this.clientStorageService.set(AppUtility.LOGGED_IN_PROFILE, JSON.stringify(data));
         //console.log(this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT));
-        let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
+        //let lastVisitedPage = this.clientStorageService.get(AppUtility.LOGGED_IN_LAST_VISIT);
         this.loggedInUser = this.loggedInUserService.getLoggedInUser();
         this.loggedInUser.orgAdmin = this.loggedInUserService.hasRole("ORG_ADMIN");
         this.loggedInUser.appManager = this.loggedInUserService.hasRole("APP_ADMIN");
