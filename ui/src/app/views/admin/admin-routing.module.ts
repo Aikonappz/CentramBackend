@@ -31,6 +31,7 @@ import { AgingReportComponent } from './report/agingreport.component';
 import { ReopenReportComponent } from './report/reopenreport.component';
 import { EscalationReportComponent } from './report/escalationreport.component';
 import { IncidentReportComponent } from './report/incidentreport.component';
+import { UATReportComponent } from './report/uatreport.component';
 
 const routes: Routes = [
   {
@@ -361,6 +362,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Asset Assignment Report'
+        },
+      },
+      {
+        path: 'report/uat',
+        component: UATReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'UAT Report'
         },
       },
     ]

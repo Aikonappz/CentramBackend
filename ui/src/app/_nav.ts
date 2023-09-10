@@ -201,6 +201,12 @@ export const navItems: INavData[] = [
         icon: 'fa fa-file-text',
         attributes: { "parentModule": "ADMIN", "moduleName": "ASSET ASSIGNMENT REPORT", "licenceType": "ALL,ASSET" }
       },
+      {
+        name: 'UAT Report',
+        url: '/admin/report/uat',
+        icon: 'fa fa-folder-open',
+        attributes: { "parentModule": "ADMIN", "moduleName": "UAT REPORT", "licenceType": "ALL,UAT" }
+      },
     ]
   },
   // ORG ADMIN

@@ -52,6 +52,7 @@ export class DefaultLayoutComponent implements OnInit {
   roles: string[] = [];
   userRoles: string[] = [];
   timerHandler: any;
+  loggedInCheckTimerHandler: any;
   chatTimerHandler: any;
   isProd: boolean = false;
   chatSelection: boolean = false;
@@ -782,7 +783,29 @@ export class DefaultLayoutComponent implements OnInit {
     return this.loggedInUser;
   }
 
+  /**
+   * 
+   */
   ngAfterViewInit() {
+    // redirect all tabs to sign in. if logged out from other tab
+    this.loggedInCheckTimerHandler = setInterval(() => {
+      if (!this.isLoggedinOthersTab()) {
+        this.router.navigate(['/sign-out']);
+      }
+    }, AppUtility.APP_ACTIVITY_CHECK_INTERVAL);
+  }
+
+  /**
+   * check if logged out from other tab
+   * @returns 
+   */
+  isLoggedinOthersTab() {
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    if (this.loggedInUser != null && this.loggedInUser.jwtToken != null && this.loggedInUser.jwtToken.replace(/\s/g, "") != "") {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   ngOnDestroy() {

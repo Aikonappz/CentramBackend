@@ -21,7 +21,6 @@ export class UATDashboardComponent implements OnInit {
   roles: string[];
   loggedInUser: LoggedInUser;
   uatDashboardVO: UATDashboardVO = new UATDashboardVO();
-
   public chartType: ChartType = 'horizontalBar';
   public chartOptions: any;
   public lables: Label[] = ["Total", "Not Started", "In Progress", "Complete"];

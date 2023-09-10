@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -190,38 +191,50 @@ public class DashboardService {
         UATDashboardVO uatDashboardVO = new UATDashboardVO();
         List<String> roleNames = roleService.getByIds(loggedInUser.getRoles());
         List<ProjectUat> projectUats = projectUatRepository.uatDashboard(startDateTime, endDateTime);
-        if (roleNames.contains("ORG_UAT_CONSULTANT")) {
+        if (!roleNames.contains("ORG_ADMIN") && roleNames.contains("ORG_UAT_CONSULTANT")) {
             projectUats = projectUats.stream().filter(i -> {
                 return i.getProject().getConsultants().contains(loggedInUser.getEmail());
             }).collect(Collectors.toList());
 
         }
-        if (roleNames.contains("ORG_PROJECT_STAKEHOLDER")) {
+        if (!roleNames.contains("ORG_ADMIN") && roleNames.contains("ORG_PROJECT_STAKEHOLDER")) {
             projectUats = projectUats.stream().filter(i -> {
                 return i.getProject().getStakeHolders().contains(loggedInUser.getEmail());
             }).collect(Collectors.toList());
         }
-        projectUats.forEach(i -> {
-            long noOfUatScript = i.getProjectUatScripts().size();
-            long noOfUatScriptCompleted = i.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
-            if (i.getUatCycleComplete() && noOfUatScript == noOfUatScriptCompleted) {
-                i.setStatus("Completed");
-            } else if (noOfUatScriptCompleted == 0) {
-                i.setStatus("Not Started");
-            } else {
-                i.setStatus("In Progress");
+        if (!roleNames.contains("ORG_ADMIN") && roleNames.contains("ORG_ADMIN_PROJECT")) {
+            projectUats = projectUats.stream().filter(i -> {
+                return i.getProject().getWatchList().contains(loggedInUser.getEmail());
+            }).collect(Collectors.toList());
+        }
+        if (roleNames.contains("ORG_ADMIN")) {
+            projectUats = projectUats.stream().filter(i -> {
+                return i.getProject().getWatchList().contains(loggedInUser.getEmail());
+            }).collect(Collectors.toList());
+        }
+        long noOfUatScript = 0;
+        long noOfUatScriptCompleted = 0;
+        long noOfUatScriptInProgress = 0;
+        long noOfUatScriptNotStarted = 0;
+        long sizeOfScript = 0;
+        long completedScript = 0;
+        for (ProjectUat projectUat : projectUats) {
+            sizeOfScript = projectUat.getProjectUatScripts().size();
+            noOfUatScript += sizeOfScript;
+            completedScript = projectUat.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
+            noOfUatScriptCompleted += completedScript;
+
+
+            if (completedScript == 0) {
+                noOfUatScriptNotStarted += sizeOfScript;
+            } else if (completedScript < sizeOfScript) {
+                noOfUatScriptInProgress += completedScript;
             }
-        });
-        uatDashboardVO.setTotal((long) projectUats.size());
-        uatDashboardVO.setCompleted(projectUats.stream().filter(i -> {
-            return i.getStatus().equalsIgnoreCase("Completed");
-        }).count());
-        uatDashboardVO.setNotStarted(projectUats.stream().filter(i -> {
-            return i.getStatus().equalsIgnoreCase("Not Started");
-        }).count());
-        uatDashboardVO.setInProgress(projectUats.stream().filter(i -> {
-            return i.getStatus().equalsIgnoreCase("In Progress");
-        }).count());
+        }
+        uatDashboardVO.setTotal(noOfUatScript);
+        uatDashboardVO.setCompleted(noOfUatScriptCompleted);
+        uatDashboardVO.setNotStarted(noOfUatScriptNotStarted);
+        uatDashboardVO.setInProgress(noOfUatScriptInProgress);
         return uatDashboardVO;
     }
 

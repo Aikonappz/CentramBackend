@@ -428,7 +428,7 @@ public class ReportService {
         }
     }
 
-    public PaginatedList<UatScriptReportDTO> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, Pageable pageable) {
+    public PaginatedList<UatScriptReportDTO> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, String status, Pageable pageable) {
         //int tech = technology.ordinal();
         BigInteger mId = (!moduleId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(moduleId)) : null;
         BigInteger smId = (!subModuleId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(subModuleId)) : null;

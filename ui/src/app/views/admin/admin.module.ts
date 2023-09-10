@@ -50,6 +50,8 @@ import { VendorReportComponent } from './report/vendor.report.component';
 import { OrderReportComponent } from './report/order.report.component';
 import { AssetTicketReportComponent } from './report/asset.ticket.report.component';
 import { AssetAssignmentReportComponent } from './report/asset.asignment.report.component';
+import { UATReportComponent } from './report/uatreport.component';
+import { ViewUATDashboardDetails } from './dashboard/modal/ViewUATDashboardDetails';
 
 
 
@@ -87,7 +89,7 @@ import { AssetAssignmentReportComponent } from './report/asset.asignment.report.
     EditAccountComponent,
     ProjectComponent,
     EditProjectComponent,
-
+    UATReportComponent,
     AdminReportComponent,
     IncidentReportComponent,
     EscalationReportComponent,
@@ -97,6 +99,7 @@ import { AssetAssignmentReportComponent } from './report/asset.asignment.report.
     OrderReportComponent,
     AssetTicketReportComponent,
     AssetAssignmentReportComponent,
+    ViewUATDashboardDetails,
   ],
   imports: [
     CommonModule,

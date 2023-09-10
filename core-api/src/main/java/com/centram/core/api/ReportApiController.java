@@ -198,8 +198,9 @@ public class ReportApiController {
             @RequestParam(value = "projectUatId", defaultValue = "", required = false) String projectUatId,
             @RequestParam(value = "projectUatScriptId", defaultValue = "", required = false) String projectUatScriptId,
             @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
+            @RequestParam(value = "status", defaultValue = "",  required = false) String status,
             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<UatScriptReportDTO>>(reportService.uatReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId,  pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<UatScriptReportDTO>>(reportService.uatReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/uat/download", produces = {"application/json"}, method = RequestMethod.GET)
