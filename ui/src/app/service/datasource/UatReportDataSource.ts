@@ -2,21 +2,20 @@ import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { Observable, BehaviorSubject, of } from "rxjs";
 import { catchError, finalize } from "rxjs/operators";
-import { AssetOrder, AssetOrderList } from '../../model/AssetOrder';
 import { ReportService } from '../ReportService';
-import { UatScriptReportDTO, UatScriptReportDTOList } from '../../model/UatScriptReportDTO';
+import { ProjectUat, ProjectUatList } from '../../model/ProjectUat';
 
 
-export class UatReportDataSource implements DataSource<UatScriptReportDTO>{
+export class UatReportDataSource implements DataSource<ProjectUat>{
 
-    private objSubject = new BehaviorSubject<UatScriptReportDTO[]>([]);
+    private objSubject = new BehaviorSubject<ProjectUat[]>([]);
     private loadingSubject = new BehaviorSubject<boolean>(false);
     private countSubject = new BehaviorSubject<number>(0);
     public counter$ = this.countSubject.asObservable();
 
     constructor(private service: ReportService) { }
 
-    connect(collectionViewer: CollectionViewer): Observable<UatScriptReportDTO[]> {
+    connect(collectionViewer: CollectionViewer): Observable<ProjectUat[]> {
         return this.objSubject.asObservable();
     }
 
@@ -38,7 +37,7 @@ export class UatReportDataSource implements DataSource<UatScriptReportDTO>{
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))
             )
-            .subscribe((result: UatScriptReportDTOList) => {
+            .subscribe((result: ProjectUatList) => {
                 this.objSubject.next(result.content);
                 this.countSubject.next(result.totalElements);
             });

@@ -2,9 +2,6 @@ package com.centram.core.repository;
 
 
 import com.centram.common.dto.UatScriptReportDTO;
-import com.centram.common.vo.CategoryAdminDashboardVO;
-import com.centram.common.vo.IncidentPriorityVO;
-import com.centram.domain.Incident;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
@@ -96,7 +93,7 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             "   ((:projectUatScriptId) is null) " +
             " ) "
            )
-    Page<UatScriptReportDTO> uatReport(
+    Page<UatScriptReportDTO> uatScriptReport(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("technology") Technology technology,
@@ -109,6 +106,43 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             Pageable pageable
     );
 
-
+    @Query(value = "select pu from ProjectUat pu where (pu.createdDate between (:start) and (:end)) and pu.technology = (:technology) and " +
+            " ( " +
+            "   ((:moduleId) is not null and pu.moduleId = (:moduleId)) " +
+            "   OR " +
+            "   ((:moduleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:subModuleId) is not null and pu.subModuleId = (:subModuleId)) " +
+            "   OR " +
+            "   ((:subModuleId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:projectId) is not null and pu.project.id = (:projectId)) " +
+            "   OR " +
+            "   ((:projectId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:projectUatId) is not null and pu.id = (:projectUatId)) " +
+            "   OR " +
+            "   ((:projectUatId) is null) " +
+            " ) and " +
+            " ( " +
+            "   ((:uploadedByUserId) is not null and pu.uploadedBy.id = (:uploadedByUserId)) " +
+            "   OR " +
+            "   ((:uploadedByUserId) is null) " +
+            " ) "
+    )
+    Page<ProjectUat> uatReport(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("technology") Technology technology,
+            @Param("moduleId") BigInteger moduleId,
+            @Param("subModuleId") BigInteger subModuleId,
+            @Param("projectId") BigInteger projectId,
+            @Param("projectUatId") BigInteger projectUatId,
+            @Param("uploadedByUserId") BigInteger uploadedByUserId,
+            Pageable pageable
+    );
 
 }

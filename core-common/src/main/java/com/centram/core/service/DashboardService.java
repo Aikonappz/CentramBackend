@@ -212,23 +212,37 @@ public class DashboardService {
                 return i.getProject().getWatchList().contains(loggedInUser.getEmail());
             }).collect(Collectors.toList());
         }
-        long noOfUatScript = 0;
+        long noOfUat = 0;
         long noOfUatScriptCompleted = 0;
         long noOfUatScriptInProgress = 0;
         long noOfUatScriptNotStarted = 0;
+        int status = Integer.MAX_VALUE;
         for (ProjectUat projectUat : projectUats) {
+            noOfUat++;
+            status = Integer.MAX_VALUE;
             for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
-                noOfUatScript++;
                 if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count()) {
-                    noOfUatScriptCompleted++;
+                    status = 1;
+                    break;
                 } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(ProjectUatScriptDetail::getPass)) {
-                    noOfUatScriptNotStarted++;
+                    status = -1;
+                    break;
                 } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(ProjectUatScriptDetail::getPass)) {
+                    status = 0;
+                    break;
+                }
+            }
+            if (status != Integer.MAX_VALUE) {
+                if (status == 1) {
+                    noOfUatScriptCompleted++;
+                } else if (status == -1) {
+                    noOfUatScriptNotStarted++;
+                } else if (status == 0) {
                     noOfUatScriptInProgress++;
                 }
             }
         }
-        uatDashboardVO.setTotal(noOfUatScript);
+        uatDashboardVO.setTotal(noOfUat);
         uatDashboardVO.setCompleted(noOfUatScriptCompleted);
         uatDashboardVO.setNotStarted(noOfUatScriptNotStarted);
         uatDashboardVO.setInProgress(noOfUatScriptInProgress);

@@ -70,6 +70,7 @@ export class UATActivityComponent implements OnInit {
   searchedUatCycle: boolean = false;
   searchedUatCycleId: number;
   statusList: any[] = [{ id: true, label: "Pass" }, { id: false, label: "Fail" }];
+  testResultList: any[] = [{ id: "As Expected", label: "As Expected" }, { id: "Not as Expected", label: "Not as Expected" }];
   loggedInUser: LoggedInUser;
   modalRef: BsModalRef;
   searchedUatScriptId: number;
@@ -252,14 +253,14 @@ export class UATActivityComponent implements OnInit {
       var size = ev.target.files[i].size;
       var modifiedDate = ev.target.files[i].lastModifiedDate;
       const file = this.angForm.controls['uatManual'];
-      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan2MB) {
+      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan10MB) {
         return;
       }
       let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf",];
       if (!validMimeTpes.includes(type)) {
-        file.setErrors({ validAttachments: true, mustBeLessThan2MB: false });
+        file.setErrors({ validAttachments: true, mustBeLessThan10MB: false });
       } else if (size > (3145728)) {
-        file.setErrors({ validAttachments: false, mustBeLessThan2MB: true });
+        file.setErrors({ validAttachments: false, mustBeLessThan10MB: true });
       } else {
         file.setErrors(null);
         this.selectedUatManualFiles = ev.target.files;
@@ -901,7 +902,7 @@ export class UATActivityComponent implements OnInit {
         projectUatScriptDetail.remarks = [];
       }
       projectUatScriptDetail.remarks.push(
-        { name: this.loggedInUser.name, email: this.loggedInUser.email, comment: projectUatScriptDetail.remark, }
+        { name: this.loggedInUser.name, email: this.loggedInUser.email, comment: projectUatScriptDetail.remark, dateTime: moment().utc().format("yyyy-MM-DDTHH:mm:ss") as string }
       );
     }
     if (projectUatScriptDetail.actualResult != null && projectUatScriptDetail.pass == false && projectUatScriptDetail.retestDate != null && projectUatScriptDetail.retestDate != "") {
@@ -938,7 +939,7 @@ export class UATActivityComponent implements OnInit {
       class: 'modal-bg',
     };
     const initialState = {
-      msg: "Are you sure?",
+      msg: "Do you really want to mark this script as completed?",
     };
     this.modalRef = this.modalService.show(ConfirmAlert, Object.assign({}, config, { initialState }));
 
@@ -1147,6 +1148,22 @@ export class UATActivityComponent implements OnInit {
           });
       }
     });
+  }
+
+  /**
+  * 
+  */
+  @ViewChild("testResult") testResult;
+  triggerPassFail(testResult, projectUatScriptDetail: ProjectUatScriptDetail) {
+    if (typeof testResult !== 'undefined') {
+      if (testResult.id == "As Expected") {
+        projectUatScriptDetail.pass = true;
+      } else if (testResult.id == "Not as Expected") {
+        projectUatScriptDetail.pass = false;
+      }
+    } else {
+      projectUatScriptDetail.pass = false;
+    }
   }
 
 }

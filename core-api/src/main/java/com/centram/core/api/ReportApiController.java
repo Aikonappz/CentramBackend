@@ -6,10 +6,7 @@ import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.ReportService;
-import com.centram.domain.AssetOrder;
-import com.centram.domain.Incident;
-import com.centram.domain.Organisation;
-import com.centram.domain.Vendor;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.Technology;
@@ -35,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 
@@ -186,9 +182,9 @@ public class ReportApiController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "asset-assignment-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
-    @RequestMapping(value = "/uat", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/uat-script", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REPORT,UAT REPORT','READ,READ',authentication.principal)")
-    public ResponseEntity<PaginatedList<UatScriptReportDTO>> uatReport(
+    public ResponseEntity<PaginatedList<UatScriptReportDTO>> uatScriptReport(
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @RequestParam(value = "technology", defaultValue = "SAP_SUCCESS_FACTORS", required = false) String technology,
@@ -200,12 +196,12 @@ public class ReportApiController {
             @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
             @RequestParam(value = "status", defaultValue = "",  required = false) String status,
             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<UatScriptReportDTO>>(reportService.uatReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<UatScriptReportDTO>>(reportService.uatScriptReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/uat/download", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/uat-script/download", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('REPORT,UAT REPORT','READ,READ',authentication.principal)")
-    public ResponseEntity<Resource> uatReportDownload(
+    public ResponseEntity<Resource> uatScriptReportDownload(
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
             @RequestParam(value = "technology", defaultValue = "SAP_SUCCESS_FACTORS", required = false) String technology,
@@ -218,8 +214,23 @@ public class ReportApiController {
             @RequestParam(value = "status", defaultValue = "",  required = false) String status,
             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
 
-        final InputStreamResource resource = new InputStreamResource(reportService.uatReportDownload( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId, status, pageable));
+        final InputStreamResource resource = new InputStreamResource(reportService.uatScriptReportDownload( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId, status, pageable));
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "uat-" + System.currentTimeMillis() + ".csv").contentType(MediaType.parseMediaType("text/csv")).body(resource);
     }
 
+    @RequestMapping(value = "/uat", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REPORT,UAT REPORT','READ,READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<ProjectUat>> uatReport(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
+            @RequestParam(value = "technology", defaultValue = "SAP_SUCCESS_FACTORS", required = false) String technology,
+            @RequestParam(value = "moduleId", defaultValue = "", required = false) String moduleId,
+            @RequestParam(value = "subModuleId", defaultValue = "", required = false) String subModuleId,
+            @RequestParam(value = "projectId", defaultValue = "", required = false) String projectId,
+            @RequestParam(value = "projectUatId", defaultValue = "", required = false) String projectUatId,
+            @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
+            @RequestParam(value = "status", defaultValue = "",  required = false) String status,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<ProjectUat>>(reportService.uatReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
+    }
 }

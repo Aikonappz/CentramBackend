@@ -49,13 +49,13 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label required-control-label" for="watchList">Managers</label>
+                <label class="form-col-form-label required-control-label" for="watchList">Project Manager</label>
                 <ng-select [multiple]="true" [items]="managers" placeholder="-- Select Watch List People --"
                   formControlName="watchList" id="watchList" name="watchList" bindLabel="email" bindValue="email">
                 </ng-select>
                 <div *ngIf="f.watchList.touched && f.watchList.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.watchList.errors?.required">
-                    Manager is required.
+                    Project Manager is required.
                   </div>
                   <div *ngIf="f.watchList.errors?.maxlength">
                     Allowed maxlength exceeds.

@@ -25,33 +25,27 @@
                 </div>
                 <div class="card-body">
                     <table mat-table [dataSource]="datasource">
-                        <ng-container matColumnDef="projectDetail">
-                            <th mat-header-cell *matHeaderCellDef> Project Type </th>
+                        <ng-container matColumnDef="project">
+                            <th mat-header-cell *matHeaderCellDef> Project Name </th>
                             <td mat-cell *matCellDef="let element">
-                                <div>{{element.projectType}}</div>
-                                <div>{{element.technology}}</div>
+                                <!-- <div>{{element.projectType}}</div>
+                                <div>{{element.technology}}</div> -->
                                 <div>{{element.moduleName}}/{{element.subModuleName}}</div>
-                                <div>{{element.name}} [ {{element.code}}]</div>
+                                <!-- <div>{{element.name}} [ {{element.code}}]</div> -->
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="managers">
-                            <th mat-header-cell *matHeaderCellDef> Managers </th>
+                        <ng-container matColumnDef="module">
+                            <th mat-header-cell *matHeaderCellDef> Module </th>
                             <td mat-cell *matCellDef="let element">
-                                <div [innerHtml]="formateManager(element.watchList)"></div>
+                                <div>{{element.moduleName}}</div>
                             </td>
                         </ng-container>
-                        <ng-container matColumnDef="stakeHolders">
-                            <th mat-header-cell *matHeaderCellDef> Customers </th>
+                        <ng-container matColumnDef="subModule">
+                            <th mat-header-cell *matHeaderCellDef> Sub-Module </th>
                             <td mat-cell *matCellDef="let element">
-                                <div [innerHtml]="formateManager(element.stakeHolders)"></div>
+                                <div>{{element.subModuleName}}</div>
                             </td>
-                        </ng-container>
-                        <ng-container matColumnDef="consultants">
-                            <th mat-header-cell *matHeaderCellDef> Consultants </th>
-                            <td mat-cell *matCellDef="let element">
-                                <div [innerHtml]="formateManager(element.consultants)"></div>
-                            </td>
-                        </ng-container>
+                        </ng-container>                        
                         <ng-container matColumnDef="status">
                             <th mat-header-cell *matHeaderCellDef> Status </th>
                             <td mat-cell *matCellDef="let element">

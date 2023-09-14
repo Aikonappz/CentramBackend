@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -204,7 +205,7 @@ public class ProjectUatService {
     @Transactional(readOnly = true)
     public List<ProjectUat> getProjectUats(BigInteger projectId, BigInteger moduleId, BigInteger subModuleId) {
         List<ProjectUat> projectUats = projectUatRepository.getByProjectIdAndModuleIdAndSubModuleId(projectId, moduleId, subModuleId);
-        projectUats.stream().forEach(i->{
+        projectUats.stream().forEach(i -> {
             long noOfScript = i.getProjectUatScripts().size();
             long noOftestCasePassed = i.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
             i.setCanMarkComplete(true);
@@ -213,7 +214,7 @@ public class ProjectUatService {
             }*/
         });
 
-        return  projectUats;
+        return projectUats;
     }
 
     /**
@@ -240,8 +241,13 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(BigInteger uatProjectId) {
-        return projectUatRepository.getProjectUatScriptsByUatProjectId(uatProjectId);
+    public Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(final BigInteger uatProjectId) {
+        Set<ProjectUatScript> projectUatScripts = projectUatRepository.getProjectUatScriptsByUatProjectId(uatProjectId);
+        projectUatScripts.forEach(i -> {
+            i.setUatManual(mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_MANUAL, uatProjectId));
+            i.setUatScript(mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, uatProjectId));
+        });
+        return projectUatScripts;
     }
 
     /**
@@ -406,7 +412,8 @@ public class ProjectUatService {
                         } else if (cell.getAddress().getColumn() == 10) {
                             //Remarks
                             if (!cellValue.trim().isEmpty()) {
-                                UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue);
+                                UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue, LocalDateTime.now());
+                                //UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue);
                                 projectUatScriptDetail.setRemarks(new LinkedHashSet<UATRemark>() {{
                                     add(uatRemark);
                                 }});
@@ -469,7 +476,6 @@ public class ProjectUatService {
     }
 
     /**
-     *
      * @param start
      * @param end
      * @param technology
@@ -483,7 +489,24 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Page<UatScriptReportDTO> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger projectUatScriptId, BigInteger uploadedByUserId, Pageable pageable) {
-        return projectUatRepository.uatReport( start, end, technology,  moduleId,  subModuleId,  projectId,  projectUatId,  projectUatScriptId,  uploadedByUserId,  pageable);
+    public Page<UatScriptReportDTO> uatScriptReport(LocalDateTime start, LocalDateTime end, Technology technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger projectUatScriptId, BigInteger uploadedByUserId, Pageable pageable) {
+        return projectUatRepository.uatScriptReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, projectUatScriptId, uploadedByUserId, pageable);
+    }
+
+    /**
+     * @param start
+     * @param end
+     * @param technology
+     * @param moduleId
+     * @param subModuleId
+     * @param projectId
+     * @param projectUatId
+     * @param uploadedByUserId
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Page<ProjectUat> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger uploadedByUserId, Pageable pageable) {
+        return projectUatRepository.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, uploadedByUserId, pageable);
     }
 }

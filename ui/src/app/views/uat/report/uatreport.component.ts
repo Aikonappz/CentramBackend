@@ -17,7 +17,7 @@ import { LoggedInUser } from '../../../model/LoggedInUser';
 import { ProjectUat } from '../../../model/ProjectUat';
 import { ProjectUatScript } from '../../../model/ProjectUatScript';
 import { ProjectUatService } from '../../../service/ProjectUatService';
-import { UatReportDataSource } from '../../../service/datasource/UatReportDataSource';
+import { UatScriptReportDataSource } from '../../../service/datasource/UatScriptReportDataSource';
 
 @Component({
   selector: 'app-uat-report',
@@ -28,7 +28,7 @@ export class UATReportComponent implements OnInit {
   moduleName: string = "UAT REPORT";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   displayedColumns = ['projDtl', 'consltDtl', 'testCaseDtl', 'status',];
-  datasource: UatReportDataSource;
+  datasource: UatScriptReportDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: any[] = [];
   uatCommunicationSearchForm: FormGroup;
@@ -371,7 +371,7 @@ export class UATReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.datasource = new UatReportDataSource(this.service);
+    this.datasource = new UatScriptReportDataSource(this.service);
     this.datasource.loadData(0, 10, this.searchedData);
   }
 
@@ -397,7 +397,7 @@ export class UATReportComponent implements OnInit {
 
   download() {
     this.service
-      .downloadUatReport(this.searchedData)
+      .downloadUatScriptReport(this.searchedData)
       .subscribe((data: any) => {
         //console.log(data);
         let blob = new Blob([data], { type: "text/csv" });

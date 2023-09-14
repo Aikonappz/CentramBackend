@@ -1,4 +1,5 @@
 import { Base } from "./Base"
+import { MediaFile } from "./MediaFile";
 import { ProjectUatScriptDetail } from "./ProjectUatScriptDetail"
 
 export class ProjectUatScript extends Base {
@@ -12,6 +13,8 @@ export class ProjectUatScript extends Base {
     projectUatScriptDetails: ProjectUatScriptDetail[];
     label: string;
     status: string;
+    uatManual : MediaFile;
+    uatScript : MediaFile;
 }
 
 export interface ProjectUatScriptList {

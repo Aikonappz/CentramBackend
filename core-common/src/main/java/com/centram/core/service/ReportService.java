@@ -428,7 +428,7 @@ public class ReportService {
         }
     }
 
-    public PaginatedList<UatScriptReportDTO> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, String status, Pageable pageable) {
+    public PaginatedList<UatScriptReportDTO> uatScriptReport(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, String status, Pageable pageable) {
         //int tech = technology.ordinal();
         BigInteger mId = (!moduleId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(moduleId)) : null;
         BigInteger smId = (!subModuleId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(subModuleId)) : null;
@@ -440,7 +440,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        Page<UatScriptReportDTO> page = projectUatService.uatReport(start, end, technology, mId, smId, pId, pUatId, pUatScriptId, pUplId, pageable);
+        Page<UatScriptReportDTO> page = projectUatService.uatScriptReport(start, end, technology, mId, smId, pId, pUatId, pUatScriptId, pUplId, pageable);
         page.getContent().forEach(i -> {
             Module module = moduleService.getModuleById(i.getModuleId());
             i.setModule(module.getCustomerModuleName());
@@ -468,11 +468,11 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    public ByteArrayInputStream uatReportDownload(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, String status, Pageable pageable) {
+    public ByteArrayInputStream uatScriptReportDownload(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String projectUatScriptId, String uploadedByUserId, String status, Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         final CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         List<String> data = new ArrayList<String>();
-        PaginatedList<UatScriptReportDTO> page = this.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, projectUatScriptId, uploadedByUserId, status, Pageable.unpaged());
+        PaginatedList<UatScriptReportDTO> page = this.uatScriptReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, projectUatScriptId, uploadedByUserId, status, Pageable.unpaged());
         List<UatScriptReportDTO> uatScriptReportDTOS = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
             data = Arrays.asList("Sl.No", "Technology", "Module", "Sub Module", "Project Type", "Project Name", "Project Code", "Project Manager", "Consultant Responsible", "Test Case ID", "Test Case Description", "Status", "Currently with", "Age (days)");
@@ -488,6 +488,53 @@ public class ReportService {
         } catch (IOException e) {
             throw new AppException(GenericErrorCode.CSV_GENERATION_ISSUE);
         }
+    }
+
+    public PaginatedList<ProjectUat> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, String moduleId, String subModuleId, String projectId, String projectUatId, String uploadedByUserId, String status, Pageable pageable) {
+        //int tech = technology.ordinal();
+        BigInteger mId = (!moduleId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(moduleId)) : null;
+        BigInteger smId = (!subModuleId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(subModuleId)) : null;
+        BigInteger pId = (!projectId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(projectId)) : null;
+        BigInteger pUatId = (!projectUatId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(projectUatId)) : null;
+        BigInteger pUplId = (!uploadedByUserId.isEmpty()) ? BigInteger.valueOf(Long.parseLong(uploadedByUserId)) : null;
+        if (start == null || end == null) {
+            end = LocalDateTime.now();
+            start = end.minusDays(90);
+        }
+        Page<ProjectUat> page = projectUatService.uatReport(start, end, technology, mId, smId, pId, pUatId, pUplId, pageable);
+        page.getContent().forEach(i -> {
+            Module module = moduleService.getModuleById(i.getModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            module = moduleService.getModuleById(i.getSubModuleId());
+            i.setSubModuleName(module.getCustomerModuleName());
+            for (ProjectUatScript projectUatScript : i.getProjectUatScripts()) {
+                if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count()) {
+                    i.setStatus("Completed");
+                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(ProjectUatScriptDetail::getPass)) {
+                    i.setStatus("Not Started");
+                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(ProjectUatScriptDetail::getPass)) {
+                    i.setStatus("In Progress");
+                }
+            }
+        });
+        List<ProjectUat> projectUats = new LinkedList<ProjectUat>();
+        projectUats = page.getContent();
+        if (!status.isEmpty()) {
+            if (status.equalsIgnoreCase("completed")) {
+                projectUats = projectUats.stream().filter(i -> {
+                    return i.getStatus().equalsIgnoreCase("Completed");
+                }).collect(Collectors.toList());
+            } else if (status.equalsIgnoreCase("notStarted")) {
+                projectUats = projectUats.stream().filter(i -> {
+                    return i.getStatus().equalsIgnoreCase("Not Started");
+                }).collect(Collectors.toList());
+            } else if (status.equalsIgnoreCase("inProgress")) {
+                projectUats = projectUats.stream().filter(i -> {
+                    return i.getStatus().equalsIgnoreCase("In Progress");
+                }).collect(Collectors.toList());
+            }
+        }
+        return new PaginatedList<ProjectUat>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), projectUats);
     }
 
 }

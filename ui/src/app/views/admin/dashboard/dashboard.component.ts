@@ -216,7 +216,7 @@ export class DashboardComponent implements OnInit {
       }]
     }
   };;
-  public lables: Label[] = ["Total", "Not Started", "In Progress", "Complete"];
+  public lables: Label[] = ["Total Modules", "Modules Not Started", "Modules In-Progress", "Modules Completed"];
   public dataSets: MultiDataSet = [];
   public colors: any[] = [{ backgroundColor: ["#437ff7a8", "#08d620a9", "#f63c6e83", "#8939f283"] }];
 
@@ -1363,13 +1363,13 @@ export class DashboardComponent implements OnInit {
   }
 
   uatChart(e: any) {
-    if (this.getChartSegmentData(e) == "Total") {
+    if (this.getChartSegmentData(e) == "Total Modules") {
       this.viewUat({ status: "total" });
-    } else if (this.getChartSegmentData(e) == "Not Started") {
+    } else if (this.getChartSegmentData(e) == "Modules Not Started") {
       this.viewUat({ status: "notStarted" });
-    } else if (this.getChartSegmentData(e) == "In Progress") {
+    } else if (this.getChartSegmentData(e) == "Modules In-Progress") {
       this.viewUat({ status: "inProgress" });
-    } else if (this.getChartSegmentData(e) == "Complete") {
+    } else if (this.getChartSegmentData(e) == "Modules Completed") {
       this.viewUat({ status: "completed" });
     }
   }

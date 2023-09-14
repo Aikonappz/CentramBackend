@@ -1,4 +1,5 @@
 import { Base } from "./Base"
+import { MediaFile } from "./MediaFile"
 import { Organisation } from "./Organisation"
 import { Project } from "./Project"
 import { ProjectUatScript } from "./ProjectUatScript"
@@ -16,6 +17,8 @@ export class ProjectUat extends Base {
     user: UserVO;
     uatCycleComplete: boolean;
     canMarkComplete: boolean;
+    uatManual : MediaFile;
+    uatScript : MediaFile;
 }
 
 export interface ProjectUatList {

@@ -1655,9 +1655,9 @@ public class MiscService {
         emailValues.put("action", projectUatScriptDetail.getAction());
         emailValues.put("expectedResult", projectUatScriptDetail.getExpectedResult());
         emailValues.put("actualResult", projectUatScriptDetail.getActualResult());
-        emailValues.put("pass", projectUatScriptDetail.getPass() ? "Y" : "N");
+        emailValues.put("pass", projectUatScriptDetail.getPass() ? "Yes" : "No");
         emailValues.put("retestDate", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "");
-        emailValues.put("retest", projectUatScriptDetail.getRetestPass() ? "Y" : "N");
+        emailValues.put("retest", projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail");
         for (UATRemark remark : projectUatScriptDetail.getRemarks()) {
             uatRemark = remark;
         }

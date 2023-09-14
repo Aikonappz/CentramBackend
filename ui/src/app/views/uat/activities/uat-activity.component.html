@@ -5,7 +5,7 @@
         <tab *ngIf="isConsultant()" heading="UAT Script and Manual Upload">
           <div class="card">
             <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="uploadSuccess">
-              <h6>UAT Script uploaded successfully!</h6>
+              <h6>UAT Script and Manual are uploaded successfully.</h6>
             </div>
             <form [formGroup]="angForm" (ngSubmit)="uploadUatScript()" novalidate>
               <div class="card-body">
@@ -67,7 +67,7 @@
                       formControlName="uatScript" name="uatScript">
                     <div *ngIf="f.uatScript.touched && f.uatScript.invalid" class="alert alert-danger-custom">
                       <div *ngIf="f.uatScript.errors?.validAttachments">
-                        Supported file type is xslx.
+                        Supported file format is <b>.xslx</b> only
                       </div>
                       <div *ngIf="f.uatScript.errors?.mustBeLessThan2MB">
                         File size should be less than 3 MB.
@@ -82,10 +82,10 @@
                       formControlName="uatManual" name="uatManual">
                     <div *ngIf="f.uatManual.touched && f.uatManual.invalid" class="alert alert-danger-custom">
                       <div *ngIf="f.uatManual.errors?.validAttachments">
-                        Supported file types are pdf/doc.
+                        Supported file types are <b>pdf/doc</b>.
                       </div>
-                      <div *ngIf="f.uatManual.errors?.mustBeLessThan2MB">
-                        File size should be less than 3 MB.
+                      <div *ngIf="f.uatManual.errors?.mustBeLessThan10MB">
+                        File size should be less than 10 MB.
                       </div>
                     </div>
                   </div>
@@ -101,7 +101,7 @@
                 </button>
                 <a class="btn btn-link sample-uat-script-download-btn" href="assets/downloads/uat-scripts.xlsx">
                   <i class="icon-arrow-down-circle"></i>
-                  Download Sample Template
+                  Download Sample UAT Script Template
                 </a>
               </div>
             </form>
@@ -270,6 +270,12 @@
                   <label class="form-col-form-label " for="testScriptName"><b><u>Test Script Name</u></b> :
                     {{projectUatScript?.testScriptName}}</label>
                 </div>
+                <div class="col">
+                  <label class="form-col-form-label " for="testScriptManual"><b><u>Test Script Manual</u></b> :
+                    <span class="actionable-span"
+                      (click)="downloadFile(projectUatScript?.uatManual?.id, projectUatScript?.uatManual?.fileName)">{{projectUatScript?.uatManual?.fileName}}&nbsp;&nbsp;</span>
+                  </label>
+                </div>
               </div>
               <table mat-table class="table table-striped script-table" [dataSource]="projectUatScriptDetailSource">
                 <ng-container matColumnDef="uatDescription">
@@ -289,7 +295,7 @@
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="actualResultDetail">
-                  <th class="actualResultHeader" mat-header-cell *matHeaderCellDef> Result Detail</th>
+                  <th class="actualResultHeader" mat-header-cell *matHeaderCellDef> Test Detail</th>
                   <td class="actualResultBody" mat-cell *matCellDef="let element">
                     <div *ngIf="resultNotEditable(element); else editingTemplate">
                       <div><b><u>Actual Result</u> - </b>{{element.actualResult==null? 'NA' : element.actualResult}}
@@ -298,9 +304,14 @@
                       <div><b><u>Test Passed</u> - </b>{{element.pass==true? 'Yes' : 'No'}}</div>
                     </div>
                     <ng-template #editingTemplate>
-                      <textarea class="form-control" [(ngModel)]='element.actualResult' placeholder="Actual Result"
+                      <!-- <textarea class="form-control" [(ngModel)]='element.actualResult' placeholder="Actual Result"
                         rows="7" cols="30">
-                      </textarea>
+                      </textarea> -->
+
+                      <ng-select [items]="testResultList" #testResult (change)="triggerPassFail($event,element)" placeholder="-- Select Result --"
+                        [(ngModel)]='element.actualResult' bindLabel="label" bindValue="id"></ng-select>
+
+
                       <hr />
                       <ng-select [items]="statusList" placeholder="-- Select Result Status --"
                         [(ngModel)]='element.pass' bindLabel="label" bindValue="id"></ng-select>

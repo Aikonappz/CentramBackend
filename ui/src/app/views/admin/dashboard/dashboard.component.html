@@ -49,8 +49,7 @@
               </div>
             </div>
             <h3 class="accordion-toggle"
-              *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'UAT')"><b>UAT Cycles By
-                Status</b>
+              *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'UAT')"><b>UAT Status</b>
             </h3>
             <div>
               <div class="row">
@@ -62,7 +61,7 @@
                         <i class="icon-eye"></i>
                       </button>
                       <div class="text-value">{{uatDashboardVO.total}}</div>
-                      <div>Total UAT Cycle</div>
+                      <div>Total Modules</div>
                     </div>
                   </div>
                 </div>
@@ -76,7 +75,7 @@
                       </button>
                       <div class="text-value">{{uatDashboardVO.notStarted}}
                       </div>
-                      <div>Not Started UAT Cycle</div>
+                      <div>Modules Not Started</div>
                     </div>
                   </div>
                 </div>
@@ -90,7 +89,7 @@
                       </button>
                       <div class="text-value">{{uatDashboardVO.inProgress}}
                       </div>
-                      <div>In Progress UAT Cycle</div>
+                      <div>Modules In-Progress</div>
                     </div>
                   </div>
                 </div>
@@ -102,7 +101,7 @@
                         <i class="icon-eye"></i>
                       </button>
                       <div class="text-value">{{uatDashboardVO.completed}}</div>
-                      <div>Completed UAT Cycle</div>
+                      <div>Modules Completed</div>
                     </div>
                   </div>
                 </div>

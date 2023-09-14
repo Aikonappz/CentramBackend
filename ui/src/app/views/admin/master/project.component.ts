@@ -18,7 +18,7 @@ import { MiscService } from '../../../service/MiscService';
 export class ProjectComponent implements OnInit {
   moduleName: string = "PROJECT_MASTER";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
-  displayedColumns = ['projectDetail', 'stakeHolders', 'consultants', 'managers', 'status', 'action'];
+  displayedColumns = ['project', 'module', 'subModule', 'status', 'action'];
   datasource: ProjectDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   type: string;

@@ -30,15 +30,18 @@ import { ProjectUatScriptDetail } from "../../../model/ProjectUatScriptDetail";
           </div>
           <table class="table table-bordered table-striped table-sm">
             <tr>
-              <td align="center" width="33%"><strong>Name</strong></td>
-              <td align="center" width="33%"><strong>Email</strong></td>
-              <td align="center" width="34%"><strong>Remark</strong></td>
+              <td align="center" width="25%"><strong>Name</strong></td>
+              <td align="center" width="25%"><strong>Email</strong></td>
+              <td align="center" width="25%"><strong>Remark</strong></td>
+              <td align="center" width="25%"><strong>Date & Time</strong></td>
             </tr>
             <ng-container *ngFor="let elm of projectUatScriptDetail.remarks;let i=index;">
               <tr>
                 <td>{{elm.name}}</td>
                 <td>{{elm.email}}</td>
                 <td>{{elm.comment}}</td>
+                <td>{{formatDateTime(elm?.dateTime)}}</td>
+
               </tr>
             </ng-container>
           </table>
@@ -69,9 +72,9 @@ export class RemarkViewer implements OnInit {
   loadData(req = {}) {
   }
 
-  formatDate(d: string) {
+  formatDateTime(d: string) {
     if (d != null && d != "") {
-      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
     return null;
   }
