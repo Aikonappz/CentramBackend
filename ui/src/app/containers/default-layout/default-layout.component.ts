@@ -35,6 +35,10 @@ declare var $: any;
   templateUrl: './default-layout.component.html'
 })
 export class DefaultLayoutComponent implements OnInit {
+
+  public loggedInUser: LoggedInUser;
+  public unreadNotifications: number;
+
   private notifications: Notification[] = [];
   private notificationMenuOpened: boolean = false;
   public sidebarMinimized = false;
@@ -44,9 +48,7 @@ export class DefaultLayoutComponent implements OnInit {
   public appBrandName;
   public appDevName;
   public currentYear;
-  private permissions: Permission[];
-  private loggedInUser: LoggedInUser;
-  private unreadNotifications: number;
+  private permissions: Permission[];  
   private menuAttributes: any;
   modalRef: BsModalRef;
   roles: string[] = [];

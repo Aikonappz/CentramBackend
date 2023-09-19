@@ -71,7 +71,7 @@ import { AppUtility } from "../../../../config/AppUtility";
 export class ViewAppAdminDashboardDetails implements OnInit {
     params: any;
     displayedColumns = ['name', 'addressDtl', 'licence', 'status'];
-    private datasource: OrganisationDataSource;
+    public datasource: OrganisationDataSource;
     @ViewChild(MatPaginator) paginator: MatPaginator;
     constructor(
         private fb: FormBuilder,

@@ -308,8 +308,9 @@
                         rows="7" cols="30">
                       </textarea> -->
 
-                      <ng-select [items]="testResultList" #testResult (change)="triggerPassFail($event,element)" placeholder="-- Select Result --"
-                        [(ngModel)]='element.actualResult' bindLabel="label" bindValue="id"></ng-select>
+                      <ng-select [items]="testResultList" #testResult (change)="triggerPassFail($event,element)"
+                        placeholder="-- Select Result --" [(ngModel)]='element.actualResult' bindLabel="label"
+                        bindValue="id"></ng-select>
 
 
                       <hr />
@@ -350,7 +351,7 @@
                     </ng-template>
                   </td>
                 </ng-container>
-                <ng-container matColumnDef="activity">
+                <ng-container *ngIf="!searchedUatScriptComplete" matColumnDef="activity">
                   <th align="center" class="activityHeader" mat-header-cell *matHeaderCellDef>
                     <div *ngIf="searchedUatScriptId!=null&&isCustomer()">
                       <button type=" button" class="btn btn-warning btn-sm"

@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   appUrl: 'http://www.centram.live',
   appBrandName: 'Centram',
   appDevName: 'Centram Dev',

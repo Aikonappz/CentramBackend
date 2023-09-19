@@ -822,17 +822,17 @@ export class UATActivityComponent implements OnInit {
     this.uatCommunicationSearchedParam = { projectUATScriptId: this.uatCommunicationSearchForm.controls['searchUatProjectScriptId'].value, };
     if (this.isScriptUATComplete()) {
       this.searchedUatScriptComplete = true;
-      // if (this.isConsultant()) {
-      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks',];
-      // } else {
-      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
-      // }
+      if (this.isConsultant()) {
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks',];
+      } else {
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+      }
     } else {
-      // if (this.isConsultant()) {
-      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
-      // } else {
-      //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
-      // }
+      if (this.isConsultant()) {
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
+      } else {
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+      }
     }
     this.loadData();
     this.searched = true;
