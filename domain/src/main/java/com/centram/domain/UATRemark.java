@@ -26,5 +26,12 @@ public class UATRemark implements Serializable {
     @JsonView(Views.BasicView.class)
     private String comment;
     @JsonView(Views.BasicView.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateTime;
+
+    public UATRemark(String name, String email, String comment) {
+        this.name = name;
+        this.email = email;
+        this.comment = comment;
+    }
 }

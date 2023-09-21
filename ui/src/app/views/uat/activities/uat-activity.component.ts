@@ -253,14 +253,14 @@ export class UATActivityComponent implements OnInit {
       var size = ev.target.files[i].size;
       var modifiedDate = ev.target.files[i].lastModifiedDate;
       const file = this.angForm.controls['uatManual'];
-      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan10MB) {
+      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan20MB) {
         return;
       }
-      let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf",];
+      let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf", "application/zip", "application/x-rar-compressed"];
       if (!validMimeTpes.includes(type)) {
-        file.setErrors({ validAttachments: true, mustBeLessThan10MB: false });
-      } else if (size > (3145728)) {
-        file.setErrors({ validAttachments: false, mustBeLessThan10MB: true });
+        file.setErrors({ validAttachments: true, mustBeLessThan20MB: false });
+      } else if (size > (20971520)) {
+        file.setErrors({ validAttachments: false, mustBeLessThan20MB: true });
       } else {
         file.setErrors(null);
         this.selectedUatManualFiles = ev.target.files;
@@ -523,6 +523,7 @@ export class UATActivityComponent implements OnInit {
           this.moduleList.push(this.projectModules[i]);
         }
       }
+      this.moduleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
       this.angForm.get('moduleId').setValue(null);
       this.subModuleList = [];
       this.angForm.get('subModuleId').setValue(null);
@@ -551,6 +552,7 @@ export class UATActivityComponent implements OnInit {
           this.subModuleList.push(this.projectModules[i]);
         }
       }
+      this.subModuleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
       this.angForm.get('subModuleId').setValue(null);
       this.projectList = [];
       this.angForm.get('project').setValue(null);
@@ -617,6 +619,7 @@ export class UATActivityComponent implements OnInit {
           this.moduleList.push(this.projectModules[i]);
         }
       }
+      this.moduleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.moduleList = [];
     }
@@ -648,6 +651,7 @@ export class UATActivityComponent implements OnInit {
           this.searchSubModuleList.push(this.projectModules[i]);
         }
       }
+      this.searchSubModuleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.searchSubModuleList = [];
     }
@@ -970,6 +974,7 @@ export class UATActivityComponent implements OnInit {
           this.moduleList.push(this.projectModules[i]);
         }
       }
+      this.moduleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.moduleList = [];
     }
@@ -996,6 +1001,7 @@ export class UATActivityComponent implements OnInit {
           this.searchSubModuleList.push(this.projectModules[i]);
         }
       }
+      this.searchSubModuleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.searchSubModuleList = [];
     }

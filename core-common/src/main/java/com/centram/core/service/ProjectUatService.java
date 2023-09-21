@@ -117,7 +117,7 @@ public class ProjectUatService {
                 i.setPass(true);
             });
             projectUatScript = projectUatScriptRepository.save(projectUatScript);
-            miscService.notifyUatScriptCompletion(loggedInUser, projectUatScript);
+            miscService.notifyUatScriptCompletion(projectUatScript);
             return projectUatScript;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
@@ -138,7 +138,7 @@ public class ProjectUatService {
             oldObj.setRetestPass(projectUatScriptDetail.getRetestPass());
             oldObj.setRemarks(projectUatScriptDetail.getRemarks());
             oldObj = projectUatScriptDetailRepository.save(oldObj);
-            miscService.notifyParticipant(loggedInUser, oldObj);
+            miscService.notifyParticipant(oldObj);
             return oldObj;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
@@ -412,8 +412,8 @@ public class ProjectUatService {
                         } else if (cell.getAddress().getColumn() == 10) {
                             //Remarks
                             if (!cellValue.trim().isEmpty()) {
-                                UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue, LocalDateTime.now());
-                                //UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue);
+                                //UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue, LocalDateTime.now());
+                                UATRemark uatRemark = new UATRemark(projectUat.getUploadedBy().getFirstName() + " " + projectUat.getUploadedBy().getLastName(), projectUat.getUploadedBy().getEmail(), cellValue);
                                 projectUatScriptDetail.setRemarks(new LinkedHashSet<UATRemark>() {{
                                     add(uatRemark);
                                 }});
@@ -428,11 +428,11 @@ public class ProjectUatService {
                     rw++;
                 }
             }
-            log.debug("projectUat => {} ", objectMapper.writeValueAsString(projectUat));
+            //log.info("projectUat => {} ", objectMapper.writeValueAsString(projectUat));
             projectUat = projectUatRepository.save(projectUat);
             mediaService.uploadMediaFile(projectUat.getId(), EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, "NA", new MultipartFile[]{multipartFile}, loggedInUser);
             file.close();
-            miscService.notifyUatScriptUpload(loggedInUser, projectUat);
+            miscService.notifyUatScriptUpload(projectUat);
             return projectUat;
         } catch (IOException | InterruptedException e) {
             log.error("Error detail - {}", e.getMessage());
