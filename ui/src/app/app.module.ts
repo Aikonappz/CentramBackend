@@ -71,6 +71,7 @@ import { CommonAlert } from './containers/default-layout/modal/CommonAlert';
 import { SSOLoginComponent } from './views/sso-login/sso-login.component';
 import { NgxMaskModule } from 'ngx-mask'
 import { TextMaskModule } from 'angular2-text-mask';
+import { SafePipe } from './service/pipe/SafePipe';
 
 @NgModule({
   imports: [
@@ -139,7 +140,8 @@ import { TextMaskModule } from 'angular2-text-mask';
     IconSetService,
     ClientStorageService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: [],
 })
 export class AppModule { }
 

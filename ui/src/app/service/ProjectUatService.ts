@@ -44,4 +44,7 @@ export class ProjectUatService {
     getUploadedUatScripts(request?: any): Observable<ProjectUatList> {
         return this.http.get('/v1/project-uat/uploaded-scripts', { "params": request });
     }
+    canMarkScriptComplete(request?: any): Observable<ProjectUatScript> {
+        return this.http.get('/v1/project-uat/can-mark-script-complete', { "params": request });
+    }    
 }

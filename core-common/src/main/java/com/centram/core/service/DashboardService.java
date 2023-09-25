@@ -208,9 +208,9 @@ public class DashboardService {
             }).collect(Collectors.toList());
         }
         if (roleNames.contains("ORG_ADMIN")) {
-            projectUats = projectUats.stream().filter(i -> {
+            /*projectUats = projectUats.stream().filter(i -> {
                 return i.getProject().getWatchList().contains(loggedInUser.getEmail());
-            }).collect(Collectors.toList());
+            }).collect(Collectors.toList());*/
         }
         long noOfUat = 0;
         long noOfUatScriptCompleted = 0;
@@ -237,7 +237,7 @@ public class DashboardService {
                     noOfUatScriptCompleted++;
                 } else if (status == -1) {
                     noOfUatScriptNotStarted++;
-                } else if (status == 0) {
+                } else {
                     noOfUatScriptInProgress++;
                 }
             }

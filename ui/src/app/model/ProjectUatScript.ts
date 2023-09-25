@@ -13,8 +13,9 @@ export class ProjectUatScript extends Base {
     projectUatScriptDetails: ProjectUatScriptDetail[];
     label: string;
     status: string;
-    uatManual : MediaFile;
-    uatScript : MediaFile;
+    uatManual: MediaFile;
+    uatScript: MediaFile;
+    canMarkComplete: Boolean;
 }
 
 export interface ProjectUatScriptList {

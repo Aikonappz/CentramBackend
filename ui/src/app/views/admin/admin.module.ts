@@ -59,7 +59,6 @@ import { ViewUATDashboardDetails } from './dashboard/modal/ViewUATDashboardDetai
   declarations: [
     NotificationComponent,
     NotificationViewComponent,
-    SafePipe,
     DashboardComponent,
     ViewUserDashboardDetails,
     UserComponent,

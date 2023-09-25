@@ -2,6 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.domain.converter.StringCommaSeparatedToListConverter;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.ProjectType;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.Technology;
@@ -133,9 +134,10 @@ public class Project extends BaseEntity implements Serializable {
 
     @NotNull
     @Valid
-    @Column(name = "uat")
+    @Column(name = "project_for")
+    @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
-    private Boolean uat = true;
+    private LicenseType projectFor;
 
 
     @Valid

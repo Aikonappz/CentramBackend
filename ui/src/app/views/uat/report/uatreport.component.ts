@@ -153,6 +153,7 @@ export class UATReportComponent implements OnInit {
           this.moduleList.push(this.projectModules[i]);
         }
       }
+      this.moduleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.moduleList = [];
     }
@@ -181,6 +182,7 @@ export class UATReportComponent implements OnInit {
           this.searchSubModuleList.push(this.projectModules[i]);
         }
       }
+      this.searchSubModuleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.searchSubModuleList = [];
     }
@@ -441,7 +443,7 @@ export class UATReportComponent implements OnInit {
         "subModuleId": subModuleId == null ? '' : subModuleId,
         "projectId": projectId == null ? '' : projectId,
         "projectUatId": projectUatId == null ? '' : projectUatId,
-        "projectUatScriptId": projectUatScriptId == null ? '' : projectUatScriptId,        
+        "projectUatScriptId": projectUatScriptId == null ? '' : projectUatScriptId,
       };
       //console.log(JSON.stringify(this.searchedData));
       this.loadData(this.searchedData);

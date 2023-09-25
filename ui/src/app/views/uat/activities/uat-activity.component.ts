@@ -89,6 +89,8 @@ export class UATActivityComponent implements OnInit {
   @ViewChild('projectUatScriptPaginator') projectUatScriptPaginator: MatPaginator;
   selection = new SelectionModel<ProjectUatScript>(true, []);
 
+  uatScriptCanBeMarkedComplete: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -222,14 +224,14 @@ export class UATActivityComponent implements OnInit {
       var size = event.target.files[i].size;
       var modifiedDate = event.target.files[i].lastModifiedDate;
       const file = this.angForm.controls['uatScript'];
-      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan2MB) {
+      if (file.errors && !file.errors.validAttachments && !file.errors.mustBeLessThan10MB) {
         return;
       }
       let validMimeTpes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
       if (!validMimeTpes.includes(type)) {
-        file.setErrors({ validAttachments: true, mustBeLessThan2MB: false });
-      } else if (size > (3145728)) {
-        file.setErrors({ validAttachments: false, mustBeLessThan2MB: true });
+        file.setErrors({ validAttachments: true, mustBeLessThan10MB: false });
+      } else if (size > (10485760)) {
+        file.setErrors({ validAttachments: false, mustBeLessThan10MB: true });
       } else {
         file.setErrors(null);
         this.selectedUatScriptFiles = event.target.files;
@@ -840,6 +842,25 @@ export class UATActivityComponent implements OnInit {
     }
     this.loadData();
     this.searched = true;
+    this.checkCanMarkComplete(this.searchedUatScriptId);
+  }
+
+  /**
+   * 
+   * @param id 
+   */
+  checkCanMarkComplete(id: number) {
+    if (this.isCustomer() && id != null && id > 0) {
+      this.projectUatService
+        .canMarkScriptComplete({ projectUATScriptId: id })
+        .subscribe((data: ProjectUatScript) => {
+          if (data.canMarkComplete) {
+            this.uatScriptCanBeMarkedComplete = true;
+          } else {
+            this.uatScriptCanBeMarkedComplete = false;
+          }
+        });
+    }
   }
 
   /**
@@ -925,6 +946,7 @@ export class UATActivityComponent implements OnInit {
           //console.log("updated data", JSON.stringify(data));
           this.loadData();
           this.searched = true;
+          this.checkCanMarkComplete(this.searchedUatScriptId);
         });
     } else {
       projectUatScriptDetail.editable = false;

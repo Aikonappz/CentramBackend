@@ -7,7 +7,7 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.AccountRepository;
 import com.centram.domain.Account;
-import com.centram.domain.enumarator.AccountType;
+import com.centram.domain.enumarator.LicenseType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public Account getByNameAndType(AccountType accountType, String name) {
+    public Account getByNameAndType(LicenseType accountType, String name) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return accountRepository.getByNameAndType(accountType, name, loggedInUser.getOrganisationId());
     }

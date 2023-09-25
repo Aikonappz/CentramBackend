@@ -14,6 +14,7 @@ import { Technology } from '../../../model/enumerator/Technology';
 import { StartEndDateValidation } from '../../../validator/StartEndDateValidation';
 import { AppUtility } from '../../../config/AppUtility';
 import * as moment from 'moment';
+import { LicenseType } from '../../../model/enumerator/LicenseType';
 declare var $: any;
 
 @Component({
@@ -60,6 +61,7 @@ export class EditProjectComponent implements OnInit {
     });
     this.project = new Project();
     this.project.status = this.defaultStatus;
+    this.project.projectFor = LicenseType.UAT;
   }
 
   hasPermission(action: string): boolean {
@@ -336,6 +338,7 @@ export class EditProjectComponent implements OnInit {
           this.subModuleList.push(this.projectModules[i]);
         }
       }
+      this.subModuleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.subModuleList = [];
       this.angForm.get('subModuleId').setValue(null);
@@ -352,6 +355,7 @@ export class EditProjectComponent implements OnInit {
           this.moduleList.push(this.projectModules[i]);
         }
       }
+      this.moduleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.moduleList = [];
       this.angForm.get('moduleId').setValue(null);

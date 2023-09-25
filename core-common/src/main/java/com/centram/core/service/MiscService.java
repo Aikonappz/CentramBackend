@@ -1644,6 +1644,7 @@ public class MiscService {
         emailValues.put("pass", projectUatScriptDetail.getPass() ? "Yes" : "No");
         emailValues.put("retestDate", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "");
         emailValues.put("retest", projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail");
+        emailValues.put("uatLink", appBaseUrl.concat("/uat/activities"));
         for (UATRemark remark : projectUatScriptDetail.getRemarks()) {
             uatRemark = remark;
         }
@@ -1798,42 +1799,45 @@ public class MiscService {
         emailValues.put("projectDetail", project.getName() + " [" + project.getCode() + "]");
         emailValues.put("projectMasterLink", appBaseUrl.concat("/admin/master/project"));
         emailValues.put("uatLink", appBaseUrl.concat("/uat/activities"));
-        //manager
-        emailValues.put("title", "managerTitle");
-        emailValues.put("body", "managerBody");
-        emailValues.put("recipient", "Project Managers");
-        emailValues.put("to", project.getWatchList().toArray(new String[0]));
-        List<UserVO> users = userService.getUsersByEmails(project.getWatchList(), loggedInUser.getOrganisationId());
+        User user;
         List<Notification> notifications = new ArrayList<Notification>();
-        for (UserVO userVO : users) {
-            notifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        //manager
+        for (String managerEmail : project.getWatchList()) {
+            user = userService.getUserByEmail(managerEmail);
+            emailValues.put("title", "managerTitle");
+            emailValues.put("body", "managerBody");
+            emailValues.put("recipient", user.getFirstName().concat(" ").concat(user.getLastName()));
+            emailValues.put("to", new String[]{managerEmail});
+            List<UserVO> users = userService.getUsersByEmails(project.getWatchList(), loggedInUser.getOrganisationId());
+            notifications = new ArrayList<Notification>();
+            notifications.add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+            emailValues.put("notify", notifications);
+            appEmailService.notifyUatProjectCreation(emailValues);
         }
-        emailValues.put("notify", notifications);
-        appEmailService.notifyUatProjectCreation(emailValues);
-        //customer
-        emailValues.put("title", "customerTitle");
-        emailValues.put("body", "customerBody");
-        emailValues.put("recipient", "Customers");
-        emailValues.put("to", project.getStakeHolders().toArray(new String[0]));
-        users = userService.getUsersByEmails(project.getStakeHolders(), loggedInUser.getOrganisationId());
-        notifications = new ArrayList<Notification>();
-        for (UserVO userVO : users) {
-            notifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
-        }
-        emailValues.put("notify", notifications);
-        appEmailService.notifyUatProjectCreation(emailValues);
         //consultant
-        emailValues.put("title", "consultantTitle");
-        emailValues.put("body", "consultantBody");
-        emailValues.put("recipient", "Project Managers");
-        emailValues.put("to", project.getWatchList().toArray(new String[0]));
-        users = userService.getUsersByEmails(project.getConsultants(), loggedInUser.getOrganisationId());
-        notifications = new ArrayList<Notification>();
-        for (UserVO userVO : users) {
-            notifications.add(new Notification(null, null, new User(userVO.getVersion(), userVO.getId()), Status.PUSHED, NotificationType.INFO));
+        for (String consultantEmail : project.getConsultants()) {
+            user = userService.getUserByEmail(consultantEmail);
+            emailValues.put("title", "consultantTitle");
+            emailValues.put("body", "consultantBody");
+            emailValues.put("recipient", user.getFirstName().concat(" ").concat(user.getLastName()));
+            emailValues.put("to", new String[]{consultantEmail});
+            notifications = new ArrayList<Notification>();
+            notifications.add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+            emailValues.put("notify", notifications);
+            appEmailService.notifyUatProjectCreation(emailValues);
         }
-        emailValues.put("notify", notifications);
-        appEmailService.notifyUatProjectCreation(emailValues);
+        //customer
+        for (String customerEmail : project.getStakeHolders()) {
+            user = userService.getUserByEmail(customerEmail);
+            emailValues.put("title", "customerTitle");
+            emailValues.put("body", "customerBody");
+            emailValues.put("recipient", user.getFirstName().concat(" ").concat(user.getLastName()));
+            emailValues.put("to", new String[]{customerEmail});
+            notifications = new ArrayList<Notification>();
+            notifications.add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+            emailValues.put("notify", notifications);
+            appEmailService.notifyUatProjectCreation(emailValues);
+        }
     }
 
 }

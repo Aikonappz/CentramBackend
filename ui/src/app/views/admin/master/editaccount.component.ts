@@ -8,6 +8,8 @@ import { LoggedInUserService } from '../../../service/LoggedInUserService';
 import { Status } from '../../../model/enumerator/Status';
 import { TicketAllocationType } from '../../../model/enumerator/TicketAllocationType';
 import { Account } from '../../../model/Account';
+import { LoggedInUser } from '../../../model/LoggedInUser';
+import { LicenseType } from '../../../model/enumerator/LicenseType';
 declare var $: any;
 
 @Component({
@@ -27,6 +29,10 @@ export class EditAccountComponent implements OnInit {
   account: Account;
   angForm: FormGroup;
   ticketAllocationTypes: any[] = [];
+  loggedInUser: LoggedInUser;
+  accountType: string = 'ALL';
+  accountTypes: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private loggedInUserService: LoggedInUserService,
@@ -44,11 +50,21 @@ export class EditAccountComponent implements OnInit {
     });
     this.account = new Account();
     this.account.status = this.defaultStatus;
+    this.account.ticketAllocationType = TicketAllocationType.GENERIC;
+    this.account.contractHours = "00:00";
+
     let ticketAllocationTypes = Object.values(TicketAllocationType)
       .filter((value) => typeof value === "string")
       .map((value) => (value as string));
     for (let k in ticketAllocationTypes) {
       this.ticketAllocationTypes.push({ id: ticketAllocationTypes[k], label: ticketAllocationTypes[k] });
+    }
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    let accountTypes = Object.values(LicenseType)
+      .filter((value) => typeof value === "string" && value != "ALL" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
+      .map((value) => (value as string));
+    for (let k in accountTypes) {
+      this.accountTypes.push({ id: accountTypes[k], label: accountTypes[k] });
     }
   }
 
@@ -71,41 +87,15 @@ export class EditAccountComponent implements OnInit {
     this.route.params.subscribe(params => {
       //this.type = this.route.snapshot.paramMap.get('licenceType');
       if (!this.route.snapshot.paramMap.has('id')) {
-
       } else {
         this.newEntity = false;
         this.entityId = Number(this.route.snapshot.paramMap.get('id'));
         this.callVendorService(this.entityId);
       }
       this.angForm = this.fb.group({
-        name: new FormControl(null, [
+        type: new FormControl(null, [
           Validators.required,
           Validators.maxLength(255),
-        ]),
-        contactName: new FormControl(null, [
-          Validators.required,
-          Validators.maxLength(255),
-        ]),
-        contactEmail: new FormControl(null, [
-          Validators.required,
-          Validators.maxLength(255),
-          Validators.email,
-        ]),
-        contractHours: new FormControl(null, [
-          Validators.maxLength(255),
-          Validators.pattern(this.numRegex),
-        ]),
-        contactNumber: new FormControl(null, [
-          Validators.required,
-          Validators.pattern(this.phoneRegex),
-        ]),
-        contactAddress: new FormControl(null, [
-          Validators.required,
-        ]),
-        ticketAllocationType: new FormControl(null, [
-          Validators.required,
-        ]),
-        status: new FormControl('ACTIVE', [
         ]),
       });
     });
@@ -126,14 +116,17 @@ export class EditAccountComponent implements OnInit {
         }
       }
       //console.log(this.angForm);
-      this.account.contractHours = this.angForm.controls['contractHours'].value;
+      this.account.accountType = LicenseType[this.angForm.controls['type'].value];
       this.account.name = this.angForm.controls['name'].value;
       this.account.contactAddress = this.angForm.controls['contactAddress'].value;
       this.account.contactEmail = this.angForm.controls['contactEmail'].value;
       this.account.contactName = this.angForm.controls['contactName'].value;
       this.account.contactNumber = this.angForm.controls['contactNumber'].value;
       this.account.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
-      this.account.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value == "" ? null : this.angForm.controls['ticketAllocationType'].value;
+      if (!this.accountType) {
+        this.account.contractHours = this.angForm.controls['contractHours'].value;
+        this.account.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value == "" ? null : this.angForm.controls['ticketAllocationType'].value;
+      }
       this.account.organisation = null;
       //console.log(this.vendor);
       //console.log(this.angForm.controls['status'].value);
@@ -170,14 +163,19 @@ export class EditAccountComponent implements OnInit {
         this.account.contractHours = data.contractHours;
         this.account.version = data.version;
         this.account.ticketAllocationType = data.ticketAllocationType;
+        this.account.accountType = data.accountType;
+        this.driveFormByType({ id: this.account.accountType, label: this.account.accountType });
         //console.log(JSON.stringify(this.user));
-        this.angForm.get('contractHours').setValue(this.account.contractHours);
+        this.angForm.get('type').setValue(this.account.accountType);
         this.angForm.get('name').setValue(this.account.name);
         this.angForm.get('contactAddress').setValue(this.account.contactAddress);
         this.angForm.get('contactEmail').setValue(this.account.contactEmail);
         this.angForm.get('contactName').setValue(this.account.contactName);
         this.angForm.get('contactNumber').setValue(this.account.contactNumber);
-        this.angForm.get('ticketAllocationType').setValue(this.account.ticketAllocationType);
+        if (this.account.accountType != 'UAT') {
+          this.angForm.get('ticketAllocationType').setValue(this.account.ticketAllocationType);
+          this.angForm.get('contractHours').setValue(this.account.contractHours);
+        }
         this.statusFlag = String(this.account.status) == 'ACTIVE' ? true : false;
         //this.angForm.markAllAsTouched();
       });
@@ -187,4 +185,96 @@ export class EditAccountComponent implements OnInit {
   onChange(status: boolean, inp: string) {
     this.statusFlag = status;
   }
+
+
+
+  @ViewChild("type") type;
+  driveFormByType(type) {
+    if (typeof type !== 'undefined') {
+      this.accountType = type.id;
+      //console.log(type);
+      if (this.accountType != 'UAT') {
+        this.angForm = this.fb.group({
+          type: new FormControl(this.accountType, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          name: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactName: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactEmail: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+            Validators.email,
+          ]),
+          contractHours: new FormControl(null, [
+            Validators.maxLength(255),
+            Validators.pattern(this.numRegex),
+          ]),
+          contactNumber: new FormControl(null, [
+            Validators.required,
+            Validators.pattern(this.phoneRegex),
+          ]),
+          contactAddress: new FormControl(null, [
+            Validators.required,
+          ]),
+          ticketAllocationType: new FormControl(null, [
+            Validators.required,
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+        });
+      } else {
+        this.angForm = this.fb.group({
+          type: new FormControl(this.accountType, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          name: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactName: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          contactEmail: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+            Validators.email,
+          ]),
+          // contractHours: new FormControl(null, [
+          //   Validators.maxLength(255),
+          //   Validators.pattern(this.numRegex),
+          // ]),
+          contactNumber: new FormControl(null, [
+            Validators.required,
+            Validators.pattern(this.phoneRegex),
+          ]),
+          contactAddress: new FormControl(null, [
+            Validators.required,
+          ]),
+          // ticketAllocationType: new FormControl(null, [
+          //   Validators.required,
+          // ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+        });
+      }
+
+    } else {
+      this.angForm = this.fb.group({
+        type: new FormControl(null, [
+          Validators.required,
+          Validators.maxLength(255),
+        ]),
+      });
+    }
+  }
+
 }

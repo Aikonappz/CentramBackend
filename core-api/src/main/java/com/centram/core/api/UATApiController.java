@@ -79,6 +79,12 @@ public class UATApiController {
         return new ResponseEntity<PaginatedList<ProjectUatScriptDetail>>(projectUatService.findByProjectUATScriptId(projectUATScriptId, pageable), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/can-mark-script-complete", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES,REPORT,UAT REPORT','WRITE,READ,READ',authentication.principal)")
+    public ResponseEntity<ProjectUatScript> canMarkScriptComplete(@NotNull @Valid @RequestParam(value = "projectUATScriptId", required = false) BigInteger projectUATScriptId) {
+        return new ResponseEntity<ProjectUatScript>(projectUatService.canMarkScriptComplete(projectUATScriptId), HttpStatus.OK);
+    }
+
     @JsonView(Views.BasicView.class)
     @RequestMapping(value = "/update-project-uat-script-detail", consumes = {APPLICATION_JSON_VALUE}, produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")

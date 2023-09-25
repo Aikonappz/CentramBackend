@@ -77,6 +77,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
     private BigInteger accountId;
     private String accountName;
     private String accountNo;
+    private String userType;
 
     public UserVO(User user) {
         super(user.getCreatedDate(), user.getModifiedDate(), user.getVersion(), user.getModifiedBy(), user.getCreatedBy());
@@ -114,6 +115,7 @@ public class UserVO extends BaseEntity implements Serializable, Comparable<UserV
                 this.locationOpsTime = String.valueOf(duration.toHours());
             }
         }
+        this.userType = user.getUserType();
     }
 
     @Override

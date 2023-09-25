@@ -62,19 +62,19 @@
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="uatScript">UAT Scripts </label>
                     <i class="icon-info"
-                      tooltip="Max file size can be 3 M.B and suported file types are xslx"></i>&nbsp;&nbsp;
+                      tooltip="Max file size can be 10 M.B and suported file types are xslx"></i>&nbsp;&nbsp;
                     <input #uatScript (change)="getUatScriptFileDetails($event)" type="file" id="uatScript"
                       formControlName="uatScript" name="uatScript">
                     <div *ngIf="f.uatScript.touched && f.uatScript.invalid" class="alert alert-danger-custom">
                       <div *ngIf="f.uatScript.errors?.validAttachments">
                         Supported file format is <b>.xslx</b> only
                       </div>
-                      <div *ngIf="f.uatScript.errors?.mustBeLessThan2MB">
-                        File size should be less than 3 MB.
+                      <div *ngIf="f.uatScript.errors?.mustBeLessThan10MB">
+                        File size should be less than 10 MB.
                       </div>
                     </div>
                     <div>
-                      <a class="btn btn-link " href="assets/downloads/uat-scripts.xlsx">
+                      <a class="btn btn-link " style="font-size: small" href="assets/downloads/uat-scripts.xlsx">
                         <i class="icon-arrow-down-circle"></i>
                         Download Sample UAT Script Template
                       </a>
@@ -91,7 +91,7 @@
                         Supported file types are <b>pdf/doc/docx/zip/rar</b>.
                       </div>
                       <div *ngIf="f.uatManual.errors?.mustBeLessThan20MB">
-                        File size should be less than 10 MB.
+                        File size should be less than 20 MB.
                       </div>
                     </div>
                   </div>
@@ -298,7 +298,7 @@
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="actualResultDetail">
-                  <th class="actualResultHeader" mat-header-cell *matHeaderCellDef> Test Detail</th>
+                  <th class="actualResultHeader" mat-header-cell *matHeaderCellDef> Test Details</th>
                   <td class="actualResultBody" mat-cell *matCellDef="let element">
                     <div *ngIf="resultNotEditable(element); else editingTemplate">
                       <div><b><u>Actual Result</u> - </b>{{element.actualResult==null? 'NA' : element.actualResult}}
@@ -323,7 +323,7 @@
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="retestDetail">
-                  <th class="retestDetailHeader" mat-header-cell *matHeaderCellDef> Retest Detail </th>
+                  <th class="retestDetailHeader" mat-header-cell *matHeaderCellDef> Retest Details </th>
                   <td class="retestDetailBody" mat-cell *matCellDef="let element">
                     <div *ngIf="retestNotEditable(element); else editingTemplate">
                       <div><b><u>Re-test Date </u> - </b>{{element.retestDate==null? 'NA' : element.retestDate}}</div>
@@ -348,15 +348,16 @@
                       </div>
                     </div>
                     <ng-template #editingTemplate>
-                      <textarea class="form-control" [(ngModel)]='element.remark' placeholder="Remarks" rows="7"
-                        cols="30">
+                      <textarea class="form-control"
+                        style="box-sizing: border-box; border: 2px solid black; border-radius: 4px;"
+                        [(ngModel)]='element.remark' placeholder="Remarks" rows="7" cols="30">
                       </textarea>
                     </ng-template>
                   </td>
                 </ng-container>
                 <ng-container *ngIf="!searchedUatScriptComplete" matColumnDef="activity">
                   <th align="center" class="activityHeader" mat-header-cell *matHeaderCellDef>
-                    <div *ngIf="searchedUatScriptId!=null&&isCustomer()">
+                    <div *ngIf="searchedUatScriptId!=null&&isCustomer()&&uatScriptCanBeMarkedComplete">
                       <button type=" button" class="btn btn-warning btn-sm"
                         (click)="markProjectUatScriptTestComplate()">Mark UAT Script
                         Complete</button>

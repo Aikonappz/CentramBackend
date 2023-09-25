@@ -31,7 +31,6 @@ import { ViewOrgAdminDashboardUserDetails } from './dashboard/modal/ViewOrgAdmin
 import { ViewOrgAdminDashboardVendorDetails } from './dashboard/modal/ViewOrgAdminDashboardVendorDetails';
 import { PermissionComponent } from './permission/permission.component';
 import { ViewTaggedModal } from './permission/model/ViewTaggedModule';
-import { SafePipe } from '../../service/pipe/SafePipe';
 import { NotificationViewComponent } from './notification/modal/NotificationViewComponent';
 import { NotificationComponent } from './notification/notification.component';
 import { AdminReportComponent } from './report/adminreport.component';
@@ -43,7 +42,6 @@ import { AdminReportComponent } from './report/adminreport.component';
     AdminReportComponent,
     NotificationComponent,
     NotificationViewComponent,
-    SafePipe,
     PermissionComponent,
     ViewTaggedModal,
     DashboardComponent,

@@ -336,6 +336,7 @@ export class EditUATProjectComponent implements OnInit {
           this.subModuleList.push(this.projectModules[i]);
         }
       }
+      this.subModuleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.subModuleList = [];
       this.angForm.get('subModuleId').setValue(null);
@@ -352,6 +353,7 @@ export class EditUATProjectComponent implements OnInit {
           this.moduleList.push(this.projectModules[i]);
         }
       }
+      this.moduleList.sort((a, b) => (a.customerModuleName < b.customerModuleName ? -1 : 1));
     } else {
       this.moduleList = [];
       this.angForm.get('moduleId').setValue(null);

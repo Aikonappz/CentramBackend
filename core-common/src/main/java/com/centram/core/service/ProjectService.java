@@ -9,6 +9,7 @@ import com.centram.core.repository.ProjectAllocationDetailRepository;
 import com.centram.core.repository.ProjectRepository;
 import com.centram.domain.Module;
 import com.centram.domain.Project;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.ProjectType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
@@ -124,7 +125,7 @@ public class ProjectService {
     public Project save(LoggedInUser loggedInUser, Project project) throws JsonProcessingException, InterruptedException {
         project.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
         project = projectRepository.save(project);
-        if (project.getUat() && project.getId() == null) {
+        if (project.getProjectFor().equals(LicenseType.UAT) && project.getVersion() == 0) {
             miscService.notifyUatProjectCreation(loggedInUser, project);
         }
         return project;

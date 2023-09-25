@@ -20,6 +20,7 @@ export class Project extends Base {
     moduleName:string;
     subModuleId: number;
     subModuleName:string;
+    projectFor: any;
 
     constructor() {
         super();

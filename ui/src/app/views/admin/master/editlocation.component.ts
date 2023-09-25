@@ -68,7 +68,7 @@ export class EditLocationComponent implements OnInit {
         Validators.maxLength(255),
       ]),
       officeName: new FormControl(null, [
-        Validators.required,
+        //Validators.required,
         Validators.maxLength(255),
       ]),
       opsStartTime: new FormControl(null, [
@@ -124,7 +124,8 @@ export class EditLocationComponent implements OnInit {
           for (let i = 0; i < this.accounts.length; i++) {
             this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
           }
-          this.angForm.get('account').setValue(this.accounts[0].id);
+          if (this.accounts.length == 1)
+            this.angForm.get('account').setValue(this.accounts[0].id);
         });
     } else {
       this.miscService

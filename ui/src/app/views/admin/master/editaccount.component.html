@@ -11,6 +11,23 @@
         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
           <div class="card-body">
             <div class="row ">
+              <div [ngClass]="{col : true}">
+                <label class="form-col-form-label required-control-label" for="type">Account Type</label>
+                <ng-select #type (change)="driveFormByType($event)" [items]="accountTypes" [multiple]="false"
+                  placeholder="-- Select Account Type --" formControlName="type" id="type" name="type" bindLabel="label"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.type.touched && f.type.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.type.errors?.required">
+                    Account Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row ">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="name">Account Name</label>
                 <input type="text" formControlName="name" id="name" name="name" class="form-control"
@@ -67,7 +84,8 @@
                 </div>
               </div>
             </div>
-            <div class="row row-margin-05">
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'"
+              class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="contractHours">Contract Hours</label>
                 <input type="text" formControlName="contractHours" id="contractHours" name="contractHours"
@@ -81,19 +99,6 @@
                   </div>
                 </div>
               </div>
-              <div class="col">
-                <label class="form-col-form-label required-control-label" for="contactAddress">Address</label>
-                <textarea formControlName="contactAddress" id="contactAddress" name="contactAddress" rows="4"
-                  class="form-control textarea-non-resizable" placeholder="Account Address"></textarea>
-                <div *ngIf="f.contactAddress.touched && f.contactAddress.invalid" class="alert alert-danger-custom">
-                  <div *ngIf="f.contactAddress.errors?.required">
-                    Account Address is required.
-                  </div>
-                  <div *ngIf="f.name.errors?.maxlength">
-                    Allowed maxlength exceeds.
-                  </div>
-                </div>
-              </div>
               <div [ngClass]="{col : true}">
                 <label class="form-col-form-label required-control-label" for="ticketAllocationType">Incident Allocation
                   Type</label>
@@ -104,6 +109,24 @@
                   class="alert alert-danger-custom">
                   <div *ngIf="f.ticketAllocationType.errors?.required">
                     Incident Allocation Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="contactAddress">Address</label>
+                <textarea formControlName="contactAddress" id="contactAddress" name="contactAddress" rows="4"
+                  class="form-control textarea-non-resizable" placeholder="Account Address"></textarea>
+                <div *ngIf="f.contactAddress.touched && f.contactAddress.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.contactAddress.errors?.required">
+                    Account Address is required.
+                  </div>
+                  <div *ngIf="f.name.errors?.maxlength">
+                    Allowed maxlength exceeds.
                   </div>
                 </div>
               </div>
@@ -123,6 +146,8 @@
                   </div>
                 </div>
               </div>
+              <div class="col"></div>
+              <div class="col"></div>
             </div>
           </div>
           <div class="card-footer">

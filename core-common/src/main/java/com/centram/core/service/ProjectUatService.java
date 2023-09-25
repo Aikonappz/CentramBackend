@@ -197,6 +197,22 @@ public class ProjectUatService {
     }
 
     /**
+     * @param projectUATScriptId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ProjectUatScript canMarkScriptComplete(BigInteger projectUATScriptId) {
+        ProjectUatScript projectUatScript = projectUatRepository.findProjectUATScriptById(projectUATScriptId);
+        long passed = projectUatScript.getProjectUatScriptDetails().stream().filter(i -> {
+            //return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
+            return i.getPass() != null && i.getPass();
+        }).count();
+        long total = projectUatScript.getProjectUatScriptDetails().size();
+        projectUatScript.setCanMarkComplete(total == passed);
+        return projectUatScript;
+    }
+
+    /**
      * @param projectId
      * @param moduleId
      * @param subModuleId
@@ -506,7 +522,7 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Page<ProjectUat> uatReport(LocalDateTime start, LocalDateTime end, Technology technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger uploadedByUserId, Pageable pageable) {
-        return projectUatRepository.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, uploadedByUserId, pageable);
+    public Page<ProjectUat> uatReport(LocalDateTime start, LocalDateTime end, Integer technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger uploadedByUserId, String status, Pageable pageable) {
+        return projectUatRepository.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, uploadedByUserId, status, pageable);
     }
 }

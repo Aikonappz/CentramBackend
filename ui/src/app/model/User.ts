@@ -24,6 +24,7 @@ export class User extends Base {
     department: Department;
     organisation: Organisation;
     account: Account;
+    userType: string;
 
     constructor() {
         super();

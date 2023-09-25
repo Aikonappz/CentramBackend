@@ -3,7 +3,6 @@ package com.centram.core.repository;
 
 import com.centram.domain.Account;
 import com.centram.domain.Vendor;
-import com.centram.domain.enumarator.AccountType;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.VendorType;
 import org.springframework.data.domain.Page;
@@ -21,13 +20,10 @@ public interface AccountRepository extends JpaRepository<Account, BigInteger> {
     Account getByName(@Param("name") String name, @Param("organisationId") BigInteger organisationId);
 
     @Query("select a from Account a join a.organisation org where a.accountType = (:accountType) and UPPER(a.name) = UPPER((:name)) and org.id = (:organisationId)")
-    Account getByNameAndType(@Param("accountType") AccountType accountType, @Param("name") String name, @Param("organisationId") BigInteger organisationId);
+    Account getByNameAndType(@Param("accountType") LicenseType accountType, @Param("name") String name, @Param("organisationId") BigInteger organisationId);
 
     @Query("select a from Account a join a.organisation org where org.id = (:organisationId) ")
-    Page getByOrganisation(
-            @Param("organisationId") BigInteger organisationId,
-            @Param("pageable") Pageable pageable
-    );
+    Page getByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);
 
     @Query("SELECT COUNT(a) FROM Account a WHERE a.organisation.id = (:organisationId)")
     long getCount(@Param("organisationId") BigInteger organisationId);

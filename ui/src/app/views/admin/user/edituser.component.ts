@@ -42,7 +42,7 @@ export class EditUserComponent implements OnInit {
   rolesList: string[] = [];
   loggedInUser: LoggedInUser;
   angForm: FormGroup;
-  userTypes = [{ "id": 'Employee', "label": "Employee" }, { "id": 'Agent', label: "Agent" }];
+  userTypes = [{ "id": 'Employee', "label": "Employee" }, { "id": 'Agent', label: "Agent" }, { "id": 'Customer', label: "Customer" }];
   accounts: Account[] = [];
 
   constructor(
@@ -435,6 +435,7 @@ export class EditUserComponent implements OnInit {
       this.user.employeeId = this.user.employeeId == null ? null : this.user.employeeId.replace(/\s/g, "");
       this.user.projectCode = this.user.projectCode == null ? null : this.user.projectCode.replace(/\s/g, "")
       this.user.organisation = null;
+      this.user.userType = this.angForm.controls['userType'].value;
       /* process department and location */
       let location = this.angForm.controls['location'].value;
       let department = this.angForm.controls['department'].value;
@@ -523,7 +524,8 @@ export class EditUserComponent implements OnInit {
         this.user.vendor = new Vendor();
         this.user.vendor.id = data.vendorId;
         this.user.account.id = data.accountId;
-        //console.log(JSON.stringify(this.user));
+        this.user.userType = data.userType;
+        console.log(JSON.stringify(this.user));
         //console.log(this.user.roles.map(String));
         if (!this.loggedInUser.appManager)
           this.populateLocaton({ id: this.user.account.id });
@@ -537,12 +539,11 @@ export class EditUserComponent implements OnInit {
         this.angForm.get('roles').setValue(this.user.roles.map(Number));
         this.angForm.get('managerId').setValue(this.user.managerId);
         this.angForm.get('account').setValue(this.user.account.id);
+        this.angForm.get('userType').setValue(this.user.userType);
         if (this.user.vendor.id != null) {
           this.angForm.get('vendorId').setValue(this.user.vendor.id);
-          this.angForm.get('userType').setValue('Agent');
           $('.vendor-col').removeClass('d-none');
         } else {
-          this.angForm.get('userType').setValue('Employee');
           $('.vendor-col').addClass('d-none');
         }
         if (!this.loggedInUserService.appManager()) {

@@ -45,6 +45,11 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             @Param("pageable") Pageable pageable
     );
 
+    @Query("select pus from ProjectUatScript pus where pus.id = (:projectUATScriptId) ")
+    ProjectUatScript findProjectUATScriptById(
+            @Param("projectUATScriptId") BigInteger projectUATScriptId
+    );
+
     @Query("select pu from ProjectUat pu join pu.projectUatScripts pus where pus.id = (:uatScriptId) ")
     ProjectUat findByProjectUATScriptId( @Param("uatScriptId") BigInteger uatScriptId );
 
@@ -106,42 +111,51 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             Pageable pageable
     );
 
-    @Query(value = "select pu from ProjectUat pu where (pu.createdDate between (:start) and (:end)) and pu.technology = (:technology) and " +
-            " ( " +
-            "   ((:moduleId) is not null and pu.moduleId = (:moduleId)) " +
-            "   OR " +
-            "   ((:moduleId) is null) " +
-            " ) and " +
-            " ( " +
-            "   ((:subModuleId) is not null and pu.subModuleId = (:subModuleId)) " +
-            "   OR " +
-            "   ((:subModuleId) is null) " +
-            " ) and " +
-            " ( " +
-            "   ((:projectId) is not null and pu.project.id = (:projectId)) " +
-            "   OR " +
-            "   ((:projectId) is null) " +
-            " ) and " +
-            " ( " +
-            "   ((:projectUatId) is not null and pu.id = (:projectUatId)) " +
-            "   OR " +
-            "   ((:projectUatId) is null) " +
-            " ) and " +
-            " ( " +
-            "   ((:uploadedByUserId) is not null and pu.uploadedBy.id = (:uploadedByUserId)) " +
-            "   OR " +
-            "   ((:uploadedByUserId) is null) " +
-            " ) "
-    )
+    @Query(value = "select * from project_uat pu where " +
+            "     (  " +
+            "       (:moduleId is not null and pu.module_id = :moduleId)  " +
+            "       OR  " +
+            "       :moduleId is null  " +
+            "     ) and  " +
+            "     (  " +
+            "       (:subModuleId is not null and pu.sub_module_id  = :subModuleId)  " +
+            "       OR  " +
+            "       :subModuleId is null  " +
+            "     ) and  " +
+            "     (  " +
+            "       (:projectId is not null and pu.project_id  = :projectId)  " +
+            "       OR  " +
+            "       :projectId is null  " +
+            "     ) and  " +
+            "     (  " +
+            "       (:projectUatId is not null and pu.id = :projectUatId)  " +
+            "       OR  " +
+            "       :projectUatId is null  " +
+            "     ) and  " +
+            "     (  " +
+            "       (:uploadedByUserId is not null and pu.user_id = :uploadedByUserId)  " +
+            "       OR  " +
+            "       :uploadedByUserId is null  " +
+            "     ) and  " +
+            "     (  " +
+            "       (:status = 'completed' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 1))  " +
+            "       OR  " +
+            "       (:status = 'notStarted' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 0 and (select count(pusd.project_uat_script_id) from project_uat_script_detail pusd where pusd.project_uat_script_id = pus.id and pusd.pass =1) = 0))  " +
+            "       OR  " +
+            "       (:status = 'inProgress' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 0 and (select count(pusd.project_uat_script_id) from project_uat_script_detail pusd where pusd.project_uat_script_id = pus.id and pusd.pass =1) > 0))  " +
+            "       OR  " +
+            "       :status = 'total'  " +
+            "     ) and pu.created_date between :start and :end and pu.technology = :technology ", nativeQuery = true)
     Page<ProjectUat> uatReport(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
-            @Param("technology") Technology technology,
+            @Param("technology") Integer technology,
             @Param("moduleId") BigInteger moduleId,
             @Param("subModuleId") BigInteger subModuleId,
             @Param("projectId") BigInteger projectId,
             @Param("projectUatId") BigInteger projectUatId,
             @Param("uploadedByUserId") BigInteger uploadedByUserId,
+            @Param("status") String status,
             Pageable pageable
     );
 

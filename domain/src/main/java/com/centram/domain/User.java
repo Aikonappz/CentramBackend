@@ -163,6 +163,10 @@ public class User extends BaseEntity implements Serializable {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
+    @Column(name = "user_type", nullable = true, columnDefinition = "varchar(50)")
+    @JsonView(Views.BasicView.class)
+    private String userType;
+
     public User(@NotNull BigInteger id) {
         this.id = id;
     }

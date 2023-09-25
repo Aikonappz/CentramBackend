@@ -79,7 +79,7 @@
                 </div>
               </div>
               <div class="col">
-                <label class="form-col-form-label required-control-label" for="officeName">Office Name</label>
+                <label class="form-col-form-label " for="officeName">Office Name</label>
                 <input type="text" formControlName="officeName" ngModel id="officeName" name="officeName"
                   class="form-control" placeholder="Office Name" aria-label="Office Name">
                 <div *ngIf="f.officeName.touched && f.officeName.invalid" class="alert alert-danger-custom">
@@ -91,8 +91,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="opsStartTime">Ops. Start Time</label>
                 <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsStartTime"
@@ -103,6 +101,8 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="opsEndTime">Ops. End Time</label>
                 <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsEndTime"
@@ -132,6 +132,8 @@
                   </div>
                 </div>
               </div>
+              <div class="col"></div>
+              <div class="col"></div>
             </div>
           </div>
           <div class="card-footer">

@@ -1,8 +1,8 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
-import com.centram.domain.enumarator.AccountType;
 import com.centram.domain.enumarator.IncidentAllocationType;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
- * Vendor
+ * Account
  */
 
 @Validated
@@ -33,12 +33,7 @@ import java.math.BigInteger;
 //@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "account",
-        indexes = {
-                @Index(name = "acc_no_org_id_indx", columnList = "account_no,organisation_id", unique = true),
-                @Index(name = "acc_org_id_indx", columnList = "organisation_id", unique = false),
-        }
-)
+@Table(name = "account", indexes = {@Index(name = "acc_no_org_id_indx", columnList = "account_no,organisation_id", unique = true), @Index(name = "acc_org_id_indx", columnList = "organisation_id", unique = false),})
 @Audited
 public class Account extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -4374104635965387182L;
@@ -109,7 +104,7 @@ public class Account extends BaseEntity implements Serializable {
     @Column(name = "account_type")
     @Enumerated(EnumType.ORDINAL)
     @JsonView(Views.BasicView.class)
-    private AccountType accountType;
+    private LicenseType accountType;
 
 
     @NotNull

@@ -35,7 +35,7 @@ export class UATDashboardComponent implements OnInit {
       }]
     }
   };
-  public lables: Label[] = ["Total Modules", "Modules Not Started", "Modules In-Progress", "Modules Completed"];
+  public lables: Label[] = ["Modules in Total", "Modules Not Started", "Modules In-Progress", "Modules Completed"];
   public dataSets: MultiDataSet = [];
   public colors: any[] = [{ backgroundColor: ["#437ff7a8", "#08d620a9", "#f63c6e83", "#8939f283"] }];
   modalRef: BsModalRef;
@@ -168,7 +168,7 @@ export class UATDashboardComponent implements OnInit {
   }
 
   uatChart(e: any) {
-    if (this.getChartSegmentData(e) == "Total Modules") {
+    if (this.getChartSegmentData(e) == "Modules in Total") {
       this.viewUat({ status: "total" });
     } else if (this.getChartSegmentData(e) == "Modules Not Started") {
       this.viewUat({ status: "notStarted" });

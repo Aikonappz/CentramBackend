@@ -464,7 +464,27 @@ public class ReportService {
                 }).collect(Collectors.toList());
             }
         }
-        return new PaginatedList<UatScriptReportDTO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), uatScriptReportDTOS);
+        if(!pageable.isUnpaged()) {
+            return new PaginatedList<UatScriptReportDTO>(
+                    page.getTotalElements(),
+                    page.getNumberOfElements(),
+                    page.getTotalPages(),
+                    page.getPageable().getOffset(),
+                    page.getPageable().getPageNumber(),
+                    page.getPageable().getPageSize(),
+                    uatScriptReportDTOS
+            );
+        }else{
+            return new PaginatedList<UatScriptReportDTO>(
+                    page.getTotalElements(),
+                    page.getNumberOfElements(),
+                    page.getTotalPages(),
+                    0,
+                    1,
+                    1,
+                    uatScriptReportDTOS
+            );
+        }
     }
 
     @Transactional(readOnly = true)
@@ -501,7 +521,7 @@ public class ReportService {
             end = LocalDateTime.now();
             start = end.minusDays(90);
         }
-        Page<ProjectUat> page = projectUatService.uatReport(start, end, technology, mId, smId, pId, pUatId, pUplId, pageable);
+        Page<ProjectUat> page = projectUatService.uatReport(start, end, technology.ordinal(), mId, smId, pId, pUatId, pUplId, status, pageable);
         page.getContent().forEach(i -> {
             Module module = moduleService.getModuleById(i.getModuleId());
             i.setModuleName(module.getCustomerModuleName());
@@ -517,7 +537,7 @@ public class ReportService {
                 }
             }
         });
-        List<ProjectUat> projectUats = new LinkedList<ProjectUat>();
+        /*List<ProjectUat> projectUats = new LinkedList<ProjectUat>();
         projectUats = page.getContent();
         if (!status.isEmpty()) {
             if (status.equalsIgnoreCase("completed")) {
@@ -534,7 +554,8 @@ public class ReportService {
                 }).collect(Collectors.toList());
             }
         }
-        return new PaginatedList<ProjectUat>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), projectUats);
+        return new PaginatedList<ProjectUat>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), projectUats);*/
+        return new PaginatedList<ProjectUat>(page);
     }
 
 }

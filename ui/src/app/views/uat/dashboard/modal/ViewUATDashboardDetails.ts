@@ -11,8 +11,8 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
 
 
 @Component({
-    selector: 'modal-content',
-    template: `<div class="modal-header">
+  selector: 'modal-content',
+  template: `<div class="modal-header">
     <h6 class="modal-title pull-left"><i class="icon-eye"></i> View UAT Details</h6>
     <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
       <span aria-hidden="true">&times;</span>
@@ -75,51 +75,51 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
   </div>`
 })
 export class ViewUATDashboardDetails implements OnInit {
-    params: any;
-    displayedColumns = ['name', 'technology', 'module', 'subModule', 'status',];
-    datasource: UatReportDataSource;
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    constructor(
-        private fb: FormBuilder,
-        public bsModalRef: BsModalRef,
-        public options: ModalOptions,
-        private loggedInUserService: LoggedInUserService,
-        private service: ReportService,
-    ) {
-    }
-    ngOnInit(): void {
-        this.datasource = new UatReportDataSource(this.service);
-        this.datasource.loadData(0, 5, this.params);
-    }
+  params: any;
+  displayedColumns = ['name', 'technology', 'module', 'subModule', 'status',];
+  datasource: UatReportDataSource;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  constructor(
+    private fb: FormBuilder,
+    public bsModalRef: BsModalRef,
+    public options: ModalOptions,
+    private loggedInUserService: LoggedInUserService,
+    private service: ReportService,
+  ) {
+  }
+  ngOnInit(): void {
+    this.datasource = new UatReportDataSource(this.service);
+    this.datasource.loadData(0, 10, this.params);
+  }
 
-    ngAfterViewInit() {
-        this.datasource.counter$
-            .pipe(
-                tap((count) => {
-                    this.paginator.length = count;
-                })
-            )
-            .subscribe();
-        this.paginator.page
-            .pipe(
-                tap(() => this.loadData(this.params))
-            )
-            .subscribe();
-    }
+  ngAfterViewInit() {
+    this.datasource.counter$
+      .pipe(
+        tap((count) => {
+          this.paginator.length = count;
+        })
+      )
+      .subscribe();
+    this.paginator.page
+      .pipe(
+        tap(() => this.loadData(this.params))
+      )
+      .subscribe();
+  }
 
-    loadData(req = {}) {
-        this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+  loadData(req = {}) {
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+  }
+  formatDate(d: string) {
+    if (d != null && d != "") {
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
     }
-    formatDate(d: string) {
-        if (d != null && d != "") {
-            return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_FORMAT);
-        }
-        return null;
+    return null;
+  }
+  formatDateTime(d: string) {
+    if (d != null && d != "") {
+      return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
     }
-    formatDateTime(d: string) {
-        if (d != null && d != "") {
-            return moment.utc(d).tz(this.loggedInUserService.getLoggedInUser().timeZone).format(AppUtility.APP_VIEW_DATE_TIME_FORMAT);
-        }
-        return null;
-    }
+    return null;
+  }
 }
