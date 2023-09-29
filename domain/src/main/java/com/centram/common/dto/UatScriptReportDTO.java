@@ -51,11 +51,17 @@ public class UatScriptReportDTO implements Serializable {
         this.technology = projectUat.getTechnology().name();
         this.testCaseId = projectUatScript.getTestCaseId();
         this.testCaseDescription = projectUatScript.getTestCaseDescription();
-        if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count()) {
+        if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(i -> {
+            return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
+        }).count()) {
             this.status = "Completed";
-        } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(ProjectUatScriptDetail::getPass)) {
+        } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(i -> {
+            return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
+        })) {
             this.status = "Not Started";
-        } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(ProjectUatScriptDetail::getPass)) {
+        } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(i -> {
+            return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
+        })) {
             this.status = "In Progress";
         }
         this.currentlyWith = this.projectCustomer;

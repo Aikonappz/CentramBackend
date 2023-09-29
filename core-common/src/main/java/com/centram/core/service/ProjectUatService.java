@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.apache.poi.hssf.usermodel.HSSFDateUtil.isCellDateFormatted;
 
@@ -80,6 +81,12 @@ public class ProjectUatService {
 
     @Autowired
     private ModuleService moduleService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private ProxyService proxyService;
 
     /**
      * @param projectUatId
@@ -158,7 +165,9 @@ public class ProjectUatService {
         Page<ProjectUatScript> page = projectUatRepository.getProjectUatScripts(projectUatId, pageable);
         page.getContent().forEach(i -> {
             long noOftestCase = i.getProjectUatScriptDetails().size();
-            long noOftestCasePassed = i.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count();
+            long noOftestCasePassed = i.getProjectUatScriptDetails().stream().filter(k -> {
+                return ((k.getRetestPass() != null && k.getRetestPass()) || (k.getPass() != null && k.getPass()));
+            }).count();
             if (i.getUatComplete() && noOftestCase == noOftestCasePassed) {
                 i.setStatus("Completed");
             } else if (noOftestCasePassed == 0) {
@@ -186,7 +195,7 @@ public class ProjectUatService {
             if (k == 0) {
                 projectUatScriptDetails.get(k).setPreviousStepPassed(true);
             } else {
-                if (projectUatScriptDetails.get(k - 1).getPass()) {
+                if ((projectUatScriptDetails.get(k - 1).getPass() != null && projectUatScriptDetails.get(k - 1).getPass()) || (projectUatScriptDetails.get(k - 1).getRetestPass() != null && projectUatScriptDetails.get(k - 1).getRetestPass())) {
                     projectUatScriptDetails.get(k).setPreviousStepPassed(true);
                 } else {
                     break;
@@ -205,7 +214,7 @@ public class ProjectUatService {
         ProjectUatScript projectUatScript = projectUatRepository.findProjectUATScriptById(projectUATScriptId);
         long passed = projectUatScript.getProjectUatScriptDetails().stream().filter(i -> {
             //return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
-            return i.getPass() != null && i.getPass();
+            return (i.getPass() != null && i.getPass() || i.getRetestPass() != null && i.getRetestPass());
         }).count();
         long total = projectUatScript.getProjectUatScriptDetails().size();
         projectUatScript.setCanMarkComplete(total == passed);
@@ -224,10 +233,10 @@ public class ProjectUatService {
         projectUats.stream().forEach(i -> {
             long noOfScript = i.getProjectUatScripts().size();
             long noOftestCasePassed = i.getProjectUatScripts().stream().filter(ProjectUatScript::getUatComplete).count();
-            i.setCanMarkComplete(true);
-            /*if(noOfScript==noOftestCasePassed){
+            //i.setCanMarkComplete(true);
+            if (noOfScript == noOftestCasePassed) {
                 i.setCanMarkComplete(true);
-            }*/
+            }
         });
 
         return projectUats;
@@ -294,7 +303,7 @@ public class ProjectUatService {
      * @param fileName
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = true)
     private ProjectUat processUATExcel(String filePath, LoggedInUser loggedInUser, ProjectUATRequestDTO projectUATRequestDTO, String fileName, MultipartFile multipartFile) {
         try {
             FileInputStream file = new FileInputStream(new File(filePath));
@@ -402,8 +411,6 @@ public class ProjectUatService {
                             //Pass/Fail
                             if (!cellValue.trim().isEmpty()) {
                                 projectUatScriptDetail.setPass(cellValue.equalsIgnoreCase("Pass"));
-                            } else {
-                                projectUatScriptDetail.setPass(false);
                             }
                         } else if (cell.getAddress().getColumn() == 8) {
                             // Retest Date
@@ -422,8 +429,6 @@ public class ProjectUatService {
                             //Retest Pass/Fail
                             if (!cellValue.trim().isEmpty()) {
                                 projectUatScriptDetail.setRetestPass(cellValue.equalsIgnoreCase("Pass"));
-                            } else {
-                                projectUatScriptDetail.setRetestPass(false);
                             }
                         } else if (cell.getAddress().getColumn() == 10) {
                             //Remarks
@@ -445,11 +450,15 @@ public class ProjectUatService {
                 }
             }
             //log.info("projectUat => {} ", objectMapper.writeValueAsString(projectUat));
-            projectUat = projectUatRepository.save(projectUat);
+            projectUat = proxyService.saveProjectUAT(projectUat);
             mediaService.uploadMediaFile(projectUat.getId(), EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, "NA", new MultipartFile[]{multipartFile}, loggedInUser);
             file.close();
             miscService.notifyUatScriptUpload(projectUat);
             return projectUat;
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(GenericErrorCode.UAT_DATA_EXIST, new HashMap<String, Object>() {{
+                put("entity", "UAT");
+            }});
         } catch (IOException | InterruptedException e) {
             log.error("Error detail - {}", e.getMessage());
             throw new RuntimeException(e);
@@ -522,7 +531,22 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Page<ProjectUat> uatReport(LocalDateTime start, LocalDateTime end, Integer technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger uploadedByUserId, String status, Pageable pageable) {
-        return projectUatRepository.uatReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, uploadedByUserId, status, pageable);
+    public Page<ProjectUat> uatReport(LoggedInUser loggedInUser, LocalDateTime start, LocalDateTime end, Integer technology, BigInteger moduleId, BigInteger subModuleId, BigInteger projectId, BigInteger projectUatId, BigInteger uploadedByUserId, String status, Pageable pageable) {
+        List<String> roleList = roleService.getByIds(loggedInUser.getRoles());
+        String userType = "";
+        if (roleList.contains("ORG_ADMIN")) {
+            userType = "ADMIN";
+        } else if (roleList.contains("ORG_UAT_CONSULTANT")) {
+            userType = "PROJECT_CONSULTANT";
+        } else if (roleList.contains("ORG_PROJECT_STAKEHOLDER")) {
+            userType = "PROJECT_OWNER";
+        } else if (roleList.contains("ORG_ADMIN_PROJECT")) {
+            userType = "PROJECT_MANAGER";
+        }
+        List<String> emails = new ArrayList<String>() {{
+            add(loggedInUser.getEmail());
+        }};
+        String emailExp = emails.stream().map(String::valueOf).collect(Collectors.joining("|"));
+        return projectUatRepository.uatReport(userType, emailExp, start, end, technology, moduleId, subModuleId, projectId, projectUatId, uploadedByUserId, status, pageable);
     }
 }

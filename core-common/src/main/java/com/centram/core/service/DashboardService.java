@@ -7,7 +7,6 @@ import com.centram.core.repository.*;
 import com.centram.domain.Permission;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
-import com.centram.domain.ProjectUatScriptDetail;
 import com.centram.domain.enumarator.LicenseType;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -221,13 +219,19 @@ public class DashboardService {
             noOfUat++;
             status = Integer.MAX_VALUE;
             for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
-                if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(ProjectUatScriptDetail::getPass).count()) {
+                if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(i -> {
+                    return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
+                }).count()) {
                     status = 1;
                     break;
-                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(ProjectUatScriptDetail::getPass)) {
+                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(i -> {
+                    return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
+                })) {
                     status = -1;
                     break;
-                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(ProjectUatScriptDetail::getPass)) {
+                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(i -> {
+                    return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
+                })) {
                     status = 0;
                     break;
                 }

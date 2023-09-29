@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.UatScriptReportDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -230,6 +232,7 @@ public class ReportApiController {
             @RequestParam(value = "uploadedByUserId", defaultValue = "",  required = false) String uploadedByUserId,
             @RequestParam(value = "status", defaultValue = "",  required = false) String status,
             @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<ProjectUat>>(reportService.uatReport( start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<ProjectUat>>(reportService.uatReport(loggedInUser, start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
     }
 }

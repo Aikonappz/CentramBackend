@@ -28,7 +28,8 @@ import java.util.Set;
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
-@Table(name = "project_uat", indexes = {@Index(name = "project_uat_organisation_id_index", columnList = "organisation_id", unique = false), @Index(name = "project_uat_project_id_module_id_sub_module_id_index", columnList = "project_id,module_id,sub_module_id", unique = false),})
+@Table(name = "project_uat", indexes = {@Index(name = "project_uat_organisation_id_index", columnList = "organisation_id", unique = false),
+        @Index(name = "project_uat_project_id_module_id_sub_module_id_index", columnList = "project_id,module_id,sub_module_id", unique = true),})
 @Audited
 public class ProjectUat extends BaseEntity implements Serializable {
 

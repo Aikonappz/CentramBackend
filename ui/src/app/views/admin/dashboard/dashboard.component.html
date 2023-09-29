@@ -4,50 +4,6 @@
       <div class="card">
         <div class="card-body">
           <div id="dataSets-org-admin" class="row-margin-05">
-            <h3 class="accordion-toggle d-none"><b>Employees & Vendors</b>
-            </h3>
-            <div class="d-none">
-              <div class="row">
-                <div class="col-sm-2">
-                  <div class="card text-black " style="background-color: #18cb0f96">
-                    <div class="card-body pb-0">
-                      <button type="button" (click)='viewOrgAdminUserDetail({})'
-                        class="btn btn-transparent p-0 float-right">
-                        <i class="icon-eye"></i>
-                      </button>
-                      <div class="text-value">{{orgAdminDashboardVO.activeEmployees||0}}</div>
-                      <div>Active Employees</div>
-                    </div>
-                  </div>
-                </div>
-                <!--/.col-->
-                <div class="col-sm-2">
-                  <div class="card text-black " style="background-color: #6e5eeca9">
-                    <div class="card-body pb-0">
-                      <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
-                        class="btn btn-transparent p-0 float-right">
-                        <i class="icon-eye"></i>
-                      </button>
-                      <div class="text-value">{{orgAdminDashboardVO.inHouseVendors||0}}</div>
-                      <div>In-House Vendors</div>
-                    </div>
-                  </div>
-                </div>
-                <!--/.col-->
-                <div class="col-sm-2">
-                  <div class="card text-black " style="background-color: #b652daa2">
-                    <div class="card-body pb-0">
-                      <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
-                        class="btn btn-transparent p-0 float-right">
-                        <i class="icon-eye"></i>
-                      </button>
-                      <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors||0}}</div>
-                      <div>Outsourced Vendors</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <h3 class="accordion-toggle"
               *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'UAT')"><b>UAT Status</b>
             </h3>
@@ -109,13 +65,57 @@
               </div>
               <div class="row">
                 <!-- <canvas baseChart width="5" height="1" (chartHover)="chartHovered($event)"
-                  (chartClick)="siteAdminChart1($event)" [colors]="colors" [data]="dataSets"
-                  [labels]="lables" [chartType]="chartType" [options]="chartOptions" [legend]="true">
-                </canvas> -->
+                (chartClick)="siteAdminChart1($event)" [colors]="colors" [data]="dataSets"
+                [labels]="lables" [chartType]="chartType" [options]="chartOptions" [legend]="true">
+              </canvas> -->
                 <canvas baseChart width="5" height="1" [colors]="colors" [data]="dataSets"
                   (chartClick)="uatChart($event)" [labels]="lables" [chartType]="uatChartType"
                   (chartHover)="chartHovered($event)" [options]="uatChartOptions" [legend]="true">
                 </canvas>
+              </div>
+            </div>
+            <h3 class="accordion-toggle d-none"><b>Employees & Vendors</b>
+            </h3>
+            <div class="d-none">
+              <div class="row">
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #18cb0f96">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewOrgAdminUserDetail({})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{orgAdminDashboardVO.activeEmployees||0}}</div>
+                      <div>Active Employees</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #6e5eeca9">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"1"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{orgAdminDashboardVO.inHouseVendors||0}}</div>
+                      <div>In-House Vendors</div>
+                    </div>
+                  </div>
+                </div>
+                <!--/.col-->
+                <div class="col-sm-2">
+                  <div class="card text-black " style="background-color: #b652daa2">
+                    <div class="card-body pb-0">
+                      <button type="button" (click)='viewOrgAdminVendorDetail({inHouse:"0"})'
+                        class="btn btn-transparent p-0 float-right">
+                        <i class="icon-eye"></i>
+                      </button>
+                      <div class="text-value">{{orgAdminDashboardVO.outSourcedVendors||0}}</div>
+                      <div>Outsourced Vendors</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <h3 *ngIf="(loggedInUser.licenseType == 'ALL' || loggedInUser.licenseType == 'INCIDENT')"

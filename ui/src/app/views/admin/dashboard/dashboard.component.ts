@@ -304,7 +304,7 @@ export class DashboardComponent implements OnInit {
           }
         };
         $(function () {
-          $("#dataSets-app-admin").accordion({
+          $("#dataSets-org-admin").accordion({
             //icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
             heightStyle: "content",
             active: true,

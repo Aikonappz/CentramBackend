@@ -1641,9 +1641,9 @@ public class MiscService {
         emailValues.put("action", projectUatScriptDetail.getAction());
         emailValues.put("expectedResult", projectUatScriptDetail.getExpectedResult());
         emailValues.put("actualResult", projectUatScriptDetail.getActualResult());
-        emailValues.put("pass", projectUatScriptDetail.getPass() ? "Yes" : "No");
+        emailValues.put("pass", projectUatScriptDetail.getPass() != null && projectUatScriptDetail.getPass() ? "Yes" : "No");
         emailValues.put("retestDate", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "");
-        emailValues.put("retest", projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail");
+        emailValues.put("retest", projectUatScriptDetail.getRetestPass() != null && projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail");
         emailValues.put("uatLink", appBaseUrl.concat("/uat/activities"));
         for (UATRemark remark : projectUatScriptDetail.getRemarks()) {
             uatRemark = remark;
@@ -1700,23 +1700,13 @@ public class MiscService {
         emailValues.put("projectName", project.getName() + " [" + project.getCode() + "]");
         emailValues.put("moduleName", module.getCustomerModuleName());
         emailValues.put("subModuleName", subModule.getCustomerModuleName());
+        emailValues.put("uatLink", appBaseUrl.concat("/uat/activities"));
         projectUATVO.setEmailValues(emailValues);
         projectUATVO.setBcc(new String[]{});
         projectUATVO.setCc(new String[]{});
         projectUATVO.setReplyTo(appReplyToEmail);
         projectUATVO.setMailBodyKey("uploadBody");
         projectUATVO.setMailSubjectKey("uploadTitle");
-        //customer
-        for (String customerEmail : project.getStakeHolders()) {
-            user = userService.getUserByEmail(customerEmail);
-            projectUATVO.setTo(new String[]{user.getEmail()});
-            projectUATVO.setRecipientName(user.getFirstName().concat(" ").concat(user.getLastName()));
-            projectUATVO.setNotifications(new ArrayList<Notification>());
-            projectUATVO.getNotifications().add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
-            //Thread.sleep(5000);
-            //log.info(objectMapper.writeValueAsString(projectUATVO));
-            appEmailService.notifyUatActivities(projectUATVO);
-        }
         //manager
         for (String managerEmail : project.getWatchList()) {
             user = userService.getUserByEmail(managerEmail);
@@ -1731,6 +1721,19 @@ public class MiscService {
         //consultant
         for (String consultantEmail : project.getConsultants()) {
             user = userService.getUserByEmail(consultantEmail);
+            projectUATVO.setTo(new String[]{user.getEmail()});
+            projectUATVO.setRecipientName(user.getFirstName().concat(" ").concat(user.getLastName()));
+            projectUATVO.setNotifications(new ArrayList<Notification>());
+            projectUATVO.getNotifications().add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+            //Thread.sleep(5000);
+            //log.info(objectMapper.writeValueAsString(projectUATVO));
+            appEmailService.notifyUatActivities(projectUATVO);
+        }
+        //customer
+        for (String customerEmail : project.getStakeHolders()) {
+            projectUATVO.setMailBodyKey("uploadBodyCustomer");
+            projectUATVO.setMailSubjectKey("uploadTitleCustomer");
+            user = userService.getUserByEmail(customerEmail);
             projectUATVO.setTo(new String[]{user.getEmail()});
             projectUATVO.setRecipientName(user.getFirstName().concat(" ").concat(user.getLastName()));
             projectUATVO.setNotifications(new ArrayList<Notification>());
@@ -1827,7 +1830,7 @@ public class MiscService {
             appEmailService.notifyUatProjectCreation(emailValues);
         }
         //customer
-        for (String customerEmail : project.getStakeHolders()) {
+        /*for (String customerEmail : project.getStakeHolders()) {
             user = userService.getUserByEmail(customerEmail);
             emailValues.put("title", "customerTitle");
             emailValues.put("body", "customerBody");
@@ -1837,7 +1840,7 @@ public class MiscService {
             notifications.add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
             emailValues.put("notify", notifications);
             appEmailService.notifyUatProjectCreation(emailValues);
-        }
+        }*/
     }
 
 }

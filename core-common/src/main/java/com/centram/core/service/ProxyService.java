@@ -38,6 +38,14 @@ public class ProxyService {
     @Autowired
     private TimeSheetRepository timeSheetRepository;
 
+    @Autowired
+    private ProjectUatRepository projectUatRepository;
+
+    @Transactional(readOnly = false)
+    public ProjectUat saveProjectUAT(ProjectUat projectUat) {
+        return projectUatRepository.save(projectUat);
+    }
+
     @Transactional(readOnly = false)
     public Asset saveAsset(Asset asset) {
         return assetRepository.save(asset);

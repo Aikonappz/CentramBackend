@@ -27,6 +27,8 @@ public enum GenericErrorCode implements ErrorCode {
     RELEVANT_DATA_NOT_FOUND("[[${entity}]] data not found!"),
 
     UPLOADED_FILE_DATA_ISSUE("Uploaded file has issue at sheet - [[${sheet}]], column - [[${col}]], row - [[${row}]]! [[${errorMessage}]]"),
+
+    UAT_DATA_EXIST("[[${entity}]] already exist against same project, module and sub module! Please check data once!"),
     ;
 
     private final String template;

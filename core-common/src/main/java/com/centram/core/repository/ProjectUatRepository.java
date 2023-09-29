@@ -111,7 +111,7 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             Pageable pageable
     );
 
-    @Query(value = "select * from project_uat pu where " +
+    @Query(value = "select * from project_uat pu join project p on p.id = pu.project_id where " +
             "     (  " +
             "       (:moduleId is not null and pu.module_id = :moduleId)  " +
             "       OR  " +
@@ -137,6 +137,15 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             "       OR  " +
             "       :uploadedByUserId is null  " +
             "     ) and  " +
+            "     (" +
+            "       :userType = 'ADMIN' " +
+            "     OR " +
+            "       :userType = 'PROJECT_MANAGER' and CONCAT(',', p.watch_list, ',') REGEXP (:emailExp) " +
+            "     OR " +
+            "       :userType = 'PROJECT_OWNER' and CONCAT(',', p.stake_holders, ',') REGEXP (:emailExp) " +
+            "     OR " +
+            "       :userType = 'PROJECT_CONSULTANT' and CONCAT(',', p.consultants, ',') REGEXP (:emailExp) " +
+            "     ) and " +
             "     (  " +
             "       (:status = 'completed' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 1))  " +
             "       OR  " +
@@ -147,6 +156,8 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             "       :status = 'total'  " +
             "     ) and pu.created_date between :start and :end and pu.technology = :technology ", nativeQuery = true)
     Page<ProjectUat> uatReport(
+            @Param("userType") String userType,
+            @Param("emailExp") String emailExp,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("technology") Integer technology,

@@ -69,14 +69,14 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     private Boolean pass = false;
 
     @Valid
-    @Column(name = "retest_date", nullable = true)
+    @Column(name = "retest_date", nullable = true, columnDefinition = "default null")
     @JsonView(Views.BasicView.class)
     private LocalDate retestDate;
 
     @Valid
-    @Column(name = "reset_pass", nullable = false)
+    @Column(name = "reset_pass", nullable = true, columnDefinition = "default null")
     @JsonView(Views.BasicView.class)
-    private Boolean retestPass = false;
+    private Boolean retestPass;
 
     @Valid
     @Lob

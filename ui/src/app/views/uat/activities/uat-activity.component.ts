@@ -807,25 +807,9 @@ export class UATActivityComponent implements OnInit {
    * 
    */
   uatCommunicationSearchFormSubmit() {
-    /*if (this.uatCommunicationSearchForm.valid) {
-      this.searchedUatScriptId = this.uatCommunicationSearchForm.controls['searchUatProjectScriptId'].value;
-      this.uatCommunicationSearchedParam = {
-        projectUATScriptId: this.uatCommunicationSearchForm.controls['searchUatProjectScriptId'].value,
-      };
-      //console.log(this.isScriptUATComplete());
-      if (this.isScriptUATComplete()) {
-        this.searchedUatScriptComplete = true;
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
-      } else {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
-      }
-      this.loadData();
-      this.searched = true;
-    } else {
-      console.log("Invalid Form!");
-    }*/
     this.searchedUatScriptId = this.uatCommunicationSearchForm.controls['searchUatProjectScriptId'].value;
     this.uatCommunicationSearchedParam = { projectUATScriptId: this.uatCommunicationSearchForm.controls['searchUatProjectScriptId'].value, };
+    //console.log(this.isScriptUATComplete());
     if (this.isScriptUATComplete()) {
       this.searchedUatScriptComplete = true;
       if (this.isConsultant()) {
@@ -834,6 +818,7 @@ export class UATActivityComponent implements OnInit {
         this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
       }
     } else {
+      this.searchedUatScriptComplete = false;
       if (this.isConsultant()) {
         this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
       } else {
@@ -1097,7 +1082,15 @@ export class UATActivityComponent implements OnInit {
   }
 
   @ViewChild("searchUatCycleProjectId") searchUatCycleProjectId;
-  uatCycleProjectIdModifyAction(searchUatCycleProject) {
+  uatCycleProjectIdModifyAction(searchUatCycleProjectId) {
+    if (typeof searchUatCycleProjectId !== 'undefined') {
+      for (let k = 0; k < this.projectUats.length; k++) {
+        if (this.projectUats[k].id == searchUatCycleProjectId.id) {
+          //console.log(JSON.stringify(this.projectUats[k]));
+        }
+      }
+    } else {
+    }
     this.searchUatCycle();
   }
 
@@ -1139,6 +1132,7 @@ export class UATActivityComponent implements OnInit {
    * @returns 
    */
   canMarkComplete(): boolean {
+    if (this.isUatCycleComplete()) return false;
     for (let k = 0; k < this.projectUats.length; k++) {
       if (this.projectUats[k].id == this.searchedUatCycleId && this.projectUats[k].canMarkComplete) {
         return true;
@@ -1160,7 +1154,7 @@ export class UATActivityComponent implements OnInit {
       class: 'modal-bg',
     };
     const initialState = {
-      msg: "Are you sure?",
+      msg: "Do you really want to mark this UAT as completed?",
     };
     this.modalRef = this.modalService.show(ConfirmAlert, Object.assign({}, config, { initialState }));
 
