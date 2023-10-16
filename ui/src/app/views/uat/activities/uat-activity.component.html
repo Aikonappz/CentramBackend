@@ -4,7 +4,8 @@
       <tabset>
         <tab *ngIf="isConsultant()" heading="UAT Script and Manual Upload">
           <div class="card">
-            <div class="alert alert-success" role="alert" data-dismiss="alert" *ngIf="uploadSuccess">
+            <div class="alert alert-success-uat-activities" style="background-color: #1C7CB4; color: white;"
+              role="alert" data-dismiss="alert" *ngIf="uploadSuccess">
               <h6>UAT Script and Manual are uploaded successfully.</h6>
             </div>
             <form [formGroup]="angForm" (ngSubmit)="uploadUatScript()" novalidate>
@@ -62,10 +63,13 @@
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="uatScript">UAT Scripts </label>
                     <i class="icon-info"
-                      tooltip="Max file size can be 10 M.B and suported file types are xslx"></i>&nbsp;&nbsp;
+                      tooltip="Max file size can be 10 M.B and suported file type is xslx"></i>&nbsp;&nbsp;
                     <input #uatScript (change)="getUatScriptFileDetails($event)" type="file" id="uatScript"
                       formControlName="uatScript" name="uatScript">
                     <div *ngIf="f.uatScript.touched && f.uatScript.invalid" class="alert alert-danger-custom">
+                      <div *ngIf="f.uatScript.errors?.required">
+                        UAT Script file is required.
+                      </div>
                       <div *ngIf="f.uatScript.errors?.validAttachments">
                         Supported file format is <b>.xslx</b> only
                       </div>
@@ -83,10 +87,13 @@
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="uatManual">UAT Manual </label>
                     <i class="icon-info"
-                      tooltip="Max file size can be 20 M.B and suported file types are pdf/doc/docx/zip/rar"></i>&nbsp;&nbsp;
+                      tooltip="Max file size can be 20 M.B and suported file types are pdf/doc/docx/zip/rar. For multiple file uploads, please use zip/rar."></i>&nbsp;&nbsp;
                     <input #uatManual (change)="getUatManualFileDetails($event)" type="file" id="uatManual"
                       formControlName="uatManual" name="uatManual">
                     <div *ngIf="f.uatManual.touched && f.uatManual.invalid" class="alert alert-danger-custom">
+                      <div *ngIf="f.uatManual.errors?.required">
+                        UAT Manual file is required.
+                      </div>
                       <div *ngIf="f.uatManual.errors?.validAttachments">
                         Supported file types are <b>pdf/doc/docx/zip/rar</b>.
                       </div>
@@ -304,22 +311,24 @@
                       <div><b><u>Actual Result</u> - </b>{{element.actualResult==null? 'NA' : element.actualResult}}
                       </div>
                       <hr />
-                      <div><b><u>Test Passed</u> - </b>{{element.pass==null? 'NA' : element.pass==true? 'Yes' : 'No'}}
+                      <div><b><u>Test Passed </u> - </b>{{element.pass==null? 'NA' : element.pass==true?
+                        'Yes' : 'No'}}
                       </div>
                     </div>
                     <ng-template #editingTemplate>
                       <!-- <textarea class="form-control" [(ngModel)]='element.actualResult' placeholder="Actual Result"
                         rows="7" cols="30">
                       </textarea> -->
-
                       <ng-select [items]="testResultList" #testResult (change)="triggerPassFail($event,element)"
                         placeholder="-- Select Result --" [(ngModel)]='element.actualResult' bindLabel="label"
                         bindValue="id"></ng-select>
-
-
                       <hr />
-                      <ng-select [items]="statusList" placeholder="-- Select Test Status --" [(ngModel)]='element.pass'
-                        bindLabel="label" bindValue="id"></ng-select>
+                      <div><b><u>Passed </u> - </b>{{element.pass==null? 'NA' : element.pass==true?
+                        'Yes' : 'No'}}
+                      </div>
+                      <input type="text" hidden="true" [(ngModel)]="element.pass">
+                      <!-- <ng-select [items]="statusList" placeholder="-- Select Test Status --" [(ngModel)]='element.pass'
+                        bindLabel="label" bindValue="id"></ng-select> -->
                     </ng-template>
                   </td>
                 </ng-container>
@@ -333,8 +342,8 @@
                         'Yes' : 'No'}}</div>
                     </div>
                     <ng-template #editingTemplate>
-                      <input type="date" format="DD-MM-YYYY" class="form-control" placeholder="Retest Date"
-                        [(ngModel)]="element.retestDate">
+                      <input type="date" format="DD-MM-YYYY" max="{{currentDate}}" class="form-control"
+                        placeholder="Retest Date" [(ngModel)]="element.retestDate">
                       <hr />
                       <ng-select [items]="statusList" placeholder="-- Select Re-Test Status --"
                         [(ngModel)]='element.retestPass' bindLabel="label" bindValue="id"></ng-select>
@@ -395,7 +404,7 @@
             </div>
           </div>
         </tab>
-        <tab *ngIf="isCustomer()" heading="Project UAT Activities">
+        <tab *ngIf="isConsultant()||isCustomer()" heading="Project UAT Activities">
           <div class="card">
             <form [formGroup]="angUatCycleSearchForm" (ngSubmit)="searchUatCycle()" novalidate>
               <div class="card-body">
@@ -476,13 +485,21 @@
                   </div>
                 </div>
               </div>
-
               <div class="row row-margin-05">
                 <div class="col">
                   <button (click)="markUatCycleComplete()" *ngIf="searchedUatCycle&&searchedUatCycleId!=null"
-                    [disabled]="!canMarkComplete()" type="button" class="btn btn-sm btn-secondary">Mark UAT complete
-                    {{canMarkComplete()}}</button>
+                    [disabled]="!canMarkComplete()" type="button" class="btn btn-sm btn-secondary"><i
+                      class="fa fa-check"></i> &nbsp;Mark UAT as
+                    Completed</button>
                 </div>
+                <div class="col">
+                  <button (click)="downloadScriptFile()" *ngIf="searchedUatCycle&&searchedUatCycleId!=null"
+                    type="button" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> &nbsp;Download UAT File
+                    with the current status</button>
+                </div>
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col"></div>
               </div>
             </form>
             <hr />

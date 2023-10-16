@@ -18,6 +18,7 @@ import com.centram.domain.enumarator.Technology;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -31,22 +32,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.apache.poi.hssf.usermodel.HSSFDateUtil.isCellDateFormatted;
 
 @Service
 public class ProjectUatService {
@@ -88,6 +87,12 @@ public class ProjectUatService {
     @Autowired
     private ProxyService proxyService;
 
+    @Value("${app.date.format:yyyy-MM-dd}")
+    private String dateFormat;
+
+    @Value("${app.date.time.format:yyyy-MM-dd'T'HH:mm:ss}")
+    private String dateTimeFormat;
+
     /**
      * @param projectUatId
      * @return
@@ -101,6 +106,7 @@ public class ProjectUatService {
                 i.setUatComplete(true);
                 i.getProjectUatScriptDetails().forEach(k -> {
                     k.setPass(true);
+                    k.setRetestPass(true);
                 });
             });
             projectUat = projectUatRepository.save(projectUat);
@@ -122,6 +128,7 @@ public class ProjectUatService {
             projectUatScript.setUatComplete(true);
             projectUatScript.getProjectUatScriptDetails().forEach(i -> {
                 i.setPass(true);
+                i.setRetestPass(true);
             });
             projectUatScript = projectUatScriptRepository.save(projectUatScript);
             miscService.notifyUatScriptCompletion(projectUatScript);
@@ -146,6 +153,7 @@ public class ProjectUatService {
             oldObj.setRemarks(projectUatScriptDetail.getRemarks());
             oldObj = projectUatScriptDetailRepository.save(oldObj);
             miscService.notifyParticipant(oldObj);
+            oldObj.setSaved(Boolean.TRUE);
             return oldObj;
         } else {
             throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
@@ -192,6 +200,11 @@ public class ProjectUatService {
         Page<ProjectUatScriptDetail> page = projectUatRepository.findByProjectUATScriptId(projectUATScriptId, pageable);
         List<ProjectUatScriptDetail> projectUatScriptDetails = page.getContent();
         for (int k = 0; k < projectUatScriptDetails.size(); k++) {
+            if (!StringUtils.isBlank(projectUatScriptDetails.get(k).getActualResult()) && (projectUatScriptDetails.get(k).getActualResult().equalsIgnoreCase("As Expected") || projectUatScriptDetails.get(k).getActualResult().equalsIgnoreCase("Not as Expected"))) {
+                projectUatScriptDetails.get(k).setSaved(Boolean.TRUE);
+            } else {
+                projectUatScriptDetails.get(k).setSaved(Boolean.FALSE);
+            }
             if (k == 0) {
                 projectUatScriptDetails.get(k).setPreviousStepPassed(true);
             } else {
@@ -237,6 +250,12 @@ public class ProjectUatService {
             if (noOfScript == noOftestCasePassed) {
                 i.setCanMarkComplete(true);
             }
+            /*Module module = moduleService.getModule(i.getModuleId());
+            i.setModuleName(module.getCustomerModuleName());
+            module = moduleService.getModule(i.getSubModuleId());
+            i.setSubModuleName(module.getCustomerModuleName());
+            i.setUatScript(mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, i.getId()));
+            i.setUatManual(mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_MANUAL, i.getId()));*/
         });
 
         return projectUats;
@@ -296,6 +315,99 @@ public class ProjectUatService {
         }
     }
 
+    private String getRemark(LinkedHashSet<UATRemark> remarks) {
+        StringBuilder str = new StringBuilder();
+        if (!CollectionUtils.isEmpty(remarks)) {
+            for (UATRemark uatRemark : remarks) {
+                str.append(Optional.of(uatRemark.getName()).orElse("NA")).append("-").append(Optional.of(uatRemark.getEmail()).orElse("NA")).append("-").append(uatRemark.getDateTime() != null ? uatRemark.getDateTime().format(DateTimeFormatter.ofPattern(dateTimeFormat)) : "").append("-").append(uatRemark.getComment() != null ? uatRemark.getComment().replace("\n", "").replace("\r", "") : "").append("\n");
+            }
+        }
+        return str.toString();
+    }
+
+    private Object[] prepareExcelRow(ProjectUatScript projectUatScript, ProjectUatScriptDetail projectUatScriptDetail, int rowNo) {
+        if (rowNo == 2) {
+            return new Object[]{projectUatScript.getTestCaseId() != null ? projectUatScript.getTestCaseId() : "", projectUatScript.getTestCaseDescription() != null ? projectUatScript.getTestCaseDescription() : "", projectUatScript.getTestScenario() != null ? projectUatScript.getTestScenario() : "", projectUatScriptDetail.getStep() != null ? String.valueOf(projectUatScriptDetail.getStep().intValue()) : "", projectUatScriptDetail.getAction() != null ? projectUatScriptDetail.getAction() : "", projectUatScriptDetail.getExpectedResult() != null ? projectUatScriptDetail.getExpectedResult() : "", projectUatScriptDetail.getActualResult() != null ? projectUatScriptDetail.getActualResult() : "", projectUatScriptDetail.getPass() != null ? projectUatScriptDetail.getPass() ? "Pass" : "Fail" : "", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "", projectUatScriptDetail.getRetestPass() != null ? projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail" : "", this.getRemark(projectUatScriptDetail.getRemarks())};
+        } else {
+            return new Object[]{"", "", "", projectUatScriptDetail.getStep() != null ? String.valueOf(projectUatScriptDetail.getStep().intValue()) : "", projectUatScriptDetail.getAction() != null ? projectUatScriptDetail.getAction() : "", projectUatScriptDetail.getExpectedResult() != null ? projectUatScriptDetail.getExpectedResult() : "", projectUatScriptDetail.getActualResult() != null ? projectUatScriptDetail.getActualResult() : "", projectUatScriptDetail.getPass() != null ? projectUatScriptDetail.getPass() ? "Pass" : "Fail" : "", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "", projectUatScriptDetail.getRetestPass() != null ? projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail" : "", this.getRemark(projectUatScriptDetail.getRemarks())};
+        }
+    }
+
+    public MediaFile getUatScriptFileName(BigInteger projectUatId) {
+        return mediaService.getMediaFile(EntityType.PROJECT_UAT, MediaType.PROJECT_UAT_SCRIPT, projectUatId);
+    }
+
+    /**
+     * @param loggedInUser
+     * @param projectUatId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ByteArrayInputStream downloadUploadedScript(LoggedInUser loggedInUser, BigInteger projectUatId) {
+        try {
+            Optional<ProjectUat> optionalProjectUat = projectUatRepository.findById(projectUatId);
+            if (optionalProjectUat.isPresent()) {
+                ProjectUat projectUat = optionalProjectUat.get();
+                //Blank workbook
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                //Create a blank sheet
+                XSSFSheet sheet;
+                Map<String, Object[]> data = new TreeMap<String, Object[]>();
+                int row = 1;
+                Set<String> keys;
+                int rowNo = 0;
+                Row newRow;
+                List<ProjectUatScriptDetail> projectUatScriptDetails;
+                for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
+                    sheet = workbook.createSheet(projectUatScript.getTestScriptName());
+                    data = new LinkedHashMap<String, Object[]>();
+                    row = 1;
+                    data.put(String.valueOf(row), new Object[]{"Test Case ID", "Test Case Description", "Test Scenario", "Step", "Action", "Expected Result", "Actual Result", "Pass/Fail ", "Retest Date", "Retest Pass/Fail", "Remarks"});
+                    projectUatScriptDetails = new ArrayList<ProjectUatScriptDetail>(projectUatScript.getProjectUatScriptDetails());
+                    projectUatScriptDetails = projectUatScriptDetails.stream().sorted(Comparator.comparing(ProjectUatScriptDetail::getStep)).collect(Collectors.toList());
+                    for (ProjectUatScriptDetail projectUatScriptDetail : projectUatScriptDetails) {
+                        data.put(String.valueOf(++row), prepareExcelRow(projectUatScript, projectUatScriptDetail, row));
+                    }
+                    keys = data.keySet();
+                    rowNo = 0;
+                    for (String key : keys) {
+                        newRow = sheet.createRow(rowNo++);
+                        Object[] objArr = data.get(key);
+                        int cellnum = 0;
+                        for (Object obj : objArr) {
+                            Cell cell = newRow.createCell(cellnum++);
+                            if (obj instanceof String) cell.setCellValue((String) obj);
+                            else if (obj instanceof Integer) cell.setCellValue((Integer) obj);
+                        }
+                    }
+                }
+                try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                    workbook.write(bos);
+                    return new ByteArrayInputStream(bos.toByteArray());
+                }
+            } else {
+                throw new AppException(GenericErrorCode.RELEVANT_DATA_NOT_FOUND, new HashMap<String, Object>() {{
+                    put("entity", "Project Uat");
+                }});
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AppException(GenericErrorCode.UAT_EXCEL_GENERATION_ISSUE);
+        }
+    }
+
+    public ProjectUat uatScriptAlreadyUploaded(
+            BigInteger moduleId,
+            BigInteger subModuleId,
+            BigInteger projectId
+    ){
+        Optional<ProjectUat> optionalProjectUat = Optional.ofNullable(projectUatRepository.findByProjectIdAndModuleIdAndSubModuleId(projectId, moduleId, subModuleId));
+        if (optionalProjectUat.isPresent()) {
+            return optionalProjectUat.get();
+        }
+        return null;
+    }
+
     /**
      * @param filePath
      * @param loggedInUser
@@ -306,6 +418,11 @@ public class ProjectUatService {
     @Transactional(readOnly = true)
     private ProjectUat processUATExcel(String filePath, LoggedInUser loggedInUser, ProjectUATRequestDTO projectUATRequestDTO, String fileName, MultipartFile multipartFile) {
         try {
+            Optional<ProjectUat> optionalProjectUat = Optional.ofNullable(projectUatRepository.findByProjectIdAndModuleIdAndSubModuleId(projectUATRequestDTO.getProjectId(), projectUATRequestDTO.getModuleId(), projectUATRequestDTO.getSubModuleId()));
+            if (optionalProjectUat.isPresent()) {
+                //delete if previously present
+                projectUatRepository.delete(optionalProjectUat.get());
+            }
             FileInputStream file = new FileInputStream(new File(filePath));
             XSSFWorkbook workbook = new XSSFWorkbook(file);
             XSSFSheet sheet;
@@ -317,7 +434,6 @@ public class ProjectUatService {
             int rw = 0;
             ProjectUatScript projectUatScript = new ProjectUatScript();
             ProjectUatScriptDetail projectUatScriptDetail = new ProjectUatScriptDetail();
-
             //project uat
             ProjectUat projectUat = new ProjectUat();
             projectUat.setUatCycleName(FilenameUtils.removeExtension(fileName).concat("-").concat(LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMYYYYHHmmss"))));
@@ -411,13 +527,15 @@ public class ProjectUatService {
                             //Pass/Fail
                             if (!cellValue.trim().isEmpty()) {
                                 projectUatScriptDetail.setPass(cellValue.equalsIgnoreCase("Pass"));
+                            } else {
+                                projectUatScriptDetail.setPass(null);
                             }
                         } else if (cell.getAddress().getColumn() == 8) {
                             // Retest Date
                             if (!cellValue.trim().isEmpty()) {
                                 try {
-                                    isCellDateFormatted(cell);
-                                    projectUatScriptDetail.setRetestDate(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                                    //isCellDateFormatted(cell);
+                                    projectUatScriptDetail.setRetestDate(LocalDate.parse(cellValue, DateTimeFormatter.ofPattern(dateFormat)));
                                 } catch (Exception e) {
                                     log.error("Error value - {}", cellValue);
                                     throw new AppException(GenericErrorCode.UPLOADED_FILE_DATA_ISSUE, prepareErrorContext(cell, projectUatScript.getTestScriptName(), "Retest Date has wrong date value!"));

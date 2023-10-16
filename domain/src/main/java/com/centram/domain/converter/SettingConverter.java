@@ -5,9 +5,9 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.domain.Setting;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -40,7 +40,7 @@ public class SettingConverter implements AttributeConverter<Setting, String> {
     @Override
     public Setting convertToEntityAttribute(String s) {
         Setting setting = null;
-        if (s != null && !StringUtils.isEmpty(s)) {
+        if (!StringUtils.isBlank(s)) {
             try {
                 setting = SettingConverter.objectMapper.readValue(s, Setting.class);
             } catch (IOException e) {

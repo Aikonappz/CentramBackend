@@ -1,6 +1,7 @@
 package com.centram.common.config.ws;
 
 import com.centram.common.utility.Utility;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
@@ -52,10 +53,10 @@ public class AppWSChannelInterceptor implements ChannelInterceptor {
     }
 
     private UsernamePasswordAuthenticationToken getAuthenticatedOrFail(final String username, final String password) throws AuthenticationException {
-        if (username == null || username.trim().isEmpty()) {
+        if (StringUtils.isBlank(username)) {
             throw new AuthenticationCredentialsNotFoundException("Username was null or empty.");
         }
-        if (password == null || password.trim().isEmpty()) {
+        if (StringUtils.isBlank(password)) {
             throw new AuthenticationCredentialsNotFoundException("Password was null or empty.");
         }
         // Add your own logic for retrieving user in fetchUserFromDb()

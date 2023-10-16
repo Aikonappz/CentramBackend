@@ -24,12 +24,16 @@ public enum GenericErrorCode implements ErrorCode {
     ASSET_DATA_EXIST("ASSET WITH SAME SERIAL NO ALREADY EXIST!"),
     DATA_EXIST("[[${entity}]] already exist! Please check data once!"),
 
+    USER_DATA_EXIST("[[${entity}]] data already exists with the same email id."),
+
     RELEVANT_DATA_NOT_FOUND("[[${entity}]] data not found!"),
 
     UPLOADED_FILE_DATA_ISSUE("Uploaded file has issue at sheet - [[${sheet}]], column - [[${col}]], row - [[${row}]]! [[${errorMessage}]]"),
 
     UAT_DATA_EXIST("[[${entity}]] already exist against same project, module and sub module! Please check data once!"),
-    ;
+
+
+    UAT_EXCEL_GENERATION_ISSUE("UAT excel generation issue!");
 
     private final String template;
 

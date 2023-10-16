@@ -452,13 +452,13 @@ export class UATReportComponent implements OnInit {
     }
   }
 
-  format(str: String[]) {
+  format(str: String) {
     // var strArray = 
     // strArray = strArray.filter((item) => {
     //   return item !== '';
     // });
     //console.log(strArray.join(",").split(",,").join(","));
-    return str.join('<br/>');
+    return str.replaceAll(',', '<br/>');
   }
 
 }

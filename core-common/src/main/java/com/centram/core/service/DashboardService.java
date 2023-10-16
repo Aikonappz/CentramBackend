@@ -218,23 +218,10 @@ public class DashboardService {
         for (ProjectUat projectUat : projectUats) {
             noOfUat++;
             status = Integer.MAX_VALUE;
-            for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
-                if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(i -> {
-                    return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
-                }).count()) {
-                    status = 1;
-                    break;
-                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(i -> {
-                    return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
-                })) {
-                    status = -1;
-                    break;
-                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(i -> {
-                    return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
-                })) {
-                    status = 0;
-                    break;
-                }
+            if (projectUat.getUatCycleComplete()) {
+                status = 1;
+            } else {
+                status = this.getUatCycleStatus(projectUat);
             }
             if (status != Integer.MAX_VALUE) {
                 if (status == 1) {
@@ -253,4 +240,16 @@ public class DashboardService {
         return uatDashboardVO;
     }
 
+    /**
+     * @param projectUat
+     * @return
+     */
+    private Integer getUatCycleStatus(ProjectUat projectUat) {
+        for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
+            if (projectUatScript.getUatComplete()) {
+                return 0;
+            }
+        }
+        return -1;
+    }
 }

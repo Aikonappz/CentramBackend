@@ -6,8 +6,8 @@ import com.centram.domain.TimeEntry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -35,7 +35,7 @@ public class TimeEntryConverter implements AttributeConverter<List<TimeEntry>, S
     @Override
     public List<TimeEntry> convertToEntityAttribute(String s) {
         List<TimeEntry> timeEntries = null;
-        if (s != null && !StringUtils.isEmpty(s)) {
+        if (!StringUtils.isBlank(s)) {
             try {
                 timeEntries = objectMapper.readValue(s, new TypeReference<List<TimeEntry>>() {
                 });

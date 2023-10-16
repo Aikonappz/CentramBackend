@@ -6,8 +6,8 @@ import com.centram.domain.BankDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -35,7 +35,7 @@ public class BankDetailConverter implements AttributeConverter<List<BankDetail>,
     @Override
     public List<BankDetail> convertToEntityAttribute(String s) {
         List<BankDetail> bankDetails = null;
-        if (s != null && !StringUtils.isEmpty(s)) {
+        if (!StringUtils.isBlank(s)) {
             try {
                 bankDetails = objectMapper.readValue(s, new TypeReference<List<BankDetail>>() {
                 });

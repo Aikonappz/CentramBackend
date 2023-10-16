@@ -64,17 +64,17 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     private String actualResult;
 
     @Valid
-    @Column(name = "pass", nullable = false)
+    @Column(name = "pass", nullable = true)
     @JsonView(Views.BasicView.class)
-    private Boolean pass = false;
+    private Boolean pass;
 
     @Valid
-    @Column(name = "retest_date", nullable = true, columnDefinition = "default null")
+    @Column(name = "retest_date", nullable = true)
     @JsonView(Views.BasicView.class)
     private LocalDate retestDate;
 
     @Valid
-    @Column(name = "reset_pass", nullable = true, columnDefinition = "default null")
+    @Column(name = "retest_pass", nullable = true)
     @JsonView(Views.BasicView.class)
     private Boolean retestPass;
 
@@ -88,6 +88,10 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @Transient
     @JsonView(Views.BasicView.class)
     private Boolean previousStepPassed = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean saved = false;
 
     public ProjectUatScriptDetail(@NotNull BigInteger id) {
         this.id = id;

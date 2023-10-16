@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -392,32 +393,38 @@ public class UserService implements UserDetailsService {
      */
     @Transactional(readOnly = false)
     public UserVO save(User user) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Boolean newOnboard = user.getId() == null;
-        String password = null;
-        if (newOnboard) {
-            password = Utility.getUniqueString(8);
-            user.setPassword(passwordEncoder.encode(password));
-        }
-        if (loggedInUser.getOrganisationId() != null) {
-            user.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
-        } else {
-            if (user.getOrganisation() != null && user.getOrganisation().getId() != null) {
-                user.setOrganisation(new Organisation(user.getOrganisation().getId(), user.getOrganisation().getVersion()));
+        try {
+            LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Boolean newOnboard = user.getId() == null;
+            String password = null;
+            if (newOnboard) {
+                password = Utility.getUniqueString(8);
+                user.setPassword(passwordEncoder.encode(password));
             }
+            if (loggedInUser.getOrganisationId() != null) {
+                user.setOrganisation(organisationService.getOrganisationById(loggedInUser.getOrganisationId()));
+            } else {
+                if (user.getOrganisation() != null && user.getOrganisation().getId() != null) {
+                    user.setOrganisation(new Organisation(user.getOrganisation().getId(), user.getOrganisation().getVersion()));
+                }
+            }
+            UserVO userVO = new UserVO(proxyService.saveUser(user));
+            List<String> roleNames = new ArrayList<>();
+            for (BigInteger roleId : userVO.getRoles()) {
+                roleNames.add(roleService.getById(roleId).getName());
+            }
+            userVO.setRoleNames(roleNames);
+            if (newOnboard) {
+                Map<String, Object> mailValues = new HashMap<>();
+                mailValues.put("password", password);
+                miscService.sendOnboardMail(userVO, mailValues);
+            }
+            return userVO;
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException(GenericErrorCode.USER_DATA_EXIST, new HashMap<String, Object>() {{
+                put("entity", "User");
+            }});
         }
-        UserVO userVO = new UserVO(userRepository.save(user));
-        List<String> roleNames = new ArrayList<>();
-        for (BigInteger roleId : userVO.getRoles()) {
-            roleNames.add(roleService.getById(roleId).getName());
-        }
-        userVO.setRoleNames(roleNames);
-        if (newOnboard) {
-            Map<String, Object> mailValues = new HashMap<>();
-            mailValues.put("password", password);
-            miscService.sendOnboardMail(userVO, mailValues);
-        }
-        return userVO;
     }
 
     /**
@@ -890,7 +897,7 @@ public class UserService implements UserDetailsService {
         String projects = null;
         for (Map.Entry<BigInteger, String> entry : allocateProjectDTOS.entrySet()) {
             user = userRepository.getUserById(entry.getKey());
-            if (!StringUtils.isEmpty(user.getProjectCode())) {
+            if (!org.apache.commons.lang3.StringUtils.isBlank(user.getProjectCode())) {
                 projects = user.getProjectCode().concat(",").concat(entry.getValue());
             } else {
                 projects = entry.getValue();
@@ -911,7 +918,7 @@ public class UserService implements UserDetailsService {
         String projects = null;
         for (Map.Entry<BigInteger, String> entry : deallocateProjectDTOS.entrySet()) {
             user = userRepository.getUserById(entry.getKey());
-            if (!StringUtils.isEmpty(user.getProjectCode())) {
+            if (!org.apache.commons.lang3.StringUtils.isBlank(user.getProjectCode())) {
                 projects = user.getProjectCode();
                 projectList = Stream.of(projects.split(",")).map(String::trim).collect(Collectors.toList());
                 projectList.remove(entry.getValue());

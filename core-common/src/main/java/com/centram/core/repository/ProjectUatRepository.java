@@ -28,6 +28,9 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
     );
 
     @Query("select pu from ProjectUat pu where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId)")
+    ProjectUat findByProjectIdAndModuleIdAndSubModuleId(@Param("projectId") BigInteger projectId, @Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId);
+
+    @Query("select pu from ProjectUat pu where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId)")
     List<ProjectUat> getByProjectIdAndModuleIdAndSubModuleId(@Param("projectId") BigInteger projectId, @Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId);
 
     @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
@@ -147,11 +150,11 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
             "       :userType = 'PROJECT_CONSULTANT' and CONCAT(',', p.consultants, ',') REGEXP (:emailExp) " +
             "     ) and " +
             "     (  " +
-            "       (:status = 'completed' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 1))  " +
+            "       :status = 'completed' and pu.uat_cycle_complete = 1 " +
             "       OR  " +
-            "       (:status = 'notStarted' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 0 and (select count(pusd.project_uat_script_id) from project_uat_script_detail pusd where pusd.project_uat_script_id = pus.id and pusd.pass =1) = 0))  " +
+            "       :status = 'notStarted' and pu.uat_cycle_complete = 0 and (select COUNT(*) from project_uat_script pus where pus.project_uat_id = pu.id and pus.uat_complete = 1) = 0 " +
             "       OR  " +
-            "       (:status = 'inProgress' and pu.id in (select pus.project_uat_id from project_uat_script pus where pus.project_uat_id = pu.id and uat_cycle_complete = 0 and (select count(pusd.project_uat_script_id) from project_uat_script_detail pusd where pusd.project_uat_script_id = pus.id and pusd.pass =1) > 0))  " +
+            "       :status = 'inProgress' and pu.uat_cycle_complete = 0 and (select COUNT(*) from project_uat_script pus where pus.project_uat_id = pu.id and pus.uat_complete = 1) > 0 " +
             "       OR  " +
             "       :status = 'total'  " +
             "     ) and pu.created_date between :start and :end and pu.technology = :technology ", nativeQuery = true)

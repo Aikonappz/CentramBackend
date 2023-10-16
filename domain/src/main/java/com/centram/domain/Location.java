@@ -1,6 +1,7 @@
 package com.centram.domain;
 
 import com.centram.common.view.Views;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -112,6 +113,13 @@ public class Location extends BaseEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+
+    @NotNull
+    @Valid
+    @Column(name = "location_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private LicenseType locationType;
 
     public Location(@NotNull BigInteger id) {
         this.id = id;

@@ -6,6 +6,7 @@ import com.centram.common.dto.ProjectUATRequestDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
 import com.centram.core.service.ProjectUatService;
+import com.centram.domain.MediaFile;
 import com.centram.domain.ProjectUat;
 import com.centram.domain.ProjectUatScript;
 import com.centram.domain.ProjectUatScriptDetail;
@@ -14,15 +15,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +36,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.FileNameMap;
+import java.net.URLConnection;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +68,22 @@ public class UATApiController {
     public ResponseEntity<PaginatedList<ProjectUat>> uploadedScripts(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<PaginatedList<ProjectUat>>(projectUatService.uploadedScripts(loggedInUser.getUserId(), pageable), HttpStatus.OK);
+    }
+
+    @JsonView(Views.BasicView.class)
+    @RequestMapping(value = "/download-uploaded-scripts-file", method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','READ|WRITE',authentication.principal)")
+    public ResponseEntity<Resource> downloadUploadedScript(@RequestParam(value = "projectUatId", required = true) BigInteger projectUatId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final InputStreamResource resource = new InputStreamResource(projectUatService.downloadUploadedScript(loggedInUser,projectUatId));
+        MediaFile mediaFile = projectUatService.getUatScriptFileName(projectUatId);
+        //FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        //log.info("file name -> {}, type -> {}, mime type -> {}", mediaFile.getFileName(),mediaFile.getFileType(),MediaType.valueOf(fileNameMap.getContentTypeFor(mediaFile.getFileName())));
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + mediaFile.getFileName())
+                .contentType(
+                        MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                )
+                .body(resource);
     }
 
     @RequestMapping(value = "/uat-cycles", produces = {"application/json"}, method = RequestMethod.GET)
@@ -113,5 +138,17 @@ public class UATApiController {
     public ResponseEntity<ProjectUat> markUATCycleComplete(@PathVariable("projectUatId") BigInteger projectUatId) throws JsonProcessingException, InterruptedException {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<ProjectUat>(projectUatService.markProjectUatComplete(loggedInUser, projectUatId), HttpStatus.OK);
+    }
+
+    @JsonView(Views.BasicView.class)
+    @RequestMapping(value = "/uat-script-already-uploaded/{moduleId}/{subModuleId}/{projectId}", produces = {APPLICATION_JSON_VALUE}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
+    public ResponseEntity<ProjectUat> uatScriptAlreadyUploaded(
+            @PathVariable("moduleId") BigInteger moduleId,
+            @PathVariable("subModuleId") BigInteger subModuleId,
+            @PathVariable("projectId") BigInteger projectId
+    ) throws JsonProcessingException, InterruptedException {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<ProjectUat>(projectUatService.uatScriptAlreadyUploaded(moduleId, subModuleId,projectId), HttpStatus.OK);
     }
 }

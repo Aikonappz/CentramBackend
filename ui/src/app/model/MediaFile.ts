@@ -5,7 +5,7 @@ import { MediaType } from "./enumerator/MediaType";
 
 export class MediaFile {
     id: number;
-    fileName: number;
+    fileName: string;
     fileType: string;
     entityId: number;
     mediaType: MediaType;

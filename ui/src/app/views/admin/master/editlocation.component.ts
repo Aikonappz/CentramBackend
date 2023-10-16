@@ -12,6 +12,8 @@ import { AppUtility } from '../../../config/AppUtility';
 import { StartEndTimeValidation } from '../../../validator/StartEndTimeValidation';
 import { LoggedInUserService } from '../../../service/LoggedInUserService';
 import { Account } from '../../../model/Account';
+import { LicenseType } from '../../../model/enumerator/LicenseType';
+import { LoggedInUser } from '../../../model/LoggedInUser';
 
 @Component({
   selector: 'app-editlocation',
@@ -32,6 +34,10 @@ export class EditLocationComponent implements OnInit {
   timeList: any[] = [];
   angForm: FormGroup;
   accounts: Account[] = [];
+  accountList: Account[] = [];
+  accountType: string = 'ALL';
+  loggedInUser: LoggedInUser;
+  accountTypes: any[] = [];
 
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -47,41 +53,7 @@ export class EditLocationComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
-    this.angForm = this.fb.group({
-      account: new FormControl(null, [
-        Validators.required,
-      ]),
-      country: new FormControl(null, [
-        Validators.required,
-      ]),
-      timezone: new FormControl(null, [
-        Validators.required,
-      ]),
-      state: new FormControl(null, [
-        Validators.maxLength(255),
-      ]),
-      city: new FormControl(null, [
-        Validators.maxLength(255),
-      ]),
-      name: new FormControl(null, [
-        Validators.required,
-        Validators.maxLength(255),
-      ]),
-      officeName: new FormControl(null, [
-        //Validators.required,
-        Validators.maxLength(255),
-      ]),
-      opsStartTime: new FormControl(null, [
-        Validators.required,
-      ]),
-      opsEndTime: new FormControl(null, [
-        Validators.required,
-      ]),
-      status: new FormControl('ACTIVE', [
-      ]),
-    }, {
-      validators: StartEndTimeValidation('opsStartTime', 'opsEndTime')
-    });
+
     this.loc = new LocationVO();
     this.loc.status = this.defaultStatus;
     let timeList = AppUtility.getDayHourList(30);
@@ -98,6 +70,13 @@ export class EditLocationComponent implements OnInit {
       if (a.label > b.label) return 1;
       return 0;
     });
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    let accountTypes = Object.values(LicenseType)
+      .filter((value) => typeof value === "string" && value != "ALL" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
+      .map((value) => (value as string));
+    for (let k in accountTypes) {
+      this.accountTypes.push({ id: accountTypes[k], label: accountTypes[k] });
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -120,26 +99,32 @@ export class EditLocationComponent implements OnInit {
       this.miscService
         .accountsService()
         .subscribe((data: any) => {
-          this.accounts = data.content;
-          for (let i = 0; i < this.accounts.length; i++) {
-            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
+          this.accountList = data.content;
+          for (let i = 0; i < this.accountList.length; i++) {
+            this.accountList[i].label = this.accountList[i].name + " [" + this.accountList[i].accountNo + "]";
           }
-          if (this.accounts.length == 1)
-            this.angForm.get('account').setValue(this.accounts[0].id);
+          if (this.accountList.length == 1)
+            this.angForm.get('account').setValue(this.accountList[0].id);
         });
     } else {
       this.miscService
         .accountsService()
         .subscribe((data: any) => {
-          this.accounts = data.content;
-          for (let i = 0; i < this.accounts.length; i++) {
-            this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
+          this.accountList = data.content;
+          for (let i = 0; i < this.accountList.length; i++) {
+            this.accountList[i].label = this.accountList[i].name + " [" + this.accountList[i].accountNo + "]";
           }
           this.entityId = Number(this.route.snapshot.paramMap.get('id'));
           this.newEntity = false;
           this.callGetLocationService(this.entityId);
         });
     }
+    this.angForm = this.fb.group({
+      type: new FormControl(null, [
+        Validators.required,
+        Validators.maxLength(255),
+      ]),
+    });
   }
 
   ngAfterViewInit() { }
@@ -162,17 +147,22 @@ export class EditLocationComponent implements OnInit {
       this.loc.state = this.angForm.controls['state'].value;
       this.loc.city = this.angForm.controls['city'].value;
       this.loc.name = this.angForm.controls['name'].value;
-      this.loc.opsStartTime = this.angForm.controls['opsStartTime'].value;
-      this.loc.opsEndTime = this.angForm.controls['opsEndTime'].value;
       this.loc.officeName = this.angForm.controls['officeName'].value;
-      for (let i = 0; i < this.accounts.length; i++) {
-        if (this.accounts[i].id == this.angForm.controls['account'].value) {
-          this.loc.account = { id: this.accounts[i].id, version: this.accounts[i].version } as Account;
+      this.loc.locationType = LicenseType[this.angForm.controls['type'].value];
+      for (let i = 0; i < this.accountList.length; i++) {
+        if (this.accountList[i].id == this.angForm.controls['account'].value) {
+          this.loc.account = { id: this.accountList[i].id, version: this.accountList[i].version } as Account;
         }
       }
       /* process department and location */
       this.loc.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       //console.log(this.user.status);
+      this.loc.opsStartTime = "00:00";
+      this.loc.opsEndTime = "00:00";
+      if (this.accountType != "UAT") {
+        this.loc.opsStartTime = this.angForm.controls['opsStartTime'].value;
+        this.loc.opsEndTime = this.angForm.controls['opsEndTime'].value;
+      }
       this.callSaveLocationService();
     } else {
       console.log("Invalid Form!");
@@ -207,20 +197,24 @@ export class EditLocationComponent implements OnInit {
         this.loc.version = data.version;
         this.loc.officeName = data.officeName;
         this.loc.account = data.account;
+        this.loc.locationType = data.locationType;
+        this.driveFormByType({ id: this.loc.locationType, label: this.loc.locationType });
         //console.log(JSON.stringify(this.user));
-
+        this.angForm.get('type').setValue(this.loc.locationType);
+        //console.log(JSON.stringify(this.user));
         this.populateTimezone({ id: this.loc.country });
         this.angForm.get('name').setValue(this.loc.name);
-        this.angForm.get('opsStartTime').setValue(this.loc.opsStartTime);
-        this.angForm.get('opsEndTime').setValue(this.loc.opsEndTime);
         this.angForm.get('timezone').setValue(this.loc.timezone);
         this.angForm.get('state').setValue(this.loc.state);
         this.angForm.get('city').setValue(this.loc.city);
         this.angForm.get('country').setValue(this.loc.country);
         this.angForm.get('officeName').setValue(this.loc.officeName);
         this.angForm.get('account').setValue(this.loc.account.id);
-
         this.statusFlag = String(this.loc.status) == 'ACTIVE' ? true : false;
+        if (this.loc.locationType != 'UAT') {
+          this.angForm.get('opsStartTime').setValue(this.loc.opsStartTime);
+          this.angForm.get('opsEndTime').setValue(this.loc.opsEndTime);
+        }
         //this.angForm.get('status').setValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.get('status').patchValue(String(Status[this.user.status]) == 'ACTIVE' ? true : false);
         //this.angForm.markAllAsTouched();
@@ -246,4 +240,107 @@ export class EditLocationComponent implements OnInit {
     }
   }
 
+  @ViewChild("type") type;
+  driveFormByType(type) {
+    if (typeof type !== 'undefined') {
+      this.accountType = type.id;
+      //console.log(type);
+      if (this.accountType != 'UAT') {
+        this.angForm = this.fb.group({
+          type: new FormControl(this.accountType, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          account: new FormControl(null, [
+            Validators.required,
+          ]),
+          country: new FormControl(null, [
+            Validators.required,
+          ]),
+          timezone: new FormControl(null, [
+            Validators.required,
+          ]),
+          state: new FormControl(null, [
+            Validators.maxLength(255),
+          ]),
+          city: new FormControl(null, [
+            Validators.maxLength(255),
+          ]),
+          name: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          officeName: new FormControl(null, [
+            //Validators.required,
+            Validators.maxLength(255),
+          ]),
+          opsStartTime: new FormControl(null, [
+            Validators.required,
+          ]),
+          opsEndTime: new FormControl(null, [
+            Validators.required,
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+        }, {
+          validators: StartEndTimeValidation('opsStartTime', 'opsEndTime')
+        });
+        this.accounts = [];
+        for (let k = 0; k < this.accountList.length; k++) {
+          if (this.accountList[k].accountType != 'UAT') {
+            this.accounts.push(this.accountList[k]);
+          }
+        }
+      } else {
+        this.angForm = this.fb.group({
+          type: new FormControl(this.accountType, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          account: new FormControl(null, [
+            Validators.required,
+          ]),
+          country: new FormControl(null, [
+            Validators.required,
+          ]),
+          timezone: new FormControl(null, [
+            Validators.required,
+          ]),
+          state: new FormControl(null, [
+            Validators.maxLength(255),
+          ]),
+          city: new FormControl(null, [
+            Validators.maxLength(255),
+          ]),
+          name: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          officeName: new FormControl(null, [
+            //Validators.required,
+            Validators.maxLength(255),
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+        });
+        this.accounts = [];
+        for (let k = 0; k < this.accountList.length; k++) {
+          if (this.accountList[k].accountType == 'UAT') {
+            this.accounts.push(this.accountList[k]);
+          }
+        }
+      }
+    } else {
+      this.accountType = "ALL";
+      this.angForm = this.fb.group({
+        type: new FormControl(null, [
+          Validators.required,
+          Validators.maxLength(255),
+        ]),
+      });
+    }
+  }
+
 }
+
+

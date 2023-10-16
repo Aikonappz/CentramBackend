@@ -1731,7 +1731,8 @@ public class MiscService {
         }
         //customer
         for (String customerEmail : project.getStakeHolders()) {
-            projectUATVO.setMailBodyKey("uploadBodyCustomer");
+            //projectUATVO.setMailBodyKey("uploadBodyCustomer");
+            projectUATVO.setMailBodyKey("uploadBody");
             projectUATVO.setMailSubjectKey("uploadTitleCustomer");
             user = userService.getUserByEmail(customerEmail);
             projectUATVO.setTo(new String[]{user.getEmail()});

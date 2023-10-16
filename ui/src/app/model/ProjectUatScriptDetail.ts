@@ -14,6 +14,7 @@ export class ProjectUatScriptDetail extends Base {
   remark: string;
   editable: boolean = false;
   previousStepPassed: boolean = false;
+  saved: boolean = false;
 }
 export interface ProjectUatScriptDetailList {
   content: ProjectUatScriptDetail[];

@@ -26,7 +26,7 @@ export class ProjectUatDataSource implements DataSource<ProjectUat>{
         this.countSubject.complete();
     }
 
-    load(pageNumber = 0, pageSize = 10, req: Object = {}) {
+    load(pageNumber = 0, pageSize = 100, req: Object = {}) {
         this.loadingSubject.next(true);
         let defaultParam = { page: pageNumber, size: pageSize, sort: "id,asc", };
         let params = Object.assign(

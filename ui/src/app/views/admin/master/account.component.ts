@@ -53,7 +53,8 @@ export class AccountComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       //console.log(this.type);
-      this.displayedColumns = ['name', 'conDtl', 'allocationType', 'status', 'action'];
+      //this.displayedColumns = ['name', 'conDtl', 'allocationType', 'status', 'action'];
+      this.displayedColumns = ['name', 'conDtl', 'status', 'action'];
       this.hasAllocationType = true;
       this.datasource = new AccountDataSource(this.service);
       this.datasource.loadData(0, 10, {});

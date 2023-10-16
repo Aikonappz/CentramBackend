@@ -17,6 +17,9 @@ export class ProjectUatService {
     getProjectUats(request?: any): Observable<ProjectUat[]> {
         return this.http.get('/v1/project-uat/uat-cycles', { "params": request });
     }
+    downloadUploadedScript(request?: any): Observable<any> {
+        return this.http.get('/v1/project-uat/download-uploaded-scripts-file', { "params": request, responseType: 'blob' });
+    }
     getProjectUatScripts(request?: any): Observable<ProjectUatScript[]> {
         return this.http.get('/v1/project-uat/uat-scripts', { "params": request });
     }
@@ -46,5 +49,9 @@ export class ProjectUatService {
     }
     canMarkScriptComplete(request?: any): Observable<ProjectUatScript> {
         return this.http.get('/v1/project-uat/can-mark-script-complete', { "params": request });
-    }    
+    }
+    uatScriptAlreadyUploaded(moduleId: number, subModuleId: number, projectId: number, request?: any): Observable<ProjectUat> {
+        return this.http.get('/v1/project-uat/uat-script-already-uploaded/' + moduleId + "/" + subModuleId + "/" + projectId, { "params": request });
+    }
+
 }

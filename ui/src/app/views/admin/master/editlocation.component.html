@@ -11,6 +11,23 @@
         <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
           <div class="card-body">
             <div class="row">
+              <div [ngClass]="{col : true}">
+                <label class="form-col-form-label required-control-label" for="type">Account Type</label>
+                <ng-select #type (change)="driveFormByType($event)" [items]="accountTypes" [multiple]="false"
+                  placeholder="-- Select Account Type --" formControlName="type" id="type" name="type" bindLabel="label"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.type.touched && f.type.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.type.errors?.required">
+                    Account Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="account">Account</label>
                 <ng-select [items]="accounts" placeholder="-- Select Account --" formControlName="account" id="account"
@@ -45,7 +62,7 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label" for="state">State</label>
-                <input type="text" formControlName="state" ngModel id="state" name="state" class="form-control"
+                <input type="text" formControlName="state" id="state" name="state" class="form-control"
                   placeholder="State" aria-label="State">
                 <div *ngIf="f.state.touched && f.state.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.state.errors?.maxlength">
@@ -54,11 +71,12 @@
                 </div>
               </div>
             </div>
-            <div class="row row-margin-05">
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label " for="city">City</label>
-                <input type="text" formControlName="city" ngModel id="city" name="city" class="form-control"
-                  placeholder="City" aria-label="City">
+                <input type="text" formControlName="city" id="city" name="city" class="form-control" placeholder="City"
+                  aria-label="City">
                 <div *ngIf="f.city.touched && f.city.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.city.errors?.maxlength">
                     Allowed maxlength exceeds.
@@ -67,8 +85,8 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="name">Location Name</label>
-                <input type="text" formControlName="name" ngModel id="name" name="name" class="form-control"
-                  placeholder="Name" aria-label="Name">
+                <input type="text" formControlName="name" id="name" name="name" class="form-control" placeholder="Name"
+                  aria-label="Name">
                 <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.name.errors?.required">
                     Location Name is required.
@@ -80,8 +98,8 @@
               </div>
               <div class="col">
                 <label class="form-col-form-label " for="officeName">Office Name</label>
-                <input type="text" formControlName="officeName" ngModel id="officeName" name="officeName"
-                  class="form-control" placeholder="Office Name" aria-label="Office Name">
+                <input type="text" formControlName="officeName" id="officeName" name="officeName" class="form-control"
+                  placeholder="Office Name" aria-label="Office Name">
                 <div *ngIf="f.officeName.touched && f.officeName.invalid" class="alert alert-danger-custom">
                   <div *ngIf="f.officeName.errors?.required">
                     Office Name is required.
@@ -91,18 +109,10 @@
                   </div>
                 </div>
               </div>
-              <div class="col">
-                <label class="form-col-form-label required-control-label" for="opsStartTime">Ops. Start Time</label>
-                <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsStartTime"
-                  id="opsStartTime" name="opsStartTime" bindLabel="label" bindValue="id"></ng-select>
-                <div *ngIf="f.opsStartTime.touched && f.opsStartTime.invalid" class="alert alert-danger-custom">
-                  <div *ngIf="f.opsStartTime.errors?.required">
-                    Ops. Start Time is required.
-                  </div>
-                </div>
-              </div>
+              <div class="col"></div>
             </div>
-            <div class="row row-margin-05">
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'"
+              class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="opsEndTime">Ops. End Time</label>
                 <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsEndTime"
@@ -116,6 +126,21 @@
                   </div>
                 </div>
               </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="opsStartTime">Ops. Start Time</label>
+                <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsStartTime"
+                  id="opsStartTime" name="opsStartTime" bindLabel="label" bindValue="id"></ng-select>
+                <div *ngIf="f.opsStartTime.touched && f.opsStartTime.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.opsStartTime.errors?.required">
+                    Ops. Start Time is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row row-margin-05">
               <div class="col">
                 <label class="col-md-3 col-form-label" for="status">Status</label>
                 <div class="col-md-9 col-form-label">
@@ -132,6 +157,7 @@
                   </div>
                 </div>
               </div>
+              <div class="col"></div>
               <div class="col"></div>
               <div class="col"></div>
             </div>

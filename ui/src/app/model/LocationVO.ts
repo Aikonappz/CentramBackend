@@ -16,6 +16,8 @@ export class LocationVO extends Base {
     status: any;
     organisation: Organisation;
     account: Account;
+    locationType: any;
+
     constructor() {
         super();
         this.id = null;

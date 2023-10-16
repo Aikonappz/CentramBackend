@@ -64,7 +64,6 @@ export class EditUserComponent implements OnInit {
     this.user.status = this.defaultStatus;
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     this.rolesList = this.loggedInUser.roles;
-
     if (this.rolesList.includes('APP_ADMIN')) {
       this.angForm = new FormGroup({
         firstName: new FormControl('', [
@@ -231,7 +230,8 @@ export class EditUserComponent implements OnInit {
             for (let i = 0; i < this.accounts.length; i++) {
               this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
             }
-            this.angForm.get('account').setValue(this.accounts[0].id);
+            //this.angForm.get('account').setValue(this.accounts[0].id);
+            this.accounts.sort((a, b) => (a.name < b.name ? -1 : 1));
           });
         this.miscService
           .departmentsService()
@@ -318,6 +318,7 @@ export class EditUserComponent implements OnInit {
             for (let i = 0; i < this.accounts.length; i++) {
               this.accounts[i].label = this.accounts[i].name + " [" + this.accounts[i].accountNo + "]";
             }
+            this.accounts.sort((a, b) => (a.name < b.name ? -1 : 1));
             //console.log("here I am", this.accounts);
             this.miscService
               .rolesService()

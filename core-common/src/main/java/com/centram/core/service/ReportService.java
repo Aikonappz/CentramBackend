@@ -511,41 +511,23 @@ public class ReportService {
             i.setModuleName(module.getCustomerModuleName());
             module = moduleService.getModuleById(i.getSubModuleId());
             i.setSubModuleName(module.getCustomerModuleName());
-            for (ProjectUatScript projectUatScript : i.getProjectUatScripts()) {
-                if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(k -> {
-                    return ((k.getRetestPass() != null && k.getRetestPass()) || (k.getPass() != null && k.getPass()));
-                }).count()) {
-                    i.setStatus("Completed");
-                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(k -> {
-                    return ((k.getRetestPass() != null && k.getRetestPass()) || (k.getPass() != null && k.getPass()));
-                })) {
-                    i.setStatus("Not Started");
-                } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(k -> {
-                    return ((k.getRetestPass() != null && k.getRetestPass()) || (k.getPass() != null && k.getPass()));
-                })) {
-                    i.setStatus("In Progress");
-                }
+            if (i.getUatCycleComplete()) {
+                i.setStatus("Completed");
+            } else if (this.getUatCycleStatus(i) == -1) {
+                i.setStatus("Not Started");
+            } else if (this.getUatCycleStatus(i) == 0) {
+                i.setStatus("In Progress");
             }
         });
-        /*List<ProjectUat> projectUats = new LinkedList<ProjectUat>();
-        projectUats = page.getContent();
-        if (!status.isEmpty()) {
-            if (status.equalsIgnoreCase("completed")) {
-                projectUats = projectUats.stream().filter(i -> {
-                    return i.getStatus().equalsIgnoreCase("Completed");
-                }).collect(Collectors.toList());
-            } else if (status.equalsIgnoreCase("notStarted")) {
-                projectUats = projectUats.stream().filter(i -> {
-                    return i.getStatus().equalsIgnoreCase("Not Started");
-                }).collect(Collectors.toList());
-            } else if (status.equalsIgnoreCase("inProgress")) {
-                projectUats = projectUats.stream().filter(i -> {
-                    return i.getStatus().equalsIgnoreCase("In Progress");
-                }).collect(Collectors.toList());
-            }
-        }
-        return new PaginatedList<ProjectUat>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), projectUats);*/
         return new PaginatedList<ProjectUat>(page);
     }
 
+    private Integer getUatCycleStatus(ProjectUat projectUat) {
+        for (ProjectUatScript projectUatScript : projectUat.getProjectUatScripts()) {
+            if (projectUatScript.getUatComplete()) {
+                return 0;
+            }
+        }
+        return -1;
+    }
 }

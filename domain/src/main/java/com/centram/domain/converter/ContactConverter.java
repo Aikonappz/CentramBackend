@@ -6,8 +6,8 @@ import com.centram.domain.Contact;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -36,7 +36,7 @@ public class ContactConverter implements AttributeConverter<List<Contact>, Strin
     @Override
     public List<Contact> convertToEntityAttribute(String s) {
         List<Contact> contacts = null;
-        if (s != null && !StringUtils.isEmpty(s)) {
+        if (!StringUtils.isBlank(s)) {
             try {
                 contacts = objectMapper.readValue(s, new TypeReference<List<Contact>>() {
                 });

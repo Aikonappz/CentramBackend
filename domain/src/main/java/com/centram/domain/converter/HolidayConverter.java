@@ -6,10 +6,10 @@ import com.centram.domain.Holiday;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -43,7 +43,7 @@ public class HolidayConverter implements AttributeConverter<List<Holiday>, Strin
     @Override
     public List<Holiday> convertToEntityAttribute(String s) {
         List<Holiday> holidays = null;
-        if (s != null && !StringUtils.isEmpty(s)) {
+        if (!StringUtils.isBlank(s)) {
             try {
                 holidays = HolidayConverter.objectMapper.readValue(s, new TypeReference<List<Holiday>>() {
                 });

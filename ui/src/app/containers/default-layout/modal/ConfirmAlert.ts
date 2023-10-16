@@ -19,7 +19,7 @@ import { Subject } from "rxjs/internal/Subject";
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <h6>{{msg}}</h6>
+                <h6><div [innerHtml]="msg"></div></h6>
               </div>
             </div>
           </div>

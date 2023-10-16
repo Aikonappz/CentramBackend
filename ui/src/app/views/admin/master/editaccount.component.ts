@@ -30,7 +30,7 @@ export class EditAccountComponent implements OnInit {
   angForm: FormGroup;
   ticketAllocationTypes: any[] = [];
   loggedInUser: LoggedInUser;
-  accountType: string = 'ALL';
+  accountType: any = 'ALL';
   accountTypes: any[] = [];
 
   constructor(
@@ -123,12 +123,12 @@ export class EditAccountComponent implements OnInit {
       this.account.contactName = this.angForm.controls['contactName'].value;
       this.account.contactNumber = this.angForm.controls['contactNumber'].value;
       this.account.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
-      if (!this.accountType) {
+      //console.log(JSON.stringify(this.account));
+      if (this.accountType != "UAT") {
         this.account.contractHours = this.angForm.controls['contractHours'].value;
         this.account.ticketAllocationType = this.angForm.controls['ticketAllocationType'].value == "" ? null : this.angForm.controls['ticketAllocationType'].value;
       }
       this.account.organisation = null;
-      //console.log(this.vendor);
       //console.log(this.angForm.controls['status'].value);
       this.callSaveAccountService();
     } else {
@@ -268,6 +268,7 @@ export class EditAccountComponent implements OnInit {
       }
 
     } else {
+      this.accountType = "ALL";
       this.angForm = this.fb.group({
         type: new FormControl(null, [
           Validators.required,

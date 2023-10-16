@@ -32,8 +32,7 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col">
-                                        <label class="form-col-form-label "
-                                            for="searchTechnology">Technology</label>
+                                        <label class="form-col-form-label " for="searchTechnology">Technology</label>
                                         <ng-select #searchTechnology (change)="populateSearchModule($event)"
                                             [items]="technologyList" placeholder="-- Select Technology --"
                                             formControlName="searchTechnology" id="searchTechnology" searchTechnology
@@ -41,8 +40,7 @@
                                         </ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label "
-                                            for="searchModuleId">Module</label>
+                                        <label class="form-col-form-label " for="searchModuleId">Module</label>
                                         <ng-select #searchModuleId (change)="populateSearchSubmodule($event)"
                                             [items]="moduleList" placeholder="-- Select Module --"
                                             formControlName="searchModuleId" id="searchModuleId" searchModuleId
@@ -50,8 +48,7 @@
                                         </ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label "
-                                            for="searchSubModuleId">Sub
+                                        <label class="form-col-form-label " for="searchSubModuleId">Sub
                                             Module</label>
                                         <ng-select [items]="searchSubModuleList" #searchSubModuleId
                                             (change)="populateSearchProject($event)"
@@ -60,8 +57,7 @@
                                             bindLabel="customerModuleName" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label "
-                                            for="searchProject">Project</label>
+                                        <label class="form-col-form-label " for="searchProject">Project</label>
                                         <ng-select [items]="projectList" #searchProject
                                             (change)="populateProjectUat($event)" placeholder="-- Select Project --"
                                             formControlName="searchProject" id="searchProject" searchProject
@@ -69,8 +65,7 @@
                                         </ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label "
-                                            for="searchUatProjectId">UAT File</label>
+                                        <label class="form-col-form-label " for="searchUatProjectId">UAT File</label>
                                         <ng-select [items]="projectUats" #searchUatProjectId
                                             (change)="populateProjectUATScript($event)"
                                             placeholder="-- Select Project UAT --" formControlName="searchUatProjectId"
@@ -78,8 +73,7 @@
                                             bindLabel="label" bindValue="id"></ng-select>
                                     </div>
                                     <div class="col">
-                                        <label class="form-col-form-label "
-                                            for="searchUatProjectScriptId">UAT
+                                        <label class="form-col-form-label " for="searchUatProjectScriptId">UAT
                                             Script</label>
                                         <ng-select [items]="projectUatScriptList" #searchUatProjectScriptId
                                             (change)="searchUatCommunication($event)"
@@ -115,7 +109,7 @@
                         <ng-container matColumnDef="consltDtl">
                             <th mat-header-cell *matHeaderCellDef>Consultants</th>
                             <td mat-cell *matCellDef="let element">
-                                {{element.consultantResponsible}}
+                                <div [innerHtml]=format(element.consultantResponsible)></div>
                             </td>
                         </ng-container>
                         <ng-container matColumnDef="testCaseDtl">
