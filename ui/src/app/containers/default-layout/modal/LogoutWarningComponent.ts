@@ -22,7 +22,7 @@ import { ClientStorageService } from "../../../service/ClientStorageService";
           <div class="card-body">
             <div class="row">
               <div class="col">
-                <h6>The session is going to expire. Do you want to continue?</h6>
+                <h6>The session will expire soon. Do you wish to continue?</h6>
               </div>
             </div>
           </div>

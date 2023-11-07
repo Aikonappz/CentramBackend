@@ -46,6 +46,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProjectUatService {
@@ -104,10 +105,10 @@ public class ProjectUatService {
             projectUat.setUatCycleComplete(true);
             projectUat.getProjectUatScripts().forEach(i -> {
                 i.setUatComplete(true);
-                i.getProjectUatScriptDetails().forEach(k -> {
+                /*i.getProjectUatScriptDetails().forEach(k -> {
                     k.setPass(true);
                     k.setRetestPass(true);
-                });
+                });*/
             });
             projectUat = projectUatRepository.save(projectUat);
             //miscService.notifyUatScriptCompletion(loggedInUser, projectUatScript);
@@ -126,10 +127,10 @@ public class ProjectUatService {
         ProjectUatScript projectUatScript = projectUatScriptRepository.getById(uatScriptId);
         if (projectUatScript != null) {
             projectUatScript.setUatComplete(true);
-            projectUatScript.getProjectUatScriptDetails().forEach(i -> {
+            /*projectUatScript.getProjectUatScriptDetails().forEach(i -> {
                 i.setPass(true);
                 i.setRetestPass(true);
-            });
+            });*/
             projectUatScript = projectUatScriptRepository.save(projectUatScript);
             miscService.notifyUatScriptCompletion(projectUatScript);
             return projectUatScript;
@@ -145,6 +146,8 @@ public class ProjectUatService {
     @Transactional(readOnly = false)
     public ProjectUatScriptDetail updateProjectUatScriptDetail(LoggedInUser loggedInUser, ProjectUatScriptDetail projectUatScriptDetail) throws JsonProcessingException, InterruptedException {
         ProjectUatScriptDetail oldObj = projectUatScriptDetailRepository.getById(projectUatScriptDetail.getId());
+        Boolean lastTestStatus = oldObj.getPass();
+        Boolean lastReTestStatus = oldObj.getRetestPass();
         if (oldObj != null) {
             oldObj.setActualResult(projectUatScriptDetail.getActualResult());
             oldObj.setPass(projectUatScriptDetail.getPass());
@@ -152,7 +155,8 @@ public class ProjectUatService {
             oldObj.setRetestPass(projectUatScriptDetail.getRetestPass());
             oldObj.setRemarks(projectUatScriptDetail.getRemarks());
             oldObj = projectUatScriptDetailRepository.save(oldObj);
-            miscService.notifyParticipant(oldObj);
+            if (oldObj.getPass() != lastTestStatus || oldObj.getRetestPass() != lastReTestStatus)
+                miscService.notifyParticipant(oldObj);
             oldObj.setSaved(Boolean.TRUE);
             return oldObj;
         } else {
@@ -166,25 +170,32 @@ public class ProjectUatService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<ProjectUatScript> getProjectUatScripts(BigInteger projectUatId, Pageable pageable) {
-        if (projectUatId.compareTo(BigInteger.valueOf(-1)) == 0) {
-            return new PaginatedList<ProjectUatScript>(Page.empty());
-        }
-        Page<ProjectUatScript> page = projectUatRepository.getProjectUatScripts(projectUatId, pageable);
-        page.getContent().forEach(i -> {
-            long noOftestCase = i.getProjectUatScriptDetails().size();
-            long noOftestCasePassed = i.getProjectUatScriptDetails().stream().filter(k -> {
+    public PaginatedList<ProjectUatScript> getProjectUatScripts(LoggedInUser loggedInUser, BigInteger projectUatId, Boolean isCustomer, Boolean isProjectManager, Boolean isAdmin, Boolean isConsultant, Pageable pageable) {
+        String userType = null;
+        if (isCustomer) userType = "PROJECT_OWNER";
+        else if (isProjectManager) userType = "PROJECT_MANAGER";
+        else if (isAdmin) userType = "ADMIN";
+        else if (isConsultant) userType = "PROJECT_CONSULTANT";
+        String emailExp = Stream.of(loggedInUser.getEmail()).map(String::valueOf).collect(Collectors.joining("|"));
+        Page<BigInteger> page = projectUatRepository.getProjectUatScripts(userType, emailExp, projectUatId, pageable);
+        List<ProjectUatScript> projectUatScripts = new LinkedList<ProjectUatScript>();
+        ProjectUatScript projectUatScript;
+        for (BigInteger i : page.getContent()) {
+            projectUatScript = projectUatRepository.findProjectUATScriptById(i);
+            long noOftestCase = projectUatScript.getProjectUatScriptDetails().size();
+            long noOftestCasePassed = projectUatScript.getProjectUatScriptDetails().stream().filter(k -> {
                 return ((k.getRetestPass() != null && k.getRetestPass()) || (k.getPass() != null && k.getPass()));
             }).count();
-            if (i.getUatComplete() && noOftestCase == noOftestCasePassed) {
-                i.setStatus("Completed");
+            if (projectUatScript.getUatComplete() && noOftestCase == noOftestCasePassed) {
+                projectUatScript.setStatus("Completed");
             } else if (noOftestCasePassed == 0) {
-                i.setStatus("Not Started");
+                projectUatScript.setStatus("Not Started");
             } else {
-                i.setStatus("In Progress");
+                projectUatScript.setStatus("In Progress");
             }
-        });
-        return new PaginatedList<ProjectUatScript>(page);
+            projectUatScripts.add(projectUatScript);
+        }
+        return new PaginatedList<ProjectUatScript>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), projectUatScripts);
     }
 
     /**
@@ -396,11 +407,7 @@ public class ProjectUatService {
         }
     }
 
-    public ProjectUat uatScriptAlreadyUploaded(
-            BigInteger moduleId,
-            BigInteger subModuleId,
-            BigInteger projectId
-    ){
+    public ProjectUat uatScriptAlreadyUploaded(BigInteger moduleId, BigInteger subModuleId, BigInteger projectId) {
         Optional<ProjectUat> optionalProjectUat = Optional.ofNullable(projectUatRepository.findByProjectIdAndModuleIdAndSubModuleId(projectId, moduleId, subModuleId));
         if (optionalProjectUat.isPresent()) {
             return optionalProjectUat.get();

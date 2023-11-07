@@ -224,6 +224,24 @@ export const navItems: INavData[] = [
     attributes: { "order": 2, "parentModule": "UAT", "moduleName": "MASTERS", "licenceType": "UAT" },
     children: [
       {
+        name: 'Account',
+        url: '/uat/master/account',
+        icon: 'cil-object-group',
+        attributes: { "parentModule": "UAT", "moduleName": "ACCOUNT", "licenceType": "UAT" }
+      },
+      {
+        name: 'Department',
+        url: '/uat/master/department',
+        icon: 'icon-puzzle',
+        attributes: { "parentModule": "UAT", "moduleName": "DEPARTMENT", "licenceType": "UAT" }
+      },
+      {
+        name: 'Location',
+        url: '/uat/master/location',
+        icon: 'icon-location-pin',
+        attributes: { "parentModule": "UAT", "moduleName": "LOCATION", "licenceType": "UAT" }
+      },
+      {
         name: 'Project Master',
         url: '/uat/master/project',
         icon: 'cil-blur-linear',

@@ -48,7 +48,7 @@ public class Assign extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incident/assign?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        /*from("quartzComponent://incident/assign?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .log(LoggingLevel.INFO, "=================== assign job started ===================")
                 .autoStartup(true)
                 .routeId("assign")
@@ -110,6 +110,6 @@ public class Assign extends RouteBuilder {
                 .end()
                 //.log(LoggingLevel.INFO, "assign completed -> ${header.CURRENT_DATE_TIME}")
                 .log(LoggingLevel.INFO, "=================== assign job completed ===================")
-                .end();
+                .end();*/
     }
 }

@@ -7,7 +7,7 @@ import { UserService } from "../../../../service/UserService";
 @Component({
     selector: 'modal-content',
     template: `<div class="modal-header">
-    <h6 class="modal-title pull-left"><i class="fa fa-upload"></i> Upload Bulk User</h6>
+    <h6 class="modal-title pull-left"><i class="fa fa-upload"></i> Upload Users </h6>
     <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
         <span aria-hidden="true">&times;</span>
     </button>

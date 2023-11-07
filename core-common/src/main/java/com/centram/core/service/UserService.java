@@ -482,16 +482,17 @@ public class UserService implements UserDetailsService {
             userVO = new UserVO(user);
             roleNames = new ArrayList<>();
             for (BigInteger roleId : userVO.getRoles()) {
-                roleNames.add(roleService.getById(roleId).getName());
+                roleNames.add(roleService.getById(roleId).getDisplayName());
             }
             userVO.setRoleNames(roleNames);
             userVOS.add(userVO);
         }
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
-            data = Arrays.asList("First Name", "Last Name", "Email", "Contact No", "Sec. ContactNo", "Employee Id.", "Project Code", "Roles", "Account", "Location", "Department", "Vendor", "Status");
+            data = Arrays.asList("First Name", "Last Name", "Email", "Contact No", "Sec. ContactNo", "Employee Id.", "Project Code", "Roles",
+                    "Account", "Location", "Department", "User Type", "Status");
             csvPrinter.printRecord(data);
             for (UserVO uv : userVOS) {
-                data = Arrays.asList(uv.getFirstName(), uv.getLastName(), uv.getEmail(), uv.getContactNo(), uv.getSecContactNo(), uv.getEmployeeId(), uv.getProjectCode(), String.join(",", uv.getRoleNames()), uv.getAccountName() + "[" + uv.getAccountNo() + "]", uv.getLocation(), uv.getDepartment(), uv.getVendor(), uv.getStatus());
+                data = Arrays.asList(uv.getFirstName(), uv.getLastName(), uv.getEmail(), uv.getContactNo(), uv.getSecContactNo(), uv.getEmployeeId(), uv.getProjectCode(), String.join(",", uv.getRoleNames()), uv.getAccountName() + "[" + uv.getAccountNo() + "]", uv.getLocation(), uv.getDepartment(), uv.getUserType(), uv.getStatus());
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
@@ -630,7 +631,20 @@ public class UserService implements UserDetailsService {
             throw new AppException(GenericErrorCode.FILE_UPLOAD_ISSUE);
         }
         List<Map<String, String>> values = new ArrayList<Map<String, String>>();
-        List<String> commonHeaders = Arrays.asList("FIRST_NAME", "LAST_NAME", "EMAIL", "CONTACT_NO", "SEC_CONTACT_NO", "EMP_ID", "PROJECT_CODE", "ROLES", "DEPARTMENT", "LOCATION", "MANAGER_ID", "VENDOR");
+        List<String> commonHeaders = Arrays.asList(
+                "FIRST_NAME",
+                "LAST_NAME",
+                "EMAIL",
+                "CONTACT_NO",
+                "SEC_CONTACT_NO",
+                "EMP_ID",
+                "PROJECT_CODE",
+                "ROLES",
+                "MANAGER_ID",
+                "ACCOUNT",
+                "LOCATION",
+                "DEPARTMENT",
+                "USER_TYPE");
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8)); CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim())) {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
             for (CSVRecord csvRecord : csvRecords) {

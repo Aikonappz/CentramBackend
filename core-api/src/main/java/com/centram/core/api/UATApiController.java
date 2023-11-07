@@ -128,8 +128,15 @@ public class UATApiController {
 
     @RequestMapping(value = "/uat-script", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES','WRITE',authentication.principal)")
-    public ResponseEntity<PaginatedList<ProjectUatScript>> getProjectUatScripts(@NotNull @Valid @RequestParam(value = "projectUatId", required = false) BigInteger projectUatId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<ProjectUatScript>>(projectUatService.getProjectUatScripts(projectUatId, pageable), HttpStatus.OK);
+    public ResponseEntity<PaginatedList<ProjectUatScript>> getProjectUatScripts(
+            @NotNull @Valid @RequestParam(value = "projectUatId", required = false) BigInteger projectUatId,
+            @NotNull @Valid @RequestParam(value = "isCustomer", required = false, defaultValue = "false") Boolean isCustomer,
+            @NotNull @Valid @RequestParam(value = "isProjectManager", required = false, defaultValue = "false") Boolean isProjectManager,
+            @NotNull @Valid @RequestParam(value = "isAdmin", required = false, defaultValue = "false") Boolean isAdmin,
+            @NotNull @Valid @RequestParam(value = "isConsultant", required = false, defaultValue = "false") Boolean isConsultant,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<ProjectUatScript>>(projectUatService.getProjectUatScripts(loggedInUser, projectUatId, isCustomer, isProjectManager, isAdmin, isConsultant,pageable), HttpStatus.OK);
     }
 
     @JsonView(Views.BasicView.class)

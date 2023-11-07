@@ -48,7 +48,7 @@ public class BatchReport extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://report/incident?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        /*from("quartzComponent://report/incident?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .log(LoggingLevel.INFO, "=================== batch-report job started ===================")
                 .autoStartup(true)
                 .routeId("batch-report")
@@ -239,7 +239,7 @@ public class BatchReport extends RouteBuilder {
                 //.toD("direct:${header.next-route}")
                 .end()
                 //.log(LoggingLevel.INFO, "reopened-incident-report completed -> ${header.CURRENT_DATE_TIME}")
-                .end();
+                .end();*/
     }
 
 }

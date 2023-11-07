@@ -14,6 +14,7 @@ import { Technology } from '../../../model/enumerator/Technology';
 import { StartEndDateValidation } from '../../../validator/StartEndDateValidation';
 import { AppUtility } from '../../../config/AppUtility';
 import * as moment from 'moment';
+import { LicenseType } from '../../../model/enumerator/LicenseType';
 declare var $: any;
 
 @Component({
@@ -60,6 +61,7 @@ export class EditUATProjectComponent implements OnInit {
     });
     this.project = new Project();
     this.project.status = this.defaultStatus;
+    this.project.projectFor = LicenseType.UAT; 
   }
 
   hasPermission(action: string): boolean {

@@ -22,6 +22,12 @@ import { UATDashboardComponent } from './dashboard/uatdashboard.component';
 import { EditUATProjectComponent } from './master/edituatproject.component';
 import { UATProjectComponent } from './master/uatproject.component';
 import { ViewUATDashboardDetails } from './dashboard/modal/ViewUATDashboardDetails';
+import { AccountComponent } from './master/account.component';
+import { EditAccountComponent } from './master/editaccount.component';
+import { DepartmentComponent } from './master/department.component';
+import { EditDepartmentComponent } from './master/editdepartment.component';
+import { LocationComponent } from './master/location.component';
+import { EditLocationComponent } from './master/editlocation.component';
 
 
 
@@ -34,6 +40,12 @@ import { ViewUATDashboardDetails } from './dashboard/modal/ViewUATDashboardDetai
     UATProjectComponent,
     EditUATProjectComponent,
     ViewUATDashboardDetails,
+    AccountComponent,
+    EditAccountComponent,
+    DepartmentComponent,
+    EditDepartmentComponent,
+    LocationComponent,
+    EditLocationComponent,
   ],
   imports: [
     CommonModule,

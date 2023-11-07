@@ -26,7 +26,7 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Project Name</th>
               <td mat-cell *matCellDef="let element">
-                <div>{{element.project.name}} [{{element.project.code}}]</div>
+                <div><a target="_blank" href="uat/activities" >{{element.project.name}} [{{element.project.code}}]</a></div>
               </td>
             </ng-container>
             <ng-container matColumnDef="technology">

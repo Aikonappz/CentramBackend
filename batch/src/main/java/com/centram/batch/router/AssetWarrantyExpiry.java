@@ -46,7 +46,7 @@ public class AssetWarrantyExpiry extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://organisation/assetWarrantyExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        /*from("quartzComponent://organisation/assetWarrantyExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .log(LoggingLevel.INFO, "=================== asset-warranty-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("asset-warranty-expiry")
@@ -101,7 +101,7 @@ public class AssetWarrantyExpiry extends RouteBuilder {
                 })
                 //.log(LoggingLevel.INFO, "asset-warranty-expiry completed -> ${header.CURRENT_DATE_TIME}")
                 .log(LoggingLevel.INFO, "=================== asset-warranty-expiry job completed ===================")
-                .end();
+                .end();*/
     }
 
     private Boolean notifyOrganisation(Integer remainingDays) {

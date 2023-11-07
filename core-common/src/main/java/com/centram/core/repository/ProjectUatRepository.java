@@ -36,8 +36,29 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
     @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
     Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(@Param("uatProjectId") BigInteger uatProjectId);
 
-    @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
-    Page<ProjectUatScript> getProjectUatScripts(
+    @Query(
+            value = "select pus.id from project_uat pu join project_uat_script pus on pu.id = pus.project_uat_id join project p on p.id = pu.project_id" +
+            "  where  " +
+            "     ( " +
+            "       :uatProjectId = -1 " +
+            "     OR " +
+            "       :uatProjectId > 0 and pu.id = (:uatProjectId) " +
+            "     ) and " +
+            "     ( "  +
+            "       :userType is null " +
+            "     OR " +
+            "       :userType = 'ADMIN' and pus.uat_complete = 1 " +
+            "     OR " +
+            "       :userType = 'PROJECT_MANAGER' and CONCAT(',', p.watch_list, ',') REGEXP (:emailExp) and pus.uat_complete = 1 " +
+            "     OR " +
+            "       :userType = 'PROJECT_OWNER' and CONCAT(',', p.stake_holders, ',') REGEXP (:emailExp)  and pus.uat_complete = 1 " +
+            "     OR " +
+            "       :userType = 'PROJECT_CONSULTANT' and CONCAT(',', p.consultants, ',') REGEXP (:emailExp) and pus.uat_complete = 1 " +
+            "     ) ", nativeQuery = true
+    )
+    Page<BigInteger> getProjectUatScripts(
+            @Param("userType") String userType,
+            @Param("emailExp") String emailExp,
             @Param("uatProjectId") BigInteger uatProjectId,
             @Param("pageable") Pageable pageable
     );

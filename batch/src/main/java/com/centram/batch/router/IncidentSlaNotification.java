@@ -42,7 +42,7 @@ public class IncidentSlaNotification extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://incident/slaNotify?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        /*from("quartzComponent://incident/slaNotify?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .log(LoggingLevel.INFO, "=================== sla-notify job started ===================")
                 .autoStartup(true)
                 .routeId("sla-notify")
@@ -240,7 +240,7 @@ public class IncidentSlaNotification extends RouteBuilder {
         from("direct:completeIncidentSlaNotification")
                 .routeId("complete-incident-sla-notification")
                 .log(LoggingLevel.INFO, "=================== sla-notify job completed ===================")
-                .end();
+                .end();*/
 
     }
 }

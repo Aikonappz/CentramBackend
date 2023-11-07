@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-12 mb-4">
       <tabset>
-        <tab *ngIf="isConsultant()" heading="UAT Script and Manual Upload">
+        <tab *ngIf="isConsultant()||isAdminOrProjectManager()" heading="UAT Script and Manual Upload">
           <div class="card">
             <div class="alert alert-success-uat-activities" style="background-color: #1C7CB4; color: white;"
               role="alert" data-dismiss="alert" *ngIf="uploadSuccess">
@@ -172,7 +172,7 @@
             <mat-paginator [pageSizeOptions]="[ 10, 25, 100]" #projectUatPaginator [pageSize]="10"></mat-paginator>
           </div>
         </tab>
-        <tab *ngIf="isConsultant()||isCustomer()" heading="UAT Communications">
+        <tab *ngIf="isConsultant()||isCustomer()||isAdminOrProjectManager()" heading="UAT Communications">
           <div class="card">
             <form [formGroup]="uatCommunicationSearchForm" (ngSubmit)="uatCommunicationSearchFormSubmit()" novalidate>
               <div class="card-body">
@@ -404,7 +404,7 @@
             </div>
           </div>
         </tab>
-        <tab *ngIf="isConsultant()||isCustomer()" heading="Project UAT Activities">
+        <tab *ngIf="isConsultant()||isCustomer()||isAdminOrProjectManager()" (selectTab)="searchUatCycle()" heading="Project UAT Activities">
           <div class="card">
             <form [formGroup]="angUatCycleSearchForm" (ngSubmit)="searchUatCycle()" novalidate>
               <div class="card-body">

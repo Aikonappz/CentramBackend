@@ -138,6 +138,13 @@ export class UATActivityComponent implements OnInit {
           for (let k = 0; k < this.projectList.length; k++) {
             this.projectList[k].label = this.projectList[k].name + " [" + this.projectList[k].code + "]";
           }
+        } else if (this.isAdminOrProjectManager()) {
+          for (let k = 0; k < result.content.length; k++) {
+            this.projectList.push(result.content[k]);
+          }
+          for (let k = 0; k < this.projectList.length; k++) {
+            this.projectList[k].label = this.projectList[k].name + " [" + this.projectList[k].code + "]";
+          }
         }
         this.allProjectList = this.projectList;
       });
@@ -312,13 +319,19 @@ export class UATActivityComponent implements OnInit {
     this.route.params.subscribe(params => {
       //console.log(this.route.snapshot.paramMap.get('referer'));
     });
+    this.uatCommunicationSearchedParam = {
+      isCustomer: this.isCustomer(),
+      isProjectManager: this.hasRoles(['ORG_ADMIN_PROJECT']),
+      isAdmin: this.hasRoles(['ORG_ADMIN']),
+      isConsultant: this.isConsultant(),
+    };
     this.projectUatScriptDetailSource = new ProjectUatScriptDetailSource(this.projectUatService);
     this.projectUatScriptDetailSource.load(0, 100, this.uatCommunicationSearchedParam);
 
     this.projectUatScriptDataSource = new ProjectUatScriptDataSource(this.projectUatService);
     this.projectUatScriptDataSource.load(0, 100, this.uatCommunicationSearchedParam);
 
-    if (this.isConsultant()) {
+    if (this.isConsultant() || this.isAdminOrProjectManager()) {
       this.projectUatDataSource = new ProjectUatDataSource(this.projectUatService);
       this.projectUatDataSource.load(0, 100, {});
       //this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'remarks', 'activity'];
@@ -338,7 +351,7 @@ export class UATActivityComponent implements OnInit {
         tap(() => this.loadData())
       )
       .subscribe();
-    if (this.isCustomer()) {
+    if (this.isCustomer() || this.isAdminOrProjectManager()) {
       this.projectUatScriptDataSource.counter$
         .pipe(
           tap((count) => {
@@ -352,7 +365,7 @@ export class UATActivityComponent implements OnInit {
         )
         .subscribe();
     }
-    if (this.isConsultant()) {
+    if (this.isConsultant() || this.isAdminOrProjectManager()) {
       this.projectUatDataSource.counter$
         .pipe(
           tap((count) => {
@@ -881,7 +894,11 @@ export class UATActivityComponent implements OnInit {
       // } else {
       //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
       // }
-      this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+      if (this.isAdminOrProjectManager()) {
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+      } else {
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+      }
     }
     this.loadData();
     this.searched = true;
@@ -934,6 +951,10 @@ export class UATActivityComponent implements OnInit {
    */
   isCustomer() {
     return this.hasRoles(['ORG_PROJECT_STAKEHOLDER']);
+  }
+
+  isAdminOrProjectManager() {
+    return this.hasRoles(['ORG_ADMIN_PROJECT', 'ORG_ADMIN']);
   }
 
   /**
@@ -1215,7 +1236,13 @@ export class UATActivityComponent implements OnInit {
    */
   searchUatCycle() {
     //console.log(this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value);
-    this.uatCommunicationSearchedParam = { "projectUatId": this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value };
+    this.uatCommunicationSearchedParam = {
+      isCustomer: this.isCustomer(),
+      isProjectManager: this.hasRoles(['ORG_ADMIN_PROJECT']),
+      isAdmin: this.hasRoles(['ORG_ADMIN']),
+      isConsultant: this.isConsultant(),
+      "projectUatId": this.angUatCycleSearchForm.controls['searchUatCycleProjectId'].value
+    };
     this.uatCycleloadData();
     this.searchedUatCycle = false;
     this.searchedUatCycleId = null;
@@ -1231,6 +1258,7 @@ export class UATActivityComponent implements OnInit {
       //console.log(this.isUatCycleComplete());      
     }
   }
+
 
   /**
    * 

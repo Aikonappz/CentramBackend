@@ -44,7 +44,7 @@ public class AllocatedAssetValidityExpiry extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://organisation/allocatedAssetValidityExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+        /*from("quartzComponent://organisation/allocatedAssetValidityExpiry?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
                 .log(LoggingLevel.INFO, "=================== allocated-asset-validity-expiry job started ===================")
                 .autoStartup(true)
                 .routeId("allocated-asset-validity-expiry")
@@ -99,7 +99,7 @@ public class AllocatedAssetValidityExpiry extends RouteBuilder {
                 })
                 //.log(LoggingLevel.INFO, "allocated-asset-validity-expiry completed -> ${header.CURRENT_DATE_TIME}")
                 .log(LoggingLevel.INFO, "=================== allocated-asset-validity-expiry job completed ===================")
-                .end();
+                .end();*/
     }
 
     private Boolean notifyOrganisation(Integer remainingDays) {

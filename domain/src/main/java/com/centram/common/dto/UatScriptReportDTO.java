@@ -51,18 +51,18 @@ public class UatScriptReportDTO implements Serializable {
         this.technology = projectUat.getTechnology().name();
         this.testCaseId = projectUatScript.getTestCaseId();
         this.testCaseDescription = projectUatScript.getTestCaseDescription();
-        if (projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().size() == projectUatScript.getProjectUatScriptDetails().stream().filter(i -> {
-            return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
-        }).count()) {
+        if (projectUatScript.getUatComplete()) {
             this.status = "Completed";
         } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(i -> {
             return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
         })) {
             this.status = "Not Started";
         } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().anyMatch(i -> {
-            return ((i.getPass() != null && i.getPass()) && (i.getRetestPass() != null && i.getRetestPass()));
+            return ((i.getPass() != null && i.getPass()) || (i.getRetestPass() != null && i.getRetestPass()));
         })) {
             this.status = "In Progress";
+        }else {
+            this.status = "Unknown";
         }
         this.currentlyWith = this.projectCustomer;
         this.age = projectUat.getCreatedDate().until(LocalDateTime.now(), ChronoUnit.DAYS);

@@ -69,6 +69,8 @@ public class MiscService {
     @Autowired
     private VendorService vendorService;
     @Autowired
+    private AccountService accountService;
+    @Autowired
     private RoleService roleService;
     @Autowired
     private ProxyService proxyService;
@@ -166,75 +168,80 @@ public class MiscService {
         String password = null;
         int rowNo = 2;
         Map<Integer, String> rowWiseIssues = new LinkedHashMap<Integer, String>();
+        Account account;
+        User u;
+        List<Role> roles;
+        Location location;
+        Department department;
         for (Map<String, String> data : dataList) {
             user = new User();
-            if (data.get("FIRST_NAME") == null || data.get("FIRST_NAME").trim().equals("")) {
+            if (data.get("FIRST_NAME") == null || data.get("FIRST_NAME").trim().isEmpty()) {
                 rowWiseIssues.put(rowNo++, "First Name Required!");
                 continue;
             } else {
                 user.setFirstName(data.get("FIRST_NAME").trim());
             }
-            if (data.get("LAST_NAME") == null || data.get("LAST_NAME").trim().equals("")) {
+            if (data.get("LAST_NAME") == null || data.get("LAST_NAME").trim().isEmpty()) {
                 rowWiseIssues.put(rowNo++, "Last Name Required!");
                 continue;
             } else {
                 user.setLastName(data.get("LAST_NAME").trim());
             }
-            if (data.get("EMAIL") == null || data.get("EMAIL").trim().equals("")) {
+            if (data.get("EMAIL") == null || data.get("EMAIL").trim().isEmpty()) {
                 rowWiseIssues.put(rowNo++, "User Email Required!");
                 continue;
             } else {
-                User u = userService.getUserByEmail(data.get("EMAIL").trim());
+                u = userService.getUserByEmail(data.get("EMAIL").trim());
                 if (u != null) {
                     rowWiseIssues.put(rowNo++, "User With Same Email already Exist!");
                     continue;
                 }
                 user.setEmail(data.get("EMAIL").trim());
             }
-            if (data.get("CONTACT_NO") == null || data.get("CONTACT_NO").trim().equals("")) {
+            if (data.get("CONTACT_NO") == null || data.get("CONTACT_NO").trim().isEmpty()) {
                 rowWiseIssues.put(rowNo++, "Contact No Required!");
                 continue;
             } else {
                 user.setContactNo(data.get("CONTACT_NO").trim());
             }
-            if (data.get("ROLES") == null || data.get("ROLES").trim().equals("")) {
+            if (data.get("SEC_CONTACT_NO") == null || data.get("SEC_CONTACT_NO").trim().isEmpty()) {
+                user.setSecContactNo(null);
+            } else {
+                user.setSecContactNo(data.get("SEC_CONTACT_NO").trim());
+            }
+            if (data.get("EMP_ID") == null || data.get("EMP_ID").trim().isEmpty()) {
+                rowWiseIssues.put(rowNo++, "Employee Id Required!");
+                continue;
+            } else {
+                u = userService.getUserByEmployeeId(data.get("EMP_ID").trim());
+                if (u != null) {
+                    rowWiseIssues.put(rowNo++, "User With Same Employee ID already Exist!");
+                    continue;
+                }
+                user.setEmployeeId(data.get("EMP_ID").trim().isEmpty() ? null : data.get("EMP_ID").trim());
+            }
+            if (data.get("PROJECT_CODE") == null || data.get("PROJECT_CODE").trim().isEmpty()) {
+                user.setProjectCode(null);
+            } else {
+                user.setProjectCode(data.get("PROJECT_CODE").trim());
+            }
+            if (data.get("ROLES") == null || data.get("ROLES").trim().isEmpty()) {
                 rowWiseIssues.put(rowNo++, "Roles Required!");
                 continue;
             } else {
-                List<Role> roles = roleService.getByDisplayNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
-                if (roles != null && roles.size() > 0) {
+                roles = roleService.getByDisplayNames(Arrays.asList(data.get("ROLES").trim().toUpperCase().split(",")));
+                if (roles != null && !roles.isEmpty()) {
                     user.setRoles(roles.stream().map(Role::getId).collect(Collectors.toList()));
                 } else {
                     rowWiseIssues.put(rowNo++, "Provided Roles are not valid!");
                     continue;
                 }
             }
-            if (data.get("SEC_CONTACT_NO") == null || data.get("SEC_CONTACT_NO").trim().equals("")) {
-                user.setSecContactNo(null);
-            } else {
-                user.setSecContactNo(data.get("SEC_CONTACT_NO").trim());
-            }
-            if (data.get("EMP_ID") == null || data.get("EMP_ID").trim().equals("")) {
-                rowWiseIssues.put(rowNo++, "Employee Id Required!");
-                continue;
-            } else {
-                User u = userService.getUserByEmployeeId(data.get("EMP_ID").trim());
-                if (u != null) {
-                    rowWiseIssues.put(rowNo++, "User With Same Employee ID already Exist!");
-                    continue;
-                }
-                user.setEmployeeId(data.get("EMP_ID").trim().equals("") ? null : data.get("EMP_ID").trim());
-            }
-            if (data.get("PROJECT_CODE") == null || data.get("PROJECT_CODE").trim().equals("")) {
-                user.setProjectCode(null);
-            } else {
-                user.setProjectCode(data.get("PROJECT_CODE").trim());
-            }
-            if (data.get("MANAGER_ID") == null || data.get("MANAGER_ID").trim().equals("")) {
+            if (data.get("MANAGER_ID") == null || data.get("MANAGER_ID").trim().isEmpty()) {
                 //rowWiseIssues.put(rowNo++, "Manager Id Required!");
                 //continue;
             } else {
-                User u = userService.getUserByEmployeeId(data.get("MANAGER_ID").trim());
+                u = userService.getUserByEmployeeId(data.get("MANAGER_ID").trim());
                 if (u != null) {
                     user.setManagerId(u.getId());
                 } else {
@@ -243,28 +250,7 @@ public class MiscService {
                 }
             }
             if (!loggedInUserDTO.getAppManager()) {
-                if (data.get("LOCATION") == null || data.get("LOCATION").trim().equals("")) {
-                    rowWiseIssues.put(rowNo++, "Location Required!");
-                    continue;
-                } else {
-                    Location location = locationService.getByLocationName(data.get("LOCATION").trim().toUpperCase(Locale.ROOT));
-                    if (location != null) {
-                        user.setLocation(location);
-                    } else {
-                        rowWiseIssues.put(rowNo++, "Location is not valid!");
-                        continue;
-                    }
-                }
-                if (data.get("DEPARTMENT") != null && !data.get("DEPARTMENT").trim().equals("")) {
-                    Department department = departmentService.getByDepartmentName(data.get("DEPARTMENT").trim().toUpperCase(Locale.ROOT));
-                    if (department != null) {
-                        user.setDepartment(department);
-                    } else {
-                        rowWiseIssues.put(rowNo++, "Department is not valid!");
-                        continue;
-                    }
-                }
-                if (data.get("VENDOR") != null && !data.get("VENDOR").trim().equals("")) {
+                /*if (data.get("VENDOR") != null && !data.get("VENDOR").trim().equals("")) {
                     Vendor vendor = vendorService.getByName(data.get("VENDOR").trim().toUpperCase(Locale.ROOT));
                     if (vendor != null) {
                         user.setVendor(vendor);
@@ -272,9 +258,53 @@ public class MiscService {
                         rowWiseIssues.put(rowNo++, "Vendor is not valid!");
                         continue;
                     }
+                }*/
+                if (data.get("ACCOUNT") != null && !data.get("ACCOUNT").trim().isEmpty()) {
+                    account = accountService.getByName(data.get("ACCOUNT").trim().toUpperCase(Locale.ROOT));
+                    if (account != null) {
+                        user.setAccount(account);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Account is not valid!");
+                        continue;
+                    }
+                } else {
+                    rowWiseIssues.put(rowNo++, "Account Name is Required!");
+                    continue;
                 }
-            }
-            if (loggedInUserDTO.getOrganisationId() != null) {
+
+                if (data.get("LOCATION") == null || data.get("LOCATION").trim().isEmpty()) {
+                    rowWiseIssues.put(rowNo++, "Location Required!");
+                    continue;
+                } else {
+                    location = locationService.getByLocationName(data.get("LOCATION").trim().toUpperCase(Locale.ROOT));
+                    if (location != null) {
+                        if (account.getId().compareTo(location.getAccount().getId()) == 0) {
+                            user.setLocation(location);
+                        } else {
+                            rowWiseIssues.put(rowNo++, "Location doesn't belong with mentioned Account!");
+                            continue;
+                        }
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Location is not valid!");
+                        continue;
+                    }
+                }
+                if (data.get("DEPARTMENT") != null && !data.get("DEPARTMENT").trim().isEmpty()) {
+                    department = departmentService.getByDepartmentName(data.get("DEPARTMENT").trim().toUpperCase(Locale.ROOT));
+                    if (department != null) {
+                        user.setDepartment(department);
+                    } else {
+                        rowWiseIssues.put(rowNo++, "Department is not valid!");
+                        continue;
+                    }
+                }
+                if (data.get("USER_TYPE") == null || data.get("USER_TYPE").trim().isEmpty()) {
+                    rowWiseIssues.put(rowNo++, "User Type Required!");
+                    continue;
+                } else {
+                    user.setUserType(data.get("USER_TYPE").trim());
+                }
+            } if (loggedInUserDTO.getOrganisationId() != null) {
                 user.setOrganisation(organisationService.getOrganisationById(loggedInUserDTO.getOrganisationId()));
             }
             password = Utility.getUniqueString(8);
@@ -287,9 +317,8 @@ public class MiscService {
             userVO.setPassword(password);
             userVOS.add(userVO);
             rowNo++;
-        }
-        log.info("{}", users);
-        if (users.size() > 0) {
+        } log.info("{}", users);
+        if (!users.isEmpty()) {
             Iterable<User> userList = userService.saveUsers(users);
             Map<String, Object> mailValues = new HashMap<>();
             for (User usr : userList) {
@@ -321,6 +350,7 @@ public class MiscService {
                 mailValues.put("has_issue", true);
                 mailValues.put("mailSubject", "failureSubject");
                 mailValues.put("mailBody", "failureBody");
+                log.info(rowWiseIssues.toString());
                 this.saveUploadIssueFile(filePath, rowWiseIssues);
             }
             appEmailService.sendUploadResult(mailValues);
@@ -1641,12 +1671,14 @@ public class MiscService {
         emailValues.put("action", projectUatScriptDetail.getAction());
         emailValues.put("expectedResult", projectUatScriptDetail.getExpectedResult());
         emailValues.put("actualResult", projectUatScriptDetail.getActualResult());
-        emailValues.put("pass", projectUatScriptDetail.getPass() != null && projectUatScriptDetail.getPass() ? "Yes" : "No");
+        emailValues.put("pass", projectUatScriptDetail.getPass() != null ? projectUatScriptDetail.getPass() ? "Yes" : "No" : "");
         emailValues.put("retestDate", projectUatScriptDetail.getRetestDate() != null ? projectUatScriptDetail.getRetestDate().format(DateTimeFormatter.ofPattern(dateFormat)) : "");
-        emailValues.put("retest", projectUatScriptDetail.getRetestPass() != null && projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail");
+        emailValues.put("retest", projectUatScriptDetail.getRetestPass() != null ? projectUatScriptDetail.getRetestPass() ? "Pass" : "Fail" : "");
         emailValues.put("uatLink", appBaseUrl.concat("/uat/activities"));
-        for (UATRemark remark : projectUatScriptDetail.getRemarks()) {
-            uatRemark = remark;
+        if (projectUatScriptDetail.getRemarks() != null) {
+            for (UATRemark remark : projectUatScriptDetail.getRemarks()) {
+                uatRemark = remark;
+            }
         }
         emailValues.put("remark", uatRemark != null ? uatRemark.getComment() : "");
         emailValues.put("remarkProvidedBy", uatRemark != null ? uatRemark.getName() + " [" + uatRemark.getEmail() + "]" : "");
