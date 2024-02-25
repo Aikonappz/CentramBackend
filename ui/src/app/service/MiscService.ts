@@ -20,6 +20,8 @@ import { ProjectDeallocateDTO } from '../model/ProjectDeallocateDTO';
 import { Holiday } from '../model/Holiday';
 import { Account, AccountList } from '../model/Account';
 import { ManageTimeSheetInputVO } from '../model/ManageTimeSheetInputVO';
+import { AllocationDetailVOList } from '../model/AllocationDetailVO';
+import { User } from '../model/User';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -180,5 +182,13 @@ export class MiscService {
 
     getUserProjects(request?: any): Observable<ManageTimeSheetInputVO> {
         return this.http.get('/v1/misc/user-projects', { "params": request });
+    }
+
+    allocationDetailsService(request?: any): Observable<AllocationDetailVOList> {
+        return this.http.get('/v1/misc/project-allocation-detail', { "params": request });
+    }
+
+    allocatedUsersService(request?: any): Observable<any> {
+        return this.http.get('/v1/misc/allocated-user', { "params": request });
     }
 }

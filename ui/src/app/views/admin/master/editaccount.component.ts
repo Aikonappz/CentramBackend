@@ -61,7 +61,7 @@ export class EditAccountComponent implements OnInit {
     }
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     let accountTypes = Object.values(LicenseType)
-      .filter((value) => typeof value === "string" && value != "ALL" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
+      .filter((value) => typeof value === "string" && value != "ALL" && value != "PROJECT" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
       .map((value) => (value as string));
     for (let k in accountTypes) {
       this.accountTypes.push({ id: accountTypes[k], label: accountTypes[k] });
@@ -192,7 +192,6 @@ export class EditAccountComponent implements OnInit {
   driveFormByType(type) {
     if (typeof type !== 'undefined') {
       this.accountType = type.id;
-      //console.log(type);
       if (this.accountType != 'UAT') {
         this.angForm = this.fb.group({
           type: new FormControl(this.accountType, [

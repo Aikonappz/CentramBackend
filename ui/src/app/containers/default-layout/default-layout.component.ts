@@ -48,7 +48,7 @@ export class DefaultLayoutComponent implements OnInit {
   public appBrandName;
   public appDevName;
   public currentYear;
-  private permissions: Permission[];  
+  private permissions: Permission[];
   private menuAttributes: any;
   modalRef: BsModalRef;
   roles: string[] = [];
@@ -166,11 +166,16 @@ export class DefaultLayoutComponent implements OnInit {
           licences = this.menuAttributes.licenceType.split(',');
         }
         for (let j in this.permissions) {
+          // console.log(this.menuAttributes.moduleName , "->", this.permissions[j].moduleName, commonModule,licences.includes(this.loggedInUser.licenseType),this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule),
+          // this.permissions[j].appModule == true, this.permissions[j].moduleParentId == null, this.menuAttributes.moduleName === this.permissions[j].moduleName,
+          // this.permissions[j].actions.includes('READ'),
+          // );
           if (
             (commonModule || (licences.includes(this.loggedInUser.licenseType) && this.showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule))) &&
             this.permissions[j].appModule == true && this.permissions[j].moduleParentId == null &&
             this.menuAttributes.moduleName === this.permissions[j].moduleName && this.permissions[j].actions.includes('READ')) // ROLE WISE PERMISSION CASE
           {
+            //console.log(this.menuAttributes.moduleName);
             this.newNavItems[c] = this.navItems[i];
             if (this.navItems[i].hasOwnProperty("children")) {
               let parentId = this.permissions[j].moduleId;
@@ -262,7 +267,7 @@ export class DefaultLayoutComponent implements OnInit {
    * @returns 
    */
   showModuleSubModuleBasedOnPathOrLastExploredModule(parentModule: string): boolean {
-    let exploredModule = sessionStorage.getItem(AppUtility.LAST_EXPLORED_MODULE_KEY);;
+    let exploredModule = sessionStorage.getItem(AppUtility.LAST_EXPLORED_MODULE_KEY);
     return parentModule != null &&
       ((parentModule.toLocaleUpperCase() === this.getUrlParentPath().toLocaleUpperCase()) || (exploredModule != null && exploredModule.toLocaleUpperCase() === parentModule.toLocaleUpperCase()));
   }

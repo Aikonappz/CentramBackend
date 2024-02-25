@@ -8,6 +8,7 @@ import com.centram.common.dto.RequestDemoDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
+import com.centram.common.vo.AllocationDetailVO;
 import com.centram.common.vo.CommonResponse;
 import com.centram.common.vo.ManageTimeSheetInputVO;
 import com.centram.core.service.*;
@@ -27,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,6 +44,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -135,17 +138,12 @@ public class MiscApiController {
     }
 
     @RequestMapping(value = "/all-module", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Module>> getModules(
-            @NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType,
-            @NotNull @Valid @RequestParam(value = "organisationId", defaultValue = "", required = false) BigInteger organisationId,
-            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Module>> getModules(@NotNull @Valid @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @NotNull @Valid @RequestParam(value = "organisationId", defaultValue = "", required = false) BigInteger organisationId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getModules(licenseType, organisationId, pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/app-modules", produces = {"application/json"}, method = RequestMethod.GET)
-    public ResponseEntity<PaginatedList<Module>> getAppModules(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
-    ) {
+    public ResponseEntity<PaginatedList<Module>> getAppModules(@PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Module>>(moduleService.getAppModules(pageable), HttpStatus.OK);
     }
 
@@ -403,7 +401,7 @@ public class MiscApiController {
 
     @RequestMapping(value = "/chat/dummy", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity generateDummyNotification(@RequestBody ChatMessage body) throws JsonProcessingException {
-        log.info("Consumed message: " + objectMapper.writeValueAsString(body));
+        log.info("Consumed message: {}", objectMapper.writeValueAsString(body));
         simpMessagingTemplate.convertAndSend("/topic/chat/1cf7936e-2984-4581-b4c6-bb781353b20a/12", objectMapper.writeValueAsString(body));
         return new ResponseEntity(body, HttpStatus.OK);
     }
@@ -573,6 +571,24 @@ public class MiscApiController {
     public ResponseEntity<ManageTimeSheetInputVO> getUserProjects() {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<ManageTimeSheetInputVO>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
+    }
+
+    /**
+     * @param pageable
+     * @return
+     */
+    @RequestMapping(value = "/project-allocation-detail", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|DEALLOCATE,WRITE|ALLOCATE',authentication.principal)")
+    public ResponseEntity<PaginatedList<AllocationDetailVO>> allocatedProjects(@RequestParam(value = "deallocated", defaultValue = "-1", required = false) Integer deallocated, @RequestParam(value = "billingType", required = false) Integer billingType, @RequestParam(value = "projects", required = false) List<BigInteger> projects, @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start, @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<AllocationDetailVO>>(projectAllocationDetailService.getAllocationDetail(loggedInUser, deallocated, billingType, projects, start, end, pageable), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/allocated-user", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|DEALLOCATE,WRITE|ALLOCATE',authentication.principal)")
+    public ResponseEntity<PaginatedList<User>> getAllocatedUser(@RequestParam(value = "projectId", required = true) BigInteger projectId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<User>>(projectAllocationDetailService.getAllocatedUser(loggedInUser, projectId, pageable), HttpStatus.OK);
     }
 
     /*@RequestMapping(value = "/user-timesheet", produces = {"application/json"}, method = RequestMethod.GET)

@@ -2,10 +2,7 @@ package com.centram.domain;
 
 import com.centram.common.view.Views;
 import com.centram.domain.converter.StringCommaSeparatedToListConverter;
-import com.centram.domain.enumarator.LicenseType;
-import com.centram.domain.enumarator.ProjectType;
-import com.centram.domain.enumarator.Status;
-import com.centram.domain.enumarator.Technology;
+import com.centram.domain.enumarator.*;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -81,6 +78,12 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private ProjectType projectType;
 
+    @NotNull
+    @Valid
+    @Column(name = "project_billing_type")
+    @Enumerated(EnumType.ORDINAL)
+    @JsonView(Views.BasicView.class)
+    private ProjectBillingType projectBillingType;
 
     @NotNull
     @Column(name = "name", nullable = false, columnDefinition = "varchar(255) not null")

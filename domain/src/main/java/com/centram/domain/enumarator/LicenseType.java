@@ -9,7 +9,8 @@ public enum LicenseType {
     INCIDENT("INCIDENT"),
     ASSET("ASSET"),
     PROJECT("PROJECT"),
-    UAT("UAT");
+    UAT("UAT"),
+    TIMESHEET("TIMESHEET");
 
     private final String value;
 

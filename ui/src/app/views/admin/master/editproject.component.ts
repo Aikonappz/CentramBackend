@@ -15,6 +15,8 @@ import { StartEndDateValidation } from '../../../validator/StartEndDateValidatio
 import { AppUtility } from '../../../config/AppUtility';
 import * as moment from 'moment';
 import { LicenseType } from '../../../model/enumerator/LicenseType';
+import { LoggedInUser } from '../../../model/LoggedInUser';
+import { ProjectBillingType } from '../../../model/enumerator/ProjectBillingType';
 declare var $: any;
 
 @Component({
@@ -31,7 +33,7 @@ export class EditProjectComponent implements OnInit {
   statusFlag: boolean = true;
   entityId: number;
   angForm: FormGroup;
-  type: string;
+
   users: UserVO[] = [];
   managers: UserVO[] = [];
   uatStakeHolders: UserVO[] = [];
@@ -43,6 +45,10 @@ export class EditProjectComponent implements OnInit {
   moduleList: any[] = [];
   subModuleList: any[] = [];
   technologyList: any[] = [];
+  accountType: string = 'ALL';
+  accountTypes: any[] = [];
+  loggedInUser: LoggedInUser;
+  projectBillingTypes: any[] = [];
   constructor(
     private fb: FormBuilder,
     private loggedInUserService: LoggedInUserService,
@@ -61,7 +67,20 @@ export class EditProjectComponent implements OnInit {
     });
     this.project = new Project();
     this.project.status = this.defaultStatus;
-    this.project.projectFor = LicenseType.UAT;
+    this.project.projectFor = LicenseType.ALL;
+    this.loggedInUser = this.loggedInUserService.getLoggedInUser();
+    let accountTypes = Object.values(LicenseType)
+      .filter((value) => typeof value === "string" && value != "ALL" && value != "PROJECT" && value != "INCIDENT" && value != "ASSET" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
+      .map((value) => (value as string));
+    for (let k in accountTypes) {
+      this.accountTypes.push({ id: accountTypes[k], label: accountTypes[k] });
+    }
+    let projectBillingTypes = Object.values(ProjectBillingType)
+      .filter((value) => typeof value === "string" && value != "ALL")
+      .map((value) => (value as string));
+    for (let k in projectBillingTypes) {
+      this.projectBillingTypes.push({ id: projectBillingTypes[k], label: projectBillingTypes[k] });
+    }
   }
 
   hasPermission(action: string): boolean {
@@ -177,53 +196,123 @@ export class EditProjectComponent implements OnInit {
             });
         });
     }
-
-
     this.angForm = this.fb.group({
-      name: new FormControl(null, [
+      type: new FormControl(null, [
         Validators.required,
         Validators.maxLength(255),
       ]),
-      code: new FormControl(null, [
-        Validators.required,
-        Validators.maxLength(10),
-        Validators.pattern(this.alphaNumericRegex),
-      ]),
-      projectType: new FormControl(null, [
-        Validators.required,
-      ]),
-      watchList: new FormControl(null, [
-        Validators.required,
-      ]),
-      technology: new FormControl(null, [
-        Validators.required,
-      ]),
-      moduleId: new FormControl(null, [
-        Validators.required,
-      ]),
-      subModuleId: new FormControl(null, [
-        Validators.required,
-      ]),
-      consultants: new FormControl(null, [
-        Validators.required,
-      ]),
-      stakeHolders: new FormControl(null, [
-        Validators.required,
-      ]),
-      status: new FormControl('ACTIVE', [
-      ]),
-      inHouse: new FormControl('1', [
-      ]),
-      start: new FormControl('', [
-        Validators.required
-      ]),
-      end: new FormControl('', [
-        Validators.required
-      ]),
-    }, {
-      validators: StartEndDateValidation('start', 'end')
     });
   }
+
+  @ViewChild("type") type;
+  driveFormByType(accountType) {
+    if (typeof accountType !== 'undefined') {
+      this.accountType = accountType.id;
+      //console.log(type);
+      if (this.accountType != 'UAT') {
+        this.angForm = this.fb.group({
+          type: new FormControl(this.accountType, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          name: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          code: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(10),
+            Validators.pattern(this.alphaNumericRegex),
+          ]),
+          projectBillingType: new FormControl(null, [
+            Validators.required,
+          ]),
+          projectType: new FormControl(null, [
+            Validators.required,
+          ]),
+          technology: new FormControl(null, [
+            Validators.required,
+          ]),
+          moduleId: new FormControl(null, [
+            Validators.required,
+          ]),
+          subModuleId: new FormControl(null, [
+            Validators.required,
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+          inHouse: new FormControl('1', [
+          ]),
+          start: new FormControl('', [
+            Validators.required
+          ]),
+          end: new FormControl('', [
+            Validators.required
+          ]),
+        }, {
+          validators: StartEndDateValidation('start', 'end')
+        });
+      } else {
+        this.angForm = this.fb.group({
+          type: new FormControl(this.accountType, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          name: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(255),
+          ]),
+          code: new FormControl(null, [
+            Validators.required,
+            Validators.maxLength(10),
+            Validators.pattern(this.alphaNumericRegex),
+          ]),
+          projectType: new FormControl(null, [
+            Validators.required,
+          ]),
+          watchList: new FormControl(null, [
+            Validators.required,
+          ]),
+          technology: new FormControl(null, [
+            Validators.required,
+          ]),
+          moduleId: new FormControl(null, [
+            Validators.required,
+          ]),
+          subModuleId: new FormControl(null, [
+            Validators.required,
+          ]),
+          consultants: new FormControl(null, [
+            Validators.required,
+          ]),
+          stakeHolders: new FormControl(null, [
+            Validators.required,
+          ]),
+          status: new FormControl('ACTIVE', [
+          ]),
+          inHouse: new FormControl('1', [
+          ]),
+          start: new FormControl('', [
+            Validators.required
+          ]),
+          end: new FormControl('', [
+            Validators.required
+          ]),
+        }, {
+          validators: StartEndDateValidation('start', 'end')
+        });
+      }
+    } else {
+      this.accountType = "ALL";
+      this.angForm = this.fb.group({
+        type: new FormControl(null, [
+          Validators.required,
+          Validators.maxLength(255),
+        ]),
+      });
+    }
+  }
+
 
   ngAfterViewInit() { }
 
@@ -239,14 +328,19 @@ export class EditProjectComponent implements OnInit {
           return;
         }
       }
+      this.project.projectFor = LicenseType[this.angForm.controls['type'].value];
       this.project.inHouse = false;
       this.project.name = this.angForm.controls['name'].value;
       this.project.code = this.angForm.controls['code'].value;
       this.project.projectType = Object.keys(ProjectType).indexOf(this.angForm.controls['projectType'].value);
       //ProjectType[this.angForm.controls['projectType'].value];
-      this.project.watchList = this.angForm.controls['watchList'].value;
-      this.project.stakeHolders = this.angForm.controls['stakeHolders'].value;
-      this.project.consultants = this.angForm.controls['consultants'].value;
+      if (this.angForm.controls['type'].value === 'UAT') {
+        this.project.watchList = this.angForm.controls['watchList'].value;
+        this.project.stakeHolders = this.angForm.controls['stakeHolders'].value;
+        this.project.consultants = this.angForm.controls['consultants'].value;
+      } else {
+        this.project.projectBillingType = ProjectBillingType[this.angForm.controls['projectBillingType'].value];
+      }
       this.project.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       this.project.moduleId = this.angForm.controls['moduleId'].value;
       this.project.subModuleId = this.angForm.controls['subModuleId'].value;
@@ -259,6 +353,7 @@ export class EditProjectComponent implements OnInit {
       //console.log(JSON.stringify(this.project));
       this.callSaveProjectService();
     } else {
+      //console.log(this.angForm);
       console.log("Invalid Form!");
     }
   }
@@ -301,7 +396,10 @@ export class EditProjectComponent implements OnInit {
         this.project.end = data.end;
         this.project.moduleId = data.moduleId;
         this.project.subModuleId = data.subModuleId;
-
+        this.project.projectFor = data.projectFor;
+        this.project.projectBillingType = data.projectBillingType;
+        this.driveFormByType({ id: this.project.projectFor, label: this.project.projectFor });
+        this.angForm.get('type').setValue(this.project.projectFor);
         //console.log(JSON.stringify(this.user));
         //this.populateSubmodule(moduleId);
         this.angForm.get('technology').setValue(this.getkey(Technology, this.project.technology));
@@ -314,10 +412,14 @@ export class EditProjectComponent implements OnInit {
         this.angForm.get('code').setValue(this.project.code);
         this.angForm.get('moduleId').setValue(this.project.moduleId);
         this.populateSubmodule({ id: this.project.moduleId });
-        this.statusFlag = String(this.project.status) == 'ACTIVE' ? true : false;
-        this.angForm.get('watchList').setValue(this.project.watchList.map(String));
-        this.angForm.get('stakeHolders').setValue(this.project.stakeHolders.map(String));
-        this.angForm.get('consultants').setValue(this.project.consultants.map(String));
+        this.statusFlag = String(this.project.status) == 'ACTIVE' ? true : false;        
+        if (this.project.projectFor === 'UAT') {
+          this.angForm.get('stakeHolders').setValue(this.project.stakeHolders.map(String));
+          this.angForm.get('consultants').setValue(this.project.consultants.map(String));
+          this.angForm.get('watchList').setValue(this.project.watchList.map(String));
+        } else {
+          this.angForm.get('projectBillingType').setValue(this.project.projectBillingType);
+        }
         this.angForm.get('subModuleId').setValue(this.project.subModuleId);
         //this.angForm.markAllAsTouched();
       });

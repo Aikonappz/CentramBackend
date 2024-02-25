@@ -37,7 +37,7 @@ export class EditLocationComponent implements OnInit {
   accountList: Account[] = [];
   accountType: string = 'ALL';
   loggedInUser: LoggedInUser;
-  accountTypes: any[] = [];
+  accountTypes: any[] = []; 
 
   constructor(
     private loggedInUserService: LoggedInUserService,
@@ -72,7 +72,7 @@ export class EditLocationComponent implements OnInit {
     });
     this.loggedInUser = this.loggedInUserService.getLoggedInUser();
     let accountTypes = Object.values(LicenseType)
-      .filter((value) => typeof value === "string" && value != "ALL" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
+      .filter((value) => typeof value === "string" && value != "ALL" && value != "PROJECT" && ((this.loggedInUser.licenseType != 'ALL' && this.loggedInUser.licenseType == value) || this.loggedInUser.licenseType == 'ALL'))
       .map((value) => (value as string));
     for (let k in accountTypes) {
       this.accountTypes.push({ id: accountTypes[k], label: accountTypes[k] });

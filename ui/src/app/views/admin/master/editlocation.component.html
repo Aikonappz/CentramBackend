@@ -26,7 +26,7 @@
               <div class="col"></div>
               <div class="col"></div>
             </div>
-            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'||accountType=='TIMESHEET'"
               class="row">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="account">Account</label>
@@ -71,7 +71,7 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'||accountType=='TIMESHEET'"
               class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label " for="city">City</label>
@@ -111,7 +111,7 @@
               </div>
               <div class="col"></div>
             </div>
-            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'"
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='TIMESHEET'"
               class="row row-margin-05">
               <div class="col">
                 <label class="form-col-form-label required-control-label" for="opsEndTime">Ops. End Time</label>
@@ -139,7 +139,7 @@
               <div class="col"></div>
               <div class="col"></div>
             </div>
-            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'||accountType=='TIMESHEET'"
               class="row row-margin-05">
               <div class="col">
                 <label class="col-md-3 col-form-label" for="status">Status</label>

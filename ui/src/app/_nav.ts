@@ -278,6 +278,92 @@ export const navItems: INavData[] = [
     ]
   },
   // UAT
+  // PROJECT
+  {
+    name: 'Dashboard',
+    url: '/timesheet/dashboard',
+    icon: 'icon-speedometer',
+    attributes: { "order": 1, "parentModule": "TIMESHEET", "moduleName": "DASHBOARD", "licenceType": "ALL,TIMESHEET" }
+  },
+  {
+    name: 'Masters',
+    url: '/timesheet/master',
+    icon: 'icon-layers',
+    attributes: { "order": 2, "parentModule": "TIMESHEET", "moduleName": "MASTERS", "licenceType": "TIMESHEET" },
+    children: [
+      {
+        name: 'Account',
+        url: '/timesheet/master/account',
+        icon: 'cil-object-group',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "ACCOUNT", "licenceType": "TIMESHEET" }
+      },
+      {
+        name: 'Department',
+        url: '/timesheet/master/department',
+        icon: 'icon-puzzle',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "DEPARTMENT", "licenceType": "TIMESHEET" }
+      },
+      {
+        name: 'Location',
+        url: '/timesheet/master/location',
+        icon: 'icon-location-pin',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "LOCATION", "licenceType": "TIMESHEET" }
+      },
+      {
+        name: 'Project Master',
+        url: '/timesheet/master/project',
+        icon: 'cil-blur-linear',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "PROJECT MASTER", "licenceType": "TIMESHEET" }
+      },
+    ]
+  },
+  {
+    name: 'Operations',
+    url: '/timesheet/operation',
+    icon: 'fa fa-list',
+    attributes: { "order": 3, "parentModule": "TIMESHEET", "moduleName": "TIMESHEET OPERATION", "licenceType": "ALL,TIMESHEET" },
+    children: [
+      {
+        name: 'Allocate Project',
+        url: '/timesheet/operation/allocate',
+        icon: 'fa fa-bars',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,TIMESHEET" }
+      },
+      {
+        name: 'Deallocate Project',
+        url: '/timesheet/operation/deallocate',
+        icon: 'fa fa-tasks',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,TIMESHEET" }
+      },
+      {
+        name: 'Approval',
+        url: '/timesheet/operation/approval',
+        icon: 'fa fa-check',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "TIMESHEET APPROVAL", "licenceType": "ALL,TIMESHEET" }
+      },
+    ]
+  },
+  {
+    name: 'Time Sheet',
+    url: '/timesheet/submit',
+    icon: 'icon-speedometer',
+    attributes: { "order": 4, "parentModule": "TIMESHEET", "moduleName": "TIMESHEET SUBMIT", "licenceType": "ALL,TIMESHEET" }
+  },
+  // {
+  //   name: 'Reports',
+  //   icon: 'fa fa-folder',
+  //   url: '/uat/report',
+  //   attributes: { "order": 4, "parentModule": "UAT", "moduleName": "REPORT", "licenceType": "ALL,UAT" },
+  //   children: [
+  //     {
+  //       name: 'UAT Report',
+  //       url: '/uat/report',
+  //       icon: 'fa fa-folder-open',
+  //       attributes: { "parentModule": "UAT", "moduleName": "UAT REPORT", "licenceType": "ALL,UAT" }
+  //     },
+  //   ]
+  // },
+  // PROJECT
   // INCIDENT
   {
     name: 'Dashboard',
@@ -516,32 +602,32 @@ export const navItems: INavData[] = [
   // NOTIFICATIONS COMMON FOR ALL
 
 
-  {
-    name: 'Project',
-    url: '/project',
-    icon: 'fa fa-list-alt',
-    attributes: { "moduleName": "PROJECT", "licenceType": "ALL,PROJECT" },
-    children: [
-      {
-        name: 'Manage Timesheet',
-        url: '/project/manage-timesheet',
-        icon: 'cil-clock',
-        attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
-      },
-      {
-        name: 'Allocate Project',
-        url: '/project/allocate',
-        icon: 'cil-grain',
-        attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
-      },
-      {
-        name: 'Deallocate Project',
-        url: '/project/deallocate',
-        icon: 'cil-gradient',
-        attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
-      },
-    ]
-  },
+  // {
+  //   name: 'Project',
+  //   url: '/project',
+  //   icon: 'fa fa-list-alt',
+  //   attributes: { "moduleName": "PROJECT", "licenceType": "ALL,PROJECT" },
+  //   children: [
+  //     {
+  //       name: 'Manage Timesheet',
+  //       url: '/project/manage-timesheet',
+  //       icon: 'cil-clock',
+  //       attributes: { "moduleName": "MANAGE TIMESHEET", "licenceType": "ALL,PROJECT" }
+  //     },
+  //     {
+  //       name: 'Allocate Project',
+  //       url: '/project/allocate',
+  //       icon: 'cil-grain',
+  //       attributes: { "moduleName": "ALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+  //     },
+  //     {
+  //       name: 'Deallocate Project',
+  //       url: '/project/deallocate',
+  //       icon: 'cil-gradient',
+  //       attributes: { "moduleName": "DEALLOCATE PROJECT", "licenceType": "ALL,PROJECT" }
+  //     },
+  //   ]
+  // },
 
   {
     name: 'Reports',

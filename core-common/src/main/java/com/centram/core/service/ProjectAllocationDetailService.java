@@ -1,17 +1,22 @@
 package com.centram.core.service;
 
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.ProjectDeallocateDTO;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.AllocationDetailVO;
 import com.centram.core.repository.ProjectAllocationDetailRepository;
-import com.centram.domain.Project;
 import com.centram.domain.ProjectAllocationDetail;
+import com.centram.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,4 +82,13 @@ public class ProjectAllocationDetailService {
         return projectAllocationDetailRepository.getUserProjects(userId);
     }
 
+    @Transactional
+    public PaginatedList<AllocationDetailVO> getAllocationDetail(LoggedInUser loggedInUser, Integer deallocated, Integer billingType, List<BigInteger> projects, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        return new PaginatedList<AllocationDetailVO>(projectAllocationDetailRepository.getAllocationDetail(loggedInUser.getOrganisationId(), deallocated, billingType != null ? billingType : -1, CollectionUtils.isEmpty(projects) ? -1 : 1, projects, start, end, pageable));
+    }
+
+    @Transactional
+    public PaginatedList<User> getAllocatedUser(LoggedInUser loggedInUser, BigInteger projectId, Pageable pageable){
+        return new PaginatedList<User>(projectAllocationDetailRepository.getUserProjects(loggedInUser.getOrganisationId(), projectId, Pageable.unpaged()));
+    }
 }

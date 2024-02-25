@@ -27,7 +27,7 @@ public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
             "   ((:organisationId) is null) " +
             " ) and "+
             " ( " +
-            "   ((:licenseType) = 'ALL' and m.licenseType in (0,1,2,3,4)) " +
+            "   ((:licenseType) = 'ALL' and m.licenseType in (0,1,2,3,4,5)) " +
             "   OR " +
             "   ((:licenseType) = 'INCIDENT' and m.licenseType in (1)) " +
             "   OR " +
@@ -36,6 +36,8 @@ public interface ModuleRepository extends JpaRepository<Module, BigInteger> {
             "   ((:licenseType) = 'PROJECT' and m.licenseType in (3)) " +
             "   OR " +
             "   ((:licenseType) = 'UAT' and m.licenseType in (4)) " +
+            "   OR " +
+            "   ((:licenseType) = 'TIMESHEET' and m.licenseType in (5)) " +
             " ) "
     )
     Page<Module> findAll(

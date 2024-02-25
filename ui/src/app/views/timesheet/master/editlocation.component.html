@@ -1,0 +1,175 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add Location</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit Location</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div [ngClass]="{col : true}">
+                <label class="form-col-form-label required-control-label" for="type">Account Type</label>
+                <ng-select #type (change)="driveFormByType($event)" [items]="accountTypes" [multiple]="false"
+                  placeholder="-- Select Account Type --" formControlName="type" id="type" name="type" bindLabel="label"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.type.touched && f.type.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.type.errors?.required">
+                    Account Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="account">Account</label>
+                <ng-select [items]="accounts" placeholder="-- Select Account --" formControlName="account" id="account"
+                  location name="account" bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.account.touched && f.account.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.account.errors?.required">
+                    Account is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="country">Country</label>
+                <ng-select [items]="uniqueCountries" placeholder="-- Select Country --" formControlName="country"
+                  id="country" (change)="populateTimezone($event)" #country name="country" bindLabel="label"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.country.touched && f.country.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.country.errors?.required">
+                    Country is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="timezone">Timezone</label>
+                <ng-select [items]="filterdCountry" placeholder="-- Select Timezone --" formControlName="timezone"
+                  id="timezone" name="timezone" bindLabel="zone_name" bindValue="zone_name"></ng-select>
+                <div *ngIf="f.timezone.touched && f.timezone.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.timezone.errors?.required">
+                    Timezone is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label" for="state">State</label>
+                <input type="text" formControlName="state" id="state" name="state" class="form-control"
+                  placeholder="State" aria-label="State">
+                <div *ngIf="f.state.touched && f.state.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.state.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label " for="city">City</label>
+                <input type="text" formControlName="city" id="city" name="city" class="form-control" placeholder="City"
+                  aria-label="City">
+                <div *ngIf="f.city.touched && f.city.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.city.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="name">Location Name</label>
+                <input type="text" formControlName="name" id="name" name="name" class="form-control" placeholder="Name"
+                  aria-label="Name">
+                <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.name.errors?.required">
+                    Location Name is required.
+                  </div>
+                  <div *ngIf="f.name.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label " for="officeName">Office Name</label>
+                <input type="text" formControlName="officeName" id="officeName" name="officeName" class="form-control"
+                  placeholder="Office Name" aria-label="Office Name">
+                <div *ngIf="f.officeName.touched && f.officeName.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.officeName.errors?.required">
+                    Office Name is required.
+                  </div>
+                  <div *ngIf="f.name.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'"
+              class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="opsEndTime">Ops. End Time</label>
+                <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsEndTime"
+                  id="opsEndTime" name="opsEndTime" bindLabel="label" bindValue="id"></ng-select>
+                <div *ngIf="f.opsEndTime.touched && f.opsEndTime.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.opsEndTime.errors?.required">
+                    Ops. End Time is required.
+                  </div>
+                  <div *ngIf="f.opsEndTime.errors?.mustGreaterThanStartTime">
+                    End time should be greater than Start time!
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="opsStartTime">Ops. Start Time</label>
+                <ng-select [items]="timeList" placeholder="-- Ops. Start Time --" formControlName="opsStartTime"
+                  id="opsStartTime" name="opsStartTime" bindLabel="label" bindValue="id"></ng-select>
+                <div *ngIf="f.opsStartTime.touched && f.opsStartTime.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.opsStartTime.errors?.required">
+                    Ops. Start Time is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='INCIDENT'||accountType=='ASSET'||accountType=='PROJECT'||accountType=='UAT'"
+              class="row row-margin-05">
+              <div class="col">
+                <label class="col-md-3 col-form-label" for="status">Status</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
+                      name="status" id="ACTIVE" [checked]="(loc.status == 'ACTIVE')" value="true">
+                    <label class="form-check-label" for="ACTIVE">Active</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                      [checked]="(loc.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                      value="false">
+                    <label class="form-check-label" for="INACTIVE">Inactive</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="submit"
+              class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

@@ -4,4 +4,5 @@ export enum LicenseType {
     ASSET,
     PROJECT,
     UAT,
+    TIMESHEET
 }

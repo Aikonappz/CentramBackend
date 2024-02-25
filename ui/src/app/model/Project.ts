@@ -4,6 +4,7 @@ import { Organisation } from "./Organisation";
 export class Project extends Base {
     id: number;
     projectType: any;
+    projectBillingType: any;
     name: string;
     label: string;
     code: String;
@@ -17,15 +18,16 @@ export class Project extends Base {
     end: any;
     technology: any;
     moduleId: number;
-    moduleName:string;
+    moduleName: string;
     subModuleId: number;
-    subModuleName:string;
+    subModuleName: string;
     projectFor: any;
 
     constructor() {
         super();
         this.id = null;
         this.projectType = null;
+        this.projectBillingType = null;
         this.name = null;
         this.label = null;
         this.code = null;
