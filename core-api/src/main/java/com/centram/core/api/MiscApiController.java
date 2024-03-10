@@ -14,6 +14,7 @@ import com.centram.common.vo.ManageTimeSheetInputVO;
 import com.centram.core.service.*;
 import com.centram.domain.Module;
 import com.centram.domain.*;
+import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.ProjectType;
 import com.centram.domain.enumarator.Status;
 import com.centram.domain.enumarator.VendorType;
@@ -124,6 +125,9 @@ public class MiscApiController {
 
     @Autowired
     private ProjectUatService projectUatService;
+
+    @Autowired
+    private TimeSheetService timeSheetService;
 
 
     @RequestMapping(value = "/request-demo", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
@@ -520,9 +524,9 @@ public class MiscApiController {
     @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT,MANAGE TIMESHEET,UAT ACTIVITIES','READ,ALLOCATE,DEALLOCATE,WRITE,WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
-    public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+    public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectFor", defaultValue = "ALL", required = false) String projectFor, @RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(loggedInUser.getOrganisationId(), inHouse, ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(loggedInUser.getOrganisationId(), inHouse, LicenseType.valueOf(projectFor), ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
     }
 
     /**
@@ -567,7 +571,7 @@ public class MiscApiController {
      * @return
      */
     @RequestMapping(value = "/user-projects", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,MANAGE TIMESHEET','READ,READ|WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,TIMESHEET SUBMIT','READ,READ|WRITE',authentication.principal)")
     public ResponseEntity<ManageTimeSheetInputVO> getUserProjects() {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<ManageTimeSheetInputVO>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
@@ -599,4 +603,11 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<TimeSheet>>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
     }*/
 
+    @RequestMapping(value = "/submit-timesheet", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,TIMESHEET SUBMIT','READ,READ|WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<TimeSheet> saveTimeSheet(@Valid @RequestBody TimeSheet body) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<TimeSheet>(timeSheetService.save(loggedInUser, body), HttpStatus.OK);
+    }
 }

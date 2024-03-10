@@ -78,7 +78,7 @@ export class AllocateProjectComponent implements OnInit {
         }
         //console.log(this.userList);
       });
-    this.miscService.projectsService()
+    this.miscService.projectsService({ projectFor: 'TIMESHEET' })
       .subscribe((result: ProjectList) => {
         this.projectListTmp = result.content;
       });
@@ -212,8 +212,8 @@ export class AllocateProjectComponent implements OnInit {
       this.loadData({
         "billingType": ProjectBillingType[this.searchAngForm.controls['projectBillingType_s'].value],
         "projects": this.searchAngForm.controls['projects_s'].value,
-        "start": AppUtility.prepareDateToString(moment(this.searchAngForm.controls['start_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
-        "end": AppUtility.prepareDateToString(moment(this.searchAngForm.controls['end_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
+        "start": AppUtility.prepareDateToDateTimeString(moment(this.searchAngForm.controls['start_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
+        "end": AppUtility.prepareDateToDateTimeString(moment(this.searchAngForm.controls['end_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
       });
     } else {
       console.log("Invalid Form!");
@@ -230,8 +230,8 @@ export class AllocateProjectComponent implements OnInit {
       let start = null;
       let end = null;
       let mnt = null;
-      start = AppUtility.prepareDateToString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      end = AppUtility.prepareDateToString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      start = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      end = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       for (let i = 0; i < selectedProject.length; i++) {
         for (let k = 0; k < selectedUser.length; k++) {
           projectAllocationDetail = new ProjectAllocationDetail();

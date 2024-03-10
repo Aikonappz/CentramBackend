@@ -30,6 +30,7 @@ import { LocationComponent } from './master/location.component';
 import { EditLocationComponent } from './master/editlocation.component';
 import { AllocateProjectComponent } from './operation/allocate-project.component';
 import { DeallocateProjectComponent } from './operation/deallocate-project.component';
+import { ManageTimeSheetComponent } from './manage-timesheet/manage-timesheet.component';
 
 
 
@@ -50,6 +51,7 @@ import { DeallocateProjectComponent } from './operation/deallocate-project.compo
     EditDepartmentComponent,
     LocationComponent,
     EditLocationComponent,
+    ManageTimeSheetComponent,
   ],
   imports: [
     CommonModule,

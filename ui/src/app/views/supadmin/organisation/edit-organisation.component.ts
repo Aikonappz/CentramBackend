@@ -372,8 +372,8 @@ export class EditOrganisationComponent implements OnInit {
       this.org.tan = this.angForm.controls['tan'].value;
       this.org.gstin = this.angForm.controls['gstin'].value;
       this.org.licenseType = LicenseType[String(this.angForm.controls['licenseType'].value)];
-      this.org.licenseStart = AppUtility.prepareDateToString(moment(this.angForm.controls['licenseStart'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      this.org.licenseEnd = AppUtility.prepareDateToString(moment(this.angForm.controls['licenseEnd'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.org.licenseStart = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['licenseStart'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.org.licenseEnd = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['licenseEnd'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       this.org.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       let cnt1 = new ContactPerson();
       cnt1.name = this.angForm.controls['keyPersonName1'].value;

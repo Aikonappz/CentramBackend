@@ -76,7 +76,7 @@ export class DeallocateProjectComponent implements OnInit {
         }
         //console.log(this.userList);
       });
-    this.miscService.projectsService()
+    this.miscService.projectsService({ projectFor: 'TIMESHEET' })
       .subscribe((result: ProjectList) => {
         this.projectListTmp = result.content;
       });
@@ -178,8 +178,8 @@ export class DeallocateProjectComponent implements OnInit {
         "deallocated": 1,
         "billingType": ProjectBillingType[this.searchAngForm.controls['projectBillingType_s'].value],
         "projects": this.searchAngForm.controls['projects_s'].value,
-        "start": AppUtility.prepareDateToString(moment(this.searchAngForm.controls['start_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
-        "end": AppUtility.prepareDateToString(moment(this.searchAngForm.controls['end_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
+        "start": AppUtility.prepareDateToDateTimeString(moment(this.searchAngForm.controls['start_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
+        "end": AppUtility.prepareDateToDateTimeString(moment(this.searchAngForm.controls['end_s'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate()),
       });
     } else {
       console.log("Invalid Form!");
@@ -277,7 +277,7 @@ export class DeallocateProjectComponent implements OnInit {
             for (let k = 0; k < data.content.length; k++) {
               //console.log(data.content[k].id);
               users.push(data.content[k].id);
-            }            
+            }
             //console.log(users);
           }
           this.angForm.get('users').setValue(users.map(Number));

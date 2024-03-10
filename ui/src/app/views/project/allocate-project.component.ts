@@ -171,8 +171,8 @@ export class AllocateProjectComponent implements OnInit {
       let start = null;
       let end = null;
       let mnt = null;
-      start = AppUtility.prepareDateToString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      end = AppUtility.prepareDateToString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      start = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      end = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       for (let i = 0; i < selectedProject.length; i++) {
         for (let k = 0; k < selectedUser.length; k++) {
           projectAllocationDetail = new ProjectAllocationDetail();

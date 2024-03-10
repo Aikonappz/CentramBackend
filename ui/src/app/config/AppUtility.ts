@@ -73,8 +73,12 @@ export class AppUtility {
 
     constructor() { }
 
-    static prepareDateToString(date: Date): string {
+    static prepareDateToDateTimeString(date: Date): string {
         return String(moment(date).format('YYYY-MM-DD') + 'T00:00:00');
+    }
+
+    static prepareDateToDateString(date: Date): string {
+        return String(moment(date).format('YYYY-MM-DD'));
     }
 
     static getDayHourList(diff: number) {
@@ -111,6 +115,18 @@ export class AppUtility {
             return 1;
         }
         return 0;
+    }
+
+    static getDateRange(firstDate, lastDate, format){
+        if (moment(firstDate, format).isSame(moment(lastDate, format), 'day'))
+          return [lastDate];
+        let date = firstDate;
+        const dates = [date];
+        do {
+          date = moment(date).add(1, 'day');
+          dates.push(date.format(format));
+        } while (moment(date).isBefore(lastDate));
+        return dates;
     }
 }
 

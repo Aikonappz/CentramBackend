@@ -36,6 +36,7 @@ export class EditProjectComponent implements OnInit {
 
   users: UserVO[] = [];
   managers: UserVO[] = [];
+  approvers: UserVO[] = [];
   uatStakeHolders: UserVO[] = [];
   uatConsultants: UserVO[] = [];
   projectTypes: any[] = [];
@@ -150,6 +151,9 @@ export class EditProjectComponent implements OnInit {
             if (this.users[i].roleNames.includes('ORG_PROJECT_STAKEHOLDER')) {
               this.uatStakeHolders.push(this.users[i]);
             }
+            if (this.users[i].roleNames.includes('ORG_PROJECT_TIMESHEET_APPROVER')) {
+              this.approvers.push(this.users[i]);
+            }
           }
         });
     } else {
@@ -190,6 +194,9 @@ export class EditProjectComponent implements OnInit {
                 }
                 if (this.users[i].roleNames.includes('ORG_PROJECT_STAKEHOLDER')) {
                   this.uatStakeHolders.push(this.users[i]);
+                }
+                if (this.users[i].roleNames.includes('ORG_PROJECT_TIMESHEET_APPROVER')) {
+                  this.approvers.push(this.users[i]);
                 }
               }
               this.callVendorService(this.entityId);
@@ -248,6 +255,9 @@ export class EditProjectComponent implements OnInit {
           ]),
           end: new FormControl('', [
             Validators.required
+          ]),
+          approverList: new FormControl(null, [
+            Validators.required,
           ]),
         }, {
           validators: StartEndDateValidation('start', 'end')
@@ -340,14 +350,15 @@ export class EditProjectComponent implements OnInit {
         this.project.consultants = this.angForm.controls['consultants'].value;
       } else {
         this.project.projectBillingType = ProjectBillingType[this.angForm.controls['projectBillingType'].value];
+        this.project.approvers = [this.angForm.controls['approverList'].value];
       }
       this.project.status = this.statusFlag == false ? Status['INACTIVE'] : Status['ACTIVE'];
       this.project.moduleId = this.angForm.controls['moduleId'].value;
       this.project.subModuleId = this.angForm.controls['subModuleId'].value;
       this.project.technology = Object.keys(Technology).indexOf(this.angForm.controls['technology'].value);
       //Technology[this.angForm.controls['technology'].value];
-      this.project.start = AppUtility.prepareDateToString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      this.project.end = AppUtility.prepareDateToString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.project.start = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.project.end = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       //console.log(this.vendor);
       //console.log(this.angForm.controls['status'].value);
       //console.log(JSON.stringify(this.project));
@@ -388,6 +399,7 @@ export class EditProjectComponent implements OnInit {
         this.project.version = data.version;
         this.project.watchList = data.watchList;
         this.project.stakeHolders = data.stakeHolders;
+        this.project.approvers = data.approvers;
         this.project.consultants = data.consultants;
         this.project.projectType = data.projectType;
         this.project.inHouse = data.inHouse;
@@ -412,13 +424,14 @@ export class EditProjectComponent implements OnInit {
         this.angForm.get('code').setValue(this.project.code);
         this.angForm.get('moduleId').setValue(this.project.moduleId);
         this.populateSubmodule({ id: this.project.moduleId });
-        this.statusFlag = String(this.project.status) == 'ACTIVE' ? true : false;        
+        this.statusFlag = String(this.project.status) == 'ACTIVE' ? true : false;
         if (this.project.projectFor === 'UAT') {
           this.angForm.get('stakeHolders').setValue(this.project.stakeHolders.map(String));
           this.angForm.get('consultants').setValue(this.project.consultants.map(String));
           this.angForm.get('watchList').setValue(this.project.watchList.map(String));
         } else {
           this.angForm.get('projectBillingType').setValue(this.project.projectBillingType);
+          this.angForm.get('approverList').setValue(this.project.approvers[0]);
         }
         this.angForm.get('subModuleId').setValue(this.project.subModuleId);
         //this.angForm.markAllAsTouched();

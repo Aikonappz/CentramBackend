@@ -93,7 +93,7 @@ public class ProjectService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Project> getProjects(BigInteger organisationId, String inHouse, ProjectType projectType, Pageable pageable) {
+    public PaginatedList<Project> getProjects(BigInteger organisationId, String inHouse, LicenseType projectFor ,ProjectType projectType, Pageable pageable) {
         Boolean hasFilter = !inHouse.equalsIgnoreCase("");
         Boolean inHouseFilter = false;
         if (hasFilter && inHouse.equals("1")) {
@@ -103,7 +103,7 @@ public class ProjectService {
         } else {
             hasFilter = false;
         }
-        Page<Project> projectPage = projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectType.ordinal(), organisationId, pageable);
+        Page<Project> projectPage = projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectFor.ordinal(), projectType.ordinal(), organisationId, pageable);
         projectPage.getContent().forEach(i -> {
             if (i.getModuleId() != null && i.getSubModuleId() != null) {
                 Module module = moduleService.getModuleById(i.getModuleId());

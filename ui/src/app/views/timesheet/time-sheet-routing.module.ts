@@ -15,6 +15,7 @@ import { EditAccountComponent } from './master/editaccount.component';
 import { AccountComponent } from './master/account.component';
 import { AllocateProjectComponent } from './operation/allocate-project.component';
 import { DeallocateProjectComponent } from './operation/deallocate-project.component';
+import { ManageTimeSheetComponent } from './manage-timesheet/manage-timesheet.component';
 
 
 const routes: Routes = [
@@ -50,6 +51,14 @@ const routes: Routes = [
         pathMatch: 'full',
         data: {
           title: 'Deallocate Project'
+        }
+      },
+      {
+        path: 'manage-timesheet',
+        component: ManageTimeSheetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Manage TimeSheet'
         }
       },
     ]

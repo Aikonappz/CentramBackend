@@ -32,6 +32,12 @@ public interface ProjectRepository extends JpaRepository<Project, BigInteger> {
             "  )" +
             "  and " +
             "  ( " +
+            "    ((:projectFor) = 0 and 1 = 1) " +
+            "    OR " +
+            "    ((:projectFor) <> 0 and p.projectFor = (:projectFor)) " +
+            "  )" +
+            "  and " +
+            "  ( " +
             "    ((:hasFilter) = true and p.inHouse = (:inHouseFilter)) " +
             "    OR " +
             "    ((:hasFilter) = false) " +
@@ -40,6 +46,7 @@ public interface ProjectRepository extends JpaRepository<Project, BigInteger> {
     Page getByOrganisation(
             @Param("hasFilter") Boolean hasFilter,
             @Param("inHouseFilter") Boolean inHouseFilter,
+            @Param("projectFor") Integer projectFor,
             @Param("projectType") Integer projectType,
             @Param("organisationId") BigInteger organisationId,
             @Param("pageable") Pageable pageable

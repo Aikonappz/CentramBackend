@@ -345,7 +345,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Time Sheet',
-    url: '/timesheet/submit',
+    url: '/timesheet/manage-timesheet',
     icon: 'icon-speedometer',
     attributes: { "order": 4, "parentModule": "TIMESHEET", "moduleName": "TIMESHEET SUBMIT", "licenceType": "ALL,TIMESHEET" }
   },

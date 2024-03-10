@@ -449,7 +449,7 @@ export class RequestAssetComponent implements OnInit {
           } else {
             this.incident.priority = priority;
           }
-          this.incident.assetValidity = AppUtility.prepareDateToString(moment(this.angForm.controls['assetValidity'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+          this.incident.assetValidity = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['assetValidity'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
         }
         // prepare incidentCommunication object
         this.incidentCommunication = new IncidentCommunication();

@@ -4,20 +4,12 @@ import { User } from "./User";
 
 
 export class TimeSheet extends Base {
+    submissionSelection: string;
+    id: number;
     startDate: string;
     endDate: string;
-    project: Project;
     user: User;
-    referenceId: string;
-    task: string;
-    location: string;
-    billingType: string;
-    timeSheetEntries: any;
-    approver: User;
-    approverTookAction: Boolean;
-    approverComment: String;
-    approved: Boolean;
-    submissionSelection: string = "DAILY";
+    timeSheetEntries: TimeSheetEntry[] = [];
     constructor() {
         super();
     }
@@ -26,4 +18,18 @@ export class TimeSheet extends Base {
 export interface TimeSheetList {
     content: TimeSheet[];
     totalElements: number;
+}
+
+export class TimeSheetEntry extends Base {
+    id: number;
+    project: Project;
+    task: any;
+    billingType: any;
+    location: any;
+    userComment: string;
+    timeEntries: Object = {};
+    approverComment: string;
+    approved: boolean;
+    rejected: boolean;
+    approver: User;
 }

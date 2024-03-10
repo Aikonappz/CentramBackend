@@ -1,32 +1,32 @@
 import { Component, OnInit, ViewChild, } from '@angular/core';
-import { UserService } from '../../service/UserService';
+import { UserService } from '../../../service/UserService';
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { Location } from '@angular/common';
-import { MiscService } from '../../service/MiscService';
-import { LoggedInUserService } from '../../service/LoggedInUserService';
-import { MediaService } from '../../service/MediaService';
+import { MiscService } from '../../../service/MiscService';
+import { LoggedInUserService } from '../../../service/LoggedInUserService';
+import { MediaService } from '../../../service/MediaService';
 import * as moment from 'moment';
-import { AppUtility } from '../../config/AppUtility';
-import { ClientStorageService } from '../../service/ClientStorageService';
-import { AssetOrder } from '../../model/AssetOrder';
-import { AssetOrderService } from '../../service/AssetOrderService';
+import { AppUtility } from '../../../config/AppUtility';
+import { ClientStorageService } from '../../../service/ClientStorageService';
+import { AssetOrder } from '../../../model/AssetOrder';
+import { AssetOrderService } from '../../../service/AssetOrderService';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { CommonAlert } from '../../containers/default-layout/modal/CommonAlert';
-import { UserVO, UserVOListResponse } from '../../model/UserVO';
-import { Project, ProjectList } from '../../model/Project';
-import { ProjectAllocationDetail } from '../../model/ProjectAllocationDetail';
-import { StartEndDateValidation } from '../../validator/StartEndDateValidation';
-import { LoggedInUser } from '../../model/LoggedInUser';
+import { CommonAlert } from '../../../containers/default-layout/modal/CommonAlert';
+import { UserVO, UserVOListResponse } from '../../../model/UserVO';
+import { Project, ProjectList } from '../../../model/Project';
+import { ProjectAllocationDetail } from '../../../model/ProjectAllocationDetail';
+import { StartEndDateValidation } from '../../../validator/StartEndDateValidation';
+import { LoggedInUser } from '../../../model/LoggedInUser';
 import { range } from 'rxjs';
-import { Holiday } from '../../model/Holiday';
+import { Holiday } from '../../../model/Holiday';
 
 import * as shajs from 'sha.js';
-import { WeeklyIndividualTimeSheet } from './modal/WeeklyIndividualTimeSheet';
-import { TimeSheet } from '../../model/TimeSheet';
-import { TimeSheetDateValidation } from '../../validator/TimeSheetDateValidation';
-import { ManageTimeSheetInputVO } from '../../model/ManageTimeSheetInputVO';
+import { WeeklyIndividualTimeSheet } from '../modal/WeeklyIndividualTimeSheet';
+import { TimeSheet, TimeSheetEntry } from '../../../model/TimeSheet';
+import { TimeSheetDateValidation } from '../../../validator/TimeSheetDateValidation';
+import { ManageTimeSheetInputVO } from '../../../model/ManageTimeSheetInputVO';
 
 declare var $: any;
 
@@ -36,7 +36,7 @@ declare var $: any;
   styleUrls: ['./manage-timesheet.component.scss']
 })
 export class ManageTimeSheetComponent implements OnInit {
-  moduleName: string = "MANAGE TIMESHEET";
+  moduleName: string = "TIMESHEET SUBMIT";
   angForm: FormGroup;
   timeSheetForm: FormGroup;
   modalRef: BsModalRef;
@@ -44,7 +44,6 @@ export class ManageTimeSheetComponent implements OnInit {
   alphaNumericRegex = /^[0-9]+$/i;
   private loggedInUser: LoggedInUser;
   private timeSheet: TimeSheet;
-  private timeSheets: TimeSheet[] = [];
   dailySelected: boolean = true;
   manageTimeSheetInputVO: ManageTimeSheetInputVO;
   timeEntrySingleRow: any;
@@ -230,8 +229,9 @@ export class ManageTimeSheetComponent implements OnInit {
     });
     this.angForm = this.fb.group({
       submissionSelection: new FormControl('DAILY', []),
-      singleDate: new FormControl(null, []),
-      rangeDate: new FormControl(null, []),
+      //singleDate: new FormControl(null, []),
+      //rangeDate: new FormControl(null, []),
+      //weeklyDate: new FormControl(null, []),
     });
     this.timeEntrySingleRow = [{ project: null, task: null, locationType: 'OFF', otherTask: null, billingType: null, comment: null, entries: [], }];
     this.timeSheetForm = this.timeSheetFormBuilder.group({
@@ -280,6 +280,9 @@ export class ManageTimeSheetComponent implements OnInit {
       }
       this.timeSheet.startDate = this.clientStorageService.get("startDate");
       this.timeSheet.endDate = this.clientStorageService.get("endDate");
+
+      console.log(this.timeSheet.startDate, this.timeSheet.endDate);
+
       let mnt = moment(this.timeSheet.startDate, AppUtility.APP_VIEW_DATEPICKER_INP_DATE_FORMAT);
       //this.timeSheet.startDate = moment.utc(mnt).format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
       this.timeSheet.startDate = mnt.format(AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT);
@@ -367,12 +370,18 @@ export class ManageTimeSheetComponent implements OnInit {
   }
 
   onSubmit() {
-    this.timeSheets = [];
     let formValues = this.timeSheetForm.value.timeEntries;
     let entries;
     let entryHasError = true;
+    this.timeSheet = new TimeSheet();
+    this.timeSheet.startDate = AppUtility.prepareDateToDateString(moment(this.clientStorageService.get("startDate"), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+    this.timeSheet.endDate = AppUtility.prepareDateToDateString(moment(this.clientStorageService.get("endDate"), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+    this.timeSheet.timeSheetEntries = [];
+    let timeSheetEntry: TimeSheetEntry;
+    let timeEntries = [];
+    let timeEntry = new Object();
+    //console.log(formValues);
     for (let i = 0; i < formValues.length; i++) {
-      this.timeSheet = new TimeSheet();
       if (this.isEmpty(formValues[i].project)) {
         this.errorText = "Please select project!";
         this.showTimeEntryError(i);
@@ -391,8 +400,13 @@ export class ManageTimeSheetComponent implements OnInit {
         return;
       }
       entries = formValues[i].entries;
+      timeEntries = [];
+      timeEntry = new Object();
+      //console.log(JSON.stringify(entries));
       for (let e = 0; e < entries.length; e++) {
         entries[e].time = !this.isEmpty(entries[e].time) && entries[e].time.includes("__:__") ? null : entries[e].time;
+        timeEntry[AppUtility.prepareDateToDateString(moment(entries[e].date, AppUtility.APP_VIEW_DATEPICKER_INP_DATE_FORMAT).toDate())] = entries[e].time;
+        //timeEntries.push(timeEntry);
         if (!this.isEmpty(entries[e].time)) {
           entryHasError = false;
         }
@@ -409,22 +423,56 @@ export class ManageTimeSheetComponent implements OnInit {
         this.showTimeEntryError(i);
         return;
       }
-      this.timeSheet = new TimeSheet();
-      this.timeSheet.startDate = AppUtility.prepareDateToDateTimeString(moment(formValues.startDate, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      this.timeSheet.endDate = AppUtility.prepareDateToDateTimeString(moment(formValues.endDate, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      // this.timeSheet.approved = false;
-      // this.timeSheet.approver = null;
-      // this.timeSheet.approverComment = null;
-      // this.timeSheet.approverTookAction = false;
-      // this.timeSheet.billingType = formValues[i].billingType;
-      // this.timeSheet.task = formValues[i].task;
-      // this.timeSheet.project = project as Project;
-      // this.timeSheet.referenceId = null;
-      // this.timeSheet.timeSheetEntries = formValues[i].entries;
-      this.timeSheets.push(this.timeSheet);
+      timeSheetEntry = new TimeSheetEntry();
+      timeSheetEntry.approved = false;
+      timeSheetEntry.rejected = false;
+      timeSheetEntry.rejected = false;
+      timeSheetEntry.approver = null;
+      timeSheetEntry.location = 1;
+      timeSheetEntry.approverComment = null;
+      timeSheetEntry.userComment = formValues[i].comment;
+      timeSheetEntry.project = project as Project;
+      for (let key = 0; key < this.tasks.length; key++) {
+        if (this.tasks[key] == formValues[i].task)
+          timeSheetEntry.task = key;
+      }
+      for (let key = 0; key < this.billingTypes.length; key++) {
+        if (this.billingTypes[key] == formValues[i].billingType)
+          timeSheetEntry.billingType = key;
+      }
+      //timeSheetEntry.location = formValues[i].billingType;      
+      timeSheetEntry.timeEntries = timeEntry;
+      //console.log((timeSheetEntry));
+      this.timeSheet.timeSheetEntries.push(timeSheetEntry);
       this.hideTimeEntryError(i);
     }
-    console.log(JSON.stringify(this.timeSheets));
+    //console.log(JSON.stringify(this.timeSheet));
+    this.callSubmitTimesheet(this.timeSheet);
+  }
+
+  callSubmitTimesheet(timeSheet: TimeSheet) {
+    this.miscService
+      .submitTimesheet(timeSheet)
+      .subscribe((data: any) => {
+        //console.log(data);
+        //this.angForm.reset();
+
+        const config: ModalOptions = {
+          backdrop: 'static',
+          keyboard: false,
+          animated: true,
+          ignoreBackdropClick: true,
+          class: 'modal-bg',
+        };
+        const initialState = {
+          msg: "TimeSheet saved successfully.",
+          url: null,
+        };
+        this.modalRef = this.modalService.show(CommonAlert, Object.assign({}, config, { initialState }));
+        this.angForm.reset();
+        this.timeSheetForm.reset();
+        this.dateSelected = false;
+      });
   }
 
   showTimeEntryError(id) {
@@ -515,6 +563,7 @@ export class ManageTimeSheetComponent implements OnInit {
 
           options.beforeShow = function (input, inst) {
             var dateFormat = myDateRangeTarget.datepicker("option", "dateFormat");
+            console.log(AppUtility.storage.get(atob("startDate")), AppUtility.storage.get(atob("endDate")));
             storePreviousDateRange($(input).val(), dateFormat);
             beforeShow.apply(myDateRangeTarget, arguments);
           };
@@ -535,6 +584,43 @@ export class ManageTimeSheetComponent implements OnInit {
             }
             return out;
           };
+
+          function loopCallender() {
+            $("#rangeDate .ui-datepicker-calendar tbody tr").each(function () {
+              if ($(this).has("td")) {
+                $(this).children("td").each(function () {
+                  let d, m: string;
+                  let mn: number;
+                  let date;
+                  let from = moment(atob(localStorage.getItem(btoa("startDate"))), 'DD/MM/YYYY');
+                  let to = moment(atob(localStorage.getItem(btoa("endDate"))), 'DD/MM/YYYY');
+                  if ($(this).has("a")) {
+                    if ($(this).find('a').hasClass("ui-state-default") && typeof $(this).find('a').data("date") !== 'undefined' && $(this).find('a').data("date") > 0) {
+                      let aHref = $(this).children('a')[0];
+                      //console.log($(aHref).data("date"));
+                      d = $(aHref).data("date").toString();
+                      mn = $(this).data("month") + 1;
+                      m = mn.toString();
+                      date = moment(d.padStart(2, "0") + "/" + m.padStart(2, "0") + "/" + $(this).data("year"), 'DD/MM/YYYY');
+                      //console.log(from, to);
+                      if (date.isBetween(from, to)) {
+                        $(aHref).addClass('ui-state-active');
+                        //console.log(date);
+                      } else if (date.isSame(from)) {
+                        $(aHref).addClass('ui-state-active');
+                        //console.log(date);
+                      } else if (date.isSame(to)) {
+                        $(aHref).addClass('ui-state-active');
+                        //console.log(date);
+                      } else {
+                        $(aHref).removeClass('ui-state-active');
+                      }
+                    }
+                  }
+                });
+              }
+            });
+          }
 
           options.onSelect = function (dateText, inst) {
             var textStart;
@@ -558,8 +644,11 @@ export class ManageTimeSheetComponent implements OnInit {
                   }
                   AppUtility.storage.setItem(btoa("startDate"), btoa(dateRange.start));
                   AppUtility.storage.setItem(btoa("endDate"), btoa(dateRange.end));
+                  //alert("asasa");
+                  //$(this).datepicker("refresh");
+                  loopCallender();
                 }
-                myDateRangeTarget.val(dateRange.start + options.rangeSeparator + dateRange.end);
+                //myDateRangeTarget.val(dateRange.start + options.rangeSeparator + dateRange.end);
                 inst.rangeStart = null;
               }
             }
@@ -573,9 +662,9 @@ export class ManageTimeSheetComponent implements OnInit {
           };
 
           return this.each(function () {
-            if (myDateRangeTarget.is("input")) {
-              myDateRangeTarget.datepicker(options);
-            }
+            //if (myDateRangeTarget.is("input")) {
+            myDateRangeTarget.datepicker(options);
+            //}
             myDateRangeTarget.wrap("<div class=\"dateRangeWrapper\"></div>");
           });
         };
@@ -594,7 +683,7 @@ export class ManageTimeSheetComponent implements OnInit {
         });
       });
       this.dailySelected = false;
-    } else {
+    } else if (submissionSelection == "DAILY") {
       this.dailySelected = true;
       $(function () {
         $("#singleDate").datepicker({
@@ -606,9 +695,45 @@ export class ManageTimeSheetComponent implements OnInit {
           onSelect: function (dateText, inst) {
             AppUtility.storage.setItem(btoa("startDate"), btoa(dateText));
             AppUtility.storage.setItem(btoa("endDate"), btoa(dateText));
+            //console.log(dateText);
           },
         });
       });
+    } else {
+      $(function () {
+        var startDate;
+        var endDate;
+        var selectCurrentWeek = function () {
+          window.setTimeout(function () {
+            $('#weeklyDate').find('.ui-datepicker-current-day a').addClass('ui-state-active')
+          }, 1);
+        }
+        $('#weeklyDate').datepicker({
+          showOtherMonths: true,
+          selectOtherMonths: true,
+          onSelect: function (dateText, inst) {
+            var date = $(this).datepicker('getDate');
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+            endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+            var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
+            //console.log(moment(startDate).format('DD/MM/YYYY'), moment(endDate).format('DD/MM/YYYY'));
+            AppUtility.storage.setItem(btoa("startDate"), btoa(moment(startDate).format('DD/MM/YYYY')));
+            AppUtility.storage.setItem(btoa("endDate"), btoa(moment(endDate).format('DD/MM/YYYY')));
+            selectCurrentWeek();
+          },
+          beforeShowDay: function (date) {
+            var cssClass = '';
+            if (date >= startDate && date <= endDate)
+              cssClass = 'ui-datepicker-current-day';
+            return [true, cssClass];
+          },
+          onChangeMonthYear: function (year, month, inst) {
+            selectCurrentWeek();
+          }
+        });
+      });
+      $('#weeklyDate .ui-datepicker-calendar').on('mousemove', 'tr', function () { $(this).find('td a').addClass('ui-state-hover'); });
+      $('#weeklyDate .ui-datepicker-calendar').on('mouseleave', 'tr', function () { $(this).find('td a').removeClass('ui-state-hover'); });
     }
   }
 

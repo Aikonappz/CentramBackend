@@ -1,29 +1,24 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
-import com.centram.common.utility.PaginatedList;
+import com.centram.core.repository.ProjectRepository;
 import com.centram.core.repository.TimeSheetRepository;
-import com.centram.domain.Location;
+import com.centram.domain.Project;
 import com.centram.domain.TimeSheet;
+import com.centram.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.StringTemplateResolver;
+import org.springframework.util.CollectionUtils;
 
-import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.List;
 
 @Service
 public class TimeSheetService {
@@ -39,44 +34,40 @@ public class TimeSheetService {
     @Autowired
     private ProxyService proxyService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
     /**
      * @param timeSheet
      * @return
      */
     @Transactional(readOnly = false)
-    public TimeSheet save(TimeSheet timeSheet) {
+    public TimeSheet save(LoggedInUser loggedInUser, TimeSheet timeSheet) {
+        timeSheet.setUser(new User(userService.getUserById(loggedInUser.getUserId())));
         try {
+            if (timeSheet.getId() == null) {
+                if (!CollectionUtils.isEmpty(timeSheet.getTimeSheetEntries())) {
+                    timeSheet.getTimeSheetEntries().stream().forEach(i -> {
+                        Project project = projectRepository.getById(i.getProject().getId());
+                        List<String> approverEmails = project.getApprovers();
+                        if (!CollectionUtils.isEmpty(approverEmails)) {
+                            i.setApprover(userService.getUserByEmail(approverEmails.get(0)));
+                        }
+                        i.setTimeSheet(timeSheet);
+                    });
+                }
+            }
             return proxyService.saveTimeSheet(timeSheet);
         } catch (DataIntegrityViolationException e) {
             throw new AppException(GenericErrorCode.DATA_EXIST, new HashMap<String, Object>() {{
                 put("entity", "Time Sheet");
             }});
+        } catch (Exception e){
+            e.printStackTrace();
+            throw e;
         }
-    }
-
-    /**
-     * @param referenceId
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public TimeSheet getTimeSheet(UUID referenceId) {
-        TimeSheet timeSheet = timeSheetRepository.findByReferenceId(referenceId);
-        if (timeSheet == null) {
-            throw new AppException(GenericErrorCode.RELEVANT_DATA_NOT_FOUND, new HashMap<String, Object>() {{
-                put("entity", "TimeSheet");
-            }});
-        }
-        return timeSheet;
-    }
-
-    /**
-     * @param organisationId
-     * @param pageable
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public PaginatedList<TimeSheet> getTimeSheets(BigInteger organisationId, Pageable pageable) {
-        return new PaginatedList<TimeSheet>(timeSheetRepository.getTimeSheetByUser(organisationId, pageable));
-
     }
 }

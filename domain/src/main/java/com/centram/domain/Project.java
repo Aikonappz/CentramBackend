@@ -129,6 +129,13 @@ public class Project extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     private List<String> consultants;
 
+    @Valid
+    @Lob
+    @Column(name = "approvers", nullable = true, columnDefinition = "TEXT")
+    @Convert(converter = StringCommaSeparatedToListConverter.class)
+    @JsonView(Views.BasicView.class)
+    private List<String> approvers;
+
     @NotNull
     @Valid
     @Column(name = "in_house")

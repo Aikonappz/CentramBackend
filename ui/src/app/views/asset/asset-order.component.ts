@@ -483,7 +483,7 @@ export class AssetOrderComponent implements OnInit {
         if (!this.assetOrder.existingAgreement) {
           return;
         } else {
-          this.assetOrder.agreementEndAt = AppUtility.prepareDateToString(moment(this.angForm.controls['agreementEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+          this.assetOrder.agreementEndAt = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['agreementEndAt'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
         }
       } else {
         this.assetOrder.agreementEndAt = null;

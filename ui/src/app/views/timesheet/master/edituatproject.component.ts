@@ -252,8 +252,8 @@ export class EditUATProjectComponent implements OnInit {
       this.project.subModuleId = this.angForm.controls['subModuleId'].value;
       this.project.technology = Object.keys(Technology).indexOf(this.angForm.controls['technology'].value);
       //Technology[this.angForm.controls['technology'].value];
-      this.project.start = AppUtility.prepareDateToString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-      this.project.end = AppUtility.prepareDateToString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.project.start = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['start'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+      this.project.end = AppUtility.prepareDateToDateTimeString(moment(this.angForm.controls['end'].value, AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
       //console.log(this.vendor);
       //console.log(this.angForm.controls['status'].value);
       //console.log(JSON.stringify(this.project));

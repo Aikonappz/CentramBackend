@@ -11,6 +11,7 @@ export class Project extends Base {
     watchList: string[];
     stakeHolders: string[];
     consultants: string[];
+    approvers: string[];
     inHouse: boolean;
     status: any;
     organisation: Organisation;

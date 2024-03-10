@@ -17,11 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface TimeSheetRepository extends JpaRepository<TimeSheet, String> {
-
-    TimeSheet findByReferenceId(@Param("referenceId") UUID referenceId);
-
+public interface TimeSheetRepository extends JpaRepository<TimeSheet, BigInteger> {
     @Query("select ts from TimeSheet ts join ts.user usr where usr.id = (:userId) ")
     Page<TimeSheet> getTimeSheetByUser(@Param("userId") BigInteger userId, @Param("pageable") Pageable pageable);
-
 }
