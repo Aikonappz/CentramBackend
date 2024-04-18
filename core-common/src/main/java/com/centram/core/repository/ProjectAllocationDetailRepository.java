@@ -29,6 +29,9 @@ public interface ProjectAllocationDetailRepository extends JpaRepository<Project
     @Query("select pad from ProjectAllocationDetail pad where pad.user.id = (:userId)")
     List<ProjectAllocationDetail> getUserProjects(@Param("userId") BigInteger userId);
 
+    @Query("select pad from ProjectAllocationDetail pad where pad.user.id = (:userId) and (:start) between pad.startDate and pad.endDate or (:end) between pad.startDate and pad.endDate")
+    List<ProjectAllocationDetail> getUserProjects(@Param("userId") BigInteger userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     @Query(value = "select p.technology as technology, p.project_type as projectType,  p.project_billing_type as projectBillingType, " +
             " m.name as moduleName, sm.name as subModuleName, p.name as name, p.code as code, pad.start_date as allocationStart, pad.end_date as allocationEnd, "  +
             " p.uat_start as start, p.uat_end as end, pad.max_allocation as maxAllocation, pad.created_date as allocatedAt," +
@@ -41,7 +44,15 @@ public interface ProjectAllocationDetailRepository extends JpaRepository<Project
             " and case when :projectFilter < 0 then 1 = 1 else p.id in (:projects) end " +
             " and case when :start is null then 1 = 1 else pad.start_date >= :start end " +
             " and case when :end is null then 1 = 1 else pad.end_date <= :end end "
-            , nativeQuery = true
+            , nativeQuery = true,
+            countQuery = "select count(pad.id) from project_allocation_detail pad left join project p on (p.id = pad.project_id) left join module m on (m.id = p.module_id)  " +
+                    " left join module sm on (sm.id = p.sub_module_id) left join user u on (u.id = pad.user_id) " +
+                    " where p.organisation_id = :organisationId " +
+                    " and case when :deallocated < 0 then pad.deallocated = 0 else pad.deallocated = 1 end" +
+                    " and case when :billingType < 0 then 1 = 1 else p.project_billing_type = :billingType end " +
+                    " and case when :projectFilter < 0 then 1 = 1 else p.id in (:projects) end " +
+                    " and case when :start is null then 1 = 1 else pad.start_date >= :start end " +
+                    " and case when :end is null then 1 = 1 else pad.end_date <= :end end "
     )
     Page<AllocationDetailVO> getAllocationDetail(
             @Param("organisationId") BigInteger organisationId,

@@ -1,0 +1,171 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Manage Time Sheet</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <label class="col-md-3 col-form-label" for="submissionSelection">Date Selection</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="radio" #daily (change)="onChange( 'DAILY')"
+                      name="submissionSelection" id="DAILY" [checked]="(timeSheet.submissionSelection == 'DAILY')"
+                      value="DAILY">
+                    <label class="form-check-label" for="DAILY">Single Day</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="submissionSelection" id="RANGE"
+                      [checked]="(timeSheet.submissionSelection == 'RANGE')" #range (change)="onChange( 'RANGE')"
+                      value="RANGE">
+                    <label class="form-check-label" for="RANGE">Range</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="submissionSelection" id="WEEKLY"
+                      [checked]="(timeSheet.submissionSelection == 'WEEKLY')" #weekly (change)="onChange( 'WEEKLY')"
+                      value="WEEKLY">
+                    <label class="form-check-label" for="WEEKLY">Weekly</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col" *ngIf="timeSheet.submissionSelection=='DAILY'">
+                <label class="form-col-form-label" for="singleDate"> Date </label>
+                <div id="singleDate"></div>
+                <!-- <input type="text" formControlName="singleDate" id="singleDate" name="singleDate" class="form-control"
+                  placeholder="Date" aria-label="Date">
+                <div *ngIf="f.singleDate.touched && f.singleDate.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.singleDate.errors?.required">
+                    Date is required.
+                  </div>
+                </div> -->
+              </div>
+              <div class="col" *ngIf="timeSheet.submissionSelection=='RANGE'">
+                <label class="form-col-form-label" for="rangeDate"> Date </label>
+                <div id="rangeDate"></div>
+                <!-- <input type="text" id="rangeDate" name="rangeDate" class="form-control" placeholder="Date"
+                  aria-label="Date"> -->
+              </div>
+              <div class="col" *ngIf="timeSheet.submissionSelection=='WEEKLY'">
+                <label class="form-col-form-label" for="weeklyDate"> Weekly </label>
+                <div id="weeklyDate"></div>
+                <!-- <input type="text" readonly formControlName="weeklyDate" id="weeklyDate" name="weeklyDate" class="form-control"
+                  placeholder="Date" aria-label="Date">
+                <div *ngIf="f.weeklyDate.touched && f.weeklyDate.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.weeklyDate.errors?.required">
+                    Week selection is required.
+                  </div>
+                </div> -->
+              </div>
+              <div class="col"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="button" (click)="formSubmit()"
+              class="btn btn-primary">Add Time Entry</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+
+        <form *ngIf="dateSelected" [formGroup]="timeSheetForm" (ngSubmit)="onSubmit()">
+          <div class="card-body time-entries">
+            <!-- {{this.timeSheetForm.value | json}} -->
+            <table class="table " formArrayName="timeEntries">
+              <tr>
+                <th colspan="6" class="text-right">
+                  <button type="button" (click)="addTimeEntry()" class="btn btn-primary">Add More <i
+                      class="fa fa-plus-circle " aria-hidden="true"></i>
+                  </button>
+                </th>
+              </tr>
+              <tr *ngFor="let timeEntry of timeEntries;let timeEntryIndex=index;">
+                <td width="10%" [formGroupName]="timeEntryIndex">
+                  <label class="form-col-form-label required-control-label" for="project">Project</label>
+                  <ng-select [items]="projects" placeholder="-- Select Project --" formControlName="project"
+                    id="project" name="project" bindLabel="label" bindValue="id">
+                  </ng-select>
+                  <div id="error-row-{{timeEntryIndex}}" class="d-none alert alert-danger-custom entry-error">
+                    {{errorText}}
+                  </div>
+                </td>
+                <td width="10%" [formGroupName]="timeEntryIndex">
+                  <div>
+                    <!-- {{timeEntry|json}} -->
+                    <label class="form-col-form-label required-control-label" for="task">Task</label>
+                    <ng-select (change)="otherTaskAction($event,timeEntryIndex)" #task [items]="tasks"
+                      placeholder="-- Select Task --" formControlName="task" id="task" name="task" bindLabel="id"
+                      bindValue="id">
+                    </ng-select>
+                  </div>
+                  <div></div>
+                  <div id="otherTask_{{timeEntryIndex}}" class="d-none">
+                    <label class="form-col-form-label required-control-label" for="task">Task</label>
+                    <input formControlName="otherTask" class="form-control" />
+                  </div>
+                </td>
+                <td width="10%" [formGroupName]="timeEntryIndex">
+                  <label class="form-col-form-label " for="billable">Billable Allocation</label>
+                  <br />
+                  <center>
+                    <input class="form-check-input" type="checkbox" formControlName="billable" id="billable"
+                      name="billable" value="1">
+                  </center>
+                  <!-- <ng-select [items]="billingTypes" placeholder="-- Select Billing Type --"
+                    formControlName="billingType" id="billingType" name="billingType" bindLabel="id" bindValue="id">
+                  </ng-select> -->
+                </td>
+                <td width="10%" [formGroupName]="timeEntryIndex">
+                  <label class="form-col-form-label " for="task">Comment</label>
+                  <input formControlName="comment" placeholder="Comment" class="form-control" />
+                </td>
+                <td [formGroupName]="timeEntryIndex">
+                  <table class="time-entries">
+                    <tr formArrayName="entries">
+                      <td *ngFor="let entry of getEntries(timeEntryIndex);let entryIndex=index; "
+                        [formGroupName]="entryIndex">
+                        <div>
+                          <input formControlName="date"
+                            style="font-stretch: auto !important; background-color: white !important;" [readOnly]="true"
+                            class="form-control td-date" />
+                          <input formControlName="day"
+                            style="font-stretch: auto !important; background-color: white !important;" [readOnly]="true"
+                            class="form-control td-date" />
+                          <!-- <input formControlName="isHoliday"
+                            style="font-stretch: auto !important; background-color: white !important;" [readOnly]="true"
+                            class="form-control td-date" /> -->
+                        </div>
+                      </td>
+                    </tr>
+                    <tr formArrayName="entries">
+                      <td *ngFor="let entry of getEntries(timeEntryIndex);let entryIndex=index;"
+                        [formGroupName]="entryIndex">
+                        <div>
+                          <input formControlName="time" [textMask]="mask" class="form-control td-time"
+                            id="td-time-{{entryIndex}}" />
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td class="text-right">
+                  <button *ngIf="timeEntryIndex>0" (click)="removeTimeEntry(timeEntryIndex)"
+                    class="btn btn-danger">Remove <i class="fa fa-minus-circle " aria-hidden="true"></i></button>
+                  <div *ngIf="timeEntryIndex==0"></div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-success">Request For Approval <i class="fa fa-arrow-right"
+                aria-hidden="true"></i>
+            </button>
+          </div>
+        </form>
+        <br />
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 
 @RequestMapping(value = "/api/v1/dashboard")
@@ -90,5 +90,14 @@ public class DashboardApiController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
     ) {
         return new ResponseEntity<UATDashboardVO>(dashboardService.uatDashboard(currentDate), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/time-sheet", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
+    public ResponseEntity<List<TimeSheetDashBoardVO>> timeSheetDashboard(
+            @RequestParam(value = "currentDate", defaultValue = "", required = true)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    ) {
+        return new ResponseEntity<List<TimeSheetDashBoardVO>>(dashboardService.timeSheetDashboard(currentDate), HttpStatus.OK);
     }
 }

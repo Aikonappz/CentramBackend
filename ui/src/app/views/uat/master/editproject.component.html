@@ -1,0 +1,290 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header" *ngIf="newEntity">
+          <strong>Add Project</strong>
+        </div>
+        <div class="card-header" *ngIf="!newEntity">
+          <strong>Edit Project</strong>
+        </div>
+        <form [formGroup]="angForm" (ngSubmit)="formSubmit()" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div [ngClass]="{col : true}">
+                <label class="form-col-form-label required-control-label" for="type">Account Type</label>
+                <ng-select #type (change)="driveFormByType($event)" [items]="accountTypes" [multiple]="false"
+                  placeholder="-- Select Account Type --" formControlName="type" id="type" name="type" bindLabel="label"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.type.touched && f.type.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.type.errors?.required">
+                    Account Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div *ngIf="accountType=='UAT'||accountType=='TIMESHEET'" class="row row-margin-05">
+              <div class=" col">
+                <label class="form-col-form-label required-control-label" for="name">Project Name</label>
+                <input type="text" formControlName="name" id="name" name="name" class="form-control"
+                  placeholder="Project Name" aria-label="Project Name">
+                <div *ngIf="f.name.touched && f.name.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.name.errors?.required">
+                    Project Name is required.
+                  </div>
+                  <div *ngIf="f.name.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="name">Project Code</label>
+                <input type="text" formControlName="code" oninput="this.value = this.value.toUpperCase()" id="code"
+                  name="code" class="form-control" placeholder="Project Code" aria-label="Project Code">
+                <div *ngIf="f.code.touched && f.code.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.code.errors?.required">
+                    Project Code is required.
+                  </div>
+                  <div *ngIf="f.code.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col" *ngIf="accountType=='TIMESHEET'">
+                <label class="form-col-form-label required-control-label" for="projectType">Project Billing Type</label>
+                <ng-select [items]="projectBillingTypes" placeholder="-- Select Project Billing Type --"
+                  formControlName="projectBillingType" id="projectBillingType" name="projectBillingType"
+                  bindLabel="label" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.projectBillingType.touched && f.projectBillingType.invalid"
+                  class="alert alert-danger-custom">
+                  <div *ngIf="f.projectBillingType.errors?.required">
+                    Project Billing Type is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="projectType">Project Type</label>
+                <ng-select [items]="projectTypes" placeholder="-- Select Project Type --" formControlName="projectType"
+                  id="projectType" name="projectType" bindLabel="value" bindValue="key">
+                </ng-select>
+                <div *ngIf="f.projectType.touched && f.projectType.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.projectType.errors?.required">
+                    Project Type is required.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="accountType=='TIMESHEET'" class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="technology">Technology</label>
+                <ng-select #technology (change)="populateModule($event)" [items]="technologyList"
+                  placeholder="-- Select Technology --" formControlName="technology" id="technology" technology
+                  name="technology" bindLabel="value" bindValue="key">
+                </ng-select>
+                <div *ngIf="f.technology.touched && f.technology.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.technology.errors?.required">
+                    Technology is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="moduleId">Module</label>
+                <ng-select #moduleId (change)="populateSubmodule($event)" [items]="moduleList"
+                  placeholder="-- Select Module --" formControlName="moduleId" id="moduleId" moduleId name="moduleId"
+                  bindLabel="customerModuleName" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.moduleId.errors?.required">
+                    Module is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="subModuleId">Sub
+                  Module</label>
+                <ng-select [items]="subModuleList" placeholder="-- Select Sub Module --" formControlName="subModuleId"
+                  id="subModuleId" subModuleId name="subModuleId" bindLabel="customerModuleName"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.subModuleId.errors?.required">
+                    Sub Module is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="approverList">Approvers</label>
+                <ng-select [multiple]="false" [items]="approvers" placeholder="-- Select Watch List People --"
+                  formControlName="approverList" id="approverList" name="approverList" bindLabel="email"
+                  bindValue="email">
+                </ng-select>
+                <div *ngIf="f.approverList.touched && f.approverList.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.approverList.errors?.required">
+                    Approver is required.
+                  </div>
+                  <div *ngIf="f.approverList.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col d-none">
+                <label class="col-md-3 col-form-label" for="status">Type</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
+                      name="inHouse" value="1">
+                    <label class="form-check-label" for="inHouse">In House</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="accountType=='UAT'" class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="technology">Technology</label>
+                <ng-select #technology (change)="populateModule($event)" [items]="technologyList"
+                  placeholder="-- Select Technology --" formControlName="technology" id="technology" technology
+                  name="technology" bindLabel="value" bindValue="key">
+                </ng-select>
+                <div *ngIf="f.technology.touched && f.technology.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.technology.errors?.required">
+                    Technology is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="moduleId">Module</label>
+                <ng-select #moduleId (change)="populateSubmodule($event)" [items]="moduleList"
+                  placeholder="-- Select Module --" formControlName="moduleId" id="moduleId" moduleId name="moduleId"
+                  bindLabel="customerModuleName" bindValue="id">
+                </ng-select>
+                <div *ngIf="f.moduleId.touched && f.moduleId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.moduleId.errors?.required">
+                    Module is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="subModuleId">Sub
+                  Module</label>
+                <ng-select [items]="subModuleList" placeholder="-- Select Sub Module --" formControlName="subModuleId"
+                  id="subModuleId" subModuleId name="subModuleId" bindLabel="customerModuleName"
+                  bindValue="id"></ng-select>
+                <div *ngIf="f.subModuleId.touched && f.subModuleId.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.subModuleId.errors?.required">
+                    Sub Module is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col d-none">
+                <label class="col-md-3 col-form-label" for="status">Type</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="checkbox" formControlName="inHouse" id="inHouse"
+                      name="inHouse" value="1">
+                    <label class="form-check-label" for="inHouse">In House</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="accountType=='UAT'" class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="watchList">Project Manager</label>
+                <ng-select [multiple]="true" [items]="managers" placeholder="-- Select Watch List People --"
+                  formControlName="watchList" id="watchList" name="watchList" bindLabel="email" bindValue="email">
+                </ng-select>
+                <div *ngIf="f.watchList.touched && f.watchList.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.watchList.errors?.required">
+                    Project Manager is required.
+                  </div>
+                  <div *ngIf="f.watchList.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="stakeHolders">Customer Team</label>
+                <ng-select [multiple]="true" [items]="uatStakeHolders" placeholder="-- Select Customer Team --"
+                  formControlName="stakeHolders" id="stakeHolders" name="stakeHolders" bindLabel="email"
+                  bindValue="email">
+                </ng-select>
+                <div *ngIf="f.stakeHolders.touched && f.stakeHolders.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.stakeHolders.errors?.required">
+                    Customer is required.
+                  </div>
+                  <div *ngIf="f.stakeHolders.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="consultants">Consultant
+                  Responsible</label>
+                <ng-select [multiple]="true" [items]="uatConsultants" placeholder="-- Select Consultant Responsible --"
+                  formControlName="consultants" id="consultants" name="consultants" bindLabel="email" bindValue="email">
+                </ng-select>
+                <div *ngIf="f.consultants.touched && f.consultants.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.consultants.errors?.required">
+                    Consultant is required.
+                  </div>
+                  <div *ngIf="f.consultants.errors?.maxlength">
+                    Allowed maxlength exceeds.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="accountType=='UAT'||accountType=='TIMESHEET'" class="row row-margin-05">
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="start">Start
+                  Date</label>
+                <input type="date" format="DD-MM-YYYY" formControlName="start" id="start" name="start"
+                  class="form-control" placeholder="Start Date" aria-label="Start Date">
+                <div *ngIf="f.start.touched && f.start.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.start.errors?.required">
+                    Start Date is required.
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="form-col-form-label required-control-label" for="end">End Date</label>
+                <input type="date" formControlName="end" id="end" name="end" class="form-control" placeholder="End Date"
+                  aria-label="End Date">
+                <div *ngIf="f.end.touched && f.end.invalid" class="alert alert-danger-custom">
+                  <div *ngIf="f.end.errors?.required">
+                    License End Date is required.
+                  </div>
+                  <div *ngIf="f.end.errors?.mustGreaterThanStartDate">
+                    End date should be greater than Start Date!
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="col-md-3 col-form-label" for="status">Status</label>
+                <div class="col-md-9 col-form-label">
+                  <div class="form-check form-check-inline mr-1" id="inline-radios">
+                    <input class="form-check-input" type="radio" #active (change)="onChange(true, 'ACTIVE')"
+                      name="status" id="ACTIVE" [checked]="(project.status == 'ACTIVE')" value="true">
+                    <label class="form-check-label" for="ACTIVE">Active</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="status" id="INACTIVE"
+                      [checked]="(project.status == 'INACTIVE')" #inactive (change)="onChange(false, 'INACTIVE')"
+                      value="false">
+                    <label class="form-check-label" for="INACTIVE">Inactive</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="!angForm.valid" type="submit"
+              class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

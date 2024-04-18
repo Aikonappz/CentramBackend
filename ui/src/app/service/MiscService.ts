@@ -22,7 +22,7 @@ import { Account, AccountList } from '../model/Account';
 import { ManageTimeSheetInputVO } from '../model/ManageTimeSheetInputVO';
 import { AllocationDetailVOList } from '../model/AllocationDetailVO';
 import { User } from '../model/User';
-import { TimeSheet } from '../model/TimeSheet';
+import { TimeSheet, TimeSheetList } from '../model/TimeSheet';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -192,8 +192,17 @@ export class MiscService {
     allocatedUsersService(request?: any): Observable<any> {
         return this.http.get('/v1/misc/allocated-user', { "params": request });
     }
-
-    submitTimesheet(timeSheet: TimeSheet): Observable<TimeSheet> {
-        return this.http.post('/v1/misc/submit-timesheet', timeSheet,);
+    timeSheetsService(request?: any): Observable<TimeSheetList> {
+        return this.http.get('/v1/misc/all-timesheet', { "params": request });
     }
+    timeSheetService(id: number, request?: any): Observable<TimeSheet> {
+        return this.http.get('/v1/misc/timesheet/' + id, { "params": request });
+    }
+    pendingApprovalTimeSheetsService(request?: any): Observable<TimeSheetList> {
+        return this.http.get('/v1/misc/timesheet-approval', { "params": request });
+    }
+    saveTimesheet(timeSheet: TimeSheet): Observable<TimeSheet> {
+        return this.http.post('/v1/misc/timesheet', timeSheet,);
+    }
+
 }

@@ -163,7 +163,7 @@ public class UserApiController {
      * @return
      */
     @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASSIGNMENT REPORT,USER,MY INCIDENTS,MY GROUP INCIDENTS,ORDER ASSET,ALLOCATE PROJECT,DEALLOCATE PROJECT','READ,READ,WRITE|SEARCH,WRITE|SEARCH,READ|WRITE,ASSIGN,DEALLOCATE',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('ASSET ASSIGNMENT REPORT,USER,MY INCIDENTS,MY GROUP INCIDENTS,ORDER ASSET,ALLOCATE PROJECT,DEALLOCATE PROJECT,TIMESHEET APPROVAL','READ,READ,WRITE|SEARCH,WRITE|SEARCH,READ|WRITE,ASSIGN,DEALLOCATE,APPROVE',authentication.principal) || @appSecurityUtilityService.hasCategoryAdminAccess(authentication.principal)")
     public ResponseEntity<PaginatedList<UserVO>> getUsers(@RequestParam(value = "email", defaultValue = "", required = false) String email, @RequestParam(value = "employeeId", defaultValue = "", required = false) String employeeId, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "filterType", defaultValue = "", required = false) String filterType, @RequestParam(value = "vendorId", defaultValue = "", required = false) BigInteger vendorId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<UserVO>>(userService.getUsers(email, employeeId, Status.valueOf(status), filterType, vendorId, pageable), HttpStatus.OK);
     }

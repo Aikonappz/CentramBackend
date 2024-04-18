@@ -40,6 +40,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -388,7 +389,7 @@ public class Config implements AsyncConfigurer {
             } else if (user != null && user instanceof ThirdPartyLoggedInUser) {
                 //TODO : for batch need to handle later on
                 return null;
-            } else if (user != null && user instanceof LoggedInUser) {
+            } else if (user != null && user instanceof UsernamePasswordAuthenticationToken) {
                 LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 if (loggedInUser == null) {
                     return null;

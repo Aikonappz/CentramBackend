@@ -834,4 +834,47 @@ public class AppEmailService {
         }
         emailService.sendMail(mailMap);
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Async("asyncExecutor")
+    public void notifyTimeSheetUpdate(Map<String, Object> objectMap) {
+        List<AppConfiguration> appConfigurations = appConfigService.getAppConfigurations(Arrays.asList("BASE_EMAIL_TEMPLATE", "TIMESHEET_EMAIL_TEMPLATE"));
+        String baseEmailTemplate = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("BASE_EMAIL_TEMPLATE")).findFirst().get().getConfigurationValue();
+        AppConfiguration appConfiguration = appConfigurations.stream().filter(ac -> ac.getConfigurationKey().equals("TIMESHEET_EMAIL_TEMPLATE")).findFirst().get();
+        String mailSubject = appConfiguration.getConfigurationProperties().get(objectMap.get("subject")).toString();
+        String mailBody = appConfiguration.getConfigurationProperties().get(objectMap.get("body")).toString();
+
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        Context context = new Context(Locale.ENGLISH);
+        mailSubject = templateEngine.process(mailSubject, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("from", objectMap.get("from"));
+        context.setVariable("to", objectMap.get("to"));
+        context.setVariable("user", objectMap.get("user"));
+        context.setVariable("timeSheetUserLink", objectMap.get("timeSheetUserLink"));
+        context.setVariable("timeSheetApprovalLink", objectMap.get("timeSheetApprovalLink"));
+        mailBody = templateEngine.process(mailBody, context);
+        context = new Context(Locale.ENGLISH);
+        context.setVariable("recipient_name", objectMap.get("recipientName"));
+        context.setVariable("app_url", appBaseUrl);
+        context.setVariable("team", fromName);
+        context.setVariable("mail_body", mailBody);
+        baseEmailTemplate = templateEngine.process(baseEmailTemplate, context);
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("to", objectMap.get("recipientEmail"));
+        mailMap.put("cc", objectMap.get("cc"));
+        mailMap.put("bcc", objectMap.get("bcc"));
+        mailMap.put("subject", mailSubject);
+        mailMap.put("content", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        Notification notification = (Notification) objectMap.get("notifications");
+        notification.setNotificationTitle(mailSubject);
+        notification.setNotificationBody(mailBody);
+        notificationService.save(notification);
+        //log.info("INCIDENT/ASSET EMAIL TITLE: {}", mailSubject);
+        //log.info("INCIDENT/ASSET EMAIL BODY: {}", StringEscapeUtils.unescapeHtml4(baseEmailTemplate));
+        emailService.sendMail(mailMap);
+    }
 }

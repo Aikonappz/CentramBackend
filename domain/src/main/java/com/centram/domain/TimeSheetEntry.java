@@ -45,7 +45,7 @@ import java.util.Set;
         @Index(name = "time_sheet_entry_approver_index", columnList = "approver_id", unique = false),
 })
 @Audited
-public class    TimeSheetEntry extends BaseEntity implements Serializable {
+public class TimeSheetEntry extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 3250683122623301346L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,4 +97,12 @@ public class    TimeSheetEntry extends BaseEntity implements Serializable {
     @JoinColumn(name = "approver_id", nullable = false, referencedColumnName = "id")
     @JsonView(Views.BasicView.class)
     private User approver;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean userCanEdit = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean approverCanTakeAction = false;
 }

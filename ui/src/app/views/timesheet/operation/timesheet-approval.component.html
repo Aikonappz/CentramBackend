@@ -1,0 +1,96 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Time Sheet Approval </strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <b>Start Date : </b>{{timeSheet?.startDate}}
+              </div>
+              <div class="col">
+                <b>End Date : </b>{{timeSheet?.endDate}}
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div class="row row-margin-05"></div>
+            <div class="row row-margin-05">
+              <table class="table ">
+                <tr>
+                  <td>Project</td>
+                  <td>Task</td>
+                  <td>Billing Type</td>
+                  <td>User Comment</td>
+                  <td>Approver Comment</td>
+                  <td>Time Entries</td>
+                  <td>Action</td>
+                </tr>
+                <ng-container *ngFor="let item of timeSheet?.allTimeSheetEntries;let approverUpdatesIndex=index;">
+                  <tr formArrayName="approverUpdates">
+                    <td>
+                      <div>
+                        {{item.project.name}}
+                      </div>
+                      <div>
+                        <div id="error-row-{{approverUpdatesIndex}}"
+                          class="d-none alert alert-danger-custom entry-error">
+                          {{errorText}}
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{item.task}}</td>
+                    <td>{{item.billingType}}</td>
+                    <td>{{item.userComment}}</td>
+                    <td [formGroupName]="approverUpdatesIndex">
+                      <input [hidden]="true" formControlName="entryId" name="entryId" id="entryId">
+                      <textarea *ngIf="item.approverCanTakeAction" formControlName="approverComment"
+                        id="approverComment" name="approverComment"
+                        placeholder="Comment">{{item?.approverComment}}</textarea>
+                      <div *ngIf="!item.approverCanTakeAction">{{item?.approverComment}}</div>
+                    </td>
+                    <td>
+                      <table class="table ">
+                        <tr>
+                          <td *ngFor="let timeEntry of item.timeEntries | keyvalue ">{{timeEntry.key}}</td>
+                        </tr>
+                        <tr>
+                          <td *ngFor="let timeEntry of item.timeEntries | keyvalue ">{{timeEntry.value}}</td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td [formGroupName]="approverUpdatesIndex">
+                      <!-- <div *ngIf="item.approved&&!item.canTakeAction&&item?.approverComment!=null">
+                        Approved
+                      </div>
+                      <div *ngIf="item.rejected&&!item.canTakeAction&&item?.approverComment!=null">
+                        Rejected
+                      </div> -->
+                      <div *ngIf="item.approverCanTakeAction">
+                        <ng-select [items]="actions" placeholder="-- Select Status --" formControlName="action"
+                          id="action" name="action" bindLabel="label" bindValue="id"></ng-select>
+                      </div>
+                      <div *ngIf="!item.approverCanTakeAction">
+                        <div *ngIf="item.approved">Approved</div>
+                        <div *ngIf="item.rejected">Rejected</div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')" [disabled]="timeSheet?.approverCanTakeAction==false" type="button"
+              (click)="formSubmit()" class="btn btn-primary">Submit </button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>

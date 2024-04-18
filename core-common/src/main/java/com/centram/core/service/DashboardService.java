@@ -4,24 +4,33 @@ package com.centram.core.service;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.vo.*;
 import com.centram.core.repository.*;
-import com.centram.domain.Permission;
-import com.centram.domain.ProjectUat;
-import com.centram.domain.ProjectUatScript;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.LicenseType;
+import com.centram.domain.enumarator.Status;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
 public class DashboardService {
@@ -53,6 +62,12 @@ public class DashboardService {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private ProjectAllocationDetailRepository projectAllocationDetailRepository;
+
+    @Autowired
+    private TimeSheetRepository timeSheetRepository;
 
     /**
      * Site Super Admin Dashboard Data
@@ -251,5 +266,150 @@ public class DashboardService {
             }
         }
         return -1;
+    }
+
+    /**
+     *
+     * @param start
+     * @param end
+     * @param projectStart
+     * @param projectEnd
+     * @return
+     */
+    private Boolean withinRange(LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd) {
+        //return (start.isEqual(projectStart) || start.isAfter(projectStart)) && (end.isEqual(projectStart) || end.isBefore(projectStart));
+        return (start.isEqual(projectStart) || start.isAfter(projectStart));
+    }
+
+    /**
+     *
+     * @param start
+     * @param end
+     * @param projectStart
+     * @param projectEnd
+     * @return
+     */
+    private Long noOfworkingDays(LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd){
+        LocalDate actualStart = start.toLocalDate();
+        LocalDate actualEnd = end.toLocalDate();
+        if(projectStart.isAfter(start))
+            actualStart = projectStart.toLocalDate();
+        if(projectEnd.isBefore(end))
+            actualEnd = projectEnd.toLocalDate();
+        return DAYS.between(actualStart, actualEnd);
+    }
+
+    /**
+     *
+     * @param location
+     * @return
+     */
+    private Long noOfHours(Location location){
+        return HOURS.between(location.getOpsStartTime(), location.getOpsEndTime());
+    }
+
+    /**
+     *
+     * @param perDayHour
+     * @param noOfDays
+     * @return
+     */
+    private Long totalHours(Long perDayHour, Long noOfDays){
+        return perDayHour*noOfDays;
+    }
+
+    /**
+     *
+     * @param userId
+     * @param projectId
+     * @param start
+     * @param end
+     * @param projectStart
+     * @param projectEnd
+     * @return
+     */
+    private Long submittedTime(BigInteger userId, BigInteger projectId, LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd){
+        List<TimeSheet> timeSheets = timeSheetRepository.getTimeSheetByUser(userId);
+        LocalDate actualStart = start.toLocalDate();
+        LocalDate actualEnd = end.toLocalDate();
+        if(projectStart.isAfter(start))
+            actualStart = projectStart.toLocalDate();
+        if(projectEnd.isBefore(end))
+            actualEnd = projectEnd.toLocalDate();
+        Iterator<Map.Entry<LocalDate, LocalTime>> iterator;
+        Map.Entry<LocalDate, LocalTime> entry;
+        Long total=0l;
+        if(!CollectionUtils.isEmpty(timeSheets)){
+            for(TimeSheet timeSheet : timeSheets){
+                if(!CollectionUtils.isEmpty(timeSheet.getTimeSheetEntries())){
+                    for(TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()){
+                        if(timeSheetEntry.getProject().getId().compareTo(projectId) == 0){
+                            iterator = timeSheetEntry.getTimeEntries().entrySet().iterator();
+                            while(iterator.hasNext()){
+                                entry = iterator.next();
+                                if(!(entry.getKey().isBefore(actualStart) && entry.getKey().isAfter(actualEnd)) && entry.getValue() != null){
+                                    total += entry.getValue().getHour();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return total;
+    }
+
+    /**
+     *
+     * @param currentDate
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<TimeSheetDashBoardVO> timeSheetDashboard(LocalDate currentDate) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LocalDateTime endDateTime = LocalDateTime.now(ZoneId.systemDefault());
+        LocalDateTime startDateTime = endDateTime.minusDays(90).toLocalDate().atStartOfDay();
+        Page<User> page = userRepository.getUsers(loggedInUser.getOrganisationId(), null, null, Status.ALL.ordinal(), null, null, Pageable.unpaged());
+        List<User> users = page.getContent();
+        List<ProjectAllocationDetail> projectAllocationDetails;
+        List<TimeSheetDashBoardVO> timeSheetDashBoardVOS = new ArrayList<TimeSheetDashBoardVO>();
+        for (User user : users) {
+            projectAllocationDetails = projectAllocationDetailRepository.getUserProjects(user.getId(), startDateTime, endDateTime);
+            if (!CollectionUtils.isEmpty(projectAllocationDetails)) {
+                for (ProjectAllocationDetail projectAllocationDetail : projectAllocationDetails) {
+                        timeSheetDashBoardVOS.add(
+                                new TimeSheetDashBoardVO(
+                                        user.getId(),
+                                        user.getFirstName()+" "+user.getLastName(),
+                                        user.getLocation().getId(),
+                                        user.getLocation().getName(),
+                                        totalHours(
+                                                noOfHours(user.getLocation()),
+                                                noOfworkingDays(
+                                                    startDateTime,
+                                                    endDateTime,
+                                                    projectAllocationDetail.getStartDate(),
+                                                    projectAllocationDetail.getEndDate()
+                                                )
+                                        ),
+                                        projectAllocationDetail.getProject().getProjectBillingType(),
+                                        projectAllocationDetail.getProject().getId(),
+                                        projectAllocationDetail.getProject().getName(),
+                                        projectAllocationDetail.getStartDate(),
+                                        projectAllocationDetail.getEndDate(),
+                                        submittedTime(
+                                                user.getId(),
+                                                projectAllocationDetail.getProject().getId(),
+                                                startDateTime,
+                                                endDateTime,
+                                                projectAllocationDetail.getStartDate(),
+                                                projectAllocationDetail.getEndDate()
+                                        )
+                                )
+                        );
+                }
+            }
+        }
+        return timeSheetDashBoardVOS;
     }
 }

@@ -15,7 +15,11 @@ import { EditAccountComponent } from './master/editaccount.component';
 import { AccountComponent } from './master/account.component';
 import { AllocateProjectComponent } from './operation/allocate-project.component';
 import { DeallocateProjectComponent } from './operation/deallocate-project.component';
-import { ManageTimeSheetComponent } from './manage-timesheet/manage-timesheet.component';
+import { AddTimeSheetComponent, } from './manage-timesheet/add-timesheet.component';
+import { TimeSheetsComponent } from './manage-timesheet/timesheets.component';
+import { TimeSheetApprovalListComponent } from './operation/timesheet-approval-list.component';
+import { TimeSheetApprovalComponent } from './operation/timesheet-approval.component';
+import { EditTimeSheetComponent } from './manage-timesheet/edit-timesheet.component';
 
 
 const routes: Routes = [
@@ -54,11 +58,43 @@ const routes: Routes = [
         }
       },
       {
-        path: 'manage-timesheet',
-        component: ManageTimeSheetComponent,
+        path: 'operation/timesheet-approval-list',
+        component: TimeSheetApprovalListComponent,
         pathMatch: 'full',
         data: {
-          title: 'Manage TimeSheet'
+          title: 'Timesheet Approval List'
+        }
+      },
+      {
+        path: 'operation/timesheet-approval/:id',
+        component: TimeSheetApprovalComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Timesheet Approval'
+        }
+      },
+      {
+        path: 'timesheet',
+        component: TimeSheetsComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Submitted TimeSheets'
+        }
+      },
+      {
+        path: 'timesheet/add',
+        component: AddTimeSheetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Add TimeSheet'
+        }
+      },
+      {
+        path: 'timesheet/edit/:id',
+        component: EditTimeSheetComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Edit TimeSheet'
         }
       },
     ]

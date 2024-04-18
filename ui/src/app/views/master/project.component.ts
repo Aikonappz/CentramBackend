@@ -9,6 +9,7 @@ import { Vendor } from '../../model/Vendor';
 import { ProjectDataSource } from '../../service/datasource/ProjectDataSource';
 import { LoggedInUserService } from '../../service/LoggedInUserService';
 import { MiscService } from '../../service/MiscService';
+import { LoggedInUser } from '../../model/LoggedInUser';
 
 @Component({
   selector: 'app-project',
@@ -23,6 +24,8 @@ export class ProjectComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   type: string;
   hasAllocationType: boolean = true;
+  loggedinUser: LoggedInUser;
+
   constructor(
     private loggedInUserService: LoggedInUserService,
     private titleService: Title,
@@ -36,6 +39,7 @@ export class ProjectComponent implements OnInit {
         titleService.setTitle(title);
       }
     });
+    this.loggedinUser = loggedInUserService.getLoggedInUser();
   }
 
   hasPermission(action: string): boolean {
@@ -55,7 +59,7 @@ export class ProjectComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = new ProjectDataSource(this.service);
-    this.datasource.loadData(0, 10, {});
+    this.datasource.loadData(0, 10, this.loggedinUser.licenseType, {});
   }
 
   ngAfterViewInit() {
@@ -96,7 +100,7 @@ export class ProjectComponent implements OnInit {
   }
 
   loadData(req: any = {}) {
-    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, req);
+    this.datasource.loadData(this.paginator.pageIndex, this.paginator.pageSize, this.loggedinUser.licenseType, req);
   }
 
   formateManager(str: String[]) {

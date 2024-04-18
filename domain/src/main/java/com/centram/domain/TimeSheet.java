@@ -38,6 +38,7 @@ public class TimeSheet extends BaseEntity implements Serializable {
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.BasicView.class)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
     @Column(name = "start_date", nullable = false)
@@ -56,6 +57,25 @@ public class TimeSheet extends BaseEntity implements Serializable {
     @OneToMany(mappedBy = "timeSheet", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonView(Views.BasicView.class)
     private List<TimeSheetEntry> timeSheetEntries;
+    @JsonView(Views.BasicView.class)
+    @Column(name = "freezed", nullable = false)
+    private Boolean freezed = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean newSubmission = true;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean userCanEdit = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Boolean approverCanTakeAction = false;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private List<TimeSheetEntry> allTimeSheetEntries;
 
     public TimeSheet(@NotNull TimeSheetId timeSheetId) {
     }

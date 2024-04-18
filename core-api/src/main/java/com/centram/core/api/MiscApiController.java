@@ -45,6 +45,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -522,7 +523,7 @@ public class MiscApiController {
      * @return
      */
     @RequestMapping(value = "/all-project", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT,MANAGE TIMESHEET,UAT ACTIVITIES','READ,ALLOCATE,DEALLOCATE,WRITE,WRITE',authentication.principal)")
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,ALLOCATE PROJECT,DEALLOCATE PROJECT,MANAGE TIMESHEET,UAT ACTIVITIES,TIMESHEET APPROVAL','READ,ALLOCATE,DEALLOCATE,WRITE,WRITE,APPROVE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectFor", defaultValue = "ALL", required = false) String projectFor, @RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -603,11 +604,47 @@ public class MiscApiController {
         return new ResponseEntity<PaginatedList<TimeSheet>>(miscService.getManageTimeSheetInput(loggedInUser.getUserId()), HttpStatus.OK);
     }*/
 
-    @RequestMapping(value = "/submit-timesheet", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @RequestMapping(value = "/timesheet", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,TIMESHEET SUBMIT','READ,READ|WRITE',authentication.principal)")
     @JsonView(Views.DetailView.class)
     public ResponseEntity<TimeSheet> saveTimeSheet(@Valid @RequestBody TimeSheet body) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<TimeSheet>(timeSheetService.save(loggedInUser, body), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/all-timesheet", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,TIMESHEET SUBMIT','READ,READ|WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<PaginatedList<TimeSheet>> getTimeSheets(
+            @RequestParam(value = "projectId", defaultValue = "-1") BigInteger projectId,
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            @RequestParam(value = "date", defaultValue = "", required = false) LocalDate date,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<TimeSheet>>(timeSheetService.getTimeSheets(loggedInUser, projectId, date, pageable), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/timesheet/{timeSheetId}", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,TIMESHEET SUBMIT','READ,READ|WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<TimeSheet> getTimeSheet(@PathVariable("timeSheetId") BigInteger timeSheetId) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<TimeSheet>(timeSheetService.getTimeSheet(loggedInUser, timeSheetId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/timesheet-approval", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('PROJECT_MASTER,TIMESHEET SUBMIT','READ,READ|WRITE',authentication.principal)")
+    @JsonView(Views.DetailView.class)
+    public ResponseEntity<PaginatedList<TimeSheet>> getPendingApprovalTimeSheets(
+            @RequestParam(value = "pendingApproval", defaultValue = "-1") Integer pendingApproval,
+            @RequestParam(value = "projectId", defaultValue = "-1") BigInteger projectId,
+            @RequestParam(value = "userId", defaultValue = "-1") BigInteger userId,
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            @RequestParam(value = "date", required = false) LocalDate date,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable
+    ) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<TimeSheet>>(timeSheetService.getPendingApprovalTimeSheets(pendingApproval, projectId, userId, loggedInUser, date, pageable), HttpStatus.OK);
     }
 }

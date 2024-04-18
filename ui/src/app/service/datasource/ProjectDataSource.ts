@@ -11,7 +11,7 @@ import { Vendor, VendorList } from '../../model/Vendor';
 import { Project, ProjectList } from '../../model/Project';
 
 
-export class ProjectDataSource implements DataSource<Project>{
+export class ProjectDataSource implements DataSource<Project> {
 
     private objSubject = new BehaviorSubject<Project[]>([]);
     private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -30,12 +30,12 @@ export class ProjectDataSource implements DataSource<Project>{
         this.countSubject.complete();
     }
 
-    loadData(pageNumber = 0, pageSize = 10, req = {}) {
+    loadData(pageNumber = 0, pageSize = 10, projectFor = "ALL", req = {}) {
         this.loadingSubject.next(true);
-        let defaultParam = { page: pageNumber, size: pageSize };
+        let defaultParam = { page: pageNumber, size: pageSize, projectFor: projectFor };
         let params = Object.assign(
             req,
-            defaultParam
+            defaultParam,
         );
         this.service.projectsService(params)
             .pipe(

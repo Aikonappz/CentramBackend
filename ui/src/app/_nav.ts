@@ -47,37 +47,37 @@ export const navItems: INavData[] = [
     name: 'Dashboard',
     url: '/admin/dashboard',
     icon: 'icon-speedometer',
-    attributes: { "order": 1, "parentModule": "ADMIN", "moduleName": "DASHBOARD", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+    attributes: { "order": 1, "parentModule": "ADMIN", "moduleName": "DASHBOARD", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT,TIMESHEET" }
   },
   {
     name: 'Users',
     url: '/admin/user',
     icon: 'icon-people',
-    attributes: { "order": 2, "parentModule": "ADMIN", "moduleName": "USER", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+    attributes: { "order": 2, "parentModule": "ADMIN", "moduleName": "USER", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT,TIMESHEET" }
   },
   {
     name: 'Masters',
     url: '/admin/master',
     icon: 'icon-layers',
-    attributes: { "order": 3, "parentModule": "ADMIN", "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" },
+    attributes: { "order": 3, "parentModule": "ADMIN", "moduleName": "MASTERS", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT,TIMESHEET" },
     children: [
       {
         name: 'Account',
         url: '/admin/master/account',
         icon: 'cil-object-group',
-        attributes: { "parentModule": "ADMIN", "moduleName": "ACCOUNT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "ACCOUNT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT,TIMESHEET" }
       },
       {
         name: 'Department',
         url: '/admin/master/department',
         icon: 'icon-puzzle',
-        attributes: { "parentModule": "ADMIN", "moduleName": "DEPARTMENT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "DEPARTMENT", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT,TIMESHEET" }
       },
       {
         name: 'Location',
         url: '/admin/master/location',
         icon: 'icon-location-pin',
-        attributes: { "parentModule": "ADMIN", "moduleName": "LOCATION", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "LOCATION", "licenceType": "ALL,INCIDENT,ASSET,PROJECT,UAT,TIMESHEET" }
       },
       {
         name: 'Priority -Incident',
@@ -95,7 +95,7 @@ export const navItems: INavData[] = [
         name: 'Holiday Calendar',
         url: '/admin/master/calendar',
         icon: 'icon-calendar',
-        attributes: { "parentModule": "ADMIN", "moduleName": "HOLIDAY CALENDAR", "licenceType": "ALL,INCIDENT,ASSET" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "HOLIDAY CALENDAR", "licenceType": "ALL,INCIDENT,ASSET,TIMESHEET" }
       },
       {
         name: 'Distribution List',
@@ -107,7 +107,7 @@ export const navItems: INavData[] = [
         name: 'Project Master',
         url: '/admin/master/project',
         icon: 'cil-blur-linear',
-        attributes: { "parentModule": "ADMIN", "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT,UAT" }
+        attributes: { "parentModule": "ADMIN", "moduleName": "PROJECT_MASTER", "licenceType": "ALL,PROJECT,UAT,TIMESHEET" }
       },
       {
         name: 'Vendor -Incident',
@@ -337,7 +337,7 @@ export const navItems: INavData[] = [
       },
       {
         name: 'Approval',
-        url: '/timesheet/operation/approval',
+        url: '/timesheet/operation/timesheet-approval-list',
         icon: 'fa fa-check',
         attributes: { "parentModule": "TIMESHEET", "moduleName": "TIMESHEET APPROVAL", "licenceType": "ALL,TIMESHEET" }
       },
@@ -345,7 +345,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Time Sheet',
-    url: '/timesheet/manage-timesheet',
+    url: '/timesheet/timesheet',
     icon: 'icon-speedometer',
     attributes: { "order": 4, "parentModule": "TIMESHEET", "moduleName": "TIMESHEET SUBMIT", "licenceType": "ALL,TIMESHEET" }
   },

@@ -1876,4 +1876,95 @@ public class MiscService {
         }*/
     }
 
+
+
+    @Transactional
+    @Async("asyncExecutor")
+    public void notifyTimeSheetUpdate(TimeSheet timeSheet) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Map<String, Object> objectMap = new HashMap<String, Object>();
+        User user;
+        /** user email **/
+        if(timeSheet.getNewSubmission()) {
+            objectMap = new HashMap<String, Object>();
+            user = userRepository.getUserById(timeSheet.getUser().getId());
+            objectMap.put("recipientEmail", new String[]{user.getEmail()});
+            objectMap.put("cc", new String[]{});
+            objectMap.put("bcc", new String[]{});
+            objectMap.put("from",timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+            objectMap.put("to",timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+            objectMap.put("recipientName", timeSheet.getUser().getFirstName());
+            objectMap.put("user",timeSheet.getUser().getFirstName()+" "+timeSheet.getUser().getLastName());
+            objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/"+timeSheet.getId()));
+            objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/"+timeSheet.getId()));
+            objectMap.put("notifications", new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+            objectMap.put("subject", "userSubmissionTitle");
+            objectMap.put("body", "userSubmissionBody");
+            //send mail
+            appEmailService.notifyTimeSheetUpdate(objectMap);
+        }else{
+            if(loggedInUser.getUserId().compareTo(timeSheet.getUser().getId()) != 0) {
+                objectMap = new HashMap<String, Object>();
+                user = userRepository.getUserById(timeSheet.getUser().getId());
+                objectMap.put("recipientEmail", new String[]{user.getEmail()});
+                objectMap.put("cc", new String[]{});
+                objectMap.put("bcc", new String[]{});
+                objectMap.put("from", timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                objectMap.put("to", timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                objectMap.put("recipientName", timeSheet.getUser().getFirstName());
+                objectMap.put("user", timeSheet.getUser().getFirstName() + " " + timeSheet.getUser().getLastName());
+                objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/" + timeSheet.getId()));
+                objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/" + timeSheet.getId()));
+                objectMap.put("notifications", new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+                objectMap.put("subject", "userResponseTitle");
+                objectMap.put("body", "userResponseBody");
+                appEmailService.notifyTimeSheetUpdate(objectMap);
+            }
+        }
+        /** user email **/
+        /** approver email **/
+        if(timeSheet.getNewSubmission()) {;
+            for(TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()){
+                objectMap = new HashMap<String, Object>();
+                user = userRepository.getUserById(timeSheetEntry.getApprover().getId());
+                objectMap.put("recipientEmail", new String[]{user.getEmail()});
+                objectMap.put("cc", new String[]{});
+                objectMap.put("bcc", new String[]{});
+                objectMap.put("from",timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                objectMap.put("to",timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                objectMap.put("recipientName", user.getFirstName());
+                objectMap.put("user",timeSheet.getUser().getFirstName()+" "+timeSheet.getUser().getLastName());
+                objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/"+timeSheet.getId()));
+                objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/"+timeSheet.getId()));
+                objectMap.put("notifications", new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+                objectMap.put("subject", "managerTitle");
+                objectMap.put("body", "managerBody");
+                //send mail
+                appEmailService.notifyTimeSheetUpdate(objectMap);
+            }
+        }else{
+            if(loggedInUser.getUserId().compareTo(timeSheet.getUser().getId()) == 0) {
+                for (TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()) {
+                    objectMap = new HashMap<String, Object>();
+                    user = userRepository.getUserById(timeSheetEntry.getApprover().getId());
+                    objectMap.put("recipientEmail", new String[]{user.getEmail()});
+                    objectMap.put("cc", new String[]{});
+                    objectMap.put("bcc", new String[]{});
+                    objectMap.put("from", timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                    objectMap.put("to", timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                    objectMap.put("recipientName", user.getFirstName());
+                    objectMap.put("user", timeSheet.getUser().getFirstName() + " " + timeSheet.getUser().getLastName());
+                    objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/" + timeSheet.getId()));
+                    objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/" + timeSheet.getId()));
+                    objectMap.put("notifications", new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+                    objectMap.put("subject", "managerResponseTitle");
+                    objectMap.put("body", "managerResponseBody");
+                    //send mail
+                    appEmailService.notifyTimeSheetUpdate(objectMap);
+                }
+            }
+        }
+        /** approver email **/
+    }
+
 }

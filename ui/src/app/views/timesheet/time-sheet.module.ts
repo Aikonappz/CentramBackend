@@ -30,12 +30,22 @@ import { LocationComponent } from './master/location.component';
 import { EditLocationComponent } from './master/editlocation.component';
 import { AllocateProjectComponent } from './operation/allocate-project.component';
 import { DeallocateProjectComponent } from './operation/deallocate-project.component';
-import { ManageTimeSheetComponent } from './manage-timesheet/manage-timesheet.component';
+
+import { TimeSheetsComponent } from './manage-timesheet/timesheets.component';
+import { TimeSheetApprovalListComponent } from './operation/timesheet-approval-list.component';
+import { TimeSheetApprovalComponent } from './operation/timesheet-approval.component';
+import { AddTimeSheetComponent } from './manage-timesheet/add-timesheet.component';
+import { EditTimeSheetComponent } from './manage-timesheet/edit-timesheet.component';
 
 
 
 @NgModule({
   declarations: [
+    EditTimeSheetComponent,
+    AddTimeSheetComponent,
+    TimeSheetApprovalComponent,
+    TimeSheetApprovalListComponent,
+    TimeSheetsComponent,
     AllocateProjectComponent,
     DeallocateProjectComponent,
     UATActivityComponent,
@@ -51,7 +61,7 @@ import { ManageTimeSheetComponent } from './manage-timesheet/manage-timesheet.co
     EditDepartmentComponent,
     LocationComponent,
     EditLocationComponent,
-    ManageTimeSheetComponent,
+    EditTimeSheetComponent,
   ],
   imports: [
     CommonModule,

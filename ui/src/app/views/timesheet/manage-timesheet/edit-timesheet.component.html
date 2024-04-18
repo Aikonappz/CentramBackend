@@ -1,0 +1,96 @@
+<div class="animated fadeIn">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Edit Time Sheet</strong>
+        </div>
+        <form [formGroup]="angForm" novalidate>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <b>Start Date : </b>{{timeSheet?.startDate}}
+              </div>
+              <div class="col">
+                <b>End Date : </b>{{timeSheet?.endDate}}
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div class="row row-margin-05"></div>
+            <div class="row row-margin-05">
+              <table class="table ">
+                <tr>
+                  <td>Project</td>
+                  <td>Task</td>
+                  <td>Billing Type</td>
+                  <td>User Comment</td>
+                  <td>Approver Comment</td>
+                  <td>Time Entries</td>
+                </tr>
+                <ng-container *ngFor="let item of timeSheet?.allTimeSheetEntries;let approverUpdatesIndex=index;"
+                  formArrayName="approverUpdates">
+                  <tr>
+                    <td [formGroupName]="approverUpdatesIndex">{{item.project.name}} {{item.userCanEdit}}</td>
+                    <td [formGroupName]="approverUpdatesIndex">{{item.task}}</td>
+                    <td [formGroupName]="approverUpdatesIndex">{{item.billingType}} </td>
+                    <td [formGroupName]="approverUpdatesIndex">
+                      <input [hidden]="true" formControlName="entryId" name="entryId" id="entryId">
+                      <div *ngIf="!item.userCanEdit">
+                        {{item?.userComment}}
+                      </div>
+                      <div *ngIf="item.userCanEdit">
+                        <textarea formControlName="userComment" id="userComment" name="userComment"
+                          placeholder="Comment"></textarea>
+                      </div>
+                    </td>
+                    <td [formGroupName]="approverUpdatesIndex">{{item.approverComment}}</td>
+                    <td [formGroupName]="approverUpdatesIndex">
+                      <table class="table ">
+                        <tr formArrayName="entries">
+                          <td *ngFor="let timeEntry of getEntries(approverUpdatesIndex); let entryIndex=index; "
+                            [formGroupName]="entryIndex">
+                            <input formControlName="date"
+                              style="font-stretch: auto !important; background-color: white !important;"
+                              [readOnly]="true" class="form-control td-date" />
+                            <input formControlName="day"
+                              style="font-stretch: auto !important; background-color: white !important;"
+                              [readOnly]="true" class="form-control td-date" />
+                          </td>
+                        </tr>
+                        <tr formArrayName="entries">
+                          <td *ngFor="let timeEntry of getEntries(approverUpdatesIndex); let entryIndex=index; "
+                            [formGroupName]="entryIndex">
+                            <div *ngIf="!item.userCanEdit">
+                              <input formControlName="time"
+                                style="font-stretch: auto !important; background-color: white !important;"
+                                [readOnly]="true" class="form-control td-time" />
+                            </div>
+                            <div *ngIf="item.userCanEdit">
+                              <input formControlName="time" [textMask]="mask" class="form-control td-time"
+                                id="td-time-{{entryIndex}}" />
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                      <div id="error-row-{{approverUpdatesIndex}}" class="d-none alert alert-danger-custom entry-error">
+                        {{errorText}}
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button *ngIf="hasPermission('WRITE')"
+              [disabled]="!angForm.valid||timeSheet.freezed||!timeSheet.userCanEdit" type="button"
+              (click)="formSubmit()" class="btn btn-primary">Submit</button>
+            <button class="btn btn-secondary" (click)="goBack()" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--/.col-->
+  </div>
+</div>
