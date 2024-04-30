@@ -7,4 +7,5 @@ public enum EntityType {
     ASSET_REQUEST,
     CHAT,
     PROJECT_UAT,
+    PROJECT_UAT_SCRIPT_STEP;
 }

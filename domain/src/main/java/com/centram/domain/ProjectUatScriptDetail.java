@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * ProjectUatDetail
@@ -92,6 +93,11 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @Transient
     @JsonView(Views.BasicView.class)
     private Boolean saved = false;
+
+    @Valid
+    @JsonView({Views.DetailView.class, Views.InternalView.class,})
+    @Transient
+    private List<MediaFile> attachments;
 
     public ProjectUatScriptDetail(@NotNull BigInteger id) {
         this.id = id;

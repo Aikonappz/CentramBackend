@@ -28,11 +28,13 @@ import { DepartmentComponent } from './master/department.component';
 import { EditDepartmentComponent } from './master/editdepartment.component';
 import { LocationComponent } from './master/location.component';
 import { EditLocationComponent } from './master/editlocation.component';
+import { AttachmentViewer } from './modal/AttachmentViewer';
 
 
 
 @NgModule({
   declarations: [
+    AttachmentViewer,
     UATActivityComponent,
     RemarkViewer,
     UATDashboardComponent,

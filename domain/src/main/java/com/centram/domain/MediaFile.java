@@ -7,11 +7,17 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 /**
  * Action
@@ -76,4 +82,16 @@ public class MediaFile implements Serializable {
     @Column(name = "chat_room_id")
     @JsonView({Views.BasicView.class, Views.DetailView.class})
     private String chatRoomId;
+
+    @OneToOne
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "user_id", nullable = true, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
+    private User user;
+
+    @NotNull
+    @Column(name = "uploaded_at", nullable = true)
+    @JsonView(Views.BasicView.class)
+    private LocalDateTime uploadedAt = LocalDateTime.now();
+
 }

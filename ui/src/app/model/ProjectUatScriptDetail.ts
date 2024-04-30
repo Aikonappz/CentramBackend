@@ -15,6 +15,8 @@ export class ProjectUatScriptDetail extends Base {
   editable: boolean = false;
   previousStepPassed: boolean = false;
   saved: boolean = false;
+  attachments: any[] = [];
+  attahmentUploaded: boolean = false;
 }
 export interface ProjectUatScriptDetailList {
   content: ProjectUatScriptDetail[];

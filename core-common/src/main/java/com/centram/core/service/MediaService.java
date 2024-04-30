@@ -5,7 +5,9 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.core.repository.MediaFileRepository;
+import com.centram.core.repository.UserRepository;
 import com.centram.domain.MediaFile;
+import com.centram.domain.User;
 import com.centram.domain.enumarator.EntityType;
 import com.centram.domain.enumarator.MediaType;
 import org.slf4j.Logger;
@@ -33,6 +35,9 @@ public class MediaService {
 
     @Autowired
     private MediaFileRepository mediaFileRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public MediaFile getById(BigInteger mediaId) {
@@ -81,6 +86,7 @@ public class MediaService {
                     mediaFile.setFileType(new MimetypesFileTypeMap().getContentType(multipartFile.getOriginalFilename()));
                     mediaFile.setContent(multipartFile.getBytes());
                     mediaFile.setMediaType(mediaType);
+                    mediaFile.setUser(userRepository.getUserById(loggedInUserDTO.getUserId()));
                     mediaFileList.add(mediaFile);
                 }
                 return mediaFileRepository.saveAll(mediaFileList);

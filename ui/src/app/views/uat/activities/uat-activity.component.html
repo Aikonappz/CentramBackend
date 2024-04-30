@@ -350,6 +350,27 @@
                     </ng-template>
                   </td>
                 </ng-container>
+                <ng-container matColumnDef="attachmentDetail">
+                  <th class="attachmentDetailHeader" mat-header-cell *matHeaderCellDef> Attachment Details </th>
+                  <td class="attachmentDetailBody" mat-cell *matCellDef="let element">
+                    <div *ngIf="!element.editable; else editingTemplate">
+                      <div *ngIf="element.attachments!=null&&element.attachments.length>0">
+                        <button type=" button" class="btn btn-link" (click)="viewAttachments(element)">View
+                          Attachments</button>
+                      </div>
+                    </div>
+                    <ng-template #editingTemplate>
+                      <div><b><u>Attachment <i class="icon-info"
+                              tooltip="Max file size can be 1 M.B and suported file type is word,pdf,png,jpg,jpeg"></i>
+                          </u> - </b>
+                        <input #uatScript multiple="multiple" (change)="getAttachmentFileDetails($event, element)"
+                          type="file" id="uatScript" name="uatScript">
+                        <br />
+                        <div class="alert alert-danger-custom d-none" id="attachment-error-{{element.id}}"></div>
+                      </div>
+                    </ng-template>
+                  </td>
+                </ng-container>
                 <ng-container matColumnDef="remarks">
                   <th class="remarksHeader" mat-header-cell *matHeaderCellDef> Remarks </th>
                   <td class="remarksBody" align="center" mat-cell *matCellDef="let element">
@@ -404,7 +425,8 @@
             </div>
           </div>
         </tab>
-        <tab *ngIf="isConsultant()||isCustomer()||isAdminOrProjectManager()" (selectTab)="searchUatCycle()" heading="Project UAT Activities">
+        <tab *ngIf="isConsultant()||isCustomer()||isAdminOrProjectManager()" (selectTab)="searchUatCycle()"
+          heading="Project UAT Activities">
           <div class="card">
             <form [formGroup]="angUatCycleSearchForm" (ngSubmit)="searchUatCycle()" novalidate>
               <div class="card-body">

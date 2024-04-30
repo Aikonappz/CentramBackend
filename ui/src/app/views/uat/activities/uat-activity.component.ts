@@ -38,6 +38,7 @@ import { ProjectUatDataSource } from '../../../service/datasource/ProjectUatData
 import { ConfirmAlert } from '../../../containers/default-layout/modal/ConfirmAlert';
 import { MediaFile } from '../../../model/MediaFile';
 import { CommonAlert } from '../../../containers/default-layout/modal/CommonAlert';
+import { AttachmentViewer } from '../modal/AttachmentViewer';
 declare var $: any;
 
 @Component({
@@ -58,7 +59,9 @@ export class UATActivityComponent implements OnInit {
   subModuleList: any[];
   searchSubModuleList: any[];
   selectedUatScriptFiles?: FileList;
+  selectedAttachmentFiles?: FileList;
   uatScriptFiles?: File[] = [];
+  attachmentFiles?: File[] = [];
   selectedUatManualFiles?: FileList;
   uatManualFiles?: File[] = [];
   projectUat: ProjectUat;
@@ -84,7 +87,7 @@ export class UATActivityComponent implements OnInit {
   private projectUatDataSource: ProjectUatDataSource;
   @ViewChild('projectUatPaginator') projectUatPaginator: MatPaginator;
 
-  projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+  projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'attachmentDetail', 'remarks', 'activity'];
   private projectUatScriptDetailSource: ProjectUatScriptDetailSource;
   @ViewChild('projectUatScriptDetailPaginator') projectUatScriptDetailPaginator: MatPaginator;
 
@@ -580,6 +583,81 @@ export class UATActivityComponent implements OnInit {
   }
 
   /**
+  * 
+  * @param projectUatScriptDetail 
+  */
+  viewAttachments(projectUatScriptDetail: ProjectUatScriptDetail) {
+    const config: ModalOptions = {
+      backdrop: 'static',
+      keyboard: false,
+      animated: true,
+      ignoreBackdropClick: true,
+      class: 'modal-lg',
+    };
+    const initialState = {
+      projectUatScriptDetail: projectUatScriptDetail,
+    };
+    this.modalRef = this.modalService.show(AttachmentViewer,
+      Object.assign({}, config, { initialState })
+    );
+  }
+
+  /**
+   * 
+   * @param id 
+   * @param error 
+   */
+  showStepAttachmentError(id: number, error: string) {
+    $(function () {
+      $('#attachment-error-' + id).removeClass("d-none");
+      $('#attachment-error-' + id).text(error);
+    });
+  }
+
+  /**
+   * 
+   * @param id 
+   */
+  hideStepAttachmentError(id: number) {
+    $(function () {
+      $('#attachment-error-' + id).addClass("d-none");
+      $('#attachment-error-' + id).text("");
+    });
+  }
+
+
+  getAttachmentFileDetails(event, projectUatScriptDetail: ProjectUatScriptDetail) {
+    this.attachmentFiles = [];
+    for (var i = 0; i < event.target.files.length; i++) {
+      this.selectedUatScriptFiles = null;
+      var name = event.target.files[i].name;
+      var type = event.target.files[i].type;
+      var size = event.target.files[i].size;
+      var modifiedDate = event.target.files[i].lastModifiedDate;
+      let validMimeTpes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingm", "image/jpeg", "image/pjpeg", "image/png"];
+      if (!validMimeTpes.includes(type)) {
+        this.showStepAttachmentError(projectUatScriptDetail.id, "Not a valid file! Allowed types are word,pdf,png,jpg,jpeg!");
+      } else if (size > (1000000)) {
+        this.showStepAttachmentError(projectUatScriptDetail.id, "Max file size can be 1 M.B!" + size);
+      } else {
+        this.selectedAttachmentFiles = event.target.files;
+        for (var i = 0; i < this.selectedAttachmentFiles.length; i++) {
+          this.attachmentFiles.push(this.selectedAttachmentFiles[i]);
+        }
+        this.hideStepAttachmentError(projectUatScriptDetail.id);
+        //console.log(this.allSelectedFiles);
+      }
+      console.log('Name: ' + name + "\n" +
+        'Type: ' + type + "\n" +
+        'Last-Modified-Date: ' + modifiedDate + "\n" +
+        'Size: ' + Math.round(size / 1024) + " KB");
+      projectUatScriptDetail.attahmentUploaded = true;
+      this.clientStorageService.set(projectUatScriptDetail.id.toString(), JSON.stringify(projectUatScriptDetail));
+    }
+  }
+
+  /**
    * 
    */
   @ViewChild("technology") technology;
@@ -885,7 +963,7 @@ export class UATActivityComponent implements OnInit {
       // } else {
       //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
       // }
-      this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+      this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'attachmentDetail', 'remarks',];
 
     } else {
       this.searchedUatScriptComplete = false;
@@ -895,9 +973,9 @@ export class UATActivityComponent implements OnInit {
       //   this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
       // }
       if (this.isAdminOrProjectManager()) {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks',];
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'attachmentDetail', 'remarks',];
       } else {
-        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'remarks', 'activity'];
+        this.projectUatScriptDetailDisplayedColumns = ['uatDescription', 'actualResultDetail', 'retestDetail', 'attachmentDetail', 'remarks', 'activity'];
       }
     }
     this.loadData();
@@ -1039,10 +1117,36 @@ export class UATActivityComponent implements OnInit {
     //console.log(this.clientStorageService.get(projectUatScriptDetail.id.toString()));
     //console.log(JSON.stringify(projectUatScriptDetail));
     //console.log((this.clientStorageService.get(projectUatScriptDetail.id.toString())) === JSON.stringify(projectUatScriptDetail));    
-    if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail))) {
+    //return;
+    if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail)) || projectUatScriptDetail.attahmentUploaded) {
+      projectUatScriptDetail.attachments = [];
       this.projectUatService
         .saveProjectUatScriptDetail(projectUatScriptDetail)
         .subscribe((data: any) => {
+          if (typeof this.attachmentFiles != "undefined") {
+            if (this.attachmentFiles.length > 0) {
+              const formData: FormData = new FormData();
+              for (var i = 0; i < this.attachmentFiles.length; i++) {
+                formData.append("file", this.attachmentFiles[i]);
+              }
+              let headers = new Headers();
+              headers.append('Content-Type', 'multipart/form-data');
+              headers.set('Accept', 'application/json');
+              this.mediaService
+                .saveMediaService(data.id, EntityType.PROJECT_UAT_SCRIPT_STEP, MediaType.PROJECT_UAT_SCRIPT_STEP_ATTACHMENT, "NA", formData, { 'headers': headers })
+                .subscribe((data: any) => {
+                  //this.router.navigate([returnPath]);
+                  this.clientStorageService.remove(projectUatScriptDetail.id.toString());
+                  projectUatScriptDetail.remark = null;
+                  projectUatScriptDetail.editable = false;
+                  //console.log("updated data", JSON.stringify(data));
+                  this.loadData();
+                  this.searched = true;
+                  this.checkCanMarkComplete(this.searchedUatScriptId);
+                  return;
+                });
+            }
+          }
           this.clientStorageService.remove(projectUatScriptDetail.id.toString());
           projectUatScriptDetail.remark = null;
           projectUatScriptDetail.editable = false;
