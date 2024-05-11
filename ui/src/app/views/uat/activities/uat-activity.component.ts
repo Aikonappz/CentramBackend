@@ -39,6 +39,7 @@ import { ConfirmAlert } from '../../../containers/default-layout/modal/ConfirmAl
 import { MediaFile } from '../../../model/MediaFile';
 import { CommonAlert } from '../../../containers/default-layout/modal/CommonAlert';
 import { AttachmentViewer } from '../modal/AttachmentViewer';
+import { User } from '../../../model/User';
 declare var $: any;
 
 @Component({
@@ -91,7 +92,7 @@ export class UATActivityComponent implements OnInit {
   private projectUatScriptDetailSource: ProjectUatScriptDetailSource;
   @ViewChild('projectUatScriptDetailPaginator') projectUatScriptDetailPaginator: MatPaginator;
 
-  projectUatScriptDisplayedColumns = ['testCaseId', 'testCaseDescription', 'status'];
+  projectUatScriptDisplayedColumns = ['testCaseId', 'testCaseDescription', 'customerDetail', 'status'];
   projectUatScriptDataSource: ProjectUatScriptDataSource;
   @ViewChild('projectUatScriptPaginator') projectUatScriptPaginator: MatPaginator;
   selection = new SelectionModel<ProjectUatScript>(true, []);
@@ -901,14 +902,19 @@ export class UATActivityComponent implements OnInit {
       this.projectUatService
         .getProjectUatScripts({
           uatProjectId: this.uatCommunicationSearchForm.controls['searchUatProjectId'].value,
+          customerId: this.isCustomer() ? this.loggedInUser.userId : -1,
         })
         .subscribe((data: ProjectUatScript[]) => {
           this.projectUatScriptList = data;
           for (let k = 0; k < this.projectUatScriptList.length; k++) {
+            this.projectUatScriptList[k].label = "";
+            if (!this.isCustomer()) {
+              this.projectUatScriptList[k].label = this.projectUatScriptList[k].customerUser.email + " -- ";
+            }
             if (this.projectUatScriptList[k].uatComplete == false) {
-              this.projectUatScriptList[k].label = this.projectUatScriptList[k].testCaseId;
+              this.projectUatScriptList[k].label += this.projectUatScriptList[k].testCaseId;
             } else {
-              this.projectUatScriptList[k].label = this.projectUatScriptList[k].testCaseId + " - Complete";
+              this.projectUatScriptList[k].label += this.projectUatScriptList[k].testCaseId + " - Complete";
             }
           }
           this.projectUatScriptList.sort((a, b) => (a.testCaseId < b.testCaseId ? -1 : 1));
@@ -1120,6 +1126,7 @@ export class UATActivityComponent implements OnInit {
     //return;
     if (!(this.clientStorageService.get(projectUatScriptDetail.id.toString()) === JSON.stringify(projectUatScriptDetail)) || projectUatScriptDetail.attahmentUploaded) {
       projectUatScriptDetail.attachments = [];
+      projectUatScriptDetail.customerUser = { id: projectUatScriptDetail.customerUser.id, version: projectUatScriptDetail.customerUser.version } as User;
       this.projectUatService
         .saveProjectUatScriptDetail(projectUatScriptDetail)
         .subscribe((data: any) => {

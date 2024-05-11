@@ -1,6 +1,7 @@
 import { Base } from "./Base"
 import { MediaFile } from "./MediaFile";
 import { ProjectUatScriptDetail } from "./ProjectUatScriptDetail"
+import { User } from "./User";
 
 export class ProjectUatScript extends Base {
     id: number;
@@ -16,6 +17,7 @@ export class ProjectUatScript extends Base {
     uatManual: MediaFile;
     uatScript: MediaFile;
     canMarkComplete: Boolean;
+    customerUser: User;
 }
 
 export interface ProjectUatScriptList {

@@ -33,8 +33,9 @@ public interface ProjectUatRepository extends JpaRepository<ProjectUat, BigInteg
     @Query("select pu from ProjectUat pu where pu.project.id = (:projectId) and pu.moduleId = (:moduleId) and pu.subModuleId = (:subModuleId)")
     List<ProjectUat> getByProjectIdAndModuleIdAndSubModuleId(@Param("projectId") BigInteger projectId, @Param("moduleId") BigInteger moduleId, @Param("subModuleId") BigInteger subModuleId);
 
-    @Query("select pus from ProjectUat pu join pu.projectUatScripts pus where pu.id = (:uatProjectId)")
-    Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(@Param("uatProjectId") BigInteger uatProjectId);
+    @Query("select pus from ProjectUat pu join pu.projectUatScripts pus join pus.customerUser user where 1 = 1 " +
+            " and pu.id = (:uatProjectId) and (:customerId is null or user.id = :customerId)")
+    Set<ProjectUatScript> getProjectUatScriptsByUatProjectId(@Param("uatProjectId") BigInteger uatProjectId, @Param("customerId") BigInteger customerId);
 
     @Query(
             value = "select pus.id from project_uat pu join project_uat_script pus on pu.id = pus.project_uat_id join project p on p.id = pu.project_id" +

@@ -479,12 +479,12 @@ public class ReportService {
         PaginatedList<UatScriptReportDTO> page = this.uatScriptReport(start, end, technology, moduleId, subModuleId, projectId, projectUatId, projectUatScriptId, uploadedByUserId, status, Pageable.unpaged());
         List<UatScriptReportDTO> uatScriptReportDTOS = page.getContent();
         try (ByteArrayOutputStream out = new ByteArrayOutputStream(); CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
-            data = Arrays.asList("Sl.No", "Technology", "Module", "Sub Module", "Project Type", "Project Name", "Project Code", "Project Manager", "Consultant Responsible", "Test Case ID", "Test Case Description", "Status", "Currently with", "Age (days)");
+            data = Arrays.asList("Sl.No", "Technology", "Module", "Sub Module", "Project Type", "Project Name", "Project Code", "Project Manager", "Consultant Responsible", "Test Case ID", "Test Case Description", "Script Detail", "Status", "Currently with", "Age (days)");
             csvPrinter.printRecord(data);
             User manager = null;
             int c = 0;
             for (UatScriptReportDTO uatScriptReportDTO : uatScriptReportDTOS) {
-                data = Arrays.asList(String.valueOf(++c), uatScriptReportDTO.getTechnology(), uatScriptReportDTO.getModule(), uatScriptReportDTO.getSubModule(), uatScriptReportDTO.getProjectType(), uatScriptReportDTO.getProjectName(), uatScriptReportDTO.getProjectCode(), uatScriptReportDTO.getProjectManager(), uatScriptReportDTO.getConsultantResponsible(), uatScriptReportDTO.getTestCaseId(), uatScriptReportDTO.getTestCaseDescription(), uatScriptReportDTO.getStatus(), uatScriptReportDTO.getCurrentlyWith(), String.valueOf(uatScriptReportDTO.getAge()));
+                data = Arrays.asList(String.valueOf(++c), uatScriptReportDTO.getTechnology(), uatScriptReportDTO.getModule(), uatScriptReportDTO.getSubModule(), uatScriptReportDTO.getProjectType(), uatScriptReportDTO.getProjectName(), uatScriptReportDTO.getProjectCode(), uatScriptReportDTO.getProjectManager(), uatScriptReportDTO.getConsultantResponsible(), uatScriptReportDTO.getTestCaseId(), uatScriptReportDTO.getTestCaseDescription(), uatScriptReportDTO.getCustomerUserEmail()+"-"+uatScriptReportDTO.getScriptName(), uatScriptReportDTO.getStatus(), uatScriptReportDTO.getCurrentlyWith(), String.valueOf(uatScriptReportDTO.getAge()));
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
@@ -511,6 +511,12 @@ public class ReportService {
             i.setModuleName(module.getCustomerModuleName());
             module = moduleService.getModuleById(i.getSubModuleId());
             i.setSubModuleName(module.getCustomerModuleName());
+           for(ProjectUatScript projectUatScript : i.getProjectUatScripts()){
+                i.getActionDetails().put(
+                        projectUatScript.getCustomerUser().getEmail(),
+                        projectUatScript.getTestScriptName().concat("/").concat(projectUatScript.getUatComplete()? "Completed" : "Pending")
+                );
+            }
             if (i.getUatCycleComplete()) {
                 i.setStatus("Completed");
             } else if (this.getUatCycleStatus(i) == -1) {

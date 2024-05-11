@@ -19,6 +19,7 @@ export class ProjectUat extends Base {
     canMarkComplete: boolean;
     uatManual : MediaFile;
     uatScript : MediaFile;
+    actionDetails: Map<number, string> = new Map<number, string>();
 }
 
 export interface ProjectUatList {

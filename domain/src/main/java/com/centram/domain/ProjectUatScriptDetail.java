@@ -4,6 +4,8 @@ import com.centram.common.view.Views;
 import com.centram.domain.converter.UATRemarkConverter;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
@@ -85,6 +87,13 @@ public class ProjectUatScriptDetail extends BaseEntity implements Serializable {
     @JsonView(Views.BasicView.class)
     @Convert(converter = UATRemarkConverter.class)
     private LinkedHashSet<UATRemark> remarks;
+
+    @Valid
+    @OneToOne
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "customer_user_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
+    private User customerUser;
 
     @Transient
     @JsonView(Views.BasicView.class)

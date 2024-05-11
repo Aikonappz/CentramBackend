@@ -304,7 +304,8 @@ public class MiscService {
                 } else {
                     user.setUserType(data.get("USER_TYPE").trim());
                 }
-            } if (loggedInUserDTO.getOrganisationId() != null) {
+            }
+            if (loggedInUserDTO.getOrganisationId() != null) {
                 user.setOrganisation(organisationService.getOrganisationById(loggedInUserDTO.getOrganisationId()));
             }
             password = Utility.getUniqueString(8);
@@ -317,7 +318,8 @@ public class MiscService {
             userVO.setPassword(password);
             userVOS.add(userVO);
             rowNo++;
-        } log.info("{}", users);
+        }
+        log.info("{}", users);
         if (!users.isEmpty()) {
             Iterable<User> userList = userService.saveUsers(users);
             Map<String, Object> mailValues = new HashMap<>();
@@ -1659,8 +1661,11 @@ public class MiscService {
         Module module = moduleService.getModule(projectUat.getModuleId());
         Module subModule = moduleService.getModule(projectUat.getSubModuleId());
         User user;
+        Boolean hasMultiCustomer = project.getStakeHolders().size() > 1;
+        String customerDetail = projectUatScriptDetail.getCustomerUser() != null ? projectUatScriptDetail.getCustomerUser().getFirstName() + " " + projectUatScriptDetail.getCustomerUser().getLastName() + "/" + projectUatScriptDetail.getCustomerUser().getEmail() : null;
+        String uatScriptAppender = hasMultiCustomer ? "/" + customerDetail : "";
         Map<String, Object> emailValues = new LinkedHashMap<String, Object>();
-        emailValues.put("uatScript", projectUatScript.getTestScriptName() + " [" + projectUatScript.getTestCaseId() + "]");
+        emailValues.put("uatScript", projectUatScript.getTestScriptName() + " [" + projectUatScript.getTestCaseId() + "]" + uatScriptAppender);
         emailValues.put("projectName", project.getName() + " [" + project.getCode() + "]");
         emailValues.put("moduleName", module.getCustomerModuleName());
         emailValues.put("subModuleName", subModule.getCustomerModuleName());
@@ -1708,12 +1713,14 @@ public class MiscService {
         }
         // customer
         for (String customerEmail : project.getStakeHolders()) {
-            user = userService.getUserByEmail(customerEmail);
-            projectUATVO.setRecipientName(user.getFirstName().concat(" ").concat(user.getLastName()));
-            projectUATVO.setTo(new String[]{user.getEmail()});
-            projectUATVO.setNotifications(new ArrayList<Notification>());
-            projectUATVO.getNotifications().add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
-            appEmailService.notifyUatActivities(projectUATVO);
+            if (projectUatScriptDetail.getCustomerUser() != null && projectUatScriptDetail.getCustomerUser().getEmail().equals(customerEmail)) {
+                user = userService.getUserByEmail(customerEmail);
+                projectUATVO.setRecipientName(user.getFirstName().concat(" ").concat(user.getLastName()));
+                projectUATVO.setTo(new String[]{user.getEmail()});
+                projectUATVO.setNotifications(new ArrayList<Notification>());
+                projectUATVO.getNotifications().add(new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
+                appEmailService.notifyUatActivities(projectUATVO);
+            }
         }
     }
 
@@ -1789,8 +1796,13 @@ public class MiscService {
         Module module = moduleService.getModule(projectUat.getModuleId());
         Module subModule = moduleService.getModule(projectUat.getSubModuleId());
         projectUATVO.setReplyTo(appReplyToEmail);
+
+        Boolean hasMultiCustomer = project.getStakeHolders().size() > 1;
+        String customerDetail = projectUatScript.getCustomerUser() != null ? projectUatScript.getCustomerUser().getFirstName() + " " + projectUatScript.getCustomerUser().getLastName() + "/" + projectUatScript.getCustomerUser().getEmail() : null;
+        String uatScriptAppender = hasMultiCustomer ? "/" + customerDetail : "";
+
         Map<String, Object> emailValues = new LinkedHashMap<String, Object>();
-        emailValues.put("uatScript", projectUatScript.getTestScriptName() + " [" + projectUatScript.getTestCaseId() + "]");
+        emailValues.put("uatScript", projectUatScript.getTestScriptName() + " [" + projectUatScript.getTestCaseId() + "]"+uatScriptAppender);
         emailValues.put("projectName", project.getName() + " [" + project.getCode() + "]");
         emailValues.put("moduleName", module.getCustomerModuleName());
         emailValues.put("subModuleName", subModule.getCustomerModuleName());
@@ -1877,7 +1889,6 @@ public class MiscService {
     }
 
 
-
     @Transactional
     @Async("asyncExecutor")
     public void notifyTimeSheetUpdate(TimeSheet timeSheet) {
@@ -1885,25 +1896,25 @@ public class MiscService {
         Map<String, Object> objectMap = new HashMap<String, Object>();
         User user;
         /** user email **/
-        if(timeSheet.getNewSubmission()) {
+        if (timeSheet.getNewSubmission()) {
             objectMap = new HashMap<String, Object>();
             user = userRepository.getUserById(timeSheet.getUser().getId());
             objectMap.put("recipientEmail", new String[]{user.getEmail()});
             objectMap.put("cc", new String[]{});
             objectMap.put("bcc", new String[]{});
-            objectMap.put("from",timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
-            objectMap.put("to",timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+            objectMap.put("from", timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+            objectMap.put("to", timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
             objectMap.put("recipientName", timeSheet.getUser().getFirstName());
-            objectMap.put("user",timeSheet.getUser().getFirstName()+" "+timeSheet.getUser().getLastName());
-            objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/"+timeSheet.getId()));
-            objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/"+timeSheet.getId()));
+            objectMap.put("user", timeSheet.getUser().getFirstName() + " " + timeSheet.getUser().getLastName());
+            objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/" + timeSheet.getId()));
+            objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/" + timeSheet.getId()));
             objectMap.put("notifications", new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
             objectMap.put("subject", "userSubmissionTitle");
             objectMap.put("body", "userSubmissionBody");
             //send mail
             appEmailService.notifyTimeSheetUpdate(objectMap);
-        }else{
-            if(loggedInUser.getUserId().compareTo(timeSheet.getUser().getId()) != 0) {
+        } else {
+            if (loggedInUser.getUserId().compareTo(timeSheet.getUser().getId()) != 0) {
                 objectMap = new HashMap<String, Object>();
                 user = userRepository.getUserById(timeSheet.getUser().getId());
                 objectMap.put("recipientEmail", new String[]{user.getEmail()});
@@ -1923,27 +1934,27 @@ public class MiscService {
         }
         /** user email **/
         /** approver email **/
-        if(timeSheet.getNewSubmission()) {;
-            for(TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()){
+        if (timeSheet.getNewSubmission()) {
+            for (TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()) {
                 objectMap = new HashMap<String, Object>();
                 user = userRepository.getUserById(timeSheetEntry.getApprover().getId());
                 objectMap.put("recipientEmail", new String[]{user.getEmail()});
                 objectMap.put("cc", new String[]{});
                 objectMap.put("bcc", new String[]{});
-                objectMap.put("from",timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
-                objectMap.put("to",timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                objectMap.put("from", timeSheet.getStartDate().format(DateTimeFormatter.ofPattern(dateFormat)));
+                objectMap.put("to", timeSheet.getEndDate().format(DateTimeFormatter.ofPattern(dateFormat)));
                 objectMap.put("recipientName", user.getFirstName());
-                objectMap.put("user",timeSheet.getUser().getFirstName()+" "+timeSheet.getUser().getLastName());
-                objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/"+timeSheet.getId()));
-                objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/"+timeSheet.getId()));
+                objectMap.put("user", timeSheet.getUser().getFirstName() + " " + timeSheet.getUser().getLastName());
+                objectMap.put("timeSheetUserLink", appBaseUrl.concat("/timesheet/timesheet/edit/" + timeSheet.getId()));
+                objectMap.put("timeSheetApprovalLink", appBaseUrl.concat("/timesheet/operation/timesheet-approval/" + timeSheet.getId()));
                 objectMap.put("notifications", new Notification(null, null, user, Status.PUSHED, NotificationType.INFO));
                 objectMap.put("subject", "managerTitle");
                 objectMap.put("body", "managerBody");
                 //send mail
                 appEmailService.notifyTimeSheetUpdate(objectMap);
             }
-        }else{
-            if(loggedInUser.getUserId().compareTo(timeSheet.getUser().getId()) == 0) {
+        } else {
+            if (loggedInUser.getUserId().compareTo(timeSheet.getUser().getId()) == 0) {
                 for (TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()) {
                     objectMap = new HashMap<String, Object>();
                     user = userRepository.getUserById(timeSheetEntry.getApprover().getId());

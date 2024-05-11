@@ -94,8 +94,11 @@ public class UATApiController {
 
     @RequestMapping(value = "/uat-scripts", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('UAT ACTIVITIES,REPORT,UAT REPORT','WRITE,READ,READ',authentication.principal)")
-    public ResponseEntity<Set<ProjectUatScript>> getProjectUatScripts(@NotNull @Valid @RequestParam(value = "uatProjectId", required = true) BigInteger uatProjectId) {
-        return new ResponseEntity<Set<ProjectUatScript>>(projectUatService.getProjectUatScriptsByUatProjectId(uatProjectId), HttpStatus.OK);
+    public ResponseEntity<Set<ProjectUatScript>> getProjectUatScripts(
+            @RequestParam(value = "uatProjectId", required = true) BigInteger uatProjectId,
+            @RequestParam(value = "customerId", required = false, defaultValue = "-1") BigInteger customerId
+    ) {
+        return new ResponseEntity<Set<ProjectUatScript>>(projectUatService.getProjectUatScriptsByUatProjectId(uatProjectId,customerId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/uat-script-detail", produces = {"application/json"}, method = RequestMethod.GET)

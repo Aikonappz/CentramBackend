@@ -28,7 +28,7 @@ export class UATReportComponent implements OnInit {
   moduleName: string = "UAT REPORT";
   //actions: string[] = ["READ", "DELETE", "SEARCH", "WRITE"];
   //displayedColumns = ['projDtl', 'consltDtl', 'testCaseDtl', 'status',];
-  displayedColumns = ['project', 'technology', 'module', 'subModule', 'status',];
+  displayedColumns = ['project', 'technology', 'module', 'subModule', 'actionDetails', 'status',];
   datasource: UatScriptReportDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   statusList: any[] = [];

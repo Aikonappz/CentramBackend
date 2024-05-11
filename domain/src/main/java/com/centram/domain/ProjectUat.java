@@ -14,6 +14,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -123,6 +125,10 @@ public class ProjectUat extends BaseEntity implements Serializable {
     @Transient
     @JsonView(Views.BasicView.class)
     private String status;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private Map<String,String> actionDetails = new HashMap<String,String>();
 
     public ProjectUat(@NotNull BigInteger id) {
         this.id = id;

@@ -37,6 +37,9 @@ public class UatScriptReportDTO implements Serializable {
     private String status;
     private String currentlyWith;
     private Long age;
+    private String customerUserName;
+    private String customerUserEmail;
+    private String scriptName;
 
     public UatScriptReportDTO(ProjectUat projectUat, ProjectUatScript projectUatScript) {
         this.moduleId = projectUat.getModuleId();
@@ -51,6 +54,9 @@ public class UatScriptReportDTO implements Serializable {
         this.technology = projectUat.getTechnology().name();
         this.testCaseId = projectUatScript.getTestCaseId();
         this.testCaseDescription = projectUatScript.getTestCaseDescription();
+        this.customerUserEmail = projectUatScript.getCustomerUser().getEmail();
+        this.customerUserName = projectUatScript.getCustomerUser().getFirstName()+" "+projectUatScript.getCustomerUser().getLastName();
+        this.scriptName = projectUatScript.getTestScriptName();
         if (projectUatScript.getUatComplete()) {
             this.status = "Completed";
         } else if (!projectUatScript.getUatComplete() && projectUatScript.getProjectUatScriptDetails().stream().noneMatch(i -> {

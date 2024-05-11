@@ -1,4 +1,5 @@
 import { Base } from "./Base"
+import { User } from "./User";
 
 export class ProjectUatScriptDetail extends Base {
   id: number;
@@ -14,6 +15,7 @@ export class ProjectUatScriptDetail extends Base {
   remark: string;
   editable: boolean = false;
   previousStepPassed: boolean = false;
+  customerUser: User;
   saved: boolean = false;
   attachments: any[] = [];
   attahmentUploaded: boolean = false;

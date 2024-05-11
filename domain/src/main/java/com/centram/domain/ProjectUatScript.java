@@ -3,6 +3,8 @@ package com.centram.domain;
 import com.centram.common.view.Views;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.springframework.validation.annotation.Validated;
 
@@ -55,6 +57,13 @@ public class ProjectUatScript extends BaseEntity implements Serializable {
     @Column(name = "test_script_name", nullable = false)
     @JsonView(Views.BasicView.class)
     private String testScriptName;
+
+    @Valid
+    @OneToOne
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "customer_user_id", nullable = false, referencedColumnName = "id")
+    @JsonView(Views.BasicView.class)
+    private User customerUser;
 
     @NotNull
     @Valid

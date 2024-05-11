@@ -242,6 +242,8 @@
                       </div>
                     </div>
                   </div>
+                </div>
+                <div class="row row-margin-05">
                   <div class="col">
                     <label class="form-col-form-label required-control-label" for="searchUatProjectScriptId">UAT
                       Script</label>
@@ -256,6 +258,8 @@
                       </div>
                     </div>
                   </div>
+                  <div class="col"></div>
+                  <div class="col"></div>
                 </div>
               </div>
             </form>
@@ -286,6 +290,17 @@
                       (click)="downloadFile(projectUatScript?.uatManual?.id, projectUatScript?.uatManual?.fileName)">{{projectUatScript?.uatManual?.fileName}}&nbsp;&nbsp;</span>
                   </label>
                 </div>
+              </div>
+              <div class="row row-margin-10" *ngIf="projectUatScript!=null">
+                <div class="col">
+                  <label class="form-col-form-label " for="testCaseId"><u><b>Customer Details</b></u> :
+                    {{projectUatScript?.customerUser?.firstName}}
+                    {{projectUatScript?.customerUser?.lastName}}/{{projectUatScript?.customerUser?.email}}</label>
+                </div>
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col"></div>
+                <div class="col"></div>
               </div>
               <table mat-table class="table table-striped script-table" [dataSource]="projectUatScriptDetailSource">
                 <ng-container matColumnDef="uatDescription">
@@ -551,6 +566,13 @@
                   <th mat-header-cell *matHeaderCellDef> Test Case Description</th>
                   <td mat-cell *matCellDef="let element">
                     {{element.testCaseDescription}}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="customerDetail">
+                  <th mat-header-cell *matHeaderCellDef> Customer Detail</th>
+                  <td mat-cell *matCellDef="let element">
+                    <div>{{element?.customerUser?.firstName}} {{element?.customerUser?.lastName}}</div>
+                    <div>{{element?.customerUser?.email}}</div>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="status">

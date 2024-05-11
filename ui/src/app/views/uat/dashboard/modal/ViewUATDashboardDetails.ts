@@ -48,6 +48,14 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
                 <div>{{element.subModuleName}}</div>
               </td>
             </ng-container>
+            <ng-container matColumnDef="actionDetails">
+              <th mat-header-cell *matHeaderCellDef>Script Wise Status</th>
+              <td mat-cell *matCellDef="let element">
+                <div *ngFor="let actionDetail of element.actionDetails | keyvalue">
+                    {{actionDetail.key}} - {{actionDetail.value}}
+                </div>
+              </td>
+            </ng-container>
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let element">
@@ -76,7 +84,7 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
 })
 export class ViewUATDashboardDetails implements OnInit {
   params: any;
-  displayedColumns = ['name', 'technology', 'module', 'subModule', 'status',];
+  displayedColumns = ['name', 'technology', 'module', 'subModule', 'actionDetails', 'status',];
   datasource: UatReportDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
