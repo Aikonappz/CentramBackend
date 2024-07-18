@@ -7,7 +7,7 @@ import { tap } from "rxjs/operators";
 import { LoggedInUserService } from "../../../../service/LoggedInUserService";
 import { AppUtility } from "../../../../config/AppUtility";
 import { ReportService } from "../../../../service/ReportService";
-import { UatReportDataSource } from "../../../../service/datasource/UatReportDataSource";
+import { TimesheetReportDataSource } from "../../../../service/datasource/TimesheetReportDataSource";
 
 
 @Component({
@@ -23,42 +23,37 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
       <div class="col-sm-12">
         <div class="card ">
           <table mat-table [dataSource]="datasource">
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Project Name</th>
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>User</th>
               <td mat-cell *matCellDef="let element">
-              <div><a target="_blank" href="uat/activities" >{{element.project.name}} [{{element.project.code}}]</a></div>
+                <div>{{element.userName}} <{{element.userEmail}}></div>
+                <div>{{element.userEmpId}}</div>
               </td>
             </ng-container>
-            <ng-container matColumnDef="technology">
-              <th mat-header-cell *matHeaderCellDef>Technology</th>
+            <ng-container matColumnDef="project">
+              <th mat-header-cell *matHeaderCellDef>Project</th>
               <td mat-cell *matCellDef="let element">
-                <div>{{element.technology}}</div>
-  
+                <div>{{element.projectName}} <{{element.projectCode}}></div>
+                <div>{{element.task}}</div>
+                <div>{{element.taskDescription}}</div>
               </td>
             </ng-container>
-            <ng-container matColumnDef="module">
-              <th mat-header-cell *matHeaderCellDef>Module</th>
+            <ng-container matColumnDef="work">
+              <th mat-header-cell *matHeaderCellDef>Work Detail</th>
               <td mat-cell *matCellDef="let element">
-                <div>{{element.moduleName}}</div>
+                <div>Billable : {{element.billable? 'YES' : 'NO'}}</div>
+                <div>Hours : {{element.totalHours}}</div>
+                <div>Status : {{element.approved? 'Approved' : 'Pending'}}</div>
               </td>
             </ng-container>
-            <ng-container matColumnDef="subModule">
-              <th mat-header-cell *matHeaderCellDef>Sub Module</th>
+            <ng-container matColumnDef="approver">
+              <th mat-header-cell *matHeaderCellDef>Approver</th>
               <td mat-cell *matCellDef="let element">
-                <div>{{element.subModuleName}}</div>
+                <div>{{element.approverName}} <{{element.approverEmail}}></div>
+                <div>{{element.approverEmpId}}</div>
+                <div>{{element.approverComment}}</div>
               </td>
-            </ng-container>
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let element">
-                <span [ngClass]="{
-                        'badge-closed': element.status =='Completed',                      
-                        'badge-sla-breached': element.status =='Not Started',   
-                        'badge-sla-about-to-breach' : element.status =='In Progress',                     
-                        'badge':true
-                        }">{{element.status}}</span>
-              </td>
-            </ng-container>
+            </ng-container>            
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; let even = even; columns: displayedColumns;" [ngClass]="{gray: even}"></tr>
             <tr class="mat-row" *matNoDataRow>
@@ -74,10 +69,11 @@ import { UatReportDataSource } from "../../../../service/datasource/UatReportDat
     </div>
   </div>`
 })
-export class ViewUATDashboardDetails implements OnInit {
+// <div><a target="_blank" href="uat/activities" >{{element.project.name}} [{{element.project.code}}]</a></div>
+export class ViewTimesheetDashboardDetails implements OnInit {
   params: any;
-  displayedColumns = ['name', 'technology', 'module', 'subModule', 'status',];
-  datasource: UatReportDataSource;
+  displayedColumns = ['user', 'project', 'work', 'approver',];
+  datasource: TimesheetReportDataSource;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(
     private fb: FormBuilder,
@@ -88,7 +84,7 @@ export class ViewUATDashboardDetails implements OnInit {
   ) {
   }
   ngOnInit(): void {
-    this.datasource = new UatReportDataSource(this.service);
+    this.datasource = new TimesheetReportDataSource(this.service);
     this.datasource.loadData(0, 10, this.params);
   }
 

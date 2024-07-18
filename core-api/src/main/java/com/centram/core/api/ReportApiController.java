@@ -6,6 +6,7 @@ import com.centram.common.dto.UatScriptReportDTO;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.view.Views;
+import com.centram.common.vo.TimeSheetReportVO;
 import com.centram.core.service.ReportService;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.LicenseType;
@@ -34,7 +35,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @RequestMapping(value = "/api/v1/report")
@@ -235,4 +238,18 @@ public class ReportApiController {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<PaginatedList<ProjectUat>>(reportService.uatReport(loggedInUser, start,  end,  Technology.valueOf(technology),  moduleId,  subModuleId,  projectId,  projectUatId,  uploadedByUserId, status,  pageable), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/timesheet", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('REPORT,TIMESHEET REPORT','READ,READ',authentication.principal)")
+    public ResponseEntity<PaginatedList<TimeSheetReportVO>> timesheetReport(
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "start", defaultValue = "", required = false) LocalDateTime start,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "end", defaultValue = "", required = false) LocalDateTime end,
+            @RequestParam(value = "approved", defaultValue = "false", required = false) Boolean approved,
+            @RequestParam(value = "userIds", required = false) List<BigInteger> userIds,
+            @RequestParam(value = "includeAll", defaultValue = "false", required = false) Boolean includeAll,
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<PaginatedList<TimeSheetReportVO>>(reportService.timesheetReport(loggedInUser, start,  end,  approved, userIds, includeAll,  pageable), HttpStatus.OK);
+    }
+
 }

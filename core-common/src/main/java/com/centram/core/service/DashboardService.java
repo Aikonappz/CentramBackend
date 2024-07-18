@@ -23,11 +23,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -59,6 +57,9 @@ public class DashboardService {
 
     @Autowired
     private ProjectUatRepository projectUatRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @Autowired
     private RoleService roleService;
@@ -269,7 +270,6 @@ public class DashboardService {
     }
 
     /**
-     *
      * @param start
      * @param end
      * @param projectStart
@@ -282,44 +282,38 @@ public class DashboardService {
     }
 
     /**
-     *
      * @param start
      * @param end
      * @param projectStart
      * @param projectEnd
      * @return
      */
-    private Long noOfworkingDays(LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd){
+    private Long noOfworkingDays(LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd) {
         LocalDate actualStart = start.toLocalDate();
         LocalDate actualEnd = end.toLocalDate();
-        if(projectStart.isAfter(start))
-            actualStart = projectStart.toLocalDate();
-        if(projectEnd.isBefore(end))
-            actualEnd = projectEnd.toLocalDate();
+        if (projectStart.isAfter(start)) actualStart = projectStart.toLocalDate();
+        if (projectEnd.isBefore(end)) actualEnd = projectEnd.toLocalDate();
         return DAYS.between(actualStart, actualEnd);
     }
 
     /**
-     *
      * @param location
      * @return
      */
-    private Long noOfHours(Location location){
+    private Long noOfHours(Location location) {
         return HOURS.between(location.getOpsStartTime(), location.getOpsEndTime());
     }
 
     /**
-     *
      * @param perDayHour
      * @param noOfDays
      * @return
      */
-    private Long totalHours(Long perDayHour, Long noOfDays){
-        return perDayHour*noOfDays;
+    private Long totalHours(Long perDayHour, Long noOfDays) {
+        return perDayHour * noOfDays;
     }
 
     /**
-     *
      * @param userId
      * @param projectId
      * @param start
@@ -328,26 +322,24 @@ public class DashboardService {
      * @param projectEnd
      * @return
      */
-    private Long submittedTime(BigInteger userId, BigInteger projectId, LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd){
+    private Long submittedTime(BigInteger userId, BigInteger projectId, LocalDateTime start, LocalDateTime end, LocalDateTime projectStart, LocalDateTime projectEnd) {
         List<TimeSheet> timeSheets = timeSheetRepository.getTimeSheetByUser(userId);
         LocalDate actualStart = start.toLocalDate();
         LocalDate actualEnd = end.toLocalDate();
-        if(projectStart.isAfter(start))
-            actualStart = projectStart.toLocalDate();
-        if(projectEnd.isBefore(end))
-            actualEnd = projectEnd.toLocalDate();
+        if (projectStart.isAfter(start)) actualStart = projectStart.toLocalDate();
+        if (projectEnd.isBefore(end)) actualEnd = projectEnd.toLocalDate();
         Iterator<Map.Entry<LocalDate, LocalTime>> iterator;
         Map.Entry<LocalDate, LocalTime> entry;
-        Long total=0l;
-        if(!CollectionUtils.isEmpty(timeSheets)){
-            for(TimeSheet timeSheet : timeSheets){
-                if(!CollectionUtils.isEmpty(timeSheet.getTimeSheetEntries())){
-                    for(TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()){
-                        if(timeSheetEntry.getProject().getId().compareTo(projectId) == 0){
+        Long total = 0L;
+        if (!CollectionUtils.isEmpty(timeSheets)) {
+            for (TimeSheet timeSheet : timeSheets) {
+                if (!CollectionUtils.isEmpty(timeSheet.getTimeSheetEntries())) {
+                    for (TimeSheetEntry timeSheetEntry : timeSheet.getTimeSheetEntries()) {
+                        if (timeSheetEntry.getProject().getId().compareTo(projectId) == 0) {
                             iterator = timeSheetEntry.getTimeEntries().entrySet().iterator();
-                            while(iterator.hasNext()){
+                            while (iterator.hasNext()) {
                                 entry = iterator.next();
-                                if(!(entry.getKey().isBefore(actualStart) && entry.getKey().isAfter(actualEnd)) && entry.getValue() != null){
+                                if (!(entry.getKey().isBefore(actualStart) && entry.getKey().isAfter(actualEnd)) && entry.getValue() != null) {
                                     total += entry.getValue().getHour();
                                 }
                             }
@@ -360,6 +352,7 @@ public class DashboardService {
     }
 
     /**
+     * old one
      *
      * @param currentDate
      * @return
@@ -377,39 +370,59 @@ public class DashboardService {
             projectAllocationDetails = projectAllocationDetailRepository.getUserProjects(user.getId(), startDateTime, endDateTime);
             if (!CollectionUtils.isEmpty(projectAllocationDetails)) {
                 for (ProjectAllocationDetail projectAllocationDetail : projectAllocationDetails) {
-                        timeSheetDashBoardVOS.add(
-                                new TimeSheetDashBoardVO(
-                                        user.getId(),
-                                        user.getFirstName()+" "+user.getLastName(),
-                                        user.getLocation().getId(),
-                                        user.getLocation().getName(),
-                                        totalHours(
-                                                noOfHours(user.getLocation()),
-                                                noOfworkingDays(
-                                                    startDateTime,
-                                                    endDateTime,
-                                                    projectAllocationDetail.getStartDate(),
-                                                    projectAllocationDetail.getEndDate()
-                                                )
-                                        ),
-                                        projectAllocationDetail.getProject().getProjectBillingType(),
-                                        projectAllocationDetail.getProject().getId(),
-                                        projectAllocationDetail.getProject().getName(),
-                                        projectAllocationDetail.getStartDate(),
-                                        projectAllocationDetail.getEndDate(),
-                                        submittedTime(
-                                                user.getId(),
-                                                projectAllocationDetail.getProject().getId(),
-                                                startDateTime,
-                                                endDateTime,
-                                                projectAllocationDetail.getStartDate(),
-                                                projectAllocationDetail.getEndDate()
-                                        )
-                                )
-                        );
+                    timeSheetDashBoardVOS.add(new TimeSheetDashBoardVO(user.getId(), user.getFirstName() + " " + user.getLastName(), user.getLocation().getId(), user.getLocation().getName(), totalHours(noOfHours(user.getLocation()), noOfworkingDays(startDateTime, endDateTime, projectAllocationDetail.getStartDate(), projectAllocationDetail.getEndDate())), projectAllocationDetail.getProject().getProjectBillingType(), projectAllocationDetail.getProject().getId(), projectAllocationDetail.getProject().getName(), projectAllocationDetail.getStartDate(), projectAllocationDetail.getEndDate(), submittedTime(user.getId(), projectAllocationDetail.getProject().getId(), startDateTime, endDateTime, projectAllocationDetail.getStartDate(), projectAllocationDetail.getEndDate())));
                 }
             }
         }
         return timeSheetDashBoardVOS;
+    }
+
+    /**
+     * new one
+     *
+     * @param currentDate
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public TimeSheetDashBoardV1VO timeSheetV1Dashboard(LocalDate currentDate) {
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> roleNames = roleService.getByIds(loggedInUser.getRoles());
+        List<Project> projects;
+        List<ProjectAllocationDetail> projectAllocationDetails;
+        List<BigInteger> projectIds;
+        String emailExp = Stream.of(loggedInUser.getEmail()).map(String::valueOf).collect(Collectors.joining("|"));
+        List<BigInteger> userIds = Collections.emptyList();
+        List<User> users;
+        if(roleNames.contains("ORG_ADMIN_PROJECT") || roleNames.contains("ORG_ADMIN") ){
+            users = userRepository.getUsersByRoleNames(
+                    Collections.singleton("ORG_USER_PROJECT").stream().map(String::valueOf).collect(Collectors.joining("|")),
+                    loggedInUser.getOrganisationId()
+            );
+            userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        }else if(roleNames.contains("ORG_PROJECT_TIMESHEET_APPROVER")){
+            projects = projectRepository.getProjectByProjectApproversEmail(emailExp, loggedInUser.getOrganisationId());
+            projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
+            projectAllocationDetails = projectAllocationDetailRepository.getUsersProjects(projectIds);
+            users = projectAllocationDetails.stream().map(ProjectAllocationDetail::getUser).collect(Collectors.toList());
+            userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        }else if(roleNames.contains("ORG_USER_PROJECT")){
+            projectAllocationDetails = projectAllocationDetailRepository.getUserProjects(loggedInUser.getUserId());
+            users = projectAllocationDetails.stream().map(ProjectAllocationDetail::getUser).collect(Collectors.toList());
+            userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        }
+        LocalDate endDate = LocalDate.now(ZoneId.systemDefault());
+        LocalDate startDate = endDate.minusDays(90);
+        Page<TimeSheetEntry> page = timeSheetRepository.getTimeSheetsByUserIdsAndDateRange(userIds, startDate, endDate, Pageable.unpaged());
+        Long approvedCount = 0L;
+        Long pendingCount = 0L;
+        Long inProgressCount = 0L;
+        for (TimeSheetEntry timeSheetEntry : page.getContent()) {
+            if (timeSheetEntry.getApproved()) {
+                approvedCount++;
+            } else {
+                pendingCount++;
+            }
+        }
+        return new TimeSheetDashBoardV1VO(approvedCount, pendingCount);
     }
 }

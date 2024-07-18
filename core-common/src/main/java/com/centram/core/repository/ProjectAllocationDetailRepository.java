@@ -29,6 +29,9 @@ public interface ProjectAllocationDetailRepository extends JpaRepository<Project
     @Query("select pad from ProjectAllocationDetail pad where pad.user.id = (:userId)")
     List<ProjectAllocationDetail> getUserProjects(@Param("userId") BigInteger userId);
 
+    @Query("select pad from ProjectAllocationDetail pad where pad.user.id in (:userIds)")
+    List<ProjectAllocationDetail> getUsersProjects(@Param("userIds") List<BigInteger> userIds);
+
     @Query("select pad from ProjectAllocationDetail pad where pad.user.id = (:userId) and (:start) between pad.startDate and pad.endDate or (:end) between pad.startDate and pad.endDate")
     List<ProjectAllocationDetail> getUserProjects(@Param("userId") BigInteger userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
@@ -65,6 +68,13 @@ public interface ProjectAllocationDetailRepository extends JpaRepository<Project
             Pageable pageable
     );
 
-    @Query("select pad.user from ProjectAllocationDetail pad where pad.project.id = (:projectId) and pad.project.organisation.id = (:organisationId) and pad.deallocated = 0")
-    Page<User> getUserProjects(@Param("organisationId") BigInteger organisationId, @Param("projectId") BigInteger projectId, Pageable pageable);
+    @Query("select pad.user from ProjectAllocationDetail pad where pad.project.id = (:projectId) and pad.project.organisation.id = (:organisationId) " +
+            " and " +
+            "  ( " +
+            "    (:includeDeallocated = true and 1=1) " +
+            "    OR " +
+            "    (:includeDeallocated = false and pad.deallocated = 0) " +
+            "  ) "
+    )
+    Page<User> getUserProjects(@Param("organisationId") BigInteger organisationId, @Param("projectId") BigInteger projectId, @Param("includeDeallocated") Boolean includeDeallocated , Pageable pageable);
 }

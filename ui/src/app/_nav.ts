@@ -349,20 +349,20 @@ export const navItems: INavData[] = [
     icon: 'icon-speedometer',
     attributes: { "order": 4, "parentModule": "TIMESHEET", "moduleName": "TIMESHEET SUBMIT", "licenceType": "ALL,TIMESHEET" }
   },
-  // {
-  //   name: 'Reports',
-  //   icon: 'fa fa-folder',
-  //   url: '/uat/report',
-  //   attributes: { "order": 4, "parentModule": "UAT", "moduleName": "REPORT", "licenceType": "ALL,UAT" },
-  //   children: [
-  //     {
-  //       name: 'UAT Report',
-  //       url: '/uat/report',
-  //       icon: 'fa fa-folder-open',
-  //       attributes: { "parentModule": "UAT", "moduleName": "UAT REPORT", "licenceType": "ALL,UAT" }
-  //     },
-  //   ]
-  // },
+  {
+    name: 'Reports',
+    icon: 'fa fa-folder',
+    url: '/timesheet/report',
+    attributes: { "order": 4, "parentModule": "TIMESHEET", "moduleName": "REPORT", "licenceType": "ALL,TIMESHEET" },
+    children: [
+      {
+        name: 'Timesheet Report',
+        url: '/timesheet/report',
+        icon: 'fa fa-folder-open',
+        attributes: { "parentModule": "TIMESHEET", "moduleName": "TIMESHEET REPORT", "licenceType": "ALL,TIMESHEET" }
+      },
+    ]
+  },
   // PROJECT
   // INCIDENT
   {

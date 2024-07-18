@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { UATReportComponent } from './report/uatreport.component';
+import { TimesheetReportComponent } from './report/timesheetreport.component';
 
 import { UATActivityComponent } from './activities/uat-activity.component';
-import { TimeSheetDashboardComponent } from './dashboard/uatdashboard.component';
+import { TimeSheetDashboardComponent } from './dashboard/dashboard.component';
 import { UATProjectComponent } from './master/uatproject.component';
 import { EditUATProjectComponent } from './master/edituatproject.component';
 import { EditLocationComponent } from './master/editlocation.component';
@@ -38,7 +38,7 @@ const routes: Routes = [
         component: TimeSheetDashboardComponent,
         pathMatch: 'full',
         data: {
-          title: 'UAT Dashboard'
+          title: 'Timesheet Dashboard'
         },
       },
       {
@@ -96,6 +96,14 @@ const routes: Routes = [
         data: {
           title: 'Edit TimeSheet'
         }
+      },
+      {
+        path: 'report',
+        component: TimesheetReportComponent,
+        pathMatch: 'full',
+        data: {
+          title: 'Timesheet Report'
+        },
       },
     ]
   }

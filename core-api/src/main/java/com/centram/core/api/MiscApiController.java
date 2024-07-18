@@ -527,7 +527,7 @@ public class MiscApiController {
     @JsonView(Views.DetailView.class)
     public ResponseEntity<PaginatedList<Project>> getProjects(@RequestParam(value = "projectFor", defaultValue = "ALL", required = false) String projectFor, @RequestParam(value = "projectType", defaultValue = "ALL", required = false) String projectType, @RequestParam(value = "inHouse", defaultValue = "", required = false) String inHouse, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(loggedInUser.getOrganisationId(), inHouse, LicenseType.valueOf(projectFor), ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<Project>>(projectService.getProjects(loggedInUser, inHouse, LicenseType.valueOf(projectFor), ProjectType.valueOf(projectType), pageable), HttpStatus.OK);
     }
 
     /**
@@ -591,9 +591,11 @@ public class MiscApiController {
 
     @RequestMapping(value = "/allocated-user", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DEALLOCATE PROJECT','WRITE|DEALLOCATE,WRITE|ALLOCATE',authentication.principal)")
-    public ResponseEntity<PaginatedList<User>> getAllocatedUser(@RequestParam(value = "projectId", required = true) BigInteger projectId, @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+    public ResponseEntity<PaginatedList<User>> getAllocatedUser(@RequestParam(value = "projectId", required = true) BigInteger projectId,
+                                                                @RequestParam(value = "includeDeallocated", defaultValue = "false", required = false) Boolean includeDeallocated,
+                                                                @PageableDefault(size = Integer.MAX_VALUE, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<PaginatedList<User>>(projectAllocationDetailService.getAllocatedUser(loggedInUser, projectId, pageable), HttpStatus.OK);
+        return new ResponseEntity<PaginatedList<User>>(projectAllocationDetailService.getAllocatedUser(loggedInUser, projectId, includeDeallocated, pageable), HttpStatus.OK);
     }
 
     /*@RequestMapping(value = "/user-timesheet", produces = {"application/json"}, method = RequestMethod.GET)

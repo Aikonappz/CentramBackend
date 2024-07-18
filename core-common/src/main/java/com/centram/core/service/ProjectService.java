@@ -7,8 +7,10 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.ProjectAllocationDetailRepository;
 import com.centram.core.repository.ProjectRepository;
+import com.centram.core.repository.UserRepository;
 import com.centram.domain.Module;
 import com.centram.domain.Project;
+import com.centram.domain.ProjectAllocationDetail;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.ProjectType;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,9 +22,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ProjectService {
@@ -43,6 +50,12 @@ public class ProjectService {
 
     @Autowired
     private ModuleService moduleService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     /**
@@ -93,7 +106,7 @@ public class ProjectService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PaginatedList<Project> getProjects(BigInteger organisationId, String inHouse, LicenseType projectFor ,ProjectType projectType, Pageable pageable) {
+    public PaginatedList<Project> getProjects(LoggedInUser loggedInUser, String inHouse, LicenseType projectFor, ProjectType projectType, Pageable pageable) {
         Boolean hasFilter = !inHouse.equalsIgnoreCase("");
         Boolean inHouseFilter = false;
         if (hasFilter && inHouse.equals("1")) {
@@ -103,7 +116,24 @@ public class ProjectService {
         } else {
             hasFilter = false;
         }
-        Page<Project> projectPage = projectRepository.getByOrganisation(hasFilter, inHouseFilter, projectFor.ordinal(), projectType.ordinal(), organisationId, pageable);
+        List<BigInteger> projectIds = null;
+        if (projectFor.equals(LicenseType.TIMESHEET)) {
+            List<String> roleNames = roleService.getByIds(loggedInUser.getRoles());
+            List<Project> projects;
+            List<ProjectAllocationDetail> projectAllocationDetails;
+            String emailExp = Stream.of(loggedInUser.getEmail()).map(String::valueOf).collect(Collectors.joining("|"));
+            if (roleNames.contains("ORG_ADMIN_PROJECT") || roleNames.contains("ORG_ADMIN")) {
+
+            } else if (roleNames.contains("ORG_PROJECT_TIMESHEET_APPROVER")) {
+                projects = projectRepository.getProjectByProjectApproversEmail(emailExp, loggedInUser.getOrganisationId());
+                projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
+            } else if (roleNames.contains("ORG_USER_PROJECT")) {
+                projectAllocationDetails = projectAllocationDetailRepository.getUserProjects(loggedInUser.getUserId());
+                projects = projectAllocationDetails.stream().map(ProjectAllocationDetail::getProject).collect(Collectors.toList());
+                projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
+            }
+        }
+        Page<Project> projectPage = projectRepository.getByOrganisation(!CollectionUtils.isEmpty(projectIds), projectIds, hasFilter, inHouseFilter, projectFor.ordinal(), projectType.ordinal(), loggedInUser.getOrganisationId(), pageable);
         projectPage.getContent().forEach(i -> {
             if (i.getModuleId() != null && i.getSubModuleId() != null) {
                 Module module = moduleService.getModuleById(i.getModuleId());

@@ -406,8 +406,8 @@ export class AddTimeSheetComponent implements OnInit {
     let entries;
     let entryHasError = true;
     this.timeSheet = new TimeSheet();
-    this.timeSheet.startDate = AppUtility.prepareDateToDateString(moment(this.clientStorageService.get("startDate"), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
-    this.timeSheet.endDate = AppUtility.prepareDateToDateString(moment(this.clientStorageService.get("endDate"), AppUtility.APP_VIEW_DATEPICKER_OP_DATE_FORMAT).toDate());
+    this.timeSheet.startDate = AppUtility.prepareDateToDateString(moment(this.clientStorageService.get("startDate"), AppUtility.APP_VIEW_DATEPICKER_INP_DATE_FORMAT).toDate());
+    this.timeSheet.endDate = AppUtility.prepareDateToDateString(moment(this.clientStorageService.get("endDate"), AppUtility.APP_VIEW_DATEPICKER_INP_DATE_FORMAT).toDate());
     this.timeSheet.timeSheetEntries = [];
     let timeSheetEntry: TimeSheetEntry;
     let timeEntries = [];

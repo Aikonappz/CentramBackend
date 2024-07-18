@@ -3,6 +3,7 @@ package com.centram.core.repository;
 
 import com.centram.common.vo.OrgAdminDashboardVO;
 import com.centram.domain.TimeSheet;
+import com.centram.domain.TimeSheetEntry;
 import com.centram.domain.Vendor;
 import com.centram.domain.enumarator.VendorType;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,19 @@ public interface TimeSheetRepository extends JpaRepository<TimeSheet, BigInteger
 
     @Query(value ="select ts from TimeSheet ts where ts.user.id = (:userId)")
     List<TimeSheet> getTimeSheetByUser(@Param("userId") BigInteger userId);
+
+    @Query(value ="select tse from TimeSheet ts join ts.timeSheetEntries tse where ts.user.id in (:userIds) and (ts.startDate between (:start) and (:end) or ts.startDate between  (:start) and (:end))")
+    Page<TimeSheetEntry> getTimeSheetsByUserIdsAndDateRange(@Param("userIds") List<BigInteger> userIds, @Param("start") LocalDate start, @Param("end") LocalDate end,@Param("pageable") Pageable pageable);
+
+    @Query(value ="select tse from TimeSheet ts join ts.timeSheetEntries tse where ts.user.id in (:userIds) and (ts.startDate between (:start) and (:end) or ts.startDate between  (:start) and (:end)) " +
+            " and " +
+            "  ( " +
+            "    (:includeAll = true and 1=1) " +
+            "    OR " +
+            "    (:includeAll = false and tse.approved = (:approved)) " +
+            "  ) "
+    )
+    Page<TimeSheetEntry> getTimeSheetsByUserIdsAndDateRange(@Param("userIds") List<BigInteger> userIds, @Param("approved") Boolean approved, @Param("includeAll") Boolean includeAll, @Param("start") LocalDate start, @Param("end") LocalDate end,@Param("pageable") Pageable pageable);
 
    /* @Query(value = "select ts from TimeSheet ts join ts.timeSheetEntries tse where tse.approver.id = (:approverId) " +
 

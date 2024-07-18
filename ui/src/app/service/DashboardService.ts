@@ -7,6 +7,7 @@ import { UserDashboardVO } from '../model/UserDashboardVO';
 import { AgentDashboardVO } from '../model/AgentDashboardVO';
 import { CategoryAdminDashboardVO } from '../model/CategoryAdminDashboardVO';
 import { UATDashboardVO } from '../model/UATDashboardVO';
+import { TimesheetDashboardVO } from '../model/TimesheetDashboardVO';
 
 @Injectable({
     providedIn: 'root' // just before your class
@@ -30,5 +31,8 @@ export class DashboardService {
     }
     uatDashboard(request?: any): Observable<UATDashboardVO> {
         return this.http.get('/v1/dashboard/uat', { "params": request });
+    }
+    timesheetDashboard(request?: any): Observable<TimesheetDashboardVO> {
+        return this.http.get('/v1/dashboard/time-sheet-v1', { "params": request });
     }
 }

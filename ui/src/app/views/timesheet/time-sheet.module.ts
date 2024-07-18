@@ -17,11 +17,11 @@ import { TimeSheetRoutingModule } from './time-sheet-routing.module';
 import { RemarkViewer } from './modal/RemarkViewer';
 import { UATActivityComponent } from './activities/uat-activity.component';
 
-import { UATReportComponent } from './report/uatreport.component';
-import { TimeSheetDashboardComponent } from './dashboard/uatdashboard.component';
+import { TimesheetReportComponent } from './report/timesheetreport.component';
+import { TimeSheetDashboardComponent } from './dashboard/dashboard.component';
 import { EditUATProjectComponent } from './master/edituatproject.component';
 import { UATProjectComponent } from './master/uatproject.component';
-import { ViewUATDashboardDetails } from './dashboard/modal/ViewUATDashboardDetails';
+import { ViewTimesheetDashboardDetails } from './dashboard/modal/ViewTimesheetDashboardDetails';
 import { AccountComponent } from './master/account.component';
 import { EditAccountComponent } from './master/editaccount.component';
 import { DepartmentComponent } from './master/department.component';
@@ -51,10 +51,10 @@ import { EditTimeSheetComponent } from './manage-timesheet/edit-timesheet.compon
     UATActivityComponent,
     RemarkViewer,
     TimeSheetDashboardComponent,
-    UATReportComponent,
+    TimesheetReportComponent,
     UATProjectComponent,
     EditUATProjectComponent,
-    ViewUATDashboardDetails,
+    ViewTimesheetDashboardDetails,
     AccountComponent,
     EditAccountComponent,
     DepartmentComponent,

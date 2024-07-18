@@ -88,7 +88,7 @@ public class ProjectAllocationDetailService {
     }
 
     @Transactional
-    public PaginatedList<User> getAllocatedUser(LoggedInUser loggedInUser, BigInteger projectId, Pageable pageable){
-        return new PaginatedList<User>(projectAllocationDetailRepository.getUserProjects(loggedInUser.getOrganisationId(), projectId, Pageable.unpaged()));
+    public PaginatedList<User> getAllocatedUser(LoggedInUser loggedInUser, BigInteger projectId, Boolean includeDeallocated, Pageable pageable){
+        return new PaginatedList<User>(projectAllocationDetailRepository.getUserProjects(loggedInUser.getOrganisationId(), projectId, includeDeallocated, Pageable.unpaged()));
     }
 }

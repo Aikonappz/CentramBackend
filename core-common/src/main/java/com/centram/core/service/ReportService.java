@@ -6,6 +6,11 @@ import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.utility.Utility;
+import com.centram.common.vo.TimeSheetReportVO;
+import com.centram.core.repository.ProjectAllocationDetailRepository;
+import com.centram.core.repository.ProjectRepository;
+import com.centram.core.repository.TimeSheetRepository;
+import com.centram.core.repository.UserRepository;
 import com.centram.domain.Module;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
@@ -30,10 +35,13 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ReportService {
@@ -55,6 +63,17 @@ public class ReportService {
     private ModuleService moduleService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TimeSheetRepository timeSheetRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
+    @Autowired
+    private ProjectAllocationDetailRepository projectAllocationDetailRepository;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Transactional(readOnly = true)
     public PaginatedList<Organisation> organisationReport(String name, Status status, LicenseType licenseType, Pageable pageable) {
@@ -484,7 +503,7 @@ public class ReportService {
             User manager = null;
             int c = 0;
             for (UatScriptReportDTO uatScriptReportDTO : uatScriptReportDTOS) {
-                data = Arrays.asList(String.valueOf(++c), uatScriptReportDTO.getTechnology(), uatScriptReportDTO.getModule(), uatScriptReportDTO.getSubModule(), uatScriptReportDTO.getProjectType(), uatScriptReportDTO.getProjectName(), uatScriptReportDTO.getProjectCode(), uatScriptReportDTO.getProjectManager(), uatScriptReportDTO.getConsultantResponsible(), uatScriptReportDTO.getTestCaseId(), uatScriptReportDTO.getTestCaseDescription(), uatScriptReportDTO.getCustomerUserEmail()+"-"+uatScriptReportDTO.getScriptName(), uatScriptReportDTO.getStatus(), uatScriptReportDTO.getCurrentlyWith(), String.valueOf(uatScriptReportDTO.getAge()));
+                data = Arrays.asList(String.valueOf(++c), uatScriptReportDTO.getTechnology(), uatScriptReportDTO.getModule(), uatScriptReportDTO.getSubModule(), uatScriptReportDTO.getProjectType(), uatScriptReportDTO.getProjectName(), uatScriptReportDTO.getProjectCode(), uatScriptReportDTO.getProjectManager(), uatScriptReportDTO.getConsultantResponsible(), uatScriptReportDTO.getTestCaseId(), uatScriptReportDTO.getTestCaseDescription(), uatScriptReportDTO.getCustomerUserEmail() + "-" + uatScriptReportDTO.getScriptName(), uatScriptReportDTO.getStatus(), uatScriptReportDTO.getCurrentlyWith(), String.valueOf(uatScriptReportDTO.getAge()));
                 csvPrinter.printRecord(data);
             }
             csvPrinter.flush();
@@ -511,11 +530,8 @@ public class ReportService {
             i.setModuleName(module.getCustomerModuleName());
             module = moduleService.getModuleById(i.getSubModuleId());
             i.setSubModuleName(module.getCustomerModuleName());
-           for(ProjectUatScript projectUatScript : i.getProjectUatScripts()){
-                i.getActionDetails().put(
-                        projectUatScript.getCustomerUser().getEmail(),
-                        projectUatScript.getTestScriptName().concat("/").concat(projectUatScript.getUatComplete()? "Completed" : "Pending")
-                );
+            for (ProjectUatScript projectUatScript : i.getProjectUatScripts()) {
+                i.getActionDetails().put(projectUatScript.getCustomerUser().getEmail(), projectUatScript.getTestScriptName().concat("/").concat(projectUatScript.getUatComplete() ? "Completed" : "Pending"));
             }
             if (i.getUatCycleComplete()) {
                 i.setStatus("Completed");
@@ -535,5 +551,61 @@ public class ReportService {
             }
         }
         return -1;
+    }
+
+    /**
+     * @param loggedInUser
+     * @param start
+     * @param end
+     * @param approved
+     * @param pageable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PaginatedList<TimeSheetReportVO> timesheetReport(LoggedInUser loggedInUser, LocalDateTime start, LocalDateTime end, Boolean approved, List<BigInteger> suppliedUserIds, Boolean includeAll, Pageable pageable) {
+        LocalDate startDate;
+        LocalDate endDate;
+        if (start == null || end == null) {
+            endDate = LocalDate.now(ZoneId.systemDefault());
+            startDate = endDate.minusDays(90);
+        } else {
+            startDate = start.toLocalDate();
+            endDate = end.toLocalDate();
+        }
+        List<BigInteger> userIds = Collections.emptyList();
+        if (CollectionUtils.isEmpty(suppliedUserIds)) {
+            List<String> roleNames = roleService.getByIds(loggedInUser.getRoles());
+            List<Project> projects;
+            List<ProjectAllocationDetail> projectAllocationDetails;
+            List<BigInteger> projectIds;
+            String emailExp = Stream.of(loggedInUser.getEmail()).map(String::valueOf).collect(Collectors.joining("|"));
+            List<User> users;
+            if (roleNames.contains("ORG_ADMIN_PROJECT") || roleNames.contains("ORG_ADMIN")) {
+                users = userRepository.getUsersByRoleNames(Collections.singleton("ORG_USER_PROJECT").stream().map(String::valueOf).collect(Collectors.joining("|")), loggedInUser.getOrganisationId());
+                userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            } else if (roleNames.contains("ORG_PROJECT_TIMESHEET_APPROVER")) {
+                projects = projectRepository.getProjectByProjectApproversEmail(emailExp, loggedInUser.getOrganisationId());
+                projectIds = projects.stream().map(Project::getId).collect(Collectors.toList());
+                projectAllocationDetails = projectAllocationDetailRepository.getUsersProjects(projectIds);
+                users = projectAllocationDetails.stream().map(ProjectAllocationDetail::getUser).collect(Collectors.toList());
+                userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            } else if (roleNames.contains("ORG_USER_PROJECT")) {
+                projectAllocationDetails = projectAllocationDetailRepository.getUserProjects(loggedInUser.getUserId());
+                users = projectAllocationDetails.stream().map(ProjectAllocationDetail::getUser).collect(Collectors.toList());
+                userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            }
+        } else {
+            userIds = suppliedUserIds;
+        }
+        Page<TimeSheetEntry> page = timeSheetRepository.getTimeSheetsByUserIdsAndDateRange(userIds, approved, includeAll, startDate, endDate, pageable);
+        List<TimeSheetReportVO> timeSheetReportVOS = new LinkedList<TimeSheetReportVO>();
+        page.getContent().forEach(i -> {
+            timeSheetReportVOS.add(new TimeSheetReportVO(i));
+        });
+        if (!pageable.isUnpaged()) {
+            return new PaginatedList<TimeSheetReportVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), page.getPageable().getOffset(), page.getPageable().getPageNumber(), page.getPageable().getPageSize(), timeSheetReportVOS);
+        } else {
+            return new PaginatedList<TimeSheetReportVO>(page.getTotalElements(), page.getNumberOfElements(), page.getTotalPages(), 0, 1, 1, timeSheetReportVOS);
+        }
     }
 }

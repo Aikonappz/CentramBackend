@@ -68,4 +68,7 @@ export class ReportService {
     uatReport(request?: any): Observable<any> {
         return this.http.get('/v1/report/uat', { "params": request });
     }
+    timesheetReport(request?: any): Observable<any> {
+        return this.http.get('/v1/report/timesheet', { "params": request });
+    }
 }

@@ -11,18 +11,19 @@ import { AdminDashboardVO } from '../../../model/AdminDashboardVO';
 import { UATDashboardVO } from '../../../model/UATDashboardVO';
 import { Label, MultiDataSet } from 'ng2-charts';
 import { ChartType } from 'chart.js';
-import { ViewUATDashboardDetails } from './modal/ViewUATDashboardDetails';
+import { ViewTimesheetDashboardDetails } from './modal/ViewTimesheetDashboardDetails';
+import { TimesheetDashboardVO } from '../../../model/TimesheetDashboardVO';
 declare var $: any;
 
 @Component({
-  templateUrl: 'uatdashboard.component.html',
-  styleUrls: ['uatdashboard.component.scss']
+  templateUrl: 'dashboard.component.html',
+  styleUrls: ['dashboard.component.scss']
 })
 export class TimeSheetDashboardComponent implements OnInit {
   roles: string[];
   loggedInUser: LoggedInUser;
-  uatDashboardVO: UATDashboardVO = new UATDashboardVO();
-  public uatChartType: ChartType = 'horizontalBar';
+  timesheetDashboardVO: TimesheetDashboardVO = new TimesheetDashboardVO();
+  public uatChartType = 'horizontalBar';
   public uatChartOptions: any = {
     responsive: true, iboxWidth: 1, legend: { display: false }, scales: {
       xAxes: [{
@@ -71,28 +72,27 @@ export class TimeSheetDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.service
-      .uatDashboard()
-      .subscribe((data: UATDashboardVO) => {
-        this.uatDashboardVO = data;
+      .timesheetDashboard()
+      .subscribe((data: TimesheetDashboardVO) => {
+        this.timesheetDashboardVO = data;
         let dataPoints = [];
-        let total = this.uatDashboardVO.total;
-        dataPoints.push(total);
-        dataPoints.push(this.uatDashboardVO.notStarted);
-        dataPoints.push(this.uatDashboardVO.inProgress);
-        dataPoints.push(this.uatDashboardVO.completed);
+        //let total = this.timesheetDashboardVO.total;
+        //dataPoints.push(total);
+        dataPoints.push(this.timesheetDashboardVO.approvedCount);
+        dataPoints.push(this.timesheetDashboardVO.pendingCount);
         this.dataSets = [dataPoints];
-        this.uatChartOptions = {
-          responsive: true, iboxWidth: 1, legend: { display: false }, scales: {
-            xAxes: [{
-              type: "linear",
-              beginAtZero: true,
-              ticks: {
-                max: Math.ceil(total * 1.05),
-                precision: 0
-              }
-            }]
-          }
-        };
+        // this.uatChartOptions = {
+        //   responsive: true, iboxWidth: 1, legend: { display: false }, scales: {
+        //     xAxes: [{
+        //       type: "linear",
+        //       beginAtZero: true,
+        //       ticks: {
+        //         max: Math.ceil(total * 1.05),
+        //         precision: 0
+        //       }
+        //     }]
+        //   }
+        // };
         $(function () {
           $("#dataSets-app-admin").accordion({
             //icons: { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
@@ -151,7 +151,8 @@ export class TimeSheetDashboardComponent implements OnInit {
     // );
   }
 
-  viewUat(element: any) {
+  viewTimesheet(element: any) {
+    //alert(element);
     const config: ModalOptions = {
       backdrop: 'static',
       keyboard: false,
@@ -160,23 +161,23 @@ export class TimeSheetDashboardComponent implements OnInit {
       class: 'modal-xl',
     };
     const initialState = {
-      params: element
+      params: element.status === 'approved' ? { approved: true } : { approved: false },
     };
-    this.modalRef = this.modalService.show(ViewUATDashboardDetails,
+    this.modalRef = this.modalService.show(ViewTimesheetDashboardDetails,
       Object.assign({}, config, { initialState })
     );
   }
 
   uatChart(e: any) {
-    if (this.getChartSegmentData(e) == "Modules in Total") {
-      this.viewUat({ status: "total" });
-    } else if (this.getChartSegmentData(e) == "Modules Not Started") {
-      this.viewUat({ status: "notStarted" });
-    } else if (this.getChartSegmentData(e) == "Modules In-Progress") {
-      this.viewUat({ status: "inProgress" });
-    } else if (this.getChartSegmentData(e) == "Modules Completed") {
-      this.viewUat({ status: "completed" });
-    }
+    // if (this.getChartSegmentData(e) == "Modules in Total") {
+    //   this.viewUat({ status: "total" });
+    // } else if (this.getChartSegmentData(e) == "Modules Not Started") {
+    //   this.viewUat({ status: "notStarted" });
+    // } else if (this.getChartSegmentData(e) == "Modules In-Progress") {
+    //   this.viewUat({ status: "inProgress" });
+    // } else if (this.getChartSegmentData(e) == "Modules Completed") {
+    //   this.viewUat({ status: "completed" });
+    // }
   }
 
   getChartSegmentData(e: any) {

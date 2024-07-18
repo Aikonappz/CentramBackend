@@ -21,6 +21,9 @@ public interface ProjectRepository extends JpaRepository<Project, BigInteger> {
     @Query("select p from Project p join p.organisation org where UPPER(p.name) = UPPER((:name)) and org.id = (:organisationId)")
     Project getByName(@Param("name") String name, @Param("organisationId") BigInteger organisationId);
 
+    @Query(value = "select p.* from project p where CONCAT(',', p.approvers, ',') REGEXP (:email) and p.organisation_id = (:organisationId)", nativeQuery = true)
+    List<Project> getProjectByProjectApproversEmail(@Param("email") String email, @Param("organisationId") BigInteger organisationId);
+
     @Query("select p from Project p join p.organisation org where p.projectType = (:projectType) and UPPER(p.name) = UPPER((:name)) and org.id = (:organisationId)")
     Project getByNameAndType(@Param("projectType") ProjectType projectType, @Param("name") String name, @Param("organisationId") BigInteger organisationId);
 
@@ -41,9 +44,17 @@ public interface ProjectRepository extends JpaRepository<Project, BigInteger> {
             "    ((:hasFilter) = true and p.inHouse = (:inHouseFilter)) " +
             "    OR " +
             "    ((:hasFilter) = false) " +
+            "  ) " +
+            "  and " +
+            "  ( " +
+            "    ((:hasProjectIdFilter) = true and p.id in (:projectIds)) " +
+            "    OR " +
+            "    ((:hasProjectIdFilter) = false) " +
             "  ) "
     )
     Page getByOrganisation(
+            @Param("hasProjectIdFilter") Boolean hasProjectIdFilter,
+            @Param("projectIds") List<BigInteger> projectIds,
             @Param("hasFilter") Boolean hasFilter,
             @Param("inHouseFilter") Boolean inHouseFilter,
             @Param("projectFor") Integer projectFor,

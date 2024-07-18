@@ -92,6 +92,11 @@ public class DashboardApiController {
         return new ResponseEntity<UATDashboardVO>(dashboardService.uatDashboard(currentDate), HttpStatus.OK);
     }
 
+    /**
+     * old one
+     * @param currentDate
+     * @return
+     */
     @RequestMapping(value = "/time-sheet", produces = {"application/json"}, method = RequestMethod.GET)
     @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
     public ResponseEntity<List<TimeSheetDashBoardVO>> timeSheetDashboard(
@@ -99,5 +104,19 @@ public class DashboardApiController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
     ) {
         return new ResponseEntity<List<TimeSheetDashBoardVO>>(dashboardService.timeSheetDashboard(currentDate), HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param currentDate
+     * @return
+     */
+    @RequestMapping(value = "/time-sheet-v1", produces = {"application/json"}, method = RequestMethod.GET)
+    @PreAuthorize("@appSecurityUtilityService.hasPermission('DASHBOARD','READ',authentication.principal)")
+    public ResponseEntity<TimeSheetDashBoardV1VO> timeSheetV1Dashboard(
+            @RequestParam(value = "currentDate", defaultValue = "", required = true)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate currentDate
+    ) {
+        return new ResponseEntity<TimeSheetDashBoardV1VO>(dashboardService.timeSheetV1Dashboard(currentDate), HttpStatus.OK);
     }
 }
