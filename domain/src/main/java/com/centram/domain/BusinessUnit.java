@@ -1,7 +1,9 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +22,15 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Audited
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(
-        name = "department",
-        uniqueConstraints = @UniqueConstraint(name = "department_constraint", columnNames = {"name", "division_id"}),
+        name = "business_unit",
+        uniqueConstraints = @UniqueConstraint(name = "business_unit_constraint", columnNames = {"name", "organisation_id"}),
         indexes = {
-                @Index(name = "department_division_idx", columnList = "division_id", unique = false),
+                @Index(name = "business_unit_organisation_id_idx", columnList = "organisation_id", unique = false),
         }
 )
-public class Department extends BaseEntity implements Serializable {
+public class BusinessUnit extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337834473432054L;
 
     @Id
@@ -36,7 +39,12 @@ public class Department extends BaseEntity implements Serializable {
     private BigInteger id;
 
     @Column(name = "name", columnDefinition = "varchar(255) not null")
+    @JsonView(Views.BasicView.class)
     private String name;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.ORDINAL)
+    private Status status;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -47,25 +55,19 @@ public class Department extends BaseEntity implements Serializable {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.ORDINAL)
-    private Status status;
-
-    @Column(name = "department_head")
-    private String departmentHead;
-
     @Column(name = "cost_center")
     private String costCenter;
 
-    @Column(name = "organisation_id")
-    private BigInteger organisationId;
+    @Column(name = "bu_head")
+    private String buHead;
 
-    @ManyToOne
-    @JoinColumn(name = "division_id", referencedColumnName = "id")
+    @OneToOne
+    @JoinColumn(name = "organisation_id", referencedColumnName = "id")
     @JsonIgnore
-    private Division division;
+    private Organisation organisation;
 
-    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Position> positions;
+    @OneToMany(mappedBy = "businessUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Division> divisions;
+
 
 }

@@ -30,40 +30,40 @@ public class JunkCleaner extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("quartzComponent://junk/cleaner?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
-                .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
-                .autoStartup(true)
-                .routeId("junk-cleaner")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                .log(LoggingLevel.INFO, "junk-cleaner started -> ${header.CURRENT_DATE_TIME}")
-                .to("direct:processGeneratedReportJunk");
-
-        from("direct:processGeneratedReportJunk")
-                .routeId("process-generated-report-file-junk")
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        List<File> files = Files.list(Paths.get(appReportPath))
-                                .filter(Files::isRegularFile)
-                                .map(Path::toFile)
-                                .collect(Collectors.toList());
-                        Long diff = 0L;
-                        for (File fl : files) {
-                            diff = new Date().getTime() - fl.lastModified();
-                            if (diff > cutOff) {
-                                fl.delete();
-                            }
-                        }
-                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
-                    }
-                })
-                .log(LoggingLevel.INFO, "junk-cleaner/process-generated-report-file-junk completed -> ${header.CURRENT_DATE_TIME}")
-                .end();
+//        from("quartzComponent://junk/cleaner?cron=".concat(interval).concat("&stateful=true&durableJob=true&recoverableJob=true"))
+//                .log(LoggingLevel.INFO, "=================== organization-license-expiry job started ===================")
+//                .autoStartup(true)
+//                .routeId("junk-cleaner")
+//                .process(new Processor() {
+//                    @Override
+//                    public void process(Exchange exchange) throws Exception {
+//                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
+//                    }
+//                })
+//                .log(LoggingLevel.INFO, "junk-cleaner started -> ${header.CURRENT_DATE_TIME}")
+//                .to("direct:processGeneratedReportJunk");
+//
+//        from("direct:processGeneratedReportJunk")
+//                .routeId("process-generated-report-file-junk")
+//                .process(new Processor() {
+//                    @Override
+//                    public void process(Exchange exchange) throws Exception {
+//                        List<File> files = Files.list(Paths.get(appReportPath))
+//                                .filter(Files::isRegularFile)
+//                                .map(Path::toFile)
+//                                .collect(Collectors.toList());
+//                        Long diff = 0L;
+//                        for (File fl : files) {
+//                            diff = new Date().getTime() - fl.lastModified();
+//                            if (diff > cutOff) {
+//                                fl.delete();
+//                            }
+//                        }
+//                        exchange.getIn().setHeader("CURRENT_DATE_TIME", LocalDateTime.now().format(DateTimeFormatter.ofPattern(dateTimeFormat)));
+//                    }
+//                })
+//                .log(LoggingLevel.INFO, "junk-cleaner/process-generated-report-file-junk completed -> ${header.CURRENT_DATE_TIME}")
+//                .end();
 
     }
 }

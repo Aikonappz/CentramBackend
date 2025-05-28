@@ -1,11 +1,11 @@
 package com.centram.core.api;
 
+import com.centram.common.dto.CommonProjection;
 import com.centram.common.utility.AppSecurityUtilityService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.OrganisationService;
 import com.centram.domain.Organisation;
 import com.centram.domain.Setting;
-import com.centram.domain.User;
 import com.centram.domain.enumarator.LicenseType;
 import com.centram.domain.enumarator.Status;
 import org.slf4j.Logger;
@@ -28,9 +28,9 @@ import java.util.List;
 
 @RequestMapping(value = "/api/v1/organisation")
 @Controller
-public class OrganisationApiController {
+public class OrganisationController {
 
-    private static final Logger log = LoggerFactory.getLogger(OrganisationApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(OrganisationController.class);
 
     @Autowired
     private AppSecurityUtilityService appSecurityUtilityService;
@@ -61,10 +61,9 @@ public class OrganisationApiController {
     }
 
 
-    @RequestMapping(value = "/all", produces = {"application/json"}, method = RequestMethod.GET)
-    @PreAuthorize("@appSecurityUtilityService.hasPermission('ORGANIZATION','READ',authentication.principal)")
-    public ResponseEntity<PaginatedList<Organisation>> getOrganisations(@RequestParam(value = "name", defaultValue = "", required = false) String name, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
-        return new ResponseEntity<PaginatedList<Organisation>>(organisationService.getOrganisations(name, Status.valueOf(status), LicenseType.valueOf(licenseType), pageable), HttpStatus.OK);
+    @RequestMapping(value = "/", produces = {"application/json"}, method = RequestMethod.GET)
+    public ResponseEntity<PaginatedList<CommonProjection>> getOrganisations(@RequestParam(value = "name", defaultValue = "", required = false) String name, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @RequestParam(value = "licenseType", defaultValue = "ALL", required = false) String licenseType, @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return new ResponseEntity<PaginatedList<CommonProjection>>(organisationService.getAll(name, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
 

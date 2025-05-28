@@ -20,7 +20,9 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -57,6 +59,15 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         context.setVariable("errorMessage", ex.getContext().get("errorMessage"));
         ClientError digest = new ClientError(ex.getCode().getCode(), templateEngine.process(ex.getCode().getTemplate(), context));
         return new ResponseEntity<ClientError>(digest, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleGlobalException(Exception ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Internal Server Error");
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**

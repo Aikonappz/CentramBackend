@@ -1,5 +1,6 @@
 package com.centram.core.repository;
 
+import com.centram.common.dto.CommonProjection;
 import com.centram.common.vo.AdminDashboardVO;
 import com.centram.domain.Organisation;
 import com.centram.domain.Setting;
@@ -60,6 +61,9 @@ public interface OrganisationRepository extends PagingAndSortingRepository<Organ
 
     @Query("select o from Organisation o where o.status = 1")
     List<Organisation> findAll();
+
+    @Query("SELECT o.id AS id, o.name AS name, o.version AS version, o.status AS status FROM Organisation o")
+    Page<CommonProjection> findAllBy(Pageable pageable);
 
     @Query(value = "select " +
             " sum(1) as totalCompanies, " +

@@ -49,8 +49,6 @@ public class UserApiController {
 
     private static final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
-    @Autowired
-    private AppSecurityUtilityService appSecurityUtilityService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;

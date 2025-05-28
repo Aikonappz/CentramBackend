@@ -1,5 +1,6 @@
 package com.centram.core.service;
 
+import com.centram.common.dto.CommonProjection;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.dto.OrganisationDTO;
 import com.centram.common.exeception.AppException;
@@ -7,9 +8,7 @@ import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.utility.Utility;
 import com.centram.core.repository.OrganisationRepository;
-import com.centram.domain.MediaFile;
-import com.centram.domain.Organisation;
-import com.centram.domain.Setting;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.*;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -26,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.persistence.EntityManager;
@@ -36,6 +36,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,7 +86,7 @@ public class OrganisationService {
      * @param organisation
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional
     public Organisation save(Organisation organisation) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Organisation newOrganisation = null;
@@ -94,6 +95,43 @@ public class OrganisationService {
         organisation.setTan(Base64.getEncoder().encodeToString(organisation.getTan().getBytes(StandardCharsets.UTF_8)));
         organisation.setPan(Base64.getEncoder().encodeToString(organisation.getPan().getBytes(StandardCharsets.UTF_8)));
         organisation.setGstin(Base64.getEncoder().encodeToString(organisation.getGstin().getBytes(StandardCharsets.UTF_8)));
+        if (!CollectionUtils.isEmpty(organisation.getBusinessUnits())) {
+            List<BusinessUnit> businessUnits = new LinkedList<>();
+            for (BusinessUnit businessUnit : organisation.getBusinessUnits()) {
+                businessUnit.setOrganisation(organisation);
+                if (!CollectionUtils.isEmpty(businessUnit.getDivisions())) {
+                    List<Division> divisions = new LinkedList<>();
+                    for (Division division : businessUnit.getDivisions()) {
+                        division.setBusinessUnit(businessUnit);
+                        divisions.add(division);
+                        if (!CollectionUtils.isEmpty(division.getDepartments())) {
+                            List<Department> departments = new LinkedList<>();
+                            for (Department department : division.getDepartments()) {
+                                department.setDivision(division);
+                                department.setOrganisationId(organisation.getId());
+                                departments.add(department);
+                                if (!CollectionUtils.isEmpty(department.getPositions())) {
+                                    List<Position> positions = new LinkedList<>();
+                                    for (Position position : department.getPositions()) {
+                                        position.setDepartment(department);
+                                        positions.add(position);
+                                    }
+                                    department.getPositions().clear();
+                                    department.getPositions().addAll(positions);
+                                }
+                            }
+                            division.getDepartments().clear();
+                            division.getDepartments().addAll(departments);
+                        }
+                    }
+                    businessUnit.getDivisions().clear();
+                    businessUnit.getDivisions().addAll(divisions);
+                }
+                businessUnits.add(businessUnit);
+            }
+            organisation.getBusinessUnits().clear();
+            organisation.getBusinessUnits().addAll(businessUnits);
+        }
         if (organisation.getId() == null) {
             organisation.setStatus(Status.ACTIVE);
             organisation.setSetting(new Setting(IncidentAllocationType.GENERIC));
@@ -313,5 +351,10 @@ public class OrganisationService {
                     return i.getSetting() != null && i.getSetting().getTicketAllocationType() == IncidentAllocationType.ROUND_ROBIN;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PaginatedList<CommonProjection> getAll(String name, Status status, Pageable pageable) {
+        return new PaginatedList<CommonProjection>(organisationRepository.findAllBy(pageable));
     }
 }

@@ -89,20 +89,20 @@ public class BatchConfig {
         return schedulerFactoryBean;
     }
 
-    @Bean("quartzProperties")
-    @ConfigurationProperties(prefix = "app.batch")
-    public Properties quartzProperties() {
-        return new Properties();
-    }
-
-    @Bean
-    public QuartzComponent quartzComponent(@Qualifier("quartzProperties") Properties properties) {
-        QuartzComponent quartz = new QuartzComponent();
-        quartz.setProperties(properties);
-        //quartz.setSchedulerFactory(schedulerFactory);
-        //quartz.setPropertiesFile("quartz.properties");
-        return quartz;
-    }
+//    @Bean("quartzProperties")
+//    @ConfigurationProperties(prefix = "app.batch")
+//    public Properties quartzProperties() {
+//        return new Properties();
+//    }
+//
+//    @Bean
+//    public QuartzComponent quartzComponent(@Qualifier("quartzProperties") Properties properties) {
+//        QuartzComponent quartz = new QuartzComponent();
+//        quartz.setProperties(properties);
+//        //quartz.setSchedulerFactory(schedulerFactory);
+//        //quartz.setPropertiesFile("quartz.properties");
+//        return quartz;
+//    }
 
     /*@Bean
     public AllocatedAssetValidityExpiry allocatedAssetValidityExpiry() {

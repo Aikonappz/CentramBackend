@@ -21,13 +21,13 @@ import java.util.List;
 @Entity
 @Audited
 @Table(
-        name = "department",
-        uniqueConstraints = @UniqueConstraint(name = "department_constraint", columnNames = {"name", "division_id"}),
+        name = "division",
+        uniqueConstraints = @UniqueConstraint(name = "division_constraint", columnNames = {"name", "business_unit_id"}),
         indexes = {
-                @Index(name = "department_division_idx", columnList = "division_id", unique = false),
+                @Index(name = "division_business_unit_idx", columnList = "business_unit_id", unique = false),
         }
 )
-public class Department extends BaseEntity implements Serializable {
+public class Division extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2575337834473432054L;
 
     @Id
@@ -51,21 +51,18 @@ public class Department extends BaseEntity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
-    @Column(name = "department_head")
-    private String departmentHead;
+    @Column(name = "division_head")
+    private String divisionHead;
 
     @Column(name = "cost_center")
     private String costCenter;
 
-    @Column(name = "organisation_id")
-    private BigInteger organisationId;
-
     @ManyToOne
-    @JoinColumn(name = "division_id", referencedColumnName = "id")
     @JsonIgnore
-    private Division division;
+    @JoinColumn(name = "business_unit_id", referencedColumnName = "id")
+    private BusinessUnit businessUnit;
 
-    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Position> positions;
 
+    @OneToMany(mappedBy = "division", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Department> departments;
 }
