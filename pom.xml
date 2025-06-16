@@ -51,6 +51,11 @@
             <name>Shibboleth</name>
             <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
         </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
     </repositories>
     <!--<build>
         <plugins>

@@ -12,10 +12,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigInteger;
 
 @RequestMapping(value = "/api/v1/requisition")
 @Controller
@@ -29,7 +28,7 @@ public class RequisitionController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @RequestMapping(value = "/add", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<Requisition> save(@RequestBody Requisition body) {
         return new ResponseEntity<Requisition>(requisitionService.save(body), HttpStatus.OK);
     }
@@ -40,5 +39,10 @@ public class RequisitionController {
         return new ResponseEntity<PaginatedList<Requisition>>(requisitionService.getAll(name, Status.valueOf(status), pageable), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<Requisition> getById(@PathVariable BigInteger id) {
+        Requisition requisition = requisitionService.findById(id);
+        return new ResponseEntity<>(requisition, HttpStatus.OK);
+    }
 
 }
