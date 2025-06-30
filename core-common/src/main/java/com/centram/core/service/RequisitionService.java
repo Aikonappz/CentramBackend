@@ -4,12 +4,8 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
-import com.centram.core.repository.RequisitionManagerReviewMapper;
-import com.centram.core.repository.RequisitionManagerReviewRepository;
-import com.centram.core.repository.RequisitionMapper;
-import com.centram.core.repository.RequisitionRepository;
-import com.centram.domain.Requisition;
-import com.centram.domain.RequisitionManagerReview;
+import com.centram.core.repository.*;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +25,28 @@ public class RequisitionService {
     private RequisitionManagerReviewRepository requisitionManagerReviewRepository;
 
     @Autowired
+    RequisitionRecruiterTeamLeadRepository requisitionRecruiterTeamLeadRepository;
+
+    @Autowired
+    RequisitionRecruiterReviewRepository requisitionRecruiterReviewRepository;
+
+    @Autowired
+    RequisitionCompletedRepository requisitionCompletedRepository;
+
+    @Autowired
     RequisitionMapper requisitionMapper;
 
     @Autowired
     RequisitionManagerReviewMapper requisitionManagerReviewMapper;
+
+    @Autowired
+    RequisitionRecruiterTeamLeadMapper requisitionRecruiterTeamLeadMapper;
+
+    @Autowired
+    RequisitionRecruiterReviewMapper requisitionRecruiterReviewMapper;
+
+    @Autowired
+    RequisitionCompletedMapper requisitionCompletedMapper;
 
     @Transactional
     public Requisition saveRequisition(Requisition requisition) {
@@ -86,6 +100,93 @@ public class RequisitionService {
 
     public RequisitionManagerReview getByRequisitionMangerReviewId(BigInteger id) {
         return requisitionManagerReviewRepository.findById(id)
+                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+    }
+
+    @Transactional
+    public RequisitionRecruiterTeamLead saveRequisitionRecruiterTeamLead(RequisitionRecruiterTeamLead requisitionRecruiterTeamLead) {
+//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (requisitionRecruiterTeamLead.getRequisition() != null && requisitionRecruiterTeamLead.getRequisition().getId() != null) {
+            Requisition requisition = requisitionRepository.findById(requisitionRecruiterTeamLead.getRequisition().getId())
+                    .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+            requisitionRecruiterTeamLead.setRequisition(requisition);
+        }
+
+        if (requisitionRecruiterTeamLead.getId() != null) {
+            requisitionRecruiterTeamLead = updateTeamLead(requisitionRecruiterTeamLead);
+        }
+
+        return requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
+    }
+
+    public RequisitionRecruiterTeamLead updateTeamLead(RequisitionRecruiterTeamLead teamLead) {
+        RequisitionRecruiterTeamLead existing = requisitionRecruiterTeamLeadRepository.findById(teamLead.getId())
+                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+
+        EntityUpdateService.updateEntity(teamLead, existing, requisitionRecruiterTeamLeadMapper);
+        return existing;
+    }
+
+    public RequisitionRecruiterTeamLead getByRequisitionRecruiterTeamLeadId(BigInteger id) {
+        return requisitionRecruiterTeamLeadRepository.findById(id)
+                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+    }
+
+    @Transactional
+    public RequisitionRecruiterReview saveRequisitionRecruiterReview(RequisitionRecruiterReview requisitionRecruiterReview) {
+//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (requisitionRecruiterReview.getRequisition() != null && requisitionRecruiterReview.getRequisition().getId() != null) {
+            Requisition requisition = requisitionRepository.findById(requisitionRecruiterReview.getRequisition().getId())
+                    .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+            requisitionRecruiterReview.setRequisition(requisition);
+        }
+
+        if (requisitionRecruiterReview.getId() != null) {
+            requisitionRecruiterReview = updateReview(requisitionRecruiterReview);
+        }
+
+        return requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
+    }
+
+    public RequisitionRecruiterReview updateReview(RequisitionRecruiterReview review) {
+        RequisitionRecruiterReview existing = requisitionRecruiterReviewRepository.findById(review.getId())
+                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+
+        EntityUpdateService.updateEntity(review, existing, requisitionRecruiterReviewMapper);
+        return existing;
+    }
+
+    public RequisitionRecruiterReview getByRequisitionRecruiterReviewId(BigInteger id) {
+        return requisitionRecruiterReviewRepository.findById(id)
+                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+    }
+
+    @Transactional
+    public RequisitionCompleted saveRequisitionCompleted(RequisitionCompleted completed) {
+//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (completed.getRequisition() != null && completed.getRequisition().getId() != null) {
+            Requisition requisition = requisitionRepository.findById(completed.getRequisition().getId())
+                    .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+            completed.setRequisition(requisition);
+        }
+
+        if (completed.getId() != null) {
+            completed = updateComplete(completed);
+        }
+
+        return requisitionCompletedRepository.save(completed);
+    }
+
+    public RequisitionCompleted updateComplete(RequisitionCompleted completed) {
+        RequisitionCompleted existing = requisitionCompletedRepository.findById(completed.getId())
+                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+
+        EntityUpdateService.updateEntity(completed, existing, requisitionCompletedMapper);
+        return existing;
+    }
+
+    public RequisitionCompleted getByRequisitionCompletedId(BigInteger id) {
+        return requisitionCompletedRepository.findById(id)
                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
     }
 }

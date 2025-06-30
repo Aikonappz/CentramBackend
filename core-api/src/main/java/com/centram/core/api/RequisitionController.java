@@ -3,8 +3,7 @@ package com.centram.core.api;
 
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.RequisitionService;
-import com.centram.domain.Requisition;
-import com.centram.domain.RequisitionManagerReview;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +49,36 @@ public class RequisitionController {
     @GetMapping(value = "/manager_review/{id}", produces = "application/json")
     public ResponseEntity<RequisitionManagerReview> getByRequisitionMangerReviewId(@PathVariable BigInteger id) {
         return new ResponseEntity<>(requisitionService.getByRequisitionMangerReviewId(id), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/recruiter_team_lead/add", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<RequisitionRecruiterTeamLead> saveRequisitionRecruiterTeamLead(@RequestBody RequisitionRecruiterTeamLead body) {
+        return new ResponseEntity<>(requisitionService.saveRequisitionRecruiterTeamLead(body), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/recruiter_team_lead/{id}", produces = "application/json")
+    public ResponseEntity<RequisitionRecruiterTeamLead> getByRequisitionRecruiterTeamLeadId(@PathVariable BigInteger id) {
+        return new ResponseEntity<>(requisitionService.getByRequisitionRecruiterTeamLeadId(id), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/recruiter_review/add", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<RequisitionRecruiterReview> saveRequisitionRecruiterReview(@RequestBody RequisitionRecruiterReview body) {
+        return new ResponseEntity<>(requisitionService.saveRequisitionRecruiterReview(body), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/recruiter_review/{id}", produces = "application/json")
+    public ResponseEntity<RequisitionRecruiterReview> getByRequisitionRecruiterReviewId(@PathVariable BigInteger id) {
+        return new ResponseEntity<>(requisitionService.getByRequisitionRecruiterReviewId(id), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/completed/add", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<RequisitionCompleted> saveRequisitionCompleted(@RequestBody RequisitionCompleted body) {
+        return new ResponseEntity<>(requisitionService.saveRequisitionCompleted(body), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/completed/{id}", produces = "application/json")
+    public ResponseEntity<RequisitionCompleted> getByRequisitionCompletedId(@PathVariable BigInteger id) {
+        return new ResponseEntity<>(requisitionService.getByRequisitionCompletedId(id), HttpStatus.OK);
     }
 
 }
