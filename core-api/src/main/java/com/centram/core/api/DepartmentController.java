@@ -5,7 +5,6 @@ import com.centram.common.dto.CommonProjection;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.DepartmentService;
 import com.centram.domain.Department;
-import com.centram.domain.Position;
 import com.centram.domain.enumarator.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

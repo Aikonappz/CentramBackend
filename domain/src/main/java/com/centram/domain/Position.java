@@ -36,7 +36,7 @@ public class Position extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
-    private Long id;
+    private BigInteger id;
 
     @Column(name = "name", columnDefinition = "varchar(255) not null")
     private String name;

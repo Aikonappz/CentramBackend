@@ -11,13 +11,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 
 @RequestMapping(value = "/api/v1/requisition")
-@Controller
+@RestController
 public class RequisitionController {
 
     @Autowired

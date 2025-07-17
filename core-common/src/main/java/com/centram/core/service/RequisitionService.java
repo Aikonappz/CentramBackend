@@ -105,7 +105,7 @@ public class RequisitionService {
 
     @Transactional
     public RequisitionRecruiterTeamLead saveRequisitionRecruiterTeamLead(RequisitionRecruiterTeamLead requisitionRecruiterTeamLead) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (requisitionRecruiterTeamLead.getRequisition() != null && requisitionRecruiterTeamLead.getRequisition().getId() != null) {
             Requisition requisition = requisitionRepository.findById(requisitionRecruiterTeamLead.getRequisition().getId())
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
@@ -134,7 +134,7 @@ public class RequisitionService {
 
     @Transactional
     public RequisitionRecruiterReview saveRequisitionRecruiterReview(RequisitionRecruiterReview requisitionRecruiterReview) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (requisitionRecruiterReview.getRequisition() != null && requisitionRecruiterReview.getRequisition().getId() != null) {
             Requisition requisition = requisitionRepository.findById(requisitionRecruiterReview.getRequisition().getId())
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
@@ -163,7 +163,7 @@ public class RequisitionService {
 
     @Transactional
     public RequisitionCompleted saveRequisitionCompleted(RequisitionCompleted completed) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (completed.getRequisition() != null && completed.getRequisition().getId() != null) {
             Requisition requisition = requisitionRepository.findById(completed.getRequisition().getId())
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));

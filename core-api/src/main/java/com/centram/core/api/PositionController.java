@@ -25,7 +25,7 @@ public class PositionController {
 
 
 
-    @RequestMapping(value = "/", produces = {"application/json"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/get-all", produces = {"application/json"}, method = RequestMethod.GET)
     public ResponseEntity<PaginatedList<Position>> organisationReport(@RequestParam(value = "name", defaultValue = "", required = false) String name, @RequestParam(value = "status", defaultValue = "ALL", required = false) String status, @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
         return new ResponseEntity<PaginatedList<Position>>(positionService.getAll(name, Status.valueOf(status), pageable), HttpStatus.OK);
     }
@@ -35,7 +35,7 @@ public class PositionController {
      * @param body
      * @return
      */
-    @RequestMapping(value = "/", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
+    @RequestMapping(value = "/add", produces = {"application/json"}, consumes = {"application/json",}, method = RequestMethod.POST)
     public ResponseEntity<Position> save(@RequestBody Position body) {
         return new ResponseEntity<Position>(positionService.save(body), HttpStatus.OK);
     }
@@ -49,5 +49,10 @@ public class PositionController {
         return new ResponseEntity<Position>(positionService.getById(id), HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePosition(@PathVariable BigInteger id) {
+        positionService.deleteById(id);
+        return ResponseEntity.ok("Deleted successfully");
+    }
 
 }
