@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @Audited
 @Table(name = "requisition_recruiter_team_lead")
 public class RequisitionRecruiterTeamLead  extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = 658710560719512420L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)

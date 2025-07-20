@@ -46,8 +46,25 @@ public class PositionService {
 
     @Transactional
     public Position getById(BigInteger id) {
-        return positionRepository.findById(id)
+        Position position =  positionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Position not found with id: " + id));
+        Department dept = position.getDepartment();
+        if (dept != null) {
+            position.setDepartmentId(dept.getId());
+            position.setOrganisationId(dept.getOrganisationId());
+
+            Division division = dept.getDivision();
+            if (division != null) {
+                position.setDivisionId(division.getId());
+
+                BusinessUnit bu = division.getBusinessUnit();
+                if (bu != null) {
+                    position.setBusinessUnitId(bu.getId());
+                }
+            }
+        }
+
+        return position;
     }
 
     public PaginatedList<Position> getAll(String name, Status status, Pageable pageable) {
