@@ -48,13 +48,18 @@ public class RequisitionService {
     @Autowired
     RequisitionCompletedMapper requisitionCompletedMapper;
 
+    @Autowired
+    NotificationService notificationService;
+
     @Transactional
     public Requisition saveRequisition(Requisition requisition) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(requisition.getId() != null){
             requisition =  updateRequisition(requisition);
         }
-        return requisitionRepository.save(requisition);
+        Requisition result = requisitionRepository.save(requisition);
+        notificationService.sendNotificationFromRequisition(result);
+        return result;
     }
 
     public Requisition updateRequisition(Requisition requisition) {

@@ -4,6 +4,7 @@ package com.centram.domain;
 import com.centram.common.view.Views;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,7 +60,8 @@ public class Position extends BaseEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "id")
-    @JsonIgnore
+//    @JsonIgnore
+    @JsonIgnoreProperties("positions")
     private Department department;
 
     @Column(name = "location")
@@ -88,6 +90,9 @@ public class Position extends BaseEntity implements Serializable {
 
     @Column(name = "max_pay")
     private BigDecimal maxPay;
+
+    @Column(name="recruiter_name")
+    private String recruiterName;
 
     // view data
     @Transient

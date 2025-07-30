@@ -4,10 +4,17 @@ package com.centram.core.service;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
+import com.centram.common.service.EmailService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.NotificationVO;
 import com.centram.core.repository.NotificationRepository;
+import com.centram.core.repository.PositionRepository;
+import com.centram.core.repository.UserRepository;
 import com.centram.domain.Notification;
+import com.centram.domain.Position;
+import com.centram.domain.Requisition;
+import com.centram.domain.User;
+import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class NotificationService {
@@ -40,6 +44,15 @@ public class NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    PositionRepository positionRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    EmailService emailService;
 
     @Value("${app.ws.broker.prefix}")
     private String appWsBrokerPrefix;
@@ -139,4 +152,24 @@ public class NotificationService {
             log.error("NOTIFICATION PUSH ISSUE {}", e.getOriginalMessage());
         }
     }
+
+    public void sendNotificationFromRequisition(Requisition requisition) {
+        BigInteger positionId = requisition.getPositionId();
+
+        Position position = positionRepository.findById(positionId)
+                .orElseThrow(() -> new RuntimeException("Position not found"));
+
+        String recruiterName = position.getRecruiterName();
+
+        User user = userRepository.findByFullName(recruiterName)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Notification notification = new Notification("Requisition Assigned", "You have a new requisition.", user, Status.ACTIVE, NotificationType.INFO);
+        Notification savedNotification = notificationRepository.save(notification);
+        NotificationVO vo = new NotificationVO(savedNotification);
+        simpMessagingTemplate.convertAndSend("/topic/notification", vo);
+//        Map<String, Object> mailMap = Map.of("to", new String[]{user.getEmail()}, "subject", vo.getTitle(), "content", "You have a new requisition.");
+//        emailService.sendMail(mailMap);
+    }
+
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, BigInteger> {
@@ -135,4 +136,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
     @Modifying
     @Query("update User set projectCode = (:projects) where id = (:userId)")
     Integer updateProjects(@Param("projects") String projects, @Param("userId") BigInteger userId);
+
+    @Query("SELECT u FROM User u WHERE CONCAT(u.firstName, ' ', u.lastName) = :fullName")
+    Optional<User> findByFullName(@Param("fullName") String fullName);
+
 }

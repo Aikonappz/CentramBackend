@@ -4,8 +4,7 @@ import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
-import com.centram.core.repository.PositionMapper;
-import com.centram.core.repository.PositionRepository;
+import com.centram.core.repository.*;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Service
 public class PositionService {
@@ -25,15 +25,48 @@ public class PositionService {
     private PositionRepository positionRepository;
 
     @Autowired
+    DepartmentRepository departmentRepository;
+
+    @Autowired
+    NotificationTrackerRepository notificationTrackerRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     PositionMapper positionMapper;
 
     @Transactional
     public Position save(Position position) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(position.getId()!=null){
+        if (position.getDepartment() != null && position.getDepartment().getId() != null) {
+            Department dept = departmentRepository.findById(position.getDepartment().getId())
+                    .orElseThrow(() -> new RuntimeException("Department not found"));
+            position.setDepartment(dept);
+        }
+        if (position.getId() != null) {
             position = updatePosition(position);
         }
-        return positionRepository.save(position);
+
+        Position savedPosition = positionRepository.save(position);
+        if (position.getRecruiterName() != null) {
+            User recruiter = userRepository.findByFullName(position.getRecruiterName())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(position.getOrganisationId(), position.getBusinessUnitId(), position.getDivisionId(), position.getDepartmentId(), recruiter.getId());
+
+            if (!alreadyExists) {
+                NotificationTracker tracker = new NotificationTracker();
+                tracker.setOrganisationId(position.getOrganisationId());
+                tracker.setBusinessUnitId(position.getBusinessUnitId());
+                tracker.setDivisionId(position.getDivisionId());
+                tracker.setDepartmentId(position.getDepartment().getId());
+                tracker.setUserId(recruiter.getId());
+
+                notificationTrackerRepository.save(tracker);
+            }
+        }
+        return savedPosition;
     }
 
     public Position updatePosition(Position position) {
