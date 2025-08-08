@@ -58,7 +58,7 @@ public class RequisitionService {
             requisition =  updateRequisition(requisition);
         }
         Requisition result = requisitionRepository.save(requisition);
-        notificationService.sendNotificationFromRequisition(result);
+//        notificationService.sendNotificationFromRequisition(result);
         return result;
     }
 
