@@ -1,7 +1,7 @@
 package com.centram.core.service;
 
 import com.centram.common.dto.LoggedInUser;
-import com.centram.common.dto.RecruiterDTO;
+//import com.centram.common.dto.RecruiterDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -139,4 +140,8 @@ public class PositionService {
         position.setStatus(Status.INACTIVE);
         positionRepository.save(position);
     }
+
+//    public List<String> getRecruiters(RecruiterDTO dto) {
+//        return userRepository.findRecruiterNamesByFilters(dto.getOrganisationId(), dto.getDivisionId(), dto.getDepartmentId(), dto.getBusinessUnitId());
+//    }
 }

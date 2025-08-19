@@ -1,8 +1,12 @@
 package com.centram.core.api;
 
 import com.centram.common.dto.*;
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.JobProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +63,30 @@ public class JobProfileController {
     @GetMapping("/job-code/{jobCodeId}")
     public ResponseEntity<List<JobProfileResponseDTO>> getJobProfilesByJobCode(@PathVariable BigInteger jobCodeId) {
         return ResponseEntity.ok(jobProfileService.getJobProfilesByJobCode(jobCodeId));
+    }
+
+    @GetMapping("/job-family/get-all")
+    public ResponseEntity<PaginatedList<JobFamilyDTO>> getAllJobFamilies(
+            @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return ResponseEntity.ok(jobProfileService.getAllJobFamilies(pageable));
+    }
+
+    @GetMapping("/job-role/get-all")
+    public ResponseEntity<PaginatedList<JobRoleDTO>> getAllJobRoles(
+            @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return ResponseEntity.ok(jobProfileService.getAllJobRoles(pageable));
+    }
+
+    @GetMapping("/competency/get-all")
+    public ResponseEntity<PaginatedList<CompetencyDTO>> getAllCompetencies(
+            @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return ResponseEntity.ok(jobProfileService.getAllCompetencies(pageable));
+    }
+
+    @GetMapping("/job-profile/get-all")
+    public ResponseEntity<PaginatedList<JobProfileDTO>> getAllJobProfiles(
+            @PageableDefault(size = 10, page = 0, direction = Sort.Direction.DESC, sort = {"id"}) Pageable pageable) {
+        return ResponseEntity.ok(jobProfileService.getAllJobProfiles(pageable));
     }
 
 

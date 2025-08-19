@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 import com.centram.common.dto.*;
+import com.centram.common.utility.PaginatedList;
 import com.centram.core.repository.*;
 import com.centram.domain.Competency;
 import com.centram.domain.JobFamily;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class JobProfileService {
 
     @Transactional
     public JobFamilyDTO saveJobFamily(JobFamilyDTO dto) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobFamily entity = dto.getId() != null ?
                 jobFamilyRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("JobFamily not found")) :
                 new JobFamily();
@@ -52,7 +54,7 @@ public class JobProfileService {
 
     @Transactional
     public JobRoleDTO saveJobRole(JobRoleDTO dto) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobRole entity = dto.getId() != null ?
                 jobRoleRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("JobRole not found")) :
                 new JobRole();
@@ -67,7 +69,7 @@ public class JobProfileService {
 
     @Transactional
     public CompetencyDTO saveCompetency(CompetencyDTO dto) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Competency entity = dto.getId() != null ?
                 competencyRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Competency not found")) :
                 new Competency();
@@ -82,7 +84,7 @@ public class JobProfileService {
 
     @Transactional
     public JobProfileDTO saveJobProfile(JobProfileDTO dto) {
-//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JobProfile entity = dto.getId() != null ?
                 jobProfileRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("JobProfile not found")) :
                 new JobProfile();
@@ -115,5 +117,30 @@ public class JobProfileService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    public PaginatedList<JobFamilyDTO> getAllJobFamilies(Pageable pageable) {
+        var page = jobFamilyRepository.findAll(pageable)
+                .map(jobFamilyMapper::toDto);
+        return new PaginatedList<>(page);
+    }
+
+    public PaginatedList<JobRoleDTO> getAllJobRoles(Pageable pageable) {
+        var page = jobRoleRepository.findAll(pageable)
+                .map(jobRoleMapper::toDto);
+        return new PaginatedList<>(page);
+    }
+
+    public PaginatedList<CompetencyDTO> getAllCompetencies(Pageable pageable) {
+        var page = competencyRepository.findAll(pageable)
+                .map(competencyMapper::toDto);
+        return new PaginatedList<>(page);
+    }
+
+    public PaginatedList<JobProfileDTO> getAllJobProfiles(Pageable pageable) {
+        var page = jobProfileRepository.findAll(pageable)
+                .map(jobProfileMapper::toDto);
+        return new PaginatedList<>(page);
+    }
+
 
 }
