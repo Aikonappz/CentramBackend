@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class JobRoleDTO {
     private BigInteger id;
     private String jobRoleName;
-    private BigInteger jobCodeId;
+    private String jobCodeId;
     private BigInteger jobFamilyId;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

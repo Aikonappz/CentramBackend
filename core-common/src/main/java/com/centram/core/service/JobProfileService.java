@@ -98,7 +98,7 @@ public class JobProfileService {
         return jobProfileMapper.toDto(jobProfileRepository.findById(id).orElseThrow());
     }
 
-    public List<JobProfileResponseDTO> getJobProfilesByJobCode(BigInteger jobCodeId) {
+    public List<JobProfileResponseDTO> getJobProfilesByJobCode(String jobCodeId) {
         List<JobProfile> profiles = jobProfileRepository.findByJobCodeId(jobCodeId);
 
         return profiles.stream().map(profile -> {

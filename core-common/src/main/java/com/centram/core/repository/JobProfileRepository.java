@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface JobProfileRepository extends JpaRepository<JobProfile, BigInteger> {
     @Query("SELECT jp FROM JobProfile jp WHERE jp.jobRole.jobCodeId = :jobCodeId")
-    List<JobProfile> findByJobCodeId(@Param("jobCodeId") BigInteger jobCodeId);
+    List<JobProfile> findByJobCodeId(@Param("jobCodeId") String jobCodeId);
 }
 

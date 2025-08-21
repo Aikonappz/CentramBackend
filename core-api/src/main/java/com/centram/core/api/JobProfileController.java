@@ -61,7 +61,7 @@ public class JobProfileController {
     }
 
     @GetMapping("/job-code/{jobCodeId}")
-    public ResponseEntity<List<JobProfileResponseDTO>> getJobProfilesByJobCode(@PathVariable BigInteger jobCodeId) {
+    public ResponseEntity<List<JobProfileResponseDTO>> getJobProfilesByJobCode(@PathVariable String jobCodeId) {
         return ResponseEntity.ok(jobProfileService.getJobProfilesByJobCode(jobCodeId));
     }
 

@@ -22,7 +22,7 @@ public class JobProfileResponseDTO {
 
     private BigInteger jobRoleId;
     private String jobRoleName;
-    private BigInteger jobCodeId;
+    private String jobCodeId;
 
     private List<CompetencyBasicDTO> competencies;
 }

@@ -27,7 +27,7 @@ public class JobRole extends BaseEntity implements Serializable {
     @JoinColumn(name = "family_id", nullable = false)
     private JobFamily jobFamily;
 
-    @Column(name = "job_code_id", columnDefinition = "BIGINT")
-    private BigInteger jobCodeId;
+    @Column(name = "job_code_id", columnDefinition = "VARCHAR(255) NOT NULL")
+    private String jobCodeId;
 }
 
