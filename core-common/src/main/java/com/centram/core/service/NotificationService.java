@@ -2,11 +2,13 @@ package com.centram.core.service;
 
 
 import com.centram.common.dto.LoggedInUser;
+import com.centram.common.dto.NotificationContext;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.service.EmailService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.NotificationVO;
+import com.centram.core.repository.NotificationExtractor;
 import com.centram.core.repository.NotificationRepository;
 import com.centram.core.repository.PositionRepository;
 import com.centram.core.repository.UserRepository;
@@ -153,23 +155,49 @@ public class NotificationService {
         }
     }
 
-    public void sendNotificationFromRequisition(Requisition requisition) {
-        BigInteger positionId = requisition.getPositionId();
-
-        Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new RuntimeException("Position not found"));
-
-        String recruiterName = position.getRecruiterName();
-
-        User user = userRepository.findByFullName(recruiterName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Notification notification = new Notification("Requisition Assigned", "You have a new requisition.", user, Status.ACTIVE, NotificationType.INFO);
-        Notification savedNotification = notificationRepository.save(notification);
-        NotificationVO vo = new NotificationVO(savedNotification);
-        simpMessagingTemplate.convertAndSend("/topic/notification", vo);
+//    public void sendNotification(Requisition requisition) {
+//        BigInteger positionId = requisition.getPositionId();
+//
+//        Position position = positionRepository.findById(positionId)
+//                .orElseThrow(() -> new RuntimeException("Position not found"));
+//
+//        String recruiterName = position.getRecruiterName();
+//
+//        User user = userRepository.findByFullName(recruiterName)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Notification notification = new Notification("Requisition Assigned", "You have a new requisition.", user, Status.ACTIVE, NotificationType.INFO);
+//        Notification savedNotification = notificationRepository.save(notification);
+//        NotificationVO vo = new NotificationVO(savedNotification);
+//        simpMessagingTemplate.convertAndSend("/topic/notification", vo);
 //        Map<String, Object> mailMap = Map.of("to", new String[]{user.getEmail()}, "subject", vo.getTitle(), "content", "You have a new requisition.");
 //        emailService.sendMail(mailMap);
+//    }
+
+    public <T> void sendNotification(T source, NotificationExtractor<T> extractor, String status) {
+        List<NotificationContext> contexts = extractor.extract(source, status);
+
+        for (NotificationContext ctx : contexts) {
+            Notification notification = new Notification(
+                    ctx.getTitle(),
+                    ctx.getContent(),
+                    ctx.getUser(),
+                    Status.ACTIVE,
+                    NotificationType.INFO
+            );
+
+            Notification saved = notificationRepository.save(notification);
+
+            NotificationVO vo = new NotificationVO(saved);
+            simpMessagingTemplate.convertAndSend("/topic/notification", vo);
+
+            Map<String, Object> mailMap = Map.of(
+                    "to", new String[]{ctx.getUser().getEmail()},
+                    "subject", ctx.getTitle(),
+                    "content", ctx.getContent()
+            );
+            emailService.sendMail(mailMap);
+        }
     }
 
 }

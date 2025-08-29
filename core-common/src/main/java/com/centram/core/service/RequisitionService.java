@@ -51,6 +51,28 @@ public class RequisitionService {
     @Autowired
     NotificationService notificationService;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    NotificationTrackerRepository notificationTrackerRepository;
+
+    @Autowired
+    TeamLeadNotificationExtractor teamLeadNotificationExtractor;
+
+    @Autowired
+    RequisitionCompletedExtractor requisitionCompletedExtractor;
+
+    @Autowired
+    RequisitionNotificationExtractor requisitionNotificationExtractor;
+
+    @Autowired
+    ManagerReviewNotificationExtractor managerReviewNotificationExtractor;
+
+    @Autowired
+    RequisitionRecruiterReviewExtractor requisitionRecruiterReviewExtractor;
+
+
     @Transactional
     public Requisition saveRequisition(Requisition requisition) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -58,7 +80,24 @@ public class RequisitionService {
             requisition =  updateRequisition(requisition);
         }
         Requisition result = requisitionRepository.save(requisition);
-//        notificationService.sendNotificationFromRequisition(result);
+        if (requisition.getHiringManager() != null && requisition.getHeadOfRecruitment()!=null) {
+            User recruiter = userRepository.findByFullName(requisition.getHiringManager())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(requisition.getOrganisationId(), requisition.getBusinessUnitId(), requisition.getDivisionId(), requisition.getDepartmentId(), recruiter.getId());
+
+            if (!alreadyExists) {
+                NotificationTracker tracker = new NotificationTracker();
+                tracker.setOrganisationId(requisition.getOrganisationId());
+                tracker.setBusinessUnitId(requisition.getBusinessUnitId());
+                tracker.setDivisionId(requisition.getDivisionId());
+                tracker.setDepartmentId(requisition.getDepartmentId());
+                tracker.setUserId(recruiter.getId());
+
+                notificationTrackerRepository.save(tracker);
+            }
+        }
+        notificationService.sendNotification(result, requisitionNotificationExtractor,"FORWARD");
         return result;
     }
 
@@ -91,8 +130,9 @@ public class RequisitionService {
         if (requisitionManagerReview.getId() != null) {
             requisitionManagerReview = updateReview(requisitionManagerReview);
         }
-
-        return requisitionManagerReviewRepository.save(requisitionManagerReview);
+        RequisitionManagerReview result = requisitionManagerReviewRepository.save(requisitionManagerReview);
+        notificationService.sendNotification(requisitionManagerReview, managerReviewNotificationExtractor, requisitionManagerReview.getStatus());
+        return result;
     }
 
     public RequisitionManagerReview updateReview(RequisitionManagerReview review) {
@@ -121,7 +161,9 @@ public class RequisitionService {
             requisitionRecruiterTeamLead = updateTeamLead(requisitionRecruiterTeamLead);
         }
 
-        return requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
+        RequisitionRecruiterTeamLead result =  requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
+        notificationService.sendNotification(requisitionRecruiterTeamLead, teamLeadNotificationExtractor, requisitionRecruiterTeamLead.getStatus());
+        return result;
     }
 
     public RequisitionRecruiterTeamLead updateTeamLead(RequisitionRecruiterTeamLead teamLead) {
@@ -149,8 +191,9 @@ public class RequisitionService {
         if (requisitionRecruiterReview.getId() != null) {
             requisitionRecruiterReview = updateReview(requisitionRecruiterReview);
         }
-
-        return requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
+        RequisitionRecruiterReview result = requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
+        notificationService.sendNotification(requisitionRecruiterReview, requisitionRecruiterReviewExtractor, requisitionRecruiterReview.getStatus());
+        return result;
     }
 
     public RequisitionRecruiterReview updateReview(RequisitionRecruiterReview review) {
@@ -178,8 +221,9 @@ public class RequisitionService {
         if (completed.getId() != null) {
             completed = updateComplete(completed);
         }
-
-        return requisitionCompletedRepository.save(completed);
+        RequisitionCompleted result = requisitionCompletedRepository.save(completed);
+        notificationService.sendNotification(completed, requisitionCompletedExtractor, completed.getStatus());
+        return result;
     }
 
     public RequisitionCompleted updateComplete(RequisitionCompleted completed) {

@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.RecruiterDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.PositionService;
 import com.centram.domain.Position;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @RequestMapping(value = "/api/v1/position")
 @RestController
@@ -55,4 +57,13 @@ public class PositionController {
         return ResponseEntity.ok("Deleted successfully");
     }
 
+    @GetMapping("/get-all/recruiters")
+    public ResponseEntity<List<String>> getAllRecruiters(@RequestBody RecruiterDTO recruiterDTO){
+        return new ResponseEntity<>(positionService.getRecruiters(recruiterDTO),HttpStatus.OK);
+    }
+
+    @GetMapping("/get-all/jobcodes")
+    public ResponseEntity<PaginatedList<String>> getAllUniqueJobCodes(@PageableDefault(size = 10, page = 0, direction = Sort.Direction.ASC, sort = {"jobCode"}) Pageable pageable) {
+        return new ResponseEntity<>(positionService.getAllUniqueJobCodes(pageable), HttpStatus.OK);
+    }
 }

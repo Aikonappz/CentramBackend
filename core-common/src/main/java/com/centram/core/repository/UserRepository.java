@@ -11,6 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -139,5 +140,23 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
 
     @Query("SELECT u FROM User u WHERE CONCAT(u.firstName, ' ', u.lastName) = :fullName")
     Optional<User> findByFullName(@Param("fullName") String fullName);
+
+    @Query(
+            value = "SELECT DISTINCT CONCAT_WS(' ', u.first_name, u.last_name) AS full_name " +
+                    "FROM notification_tracker nt " +
+                    "JOIN `user` u ON nt.user_id = u.id " +
+                    "JOIN role r ON FIND_IN_SET(r.id, u.roles) > 0 " +
+                    "WHERE (:orgId IS NULL OR nt.organisation_id = :orgId) " +
+                    "AND (:divId IS NULL OR nt.division_id = :divId) " +
+                    "AND (:deptId IS NULL OR nt.department_id = :deptId) " +
+                    "AND (:buId IS NULL OR nt.business_unit_id = :buId) ",
+            nativeQuery = true
+    )
+    List<String> findRecruiterNamesByFilters(
+            @Param("orgId") BigDecimal organisationId,
+            @Param("divId") BigDecimal divisionId,
+            @Param("deptId") BigDecimal departmentId,
+            @Param("buId") BigDecimal businessUnitId
+    );
 
 }

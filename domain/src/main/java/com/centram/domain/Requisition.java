@@ -120,4 +120,8 @@ public class Requisition extends BaseEntity implements Serializable {
 
     @Column(name = "job_posting_board", columnDefinition = "VARCHAR(255)")
     private String jobPostingBoard;
+
+    public Requisition(BigInteger id){
+        this.id = id;
+    }
 }
