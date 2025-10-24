@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class RequisitionNotificationExtractor implements NotificationExtractor<Requisition> {
@@ -22,13 +23,17 @@ public class RequisitionNotificationExtractor implements NotificationExtractor<R
 
 
     @Override
-    public List<NotificationContext> extract(Requisition requisition, String status) {
-        Position position = positionRepository.findById(requisition.getPositionId())
-                .orElseThrow(() -> new RuntimeException("Position not found"));
-
-        User user = userRepository.findByFullName(position.getRecruiterName())
+    public List<NotificationContext> extract(Requisition requisition, String status, String name) {
+        User user = userRepository.findByFullName(requisition.getHeadOfRecruitment())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return List.of(new NotificationContext(user, "Requisition Assigned", "You have a new requisition."));
+        Map<String, String> placeholders = Map.of(
+                "USER_NAME", user.getFirstName()+" "+ user.getLastName(),
+                "REQ_ID", String.valueOf(requisition.getId()),
+                "JOB_TITLE", requisition.getJobTitle(),
+                "CREATOR_NAME", name
+        );
+
+        return List.of(new NotificationContext(user, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"));
     }
 }

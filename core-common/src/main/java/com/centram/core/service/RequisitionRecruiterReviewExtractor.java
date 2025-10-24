@@ -9,7 +9,9 @@ import com.centram.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class RequisitionRecruiterReviewExtractor implements NotificationExtractor<RequisitionRecruiterReview> {
@@ -17,11 +19,32 @@ public class RequisitionRecruiterReviewExtractor implements NotificationExtracto
     UserRepository userRepository;
 
     @Override
-    public List<NotificationContext> extract(RequisitionRecruiterReview recruiterReview, String status) {
+    public List<NotificationContext> extract(RequisitionRecruiterReview recruiterReview, String status, String name) {
         Requisition requisition = recruiterReview.getRequisition();
-        User user = userRepository.findByFullName(requisition.getHiringManager())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User forwardUser = userRepository.findByFullName(requisition.getHiringManager())
+                .orElseThrow(() -> new RuntimeException("Notification Hiring Manager not found"));
 
-        return List.of(new NotificationContext(user, "Recruiter Review Assigned", "You were assigned to a requisition."));
+        User backwardUser = userRepository.findByFullName(requisition.getHeadOfRecruitment())
+                .orElseThrow(() -> new RuntimeException("Notification Head of Recruitment not found"));
+
+        User currentUser = userRepository.findByFullName(name)
+                .orElseThrow(() -> new RuntimeException("Notification User not found"));
+
+        Map<String, String> placeholders = Map.of(
+                "USER_NAME", status.equals("FORWARD") ? forwardUser.getFirstName()+" "+ forwardUser.getLastName() :
+                        backwardUser.getFirstName() + " " + backwardUser.getLastName(),
+                "REQ_ID", String.valueOf(requisition.getId()),
+                "JOB_TITLE", requisition.getJobTitle(),
+                "CREATOR_NAME", name
+        );
+
+        if(status.equals("FORWARD")) {
+            return List.of(new NotificationContext(forwardUser, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
+                    new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
+        } else {
+            return List.of(new NotificationContext(backwardUser, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
+                    new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE"));
+        }
+
     }
 }

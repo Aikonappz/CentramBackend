@@ -54,7 +54,7 @@ public class PositionService {
         Position savedPosition = positionRepository.save(position);
         if (position.getRecruiterName() != null) {
             User recruiter = userRepository.findByFullName(position.getRecruiterName())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("Recruiter name not found"));
 
             boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(position.getOrganisationId(), position.getBusinessUnitId(), position.getDivisionId(), position.getDepartment().getId(), recruiter.getId());
 

@@ -5,5 +5,5 @@ import com.centram.common.dto.NotificationContext;
 import java.util.List;
 
 public interface NotificationExtractor<T> {
-    List<NotificationContext> extract(T source, String status);
+    List<NotificationContext> extract(T source, String status, String name);
 }
