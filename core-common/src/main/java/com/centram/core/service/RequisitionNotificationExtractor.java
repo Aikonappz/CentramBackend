@@ -31,7 +31,8 @@ public class RequisitionNotificationExtractor implements NotificationExtractor<R
                 "USER_NAME", user.getFirstName()+" "+ user.getLastName(),
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
-                "CREATOR_NAME", name
+                "CREATOR_NAME", name,
+                "REQ_LINK", "http://localhost:3000/api/v1/requisition/manager_review/add"
         );
 
         return List.of(new NotificationContext(user, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"));
