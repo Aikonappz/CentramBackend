@@ -36,7 +36,7 @@ public class RequisitionRecruiterReviewExtractor implements NotificationExtracto
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
-                "REQ_LINK", "http://localhost:7001/api/v1/requisition/completed/add"
+                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId()
         );
 
         if(status.equals("FORWARD")) {

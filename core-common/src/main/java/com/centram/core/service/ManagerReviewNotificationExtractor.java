@@ -45,7 +45,7 @@ public class ManagerReviewNotificationExtractor implements NotificationExtractor
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
-                "REQ_LINK", "http://localhost:7001/api/v1/requisition/recruiter_team_lead/add"
+                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId()
         );
 
         if(status.equals("FORWARD")) {

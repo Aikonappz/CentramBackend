@@ -39,7 +39,7 @@ public class TeamLeadNotificationExtractor implements NotificationExtractor<Requ
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
-                "REQ_LINK", "http://localhost:7001/api/v1/requisition/recruiter_review/add  "
+                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId()
         );
 
 
