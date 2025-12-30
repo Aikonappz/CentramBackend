@@ -1,5 +1,6 @@
 package com.centram.core.service;
 
+import com.centram.common.dto.BlankRequisitionRequestDto;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 
 @Service
 public class RequisitionService {
@@ -51,6 +53,34 @@ public class RequisitionService {
     @Autowired
     NotificationService notificationService;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    NotificationTrackerRepository notificationTrackerRepository;
+
+    @Autowired
+    TeamLeadNotificationExtractor teamLeadNotificationExtractor;
+
+    @Autowired
+    RequisitionCompletedExtractor requisitionCompletedExtractor;
+
+    @Autowired
+    RequisitionNotificationExtractor requisitionNotificationExtractor;
+
+    @Autowired
+    ManagerReviewNotificationExtractor managerReviewNotificationExtractor;
+
+    @Autowired
+    RequisitionRecruiterReviewExtractor requisitionRecruiterReviewExtractor;
+
+    @Autowired
+    PositionRepository positionRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
+
+
     @Transactional
     public Requisition saveRequisition(Requisition requisition) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -58,7 +88,44 @@ public class RequisitionService {
             requisition =  updateRequisition(requisition);
         }
         Requisition result = requisitionRepository.save(requisition);
-//        notificationService.sendNotificationFromRequisition(result);
+
+        if (requisition.getHiringManager() != null) {
+            User recruiter = userRepository.findByFullName(requisition.getHiringManager())
+                    .orElseThrow(() -> new RuntimeException("Hiring Manager not found"));
+
+            boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(requisition.getOrganisationId(), requisition.getBusinessUnitId(), requisition.getDivisionId(), requisition.getDepartmentId(), recruiter.getId());
+
+            if (!alreadyExists) {
+                NotificationTracker tracker = new NotificationTracker();
+                tracker.setOrganisationId(requisition.getOrganisationId());
+                tracker.setBusinessUnitId(requisition.getBusinessUnitId());
+                tracker.setDivisionId(requisition.getDivisionId());
+                tracker.setDepartmentId(requisition.getDepartmentId());
+                tracker.setUserId(recruiter.getId());
+
+                notificationTrackerRepository.save(tracker);
+            }
+        }
+
+        if (requisition.getHeadOfRecruitment()!=null) {
+            User recruiter = userRepository.findByFullName(requisition.getHeadOfRecruitment())
+                    .orElseThrow(() -> new RuntimeException("Head of Recruitment not found"));
+
+            boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(requisition.getOrganisationId(), requisition.getBusinessUnitId(), requisition.getDivisionId(), requisition.getDepartmentId(), recruiter.getId());
+
+            if (!alreadyExists) {
+                NotificationTracker tracker = new NotificationTracker();
+                tracker.setOrganisationId(requisition.getOrganisationId());
+                tracker.setBusinessUnitId(requisition.getBusinessUnitId());
+                tracker.setDivisionId(requisition.getDivisionId());
+                tracker.setDepartmentId(requisition.getDepartmentId());
+                tracker.setUserId(recruiter.getId());
+
+                notificationTrackerRepository.save(tracker);
+            }
+        }
+
+        notificationService.sendNotification(result, requisitionNotificationExtractor,"FORWARD", loggedInUser.getName());
         return result;
     }
 
@@ -91,8 +158,9 @@ public class RequisitionService {
         if (requisitionManagerReview.getId() != null) {
             requisitionManagerReview = updateReview(requisitionManagerReview);
         }
-
-        return requisitionManagerReviewRepository.save(requisitionManagerReview);
+        RequisitionManagerReview result = requisitionManagerReviewRepository.save(requisitionManagerReview);
+        notificationService.sendNotification(requisitionManagerReview, managerReviewNotificationExtractor, requisitionManagerReview.getStatus(), loggedInUser.getName());
+        return result;
     }
 
     public RequisitionManagerReview updateReview(RequisitionManagerReview review) {
@@ -121,7 +189,9 @@ public class RequisitionService {
             requisitionRecruiterTeamLead = updateTeamLead(requisitionRecruiterTeamLead);
         }
 
-        return requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
+        RequisitionRecruiterTeamLead result =  requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
+        notificationService.sendNotification(requisitionRecruiterTeamLead, teamLeadNotificationExtractor, requisitionRecruiterTeamLead.getStatus(), loggedInUser.getName());
+        return result;
     }
 
     public RequisitionRecruiterTeamLead updateTeamLead(RequisitionRecruiterTeamLead teamLead) {
@@ -149,8 +219,9 @@ public class RequisitionService {
         if (requisitionRecruiterReview.getId() != null) {
             requisitionRecruiterReview = updateReview(requisitionRecruiterReview);
         }
-
-        return requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
+        RequisitionRecruiterReview result = requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
+        notificationService.sendNotification(requisitionRecruiterReview, requisitionRecruiterReviewExtractor, requisitionRecruiterReview.getStatus(), loggedInUser.getName());
+        return result;
     }
 
     public RequisitionRecruiterReview updateReview(RequisitionRecruiterReview review) {
@@ -178,8 +249,9 @@ public class RequisitionService {
         if (completed.getId() != null) {
             completed = updateComplete(completed);
         }
-
-        return requisitionCompletedRepository.save(completed);
+        RequisitionCompleted result = requisitionCompletedRepository.save(completed);
+        notificationService.sendNotification(completed, requisitionCompletedExtractor, completed.getStatus(), loggedInUser.getName());
+        return result;
     }
 
     public RequisitionCompleted updateComplete(RequisitionCompleted completed) {
@@ -193,5 +265,83 @@ public class RequisitionService {
     public RequisitionCompleted getByRequisitionCompletedId(BigInteger id) {
         return requisitionCompletedRepository.findById(id)
                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+    }
+
+    @Transactional
+    public Requisition createOrUpdateFromBlankTemplate(BlankRequisitionRequestDto request) {
+
+        Requisition req;
+        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (request.getId() != null) {
+
+            req = requisitionRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("Requisition not found"));
+
+            Position position = positionRepository.findById(req.getPositionId()).orElseThrow(() -> new RuntimeException("Linked position not found"));
+            if (position.getDepartment() != null && position.getDepartment().getId() != null) {
+                Department dept = departmentRepository.findById(position.getDepartment().getId())
+                        .orElseThrow(() -> new RuntimeException("Department not found"));
+                position.setDepartment(dept);
+            }
+            position.setName(request.getJobTitle());
+            position.setLocationId(request.getLocationId());
+            position.setJobCode(position.getJobCode());
+            positionRepository.save(position);
+
+            req.setJobTitle(request.getJobTitle());
+            req.setOrganisationId(request.getOrganisationId());
+            req.setBusinessUnitId(request.getBusinessUnitId());
+            req.setDivisionId(request.getDivisionId());
+            req.setDepartmentId(request.getDepartmentId());
+            req.setLocationId(BigInteger.valueOf(request.getLocationId()));
+            req.setJobDescription(request.getJobDescription());
+            req.setRecruiter(request.getRecruiter());
+            req.setPayGrade(request.getPayGrade());
+            req.setPayRangeMin(request.getPayRangeMin());
+            req.setPayRangeMid(request.getPayRangeMid());
+            req.setPayRangeMax(request.getPayRangeMax());
+
+            req = requisitionRepository.save(req);
+            notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
+            return req;
+        }
+
+        Position position = new Position();
+        position.setName(request.getJobTitle());
+        position.setStatus(Status.ACTIVE);
+        position.setStartDate(LocalDate.now());
+        position.setJobCode(request.getJobCode());
+        if (request.getDepartmentId() != null) {
+            Department dept = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new RuntimeException("Department not found"));
+            position.setDepartment(dept);
+        }
+        position.setLocationId(request.getLocationId());
+        position.setRecruiterName(request.getRecruiter());
+        position.setToBeHired(true);
+
+        Position savedPos = positionRepository.save(position);
+
+        req = new Requisition();
+        req.setJobTitle(request.getJobTitle());
+        req.setOrganisationId(request.getOrganisationId());
+        req.setBusinessUnitId(request.getBusinessUnitId());
+        req.setDivisionId(request.getDivisionId());
+        req.setDepartmentId(request.getDepartmentId());
+        req.setLocationId(BigInteger.valueOf(request.getLocationId()));
+        req.setJobDescription(request.getJobDescription());
+        req.setRecruiter(request.getRecruiter());
+        req.setPayGrade(request.getPayGrade());
+        req.setPayRangeMin(request.getPayRangeMin());
+        req.setPayRangeMid(request.getPayRangeMid());
+        req.setPayRangeMax(request.getPayRangeMax());
+        req.setRequisitionStatus("Open");
+        req.setPositionId(savedPos.getId());
+        req.setHiringManager(request.getHiringManager());
+        req.setHeadOfBusinessUnit(request.getHeadOfBusinessUnit());
+        req.setHeadOfRecruitment(request.getHeadOfRecruitment());
+
+        req = requisitionRepository.save(req);
+        notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
+        return req;
     }
 }

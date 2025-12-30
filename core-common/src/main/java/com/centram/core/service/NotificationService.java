@@ -2,18 +2,17 @@ package com.centram.core.service;
 
 
 import com.centram.common.dto.LoggedInUser;
+import com.centram.common.dto.NotificationContext;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.service.EmailService;
 import com.centram.common.utility.PaginatedList;
 import com.centram.common.vo.NotificationVO;
+import com.centram.core.repository.NotificationExtractor;
 import com.centram.core.repository.NotificationRepository;
 import com.centram.core.repository.PositionRepository;
 import com.centram.core.repository.UserRepository;
-import com.centram.domain.Notification;
-import com.centram.domain.Position;
-import com.centram.domain.Requisition;
-import com.centram.domain.User;
+import com.centram.domain.*;
 import com.centram.domain.enumarator.NotificationType;
 import com.centram.domain.enumarator.Status;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -53,6 +52,9 @@ public class NotificationService {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    AppConfigService appConfigService;
 
     @Value("${app.ws.broker.prefix}")
     private String appWsBrokerPrefix;
@@ -153,23 +155,41 @@ public class NotificationService {
         }
     }
 
-    public void sendNotificationFromRequisition(Requisition requisition) {
-        BigInteger positionId = requisition.getPositionId();
+    public <T> void sendNotification(T source, NotificationExtractor<T> extractor, String status, String name) {
+        List<NotificationContext> contexts = extractor.extract(source, status, name);
 
-        Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new RuntimeException("Position not found"));
+        for (NotificationContext ctx : contexts) {
+            AppConfiguration config = appConfigService.findByConfigurationKeyAndStatus(ctx.getTemplateKey());
+            String template = config.getConfigurationValue();
+            String subject = config.getConfigurationProperties().get("mailSubject").toString();
 
-        String recruiterName = position.getRecruiterName();
+            String body = replacePlaceholders(template, ctx.getPlaceholders());
 
-        User user = userRepository.findByFullName(recruiterName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            Notification notification = new Notification(
+                    subject,
+                    body,
+                    ctx.getUser(),
+                    Status.ACTIVE,
+                    NotificationType.INFO
+            );
+            Notification saved = notificationRepository.save(notification);
 
-        Notification notification = new Notification("Requisition Assigned", "You have a new requisition.", user, Status.ACTIVE, NotificationType.INFO);
-        Notification savedNotification = notificationRepository.save(notification);
-        NotificationVO vo = new NotificationVO(savedNotification);
-        simpMessagingTemplate.convertAndSend("/topic/notification", vo);
-//        Map<String, Object> mailMap = Map.of("to", new String[]{user.getEmail()}, "subject", vo.getTitle(), "content", "You have a new requisition.");
-//        emailService.sendMail(mailMap);
+            simpMessagingTemplate.convertAndSend("/topic/notification", new NotificationVO(saved));
+
+            Map<String, Object> mailMap = Map.of(
+                    "to", new String[]{ctx.getUser().getEmail()},
+                    "subject", subject,
+                    "content", body
+            );
+            emailService.sendMail(mailMap);
+        }
     }
 
+    private String replacePlaceholders(String template, Map<String, String> values) {
+        String result = template;
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            result = result.replace("[" + entry.getKey() + "]", entry.getValue());
+        }
+        return result;
+    }
 }

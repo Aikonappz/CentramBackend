@@ -32,7 +32,7 @@ public class ConfigurationPropertiesConverter implements AttributeConverter<Map<
     }
 
     @Override
-    public Map<String, Object> convertToEntityAttribute(String s) {
+    public Map<String, Object> convertToEntityAttribute(String      s) {
         Map<String, Object> configurationProperties = null;
         if (!StringUtils.isBlank(s)) {
             try {

@@ -2,6 +2,7 @@ package com.centram.core.service;
 
 import com.centram.common.dto.LoggedInUser;
 //import com.centram.common.dto.RecruiterDTO;
+import com.centram.common.dto.RecruiterDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
@@ -51,23 +52,23 @@ public class PositionService {
         }
 
         Position savedPosition = positionRepository.save(position);
-//        if (position.getRecruiterName() != null) {
-//            User recruiter = userRepository.findByFullName(position.getRecruiterName())
-//                    .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//            boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(position.getOrganisationId(), position.getBusinessUnitId(), position.getDivisionId(), position.getDepartmentId(), recruiter.getId());
-//
-//            if (!alreadyExists) {
-//                NotificationTracker tracker = new NotificationTracker();
-//                tracker.setOrganisationId(position.getOrganisationId());
-//                tracker.setBusinessUnitId(position.getBusinessUnitId());
-//                tracker.setDivisionId(position.getDivisionId());
-//                tracker.setDepartmentId(position.getDepartment().getId());
-//                tracker.setUserId(recruiter.getId());
-//
-//                notificationTrackerRepository.save(tracker);
-//            }
-//        }
+        if (position.getRecruiterName() != null) {
+            User recruiter = userRepository.findByFullName(position.getRecruiterName())
+                    .orElseThrow(() -> new RuntimeException("Recruiter name not found"));
+
+            boolean alreadyExists = notificationTrackerRepository.existsByOrganisationIdAndBusinessUnitIdAndDivisionIdAndDepartmentIdAndUserId(position.getOrganisationId(), position.getBusinessUnitId(), position.getDivisionId(), position.getDepartment().getId(), recruiter.getId());
+
+            if (!alreadyExists) {
+                NotificationTracker tracker = new NotificationTracker();
+                tracker.setOrganisationId(position.getOrganisationId());
+                tracker.setBusinessUnitId(position.getBusinessUnitId());
+                tracker.setDivisionId(position.getDivisionId());
+                tracker.setDepartmentId(position.getDepartment().getId());
+                tracker.setUserId(recruiter.getId());
+
+                notificationTrackerRepository.save(tracker);
+            }
+        }
         return savedPosition;
     }
 
@@ -141,7 +142,12 @@ public class PositionService {
         positionRepository.save(position);
     }
 
-//    public List<String> getRecruiters(RecruiterDTO dto) {
-//        return userRepository.findRecruiterNamesByFilters(dto.getOrganisationId(), dto.getDivisionId(), dto.getDepartmentId(), dto.getBusinessUnitId());
-//    }
+    public List<String> getRecruiters(RecruiterDTO dto) {
+        return userRepository.findRecruiterNamesByFilters(dto.getOrganisationId(), dto.getDivisionId(), dto.getDepartmentId(), dto.getBusinessUnitId());
+    }
+
+    public PaginatedList<String> getAllUniqueJobCodes(Pageable pageable) {
+        Page<String> page = positionRepository.findAllDistinctJobCodes(pageable);
+        return new PaginatedList<>(page);
+    }
 }

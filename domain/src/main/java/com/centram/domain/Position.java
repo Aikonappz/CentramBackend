@@ -29,6 +29,7 @@ import java.time.LocalDate;
         uniqueConstraints = @UniqueConstraint(name = "position_constraint", columnNames = {"name", "department_id"}),
         indexes = {
                 @Index(name = "position_department_idx", columnList = "department_id", unique = false),
+                @Index(name = "position_job_code_idx", columnList = "job_code", unique = false),
         }
 )
 public class Position extends BaseEntity implements Serializable {
@@ -60,7 +61,6 @@ public class Position extends BaseEntity implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "id")
-//    @JsonIgnore
     @JsonIgnoreProperties("positions")
     private Department department;
 

@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.BlankRequisitionRequestDto;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.RequisitionService;
 import com.centram.domain.*;
@@ -80,4 +81,9 @@ public class RequisitionController {
         return new ResponseEntity<>(requisitionService.getByRequisitionCompletedId(id), HttpStatus.OK);
     }
 
+    @PostMapping("/blank-template")
+    public ResponseEntity<Requisition> createRequisitionViaBlankTemplate(@RequestBody BlankRequisitionRequestDto request) {
+        Requisition req = requisitionService.createOrUpdateFromBlankTemplate(request);
+        return ResponseEntity.ok(req);
+    }
 }
