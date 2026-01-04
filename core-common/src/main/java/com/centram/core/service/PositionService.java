@@ -2,6 +2,7 @@ package com.centram.core.service;
 
 import com.centram.common.dto.LoggedInUser;
 //import com.centram.common.dto.RecruiterDTO;
+import com.centram.common.dto.PositionResponseDto;
 import com.centram.common.dto.RecruiterDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -31,6 +32,12 @@ public class PositionService {
     DepartmentRepository departmentRepository;
 
     @Autowired
+    OrganisationRepository organisationRepository;
+
+    @Autowired
+    LocationRepository locationRepository;
+
+    @Autowired
     NotificationTrackerRepository notificationTrackerRepository;
 
     @Autowired
@@ -42,12 +49,15 @@ public class PositionService {
     @Transactional
     public Position save(Position position) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (position.getDepartment() != null && position.getDepartment().getId() != null) {
-            Department dept = departmentRepository.findById(position.getDepartment().getId())
+        if (position.getDepartmentId() != null) {
+            Department dept = departmentRepository.findById(position.getDepartmentId())
                     .orElseThrow(() -> new RuntimeException("Department not found"));
             position.setDepartment(dept);
         }
         if (position.getId() != null) {
+            Department dept = departmentRepository.findById(position.getDepartment().getId())
+                    .orElseThrow(() -> new RuntimeException("Department not found"));
+            position.setDepartment(dept);
             position = updatePosition(position);
         }
 
@@ -81,26 +91,61 @@ public class PositionService {
     }
 
     @Transactional
-    public Position getById(BigInteger id) {
+    public PositionResponseDto getById(BigInteger id) {
+        PositionResponseDto positionResponseDto = new PositionResponseDto();
         Position position =  positionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Position not found with id: " + id));
         Department dept = position.getDepartment();
         if (dept != null) {
-            position.setDepartmentId(dept.getId());
-            position.setOrganisationId(dept.getOrganisationId());
+            positionResponseDto.setDepartmentId(dept.getId());
+            positionResponseDto.setOrganisationId(dept.getOrganisationId());
+            positionResponseDto.setDepartmentName(dept.getName());
+
+            Department department = new Department();
+            department.setCreatedDate(dept.getCreatedDate());
+            department.setModifiedDate(dept.getModifiedDate());
+            department.setVersion(dept.getVersion());
+            department.setName(dept.getName());
+            department.setStatus(dept.getStatus());
+            positionResponseDto.setDepartment(department);
+
+            Optional<Organisation> organisation =  organisationRepository.findById(id);
+            positionResponseDto.setOrganisationName(organisation.map(Organisation::getName).orElse(null));
 
             Division division = dept.getDivision();
             if (division != null) {
-                position.setDivisionId(division.getId());
+                positionResponseDto.setDivisionId(division.getId());
+                positionResponseDto.setDivisionName(division.getName());
 
                 BusinessUnit bu = division.getBusinessUnit();
                 if (bu != null) {
-                    position.setBusinessUnitId(bu.getId());
+                    positionResponseDto.setBusinessUnitId(bu.getId());
+                    positionResponseDto.setBusinessUnitName(bu.getName());
                 }
             }
         }
-
-        return position;
+        positionResponseDto.setId(position.getId());
+        positionResponseDto.setName(position.getName());
+        positionResponseDto.setCode(position.getCode());
+        positionResponseDto.setStatus(position.getStatus().name());
+        positionResponseDto.setStartDate(position.getStartDate());
+        positionResponseDto.setJobCode(position.getJobCode());
+        positionResponseDto.setFte(position.getFte());
+        positionResponseDto.setLocationId(position.getLocationId());
+        positionResponseDto.setCostCenter(position.getCostCenter());
+        positionResponseDto.setEndDate(position.getEndDate());
+        positionResponseDto.setPayGrad(position.getPayGrad());
+        positionResponseDto.setStandardHour(position.getStandardHour());
+        positionResponseDto.setToBeHired(position.getToBeHired());
+        positionResponseDto.setMinPay(position.getMinPay());
+        positionResponseDto.setMidPay(position.getMidPay());
+        positionResponseDto.setMaxPay(position.getMaxPay());
+        positionResponseDto.setRecruiterName(position.getRecruiterName());
+        if(position.getLocationId() != null) {
+            Optional<Location> location = locationRepository.findById(BigInteger.valueOf(position.getLocationId()));
+            positionResponseDto.setLocationName(location.map(Location::getName).orElse(null));
+        }
+        return positionResponseDto;
     }
 
     public PaginatedList<Position> getAll(String name, Status status, Pageable pageable) {

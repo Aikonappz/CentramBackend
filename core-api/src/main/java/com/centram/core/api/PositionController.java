@@ -1,6 +1,7 @@
 package com.centram.core.api;
 
 
+import com.centram.common.dto.PositionResponseDto;
 import com.centram.common.dto.RecruiterDTO;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.PositionService;
@@ -47,8 +48,8 @@ public class PositionController {
      * @return
      */
     @RequestMapping(value = "/{id}",  method = RequestMethod.GET)
-    public ResponseEntity<Position> getById(@PathVariable BigInteger id) {
-        return new ResponseEntity<Position>(positionService.getById(id), HttpStatus.OK);
+    public ResponseEntity<PositionResponseDto> getById(@PathVariable BigInteger id) {
+        return new ResponseEntity<PositionResponseDto>(positionService.getById(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
