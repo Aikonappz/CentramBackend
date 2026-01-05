@@ -58,7 +58,7 @@ public class PositionController {
         return ResponseEntity.ok("Deleted successfully");
     }
 
-    @GetMapping("/get-all/recruiters")
+    @PostMapping("/get-all/recruiters")
     public ResponseEntity<List<String>> getAllRecruiters(@RequestBody RecruiterDTO recruiterDTO){
         return new ResponseEntity<>(positionService.getRecruiters(recruiterDTO),HttpStatus.OK);
     }
