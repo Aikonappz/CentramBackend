@@ -1,6 +1,7 @@
 package com.centram.core.repository;
 
 
+import com.centram.common.dto.CommonProjection;
 import com.centram.common.vo.LocationVO;
 import com.centram.domain.Location;
 import com.centram.domain.enumarator.Status;
@@ -42,4 +43,7 @@ public interface LocationRepository extends PagingAndSortingRepository<Location,
     @Modifying
     @Query("update Location set status = (:status) where id in (:locationIds)")
     Integer updateStatus(@Param("status") Status status, @Param("locationIds") List<BigInteger> locationIds);
+
+    @Query("SELECT l.id AS id, l.name AS name, l.version AS version, l.status AS status,l.organisation.id AS mapperId FROM Location l")
+    Page<CommonProjection> findAllBy(Pageable pageable);
 }

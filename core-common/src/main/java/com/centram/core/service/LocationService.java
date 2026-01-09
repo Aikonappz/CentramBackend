@@ -1,6 +1,7 @@
 package com.centram.core.service;
 
 
+import com.centram.common.dto.CommonProjection;
 import com.centram.common.dto.LoggedInUser;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
@@ -163,6 +164,11 @@ public class LocationService {
                 }
             }
         }
+    }
+
+    @Transactional
+    public PaginatedList<CommonProjection> getAll(String name, Status status, Pageable pageable) {
+        return new PaginatedList<CommonProjection>(locationRepository.findAllBy(pageable));
     }
 
 }
