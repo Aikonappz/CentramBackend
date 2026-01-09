@@ -31,7 +31,7 @@ public interface DepartmentRepository extends PagingAndSortingRepository<Departm
     @Query("update Department set status = (:status) where id in (:departmentIds)")
     Integer updateStatus(@Param("status") Status status, @Param("departmentIds") List<BigInteger> departmentIds);
 
-    @Query("SELECT d.id AS id, d.name AS name, d.version AS version, d.status AS status FROM Department d")
+    @Query("SELECT d.id AS id, d.name AS name, d.version AS version, d.status AS status,d.division.id AS mapperId, d.code AS code FROM Department d")
     Page<CommonProjection> findAllBy(Pageable pageable);
 
 }

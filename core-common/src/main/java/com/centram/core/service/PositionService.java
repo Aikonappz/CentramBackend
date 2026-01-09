@@ -98,7 +98,6 @@ public class PositionService {
         Department dept = position.getDepartment();
         if (dept != null) {
             positionResponseDto.setDepartmentId(dept.getId());
-            positionResponseDto.setOrganisationId(dept.getOrganisationId());
             positionResponseDto.setDepartmentName(dept.getName());
 
             Department department = new Department();
@@ -109,9 +108,6 @@ public class PositionService {
             department.setStatus(dept.getStatus());
             positionResponseDto.setDepartment(department);
 
-            Optional<Organisation> organisation =  organisationRepository.findById(id);
-            positionResponseDto.setOrganisationName(organisation.map(Organisation::getName).orElse(null));
-
             Division division = dept.getDivision();
             if (division != null) {
                 positionResponseDto.setDivisionId(division.getId());
@@ -121,6 +117,13 @@ public class PositionService {
                 if (bu != null) {
                     positionResponseDto.setBusinessUnitId(bu.getId());
                     positionResponseDto.setBusinessUnitName(bu.getName());
+
+                  Organisation organisation =   bu.getOrganisation();
+                  if(organisation != null){
+                      positionResponseDto.setOrganisationId(organisation.getId());
+                      positionResponseDto.setOrganisationName(organisation.getName());
+                  }
+
                 }
             }
         }

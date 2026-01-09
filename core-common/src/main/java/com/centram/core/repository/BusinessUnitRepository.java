@@ -19,6 +19,6 @@ import java.util.List;
 
 @Repository
 public interface BusinessUnitRepository extends PagingAndSortingRepository<BusinessUnit, BigInteger> {
-    @Query("SELECT b.id AS id, b.name AS name, b.version AS version, b.status AS status FROM BusinessUnit b")
+    @Query("SELECT b.id AS id, b.name AS name, b.version AS version, b.status AS status, b.organisation.id AS mapperId, b.code AS code FROM BusinessUnit b")
     Page<CommonProjection> findAllBy(Pageable pageable);
 }

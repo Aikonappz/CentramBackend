@@ -14,6 +14,6 @@ import java.math.BigInteger;
 
 @Repository
 public interface DivisionRepository extends PagingAndSortingRepository<Division, BigInteger> {
-    @Query("SELECT d.id AS id, d.name AS name, d.version AS version, d.status AS status FROM Division d")
+    @Query("SELECT d.id AS id, d.name AS name, d.version AS version, d.status AS status,d.businessUnit.id AS mapperId, d.code AS code FROM Division d")
     Page<CommonProjection> findAllBy(Pageable pageable);
 }

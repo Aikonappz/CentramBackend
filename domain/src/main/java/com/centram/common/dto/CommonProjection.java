@@ -11,4 +11,7 @@ public interface CommonProjection {
     BigInteger getId();
 
     String getStatus();
+
+    BigInteger getMapperId();
+    String getCode();
 }
