@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -31,7 +32,7 @@ public class JobProfile extends BaseEntity implements Serializable {
             joinColumns = @JoinColumn(name = "job_profile_id"),
             inverseJoinColumns = @JoinColumn(name = "competency_id")
     )
-    private List<Competency> competencies;
+    private List<Competency> competencies = new ArrayList<>();
 
     @Lob
     @Column(name = "roles_and_responsibilities", columnDefinition = "TEXT")

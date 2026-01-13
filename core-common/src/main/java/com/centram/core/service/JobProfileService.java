@@ -142,5 +142,45 @@ public class JobProfileService {
         return new PaginatedList<>(page);
     }
 
+    @Transactional
+    public String deleteJobFamilyById(BigInteger id) {
+        JobFamily family = jobFamilyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("JobFamily not found"));
+        jobFamilyRepository.delete(family);
+        return "";
+    }
 
+    @Transactional
+    public String deleteJobRoleById(BigInteger id) {
+        JobRole role = jobRoleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("JobRole not found"));
+        jobRoleRepository.delete(role);
+        return "";
+    }
+
+    @Transactional
+    public String deleteCompetencyById(BigInteger id) {
+        Competency competency = competencyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Competency not found"));
+        competencyRepository.delete(competency);
+        return "";
+    }
+
+    @Transactional
+    public String deleteJobProfileById(BigInteger id) {
+        JobProfile profile = jobProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("JobProfile not found"));
+
+        JobRole role = profile.getJobRole();
+        if (role != null) {
+            role.setJobProfile(null);
+            profile.setJobRole(null);
+        }
+
+
+        profile.getCompetencies().clear();
+
+        jobProfileRepository.delete(profile);
+        return "";
+    }
 }

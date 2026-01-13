@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +24,11 @@ public class JobFamily extends BaseEntity implements Serializable {
 
     @Column(name = "job_family_name", columnDefinition = "VARCHAR(255) NOT NULL")
     private String jobFamilyName;
+
+    @OneToMany(
+            mappedBy = "jobFamily",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<JobRole> jobRoles = new ArrayList<>();
 }

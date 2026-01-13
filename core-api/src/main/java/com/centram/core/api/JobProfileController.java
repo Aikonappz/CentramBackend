@@ -30,6 +30,12 @@ public class JobProfileController {
         return ResponseEntity.ok(jobProfileService.getJobFamily(id));
     }
 
+
+    @DeleteMapping("/delete/job-family/{id}")
+    public ResponseEntity<String> deleteJobFamilyById(@PathVariable BigInteger id){
+        return ResponseEntity.ok(jobProfileService.deleteJobFamilyById(id));
+    }
+
     @PostMapping("/job-role/add")
     public ResponseEntity<JobRoleDTO> saveJobRole(@RequestBody JobRoleDTO dto) {
         return ResponseEntity.ok(jobProfileService.saveJobRole(dto));
@@ -38,6 +44,11 @@ public class JobProfileController {
     @GetMapping("/job-role/{id}")
     public ResponseEntity<JobRoleDTO> getJobRole(@PathVariable BigInteger id) {
         return ResponseEntity.ok(jobProfileService.getJobRole(id));
+    }
+
+    @DeleteMapping("/delete/job-role/{id}")
+    public ResponseEntity<String> deleteJobRoleById(@PathVariable BigInteger id){
+        return ResponseEntity.ok(jobProfileService.deleteJobRoleById(id));
     }
 
     @PostMapping("/competency/add")
@@ -50,6 +61,11 @@ public class JobProfileController {
         return ResponseEntity.ok(jobProfileService.getCompetency(id));
     }
 
+    @DeleteMapping("/delete/competency/{id}")
+    public ResponseEntity<String> deleteCompetencyById(@PathVariable BigInteger id){
+        return ResponseEntity.ok(jobProfileService.deleteCompetencyById(id));
+    }
+
     @PostMapping("/job-profile/add")
     public ResponseEntity<JobProfileDTO> saveJobProfile(@RequestBody JobProfileDTO dto) {
         return ResponseEntity.ok(jobProfileService.saveJobProfile(dto));
@@ -58,6 +74,11 @@ public class JobProfileController {
     @GetMapping("/job-profile/{id}")
     public ResponseEntity<JobProfileDTO> getJobProfile(@PathVariable BigInteger id) {
         return ResponseEntity.ok(jobProfileService.getJobProfile(id));
+    }
+
+    @DeleteMapping("/delete/job-profile/{id}")
+    public ResponseEntity<String> deleteJobProfileById(@PathVariable BigInteger id){
+        return ResponseEntity.ok(jobProfileService.deleteJobProfileById(id));
     }
 
     @GetMapping("/job-code/{jobCodeId}")
