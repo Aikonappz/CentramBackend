@@ -14,7 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "job_profile")
+@Table(name = "job_profile",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "role_id")
+        }
+)
 public class JobProfile extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2667845427068799174L;
     @Id
@@ -23,7 +27,7 @@ public class JobProfile extends BaseEntity implements Serializable {
     private BigInteger id;
 
     @OneToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false, unique = true)
     private JobRole jobRole;
 
     @ManyToMany
