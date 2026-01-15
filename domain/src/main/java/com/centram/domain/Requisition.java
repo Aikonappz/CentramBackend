@@ -89,7 +89,7 @@ public class Requisition extends BaseEntity implements Serializable {
     private BigDecimal approvedBudget;
 
     @Column(name = "recruiter", columnDefinition = "VARCHAR(255)")
-    private String recruiter;
+    private String recruiterName;
 
     @Column(name = "hiring_manager", columnDefinition = "VARCHAR(255)")
     private String hiringManager;

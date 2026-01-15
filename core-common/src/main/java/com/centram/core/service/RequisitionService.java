@@ -2,6 +2,7 @@ package com.centram.core.service;
 
 import com.centram.common.dto.BlankRequisitionRequestDto;
 import com.centram.common.dto.LoggedInUser;
+import com.centram.common.dto.RequisitionResponseDto;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 public class RequisitionService {
@@ -80,6 +82,9 @@ public class RequisitionService {
     @Autowired
     DepartmentRepository departmentRepository;
 
+    @Autowired
+    LocationRepository locationRepository;
+
 
     @Transactional
     public Requisition saveRequisition(Requisition requisition) {
@@ -141,9 +146,69 @@ public class RequisitionService {
         return new PaginatedList<Requisition>(requisitionRepository.findAll(pageable));
     }
 
-    public Requisition getByRequisitionId(BigInteger id) {
-        return requisitionRepository.findById(id)
-                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+    public RequisitionResponseDto getByRequisitionId(BigInteger id) {
+        Optional<Requisition> requisition = requisitionRepository.findById(id);
+        if (requisition.isEmpty()) {
+            throw new AppException(GenericErrorCode.DATA_NOT_FOUND);
+        }
+        RequisitionResponseDto requisitionResponseDto = new RequisitionResponseDto();
+        Requisition req = requisition.get();
+        requisitionResponseDto.setId(req.getId());
+        requisitionResponseDto.setRequisitionStatus(req.getRequisitionStatus());
+        requisitionResponseDto.setJobTitle(req.getJobTitle());
+        requisitionResponseDto.setJobStartDate(req.getJobStartDate());
+        requisitionResponseDto.setReasonForVacancy(req.getReasonForVacancy());
+        requisitionResponseDto.setOrganisationId(req.getOrganisationId());
+        requisitionResponseDto.setBusinessUnitId(req.getBusinessUnitId());
+        requisitionResponseDto.setDivisionId(req.getDivisionId());
+        requisitionResponseDto.setDepartmentId(req.getDepartmentId());
+        requisitionResponseDto.setPositionId(req.getPositionId());
+        requisitionResponseDto.setLocationId(req.getLocationId());
+        requisitionResponseDto.setCurrencyId(req.getCurrencyId());
+        requisitionResponseDto.setFte(req.getFte());
+        requisitionResponseDto.setPayGrade(req.getPayGrade());
+        requisitionResponseDto.setPayRangeMin(req.getPayRangeMin());
+        requisitionResponseDto.setPayRangeMid(req.getPayRangeMid());
+        requisitionResponseDto.setPayRangeMax(req.getPayRangeMax());
+        requisitionResponseDto.setApprovedBudget(req.getApprovedBudget());
+        requisitionResponseDto.setRecruiterName(req.getRecruiterName());
+        requisitionResponseDto.setHiringManager(req.getHiringManager());
+        requisitionResponseDto.setHeadOfBusinessUnit(req.getHeadOfBusinessUnit());
+        requisitionResponseDto.setHeadOfRecruitment(req.getHeadOfRecruitment());
+        requisitionResponseDto.setJobDescription(req.getJobDescription());
+        requisitionResponseDto.setInterviewingCompetencies(req.getInterviewingCompetencies());
+        requisitionResponseDto.setReferralBonus(req.getReferralBonus());
+        requisitionResponseDto.setJobPostingStartDate(req.getJobPostingStartDate());
+        requisitionResponseDto.setJobPostingEndDate(req.getJobPostingEndDate());
+        requisitionResponseDto.setJobPostingType(req.getJobPostingType());
+        requisitionResponseDto.setJobPostingBoard(req.getJobPostingBoard());
+        Optional<Department> department = departmentRepository.findById(req.getDepartmentId());
+        if (department.isPresent()) {
+            Department dept = department.get();
+            requisitionResponseDto.setDepartmentName(dept.getName());
+
+            Division division = dept.getDivision();
+            if (division != null) {
+                requisitionResponseDto.setDivisionName(division.getName());
+
+                BusinessUnit bu = division.getBusinessUnit();
+                if (bu != null) {
+                    requisitionResponseDto.setBusinessUnitName(bu.getName());
+
+                    Organisation organisation = bu.getOrganisation();
+                    if (organisation != null) {
+                        requisitionResponseDto.setOrganisationName(organisation.getName());
+                    }
+                }
+            }
+        }
+        if (req.getLocationId() != null) {
+            Optional<Location> location = locationRepository.findById(req.getLocationId());
+            requisitionResponseDto.setLocationName(location.map(Location::getName).orElse(null));
+        }
+        Optional<Position> position = positionRepository.findById(req.getPositionId());
+        position.ifPresent(value -> requisitionResponseDto.setJobCode(value.getJobCode()));
+        return requisitionResponseDto;
     }
 
     @Transactional
@@ -294,7 +359,7 @@ public class RequisitionService {
             req.setDepartmentId(request.getDepartmentId());
             req.setLocationId(BigInteger.valueOf(request.getLocationId()));
             req.setJobDescription(request.getJobDescription());
-            req.setRecruiter(request.getRecruiter());
+            req.setRecruiterName(request.getRecruiter());
             req.setPayGrade(request.getPayGrade());
             req.setPayRangeMin(request.getPayRangeMin());
             req.setPayRangeMid(request.getPayRangeMid());
@@ -329,7 +394,7 @@ public class RequisitionService {
         req.setDepartmentId(request.getDepartmentId());
         req.setLocationId(BigInteger.valueOf(request.getLocationId()));
         req.setJobDescription(request.getJobDescription());
-        req.setRecruiter(request.getRecruiter());
+        req.setRecruiterName(request.getRecruiter());
         req.setPayGrade(request.getPayGrade());
         req.setPayRangeMin(request.getPayRangeMin());
         req.setPayRangeMid(request.getPayRangeMid());

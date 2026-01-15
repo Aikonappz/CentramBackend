@@ -2,6 +2,7 @@ package com.centram.core.api;
 
 
 import com.centram.common.dto.BlankRequisitionRequestDto;
+import com.centram.common.dto.RequisitionResponseDto;
 import com.centram.common.utility.PaginatedList;
 import com.centram.core.service.RequisitionService;
 import com.centram.domain.*;
@@ -36,9 +37,9 @@ public class RequisitionController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Requisition> getByRequisitionId(@PathVariable BigInteger id) {
-        Requisition requisition = requisitionService.getByRequisitionId(id);
-        return new ResponseEntity<>(requisition, HttpStatus.OK);
+    public ResponseEntity<RequisitionResponseDto> getByRequisitionId(@PathVariable BigInteger id) {
+        RequisitionResponseDto requisitionResponseDto = requisitionService.getByRequisitionId(id);
+        return new ResponseEntity<>(requisitionResponseDto, HttpStatus.OK);
     }
 
     @PostMapping(value = "/manager_review/add", consumes = {"application/json"}, produces = {"application/json"})
