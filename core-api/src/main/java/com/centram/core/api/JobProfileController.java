@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,8 @@ public class JobProfileController {
 
     @DeleteMapping("/delete/job-family/{id}")
     public ResponseEntity<String> deleteJobFamilyById(@PathVariable BigInteger id){
-        return ResponseEntity.ok(jobProfileService.deleteJobFamilyById(id));
+        jobProfileService.deleteJobFamilyById(id);
+        return ResponseEntity.ok("Job Family deleted successfully");
     }
 
     @PostMapping("/job-role/add")
@@ -48,7 +50,8 @@ public class JobProfileController {
 
     @DeleteMapping("/delete/job-role/{id}")
     public ResponseEntity<String> deleteJobRoleById(@PathVariable BigInteger id){
-        return ResponseEntity.ok(jobProfileService.deleteJobRoleById(id));
+        jobProfileService.deleteJobRoleById(id);
+        return ResponseEntity.ok("Job Role deleted successfully");
     }
 
     @PostMapping("/competency/add")
@@ -63,7 +66,8 @@ public class JobProfileController {
 
     @DeleteMapping("/delete/competency/{id}")
     public ResponseEntity<String> deleteCompetencyById(@PathVariable BigInteger id){
-        return ResponseEntity.ok(jobProfileService.deleteCompetencyById(id));
+        jobProfileService.deleteCompetencyById(id);
+        return ResponseEntity.ok("Competency deleted successfully");
     }
 
     @PostMapping("/job-profile/add")
@@ -78,7 +82,8 @@ public class JobProfileController {
 
     @DeleteMapping("/delete/job-profile/{id}")
     public ResponseEntity<String> deleteJobProfileById(@PathVariable BigInteger id){
-        return ResponseEntity.ok(jobProfileService.deleteJobProfileById(id));
+        jobProfileService.deleteJobProfileById(id);
+        return ResponseEntity.ok("Job Profile deleted successfully");
     }
 
     @GetMapping("/job-code/{jobCodeId}")
@@ -110,5 +115,9 @@ public class JobProfileController {
         return ResponseEntity.ok(jobProfileService.getAllJobProfiles(pageable));
     }
 
+    @GetMapping("/get-all/jobcodes")
+    public ResponseEntity<JobCodeWrapperResponse> getAllUniqueJobCodes() {
+        return new ResponseEntity<>(jobProfileService.getAllUniqueJobCodes(), HttpStatus.OK);
+    }
 
 }

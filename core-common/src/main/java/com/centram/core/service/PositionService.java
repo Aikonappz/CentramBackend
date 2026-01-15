@@ -194,8 +194,8 @@ public class PositionService {
         return userRepository.findRecruiterNamesByFilters(dto.getOrganisationId(), dto.getDivisionId(), dto.getDepartmentId(), dto.getBusinessUnitId());
     }
 
-    public PaginatedList<String> getAllUniqueJobCodes(Pageable pageable) {
-        Page<String> page = positionRepository.findAllDistinctJobCodes(pageable);
-        return new PaginatedList<>(page);
-    }
+//    public PaginatedList<String> getAllUniqueJobCodes(Pageable pageable) {
+//        Page<String> page = positionRepository.findAllDistinctJobCodes(pageable);
+//        return new PaginatedList<>(page);
+//    }
 }

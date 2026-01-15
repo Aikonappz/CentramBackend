@@ -63,8 +63,8 @@ public class PositionController {
         return new ResponseEntity<>(positionService.getRecruiters(recruiterDTO),HttpStatus.OK);
     }
 
-    @GetMapping("/get-all/jobcodes")
-    public ResponseEntity<PaginatedList<String>> getAllUniqueJobCodes(@PageableDefault(size = 10, page = 0, direction = Sort.Direction.ASC, sort = {"jobCode"}) Pageable pageable) {
-        return new ResponseEntity<>(positionService.getAllUniqueJobCodes(pageable), HttpStatus.OK);
-    }
+//    @GetMapping("/get-all/jobcodes")
+//    public ResponseEntity<PaginatedList<String>> getAllUniqueJobCodes(@PageableDefault(size = 10, page = 0, direction = Sort.Direction.ASC, sort = {"jobCode"}) Pageable pageable) {
+//        return new ResponseEntity<>(positionService.getAllUniqueJobCodes(pageable), HttpStatus.OK);
+//    }
 }

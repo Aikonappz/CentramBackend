@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.CollectionUtils;
+
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -143,31 +146,28 @@ public class JobProfileService {
     }
 
     @Transactional
-    public String deleteJobFamilyById(BigInteger id) {
+    public void deleteJobFamilyById(BigInteger id) {
         JobFamily family = jobFamilyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("JobFamily not found"));
         jobFamilyRepository.delete(family);
-        return "";
     }
 
     @Transactional
-    public String deleteJobRoleById(BigInteger id) {
+    public void deleteJobRoleById(BigInteger id) {
         JobRole role = jobRoleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("JobRole not found"));
         jobRoleRepository.delete(role);
-        return "";
     }
 
     @Transactional
-    public String deleteCompetencyById(BigInteger id) {
+    public void deleteCompetencyById(BigInteger id) {
         Competency competency = competencyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Competency not found"));
         competencyRepository.delete(competency);
-        return "";
     }
 
     @Transactional
-    public String deleteJobProfileById(BigInteger id) {
+    public void deleteJobProfileById(BigInteger id) {
         JobProfile profile = jobProfileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("JobProfile not found"));
 
@@ -181,6 +181,12 @@ public class JobProfileService {
         profile.getCompetencies().clear();
 
         jobProfileRepository.delete(profile);
-        return "";
+    }
+
+    public JobCodeWrapperResponse getAllUniqueJobCodes() {
+        JobCodeWrapperResponse jobCodeWrapperResponse = new JobCodeWrapperResponse();
+        List<String> result = jobRoleRepository.findAllDistinctJobCodes();
+        jobCodeWrapperResponse.setContent(CollectionUtils.isEmpty(result) ? new ArrayList<>() : result);
+        return jobCodeWrapperResponse;
     }
 }

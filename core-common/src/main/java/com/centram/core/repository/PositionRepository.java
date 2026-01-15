@@ -14,6 +14,6 @@ import java.math.BigInteger;
 public interface PositionRepository extends JpaRepository<Position, BigInteger> {
     Page<Position> findByNameContainingIgnoreCase(String name, Pageable pageable);
     Page<Position> findByNameContainingIgnoreCaseAndStatus(String name, Status status, Pageable pageable);
-    @Query("SELECT DISTINCT p.jobCode FROM Position p WHERE p.jobCode IS NOT NULL")
-    Page<String> findAllDistinctJobCodes(Pageable pageable);
+//    @Query("SELECT DISTINCT p.jobCode FROM Position p WHERE p.jobCode IS NOT NULL")
+//    Page<String> findAllDistinctJobCodes(Pageable pageable);
 }
