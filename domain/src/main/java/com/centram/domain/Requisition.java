@@ -121,6 +121,9 @@ public class Requisition extends BaseEntity implements Serializable {
     @Column(name = "job_posting_board", columnDefinition = "VARCHAR(255)")
     private String jobPostingBoard;
 
+    @Column(name = "notification_status", columnDefinition = "VARCHAR(255) NOT NULL")
+    private String notificationStatus;
+
     public Requisition(BigInteger id){
         this.id = id;
     }

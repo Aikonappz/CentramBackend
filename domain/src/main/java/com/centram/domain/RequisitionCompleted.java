@@ -91,5 +91,8 @@ public class RequisitionCompleted extends BaseEntity implements Serializable {
 
     @Column(name = "recruiting_team_lead", columnDefinition = "VARCHAR(255)")
     private String recruitingTeamLead;
+
+    @Column(name = "notification_status", columnDefinition = "VARCHAR(255) NOT NULL")
+    private String notificationStatus;
 }
 

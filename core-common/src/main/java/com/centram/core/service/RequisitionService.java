@@ -129,8 +129,9 @@ public class RequisitionService {
                 notificationTrackerRepository.save(tracker);
             }
         }
-
-        notificationService.sendNotification(result, requisitionNotificationExtractor,"FORWARD", loggedInUser.getName());
+        if("Approver 1".equalsIgnoreCase(requisition.getNotificationStatus())){
+            notificationService.sendNotification(result, requisitionNotificationExtractor,"FORWARD", loggedInUser.getName());
+        }
         return result;
     }
 
