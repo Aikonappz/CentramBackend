@@ -85,4 +85,6 @@ public class RequisitionResponseDto {
     private String locationName;
 
     private String jobCode;
+
+    private String notificationStatus;
 }

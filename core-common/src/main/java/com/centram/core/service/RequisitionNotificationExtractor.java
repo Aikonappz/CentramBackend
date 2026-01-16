@@ -32,7 +32,7 @@ public class RequisitionNotificationExtractor implements NotificationExtractor<R
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
-                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId()
+                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=1"
         );
 
         return List.of(new NotificationContext(user, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"));

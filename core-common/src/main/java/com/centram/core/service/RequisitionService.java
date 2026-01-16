@@ -183,6 +183,7 @@ public class RequisitionService {
         requisitionResponseDto.setJobPostingEndDate(req.getJobPostingEndDate());
         requisitionResponseDto.setJobPostingType(req.getJobPostingType());
         requisitionResponseDto.setJobPostingBoard(req.getJobPostingBoard());
+        requisitionResponseDto.setNotificationStatus(req.getNotificationStatus());
         Optional<Department> department = departmentRepository.findById(req.getDepartmentId());
         if (department.isPresent()) {
             Department dept = department.get();
