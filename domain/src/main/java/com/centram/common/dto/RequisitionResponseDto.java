@@ -40,7 +40,7 @@ public class RequisitionResponseDto {
 
     private BigInteger currencyId;
 
-    private String fte;
+    private String jobType;
 
     private String payGrade;
 

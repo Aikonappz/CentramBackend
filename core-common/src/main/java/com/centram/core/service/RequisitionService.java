@@ -165,7 +165,7 @@ public class RequisitionService {
         requisitionResponseDto.setPositionId(req.getPositionId());
         requisitionResponseDto.setLocationId(req.getLocationId());
         requisitionResponseDto.setCurrencyId(req.getCurrencyId());
-        requisitionResponseDto.setFte(req.getFte());
+        requisitionResponseDto.setJobType(req.getJobType());
         requisitionResponseDto.setPayGrade(req.getPayGrade());
         requisitionResponseDto.setPayRangeMin(req.getPayRangeMin());
         requisitionResponseDto.setPayRangeMid(req.getPayRangeMid());

@@ -71,7 +71,7 @@ public class Requisition extends BaseEntity implements Serializable {
     private BigInteger currencyId;
 
     @Column(name = "fte", columnDefinition = "VARCHAR(255)")
-    private String fte;
+    private String jobType;
 
     @Column(name = "pay_grade", columnDefinition = "VARCHAR(255)")
     private String payGrade;
