@@ -130,7 +130,7 @@ public class RequisitionService {
             }
         }
         if("Approver 1".equalsIgnoreCase(requisition.getNotificationStatus())){
-            notificationService.sendNotification(result, requisitionNotificationExtractor,"FORWARD", loggedInUser.getName());
+            notificationService.sendNotification(result, requisitionNotificationExtractor,requisition.getNotificationStatus(), loggedInUser.getName());
         }
         return result;
     }
@@ -216,9 +216,14 @@ public class RequisitionService {
     @Transactional
     public RequisitionManagerReview saveRequisitionManagerReview(RequisitionManagerReview requisitionManagerReview) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String notificationStatus = requisitionManagerReview.getNotificationStatus();
         if (requisitionManagerReview.getRequisition() != null && requisitionManagerReview.getRequisition().getId() != null) {
             Requisition requisition = requisitionRepository.findById(requisitionManagerReview.getRequisition().getId())
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+            if("Approver 0".equalsIgnoreCase(notificationStatus)) {
+                requisition.setNotificationStatus("Draft");
+            }
+            requisition = requisitionRepository.save(requisition);
             requisitionManagerReview.setRequisition(requisition);
         }
 
@@ -226,7 +231,9 @@ public class RequisitionService {
             requisitionManagerReview = updateReview(requisitionManagerReview);
         }
         RequisitionManagerReview result = requisitionManagerReviewRepository.save(requisitionManagerReview);
-        notificationService.sendNotification(requisitionManagerReview, managerReviewNotificationExtractor, requisitionManagerReview.getStatus(), loggedInUser.getName());
+        if("Approver 2".equalsIgnoreCase(notificationStatus) ||  "Approver 0".equalsIgnoreCase(notificationStatus)){
+            notificationService.sendNotification(requisitionManagerReview, managerReviewNotificationExtractor, notificationStatus, loggedInUser.getName());
+        }
         return result;
     }
 
@@ -246,10 +253,20 @@ public class RequisitionService {
     @Transactional
     public RequisitionRecruiterTeamLead saveRequisitionRecruiterTeamLead(RequisitionRecruiterTeamLead requisitionRecruiterTeamLead) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String notificationStatus = requisitionRecruiterTeamLead.getNotificationStatus();
         if (requisitionRecruiterTeamLead.getRequisition() != null && requisitionRecruiterTeamLead.getRequisition().getId() != null) {
             Requisition requisition = requisitionRepository.findById(requisitionRecruiterTeamLead.getRequisition().getId())
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
             requisitionRecruiterTeamLead.setRequisition(requisition);
+
+            if ("Approver 2".equalsIgnoreCase(notificationStatus)) {
+
+                RequisitionManagerReview managerReview = requisitionManagerReviewRepository.findByRequisitionId(requisitionRecruiterTeamLead.getRequisition().getId())
+                                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+
+                managerReview.setNotificationStatus("Draft");
+                requisitionManagerReviewRepository.save(managerReview);
+            }
         }
 
         if (requisitionRecruiterTeamLead.getId() != null) {
@@ -257,7 +274,9 @@ public class RequisitionService {
         }
 
         RequisitionRecruiterTeamLead result =  requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
-        notificationService.sendNotification(requisitionRecruiterTeamLead, teamLeadNotificationExtractor, requisitionRecruiterTeamLead.getStatus(), loggedInUser.getName());
+        if("Approver 3".equalsIgnoreCase(notificationStatus) ||  "Approver 2".equalsIgnoreCase(notificationStatus)){
+            notificationService.sendNotification(requisitionRecruiterTeamLead, teamLeadNotificationExtractor, notificationStatus, loggedInUser.getName());
+        }
         return result;
     }
 

@@ -40,15 +40,19 @@ public class ManagerReviewNotificationExtractor implements NotificationExtractor
         User currentUser = userRepository.findByFullName(name)
                 .orElseThrow(() -> new RuntimeException("Manager Notification User not found"));
 
+        String reqLink = status.equals("Approver 2")
+                ? "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=2"
+                : "http://localhost:3000/job-requisition/correction?reqId=" + requisition.getId() + "&stepper=0";
+
         Map<String, String> placeholders = Map.of(
-                "USER_NAME", status.equals("FORWARD") ? forwardUser.getFirstName() + " " + forwardUser.getLastName() : backwardUser.getFirstName() + " " + backwardUser.getLastName(),
+                "USER_NAME", status.equals("Approver 2") ? forwardUser.getFirstName() + " " + forwardUser.getLastName() : backwardUser.getFirstName() + " " + backwardUser.getLastName(),
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
-                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId()
+                "REQ_LINK", reqLink
         );
 
-        if(status.equals("FORWARD")) {
+        if(status.equals("Approver 2")) {
             return List.of(new NotificationContext(forwardUser, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
                     new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
         } else {
