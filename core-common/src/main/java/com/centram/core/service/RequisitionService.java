@@ -210,7 +210,58 @@ public class RequisitionService {
         }
         Optional<Position> position = positionRepository.findById(req.getPositionId());
         position.ifPresent(value -> requisitionResponseDto.setJobCode(value.getJobCode()));
+//        String requisitionLatestStatus = findReqLatestStatus(id,requisitionResponseDto);
+//        requisitionResponseDto.setRequisitionLatestStatus(requisitionLatestStatus);
+        return findReqLatestStatus(id,requisitionResponseDto);
+    }
+
+    private RequisitionResponseDto findReqLatestStatus(BigInteger id, RequisitionResponseDto requisitionResponseDto) {
+        boolean latestStatus = false;
+
+        Optional<RequisitionRecruiterReview> recruiterReview = requisitionRecruiterReviewRepository.findByRequisitionId(id);
+        if(recruiterReview.isPresent()){
+            if("Approver 4".equalsIgnoreCase(recruiterReview.get().getNotificationStatus())){
+                requisitionResponseDto.setRequisitionLatestStatus("4");
+                latestStatus = true;
+            }
+            requisitionResponseDto.setStepper3Status(recruiterReview.get().getNotificationStatus());
+        }
+
+        Optional<RequisitionRecruiterTeamLead> teamLead  = requisitionRecruiterTeamLeadRepository.findByRequisitionId(id);
+        if(teamLead.isPresent()){
+            if("Approver 3".equalsIgnoreCase(teamLead.get().getNotificationStatus())){
+                if(!latestStatus) {
+                    requisitionResponseDto.setRequisitionLatestStatus("3");
+                    latestStatus = true;
+                }
+            }
+            requisitionResponseDto.setStepper2Status(teamLead.get().getNotificationStatus());
+        }
+
+        Optional<RequisitionManagerReview> managerReview  = requisitionManagerReviewRepository.findByRequisitionId(id);
+        if(managerReview.isPresent()){
+            if("Approver 2".equalsIgnoreCase(managerReview.get().getNotificationStatus())){
+                if(!latestStatus) {
+                    requisitionResponseDto.setRequisitionLatestStatus("2");
+                    latestStatus = true;
+                }
+            }
+            requisitionResponseDto.setStepper1Status(managerReview.get().getNotificationStatus());
+        }
+
+        Optional<Requisition> requisition = requisitionRepository.findById(id);
+        if(requisition.isPresent()){
+            if("Approver 1".equalsIgnoreCase(requisition.get().getNotificationStatus())){
+                if(!latestStatus) {
+                    requisitionResponseDto.setRequisitionLatestStatus("1");
+                    latestStatus = true;
+                }
+            }
+        }
+
+        if(!latestStatus) requisitionResponseDto.setRequisitionLatestStatus("0");
         return requisitionResponseDto;
+
     }
 
     @Transactional
@@ -274,7 +325,7 @@ public class RequisitionService {
         }
 
         RequisitionRecruiterTeamLead result =  requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
-        if("Approver 3".equalsIgnoreCase(notificationStatus) ||  "Approver 2".equalsIgnoreCase(notificationStatus)){
+        if("Approver 3".equalsIgnoreCase(notificationStatus) ||  "Approver 1".equalsIgnoreCase(notificationStatus)){
             notificationService.sendNotification(requisitionRecruiterTeamLead, teamLeadNotificationExtractor, notificationStatus, loggedInUser.getName());
         }
         return result;
@@ -316,8 +367,8 @@ public class RequisitionService {
             requisitionRecruiterReview = updateReview(requisitionRecruiterReview);
         }
         RequisitionRecruiterReview result = requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
-        if("Approver 4".equalsIgnoreCase(notificationStatus) ||  "Approver 3".equalsIgnoreCase(notificationStatus)){
-            notificationService.sendNotification(requisitionRecruiterReview, requisitionRecruiterReviewExtractor, requisitionRecruiterReview.getStatus(), loggedInUser.getName());
+        if("Approver 4".equalsIgnoreCase(notificationStatus) ||  "Approver 2".equalsIgnoreCase(notificationStatus)){
+            notificationService.sendNotification(requisitionRecruiterReview, requisitionRecruiterReviewExtractor, notificationStatus, loggedInUser.getName());
         }
         return result;
     }
