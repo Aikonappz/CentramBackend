@@ -296,17 +296,29 @@ public class RequisitionService {
     @Transactional
     public RequisitionRecruiterReview saveRequisitionRecruiterReview(RequisitionRecruiterReview requisitionRecruiterReview) {
         LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String notificationStatus = requisitionRecruiterReview.getNotificationStatus();
         if (requisitionRecruiterReview.getRequisition() != null && requisitionRecruiterReview.getRequisition().getId() != null) {
             Requisition requisition = requisitionRepository.findById(requisitionRecruiterReview.getRequisition().getId())
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
             requisitionRecruiterReview.setRequisition(requisition);
+
+            if ("Approver 3".equalsIgnoreCase(notificationStatus)) {
+
+                RequisitionRecruiterTeamLead requisitionRecruiterTeamLead = requisitionRecruiterTeamLeadRepository.findByRequisitionId(requisitionRecruiterReview.getRequisition().getId())
+                        .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+
+                requisitionRecruiterTeamLead.setNotificationStatus("Draft");
+                requisitionRecruiterTeamLeadRepository.save(requisitionRecruiterTeamLead);
+            }
         }
 
         if (requisitionRecruiterReview.getId() != null) {
             requisitionRecruiterReview = updateReview(requisitionRecruiterReview);
         }
         RequisitionRecruiterReview result = requisitionRecruiterReviewRepository.save(requisitionRecruiterReview);
-        notificationService.sendNotification(requisitionRecruiterReview, requisitionRecruiterReviewExtractor, requisitionRecruiterReview.getStatus(), loggedInUser.getName());
+        if("Approver 4".equalsIgnoreCase(notificationStatus) ||  "Approver 3".equalsIgnoreCase(notificationStatus)){
+            notificationService.sendNotification(requisitionRecruiterReview, requisitionRecruiterReviewExtractor, requisitionRecruiterReview.getStatus(), loggedInUser.getName());
+        }
         return result;
     }
 
