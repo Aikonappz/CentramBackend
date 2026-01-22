@@ -10,6 +10,7 @@ import com.centram.core.repository.*;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -144,7 +145,19 @@ public class RequisitionService {
     }
 
     public PaginatedList<Requisition> getAllRequisition(String name, Status status, Pageable pageable) {
-        return new PaginatedList<Requisition>(requisitionRepository.findAll(pageable));
+        Page<Requisition> page = requisitionRepository.findAll(pageable);
+        page.forEach(req -> {
+            req.setFinalStatus(calculateFinalStatus(req));
+        });
+        return  new PaginatedList<>(page);
+    }
+
+    private String calculateFinalStatus(Requisition req) {
+        Optional<RequisitionRecruiterReview> review = requisitionRecruiterReviewRepository.findByRequisitionId(req.getId());
+
+        if(review.isPresent()) return "4";
+
+        return "1";
     }
 
     public RequisitionResponseDto getByRequisitionId(BigInteger id) {
@@ -437,6 +450,7 @@ public class RequisitionService {
         req.setHiringManager(request.getHiringManager());
         req.setHeadOfBusinessUnit(request.getHeadOfBusinessUnit());
         req.setHeadOfRecruitment(request.getHeadOfRecruitment());
+        req.setNotificationStatus(request.getNotificationStatus());
 
         req = requisitionRepository.save(req);
         notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());

@@ -1,5 +1,7 @@
 package com.centram.domain;
 
+import com.centram.common.view.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -123,6 +125,10 @@ public class Requisition extends BaseEntity implements Serializable {
 
     @Column(name = "notification_status", columnDefinition = "VARCHAR(255) NOT NULL")
     private String notificationStatus;
+
+    @Transient
+    @JsonView(Views.BasicView.class)
+    private String finalStatus;
 
     public Requisition(BigInteger id){
         this.id = id;

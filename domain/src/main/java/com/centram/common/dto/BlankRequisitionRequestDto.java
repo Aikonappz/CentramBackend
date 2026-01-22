@@ -29,4 +29,5 @@ public class BlankRequisitionRequestDto {
     private String hiringManager;
     private String headOfBusinessUnit;
     private String headOfRecruitment;
+    private String notificationStatus;
 }
