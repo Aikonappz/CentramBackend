@@ -87,4 +87,9 @@ public class RequisitionResponseDto {
     private String jobCode;
 
     private String notificationStatus;
+
+    private String requisitionLatestStatus;
+    private String stepper1Status;
+    private String stepper2Status;
+    private String stepper3Status;
 }
