@@ -72,15 +72,15 @@ public class RequisitionController {
         return new ResponseEntity<>(requisitionService.getByRequisitionRecruiterReviewId(id), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/completed/add", consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<RequisitionCompleted> saveRequisitionCompleted(@RequestBody RequisitionCompleted body) {
-        return new ResponseEntity<>(requisitionService.saveRequisitionCompleted(body), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/completed/{id}", produces = "application/json")
-    public ResponseEntity<RequisitionCompleted> getByRequisitionCompletedId(@PathVariable BigInteger id) {
-        return new ResponseEntity<>(requisitionService.getByRequisitionCompletedId(id), HttpStatus.OK);
-    }
+//    @PostMapping(value = "/completed/add", consumes = {"application/json"}, produces = {"application/json"})
+//    public ResponseEntity<RequisitionCompleted> saveRequisitionCompleted(@RequestBody RequisitionCompleted body) {
+//        return new ResponseEntity<>(requisitionService.saveRequisitionCompleted(body), HttpStatus.OK);
+//    }
+//
+//    @GetMapping(value = "/completed/{id}", produces = "application/json")
+//    public ResponseEntity<RequisitionCompleted> getByRequisitionCompletedId(@PathVariable BigInteger id) {
+//        return new ResponseEntity<>(requisitionService.getByRequisitionCompletedId(id), HttpStatus.OK);
+//    }
 
     @PostMapping("/blank-template")
     public ResponseEntity<Requisition> createRequisitionViaBlankTemplate(@RequestBody BlankRequisitionRequestDto request) {
