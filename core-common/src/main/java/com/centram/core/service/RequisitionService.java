@@ -461,7 +461,13 @@ public class RequisitionService {
             req.setPayRangeMin(request.getPayRangeMin());
             req.setPayRangeMid(request.getPayRangeMid());
             req.setPayRangeMax(request.getPayRangeMax());
-
+            req.setNotificationStatus(request.getNotificationStatus());
+            req.setJobPostingStartDate(request.getJobPostingStartDate());
+            req.setJobPostingEndDate(request.getJobPostingEndDate());
+            req.setJobStartDate(request.getJobStartDate());
+            req.setHiringManager(request.getHiringManager());
+            req.setHeadOfBusinessUnit(request.getHeadOfBusinessUnit());
+            req.setHeadOfRecruitment(request.getHeadOfRecruitment());
             req = requisitionRepository.save(req);
             notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
             return req;
@@ -504,6 +510,7 @@ public class RequisitionService {
         req.setNotificationStatus(request.getNotificationStatus());
         req.setJobPostingStartDate(request.getJobPostingStartDate());
         req.setJobPostingEndDate(request.getJobPostingEndDate());
+        req.setJobStartDate(request.getJobStartDate());
 
         req = requisitionRepository.save(req);
         notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());

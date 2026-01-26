@@ -35,4 +35,5 @@ public class BlankRequisitionRequestDto {
     private String positionName;
     private LocalDate jobPostingStartDate;
     private LocalDate jobPostingEndDate;
+    private LocalDate jobStartDate;
 }
