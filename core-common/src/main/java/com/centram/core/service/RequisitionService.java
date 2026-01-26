@@ -65,8 +65,8 @@ public class RequisitionService {
     @Autowired
     TeamLeadNotificationExtractor teamLeadNotificationExtractor;
 
-    @Autowired
-    RequisitionCompletedExtractor requisitionCompletedExtractor;
+//    @Autowired
+//    RequisitionCompletedExtractor requisitionCompletedExtractor;
 
     @Autowired
     RequisitionNotificationExtractor requisitionNotificationExtractor;
@@ -444,7 +444,7 @@ public class RequisitionService {
                         .orElseThrow(() -> new RuntimeException("Department not found"));
                 position.setDepartment(dept);
             }
-            position.setName(request.getJobTitle());
+            position.setName(request.getPositionName());
             position.setLocationId(request.getLocationId());
             position.setJobCode(position.getJobCode());
             positionRepository.save(position);
@@ -468,7 +468,7 @@ public class RequisitionService {
         }
 
         Position position = new Position();
-        position.setName(request.getJobTitle());
+        position.setName(request.getPositionName());
         position.setStatus(Status.ACTIVE);
         position.setStartDate(LocalDate.now());
         position.setJobCode(request.getJobCode());
@@ -502,6 +502,8 @@ public class RequisitionService {
         req.setHeadOfBusinessUnit(request.getHeadOfBusinessUnit());
         req.setHeadOfRecruitment(request.getHeadOfRecruitment());
         req.setNotificationStatus(request.getNotificationStatus());
+        req.setJobPostingStartDate(request.getJobPostingStartDate());
+        req.setJobPostingEndDate(request.getJobPostingEndDate());
 
         req = requisitionRepository.save(req);
         notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());

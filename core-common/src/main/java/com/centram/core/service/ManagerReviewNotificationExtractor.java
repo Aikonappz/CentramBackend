@@ -52,12 +52,18 @@ public class ManagerReviewNotificationExtractor implements NotificationExtractor
                 "REQ_LINK", reqLink
         );
 
+        Map<String, String> currentUserPlaceholders = Map.of(
+                "USER_NAME", name,
+                "REQ_ID", String.valueOf(requisition.getId()),
+                "JOB_TITLE", requisition.getJobTitle()
+        );
+
         if(status.equals("Approver 2")) {
             return List.of(new NotificationContext(forwardUser, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
-                    new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
+                    new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
         } else {
             return List.of(new NotificationContext(backwardUser, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
-            new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE"));
+            new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE"));
         }
     }
 }

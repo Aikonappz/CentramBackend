@@ -24,11 +24,11 @@ public class TeamLeadNotificationExtractor implements NotificationExtractor<Requ
     @Override
     public List<NotificationContext> extract(RequisitionRecruiterTeamLead lead, String status, String name) {
         Requisition requisition = lead.getRequisition();
-        User forwardUser = userRepository.findByFullName(requisition.getHiringManager())
-                .orElseThrow(() -> new RuntimeException("Team Lead Notification Hiring Manager not found"));
+        User forwardUser = userRepository.findByFullName(requisition.getHeadOfBusinessUnit())
+                .orElseThrow(() -> new RuntimeException("Team Lead Notification Head of Business Unit not found"));
 
-        User backwardUser = userRepository.findByFullName(requisition.getHeadOfRecruitment())
-                .orElseThrow(() -> new RuntimeException("Team Lead Notification Head of Recruitment not found"));
+        User backwardUser = userRepository.findByFullName(requisition.getHiringManager())
+                .orElseThrow(() -> new RuntimeException("Team Lead Notification Hiring Manager not found"));
 
         User currentUser = userRepository.findByFullName(name)
                 .orElseThrow(() -> new RuntimeException("Team Lead Notification User not found"));
@@ -46,14 +46,20 @@ public class TeamLeadNotificationExtractor implements NotificationExtractor<Requ
                 "REQ_LINK", reqLink
         );
 
+        Map<String, String> currentUserPlaceholders = Map.of(
+                "USER_NAME", name,
+                "REQ_ID", String.valueOf(requisition.getId()),
+                "JOB_TITLE", requisition.getJobTitle()
+        );
+
 
         if(status.equals("Approver 3")) {
             return List.of(new NotificationContext(forwardUser, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
-                    new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE")
+                    new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE")
             );
         } else {
             return List.of(new NotificationContext(backwardUser, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
-                    new NotificationContext(currentUser, placeholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE")
+                    new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE")
             );
         }
     }

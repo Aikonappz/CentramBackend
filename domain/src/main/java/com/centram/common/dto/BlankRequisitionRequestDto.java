@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -31,4 +32,7 @@ public class BlankRequisitionRequestDto {
     private String headOfRecruitment;
     private String notificationStatus;
     private String requisitionStatus;
+    private String positionName;
+    private LocalDate jobPostingStartDate;
+    private LocalDate jobPostingEndDate;
 }

@@ -24,17 +24,28 @@ public class RequisitionNotificationExtractor implements NotificationExtractor<R
 
     @Override
     public List<NotificationContext> extract(Requisition requisition, String status, String name) {
-        User user = userRepository.findByFullName(requisition.getHeadOfRecruitment())
+        Position position = positionRepository.findById(requisition.getPositionId())
+                .orElseThrow(() -> new RuntimeException("Requisition notification Position not found"));
+        User hiringManager = userRepository.findByFullName(requisition.getHiringManager())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        User recruiter = userRepository.findByFullName(position.getRecruiterName())
+                .orElseThrow(() -> new RuntimeException("Requisition notification Recruiter Name  not found")); //current user
 
-        Map<String, String> placeholders = Map.of(
-                "USER_NAME", user.getFirstName()+" "+ user.getLastName(),
+        Map<String, String> hiringManagerPlaceholders = Map.of(
+                "USER_NAME", requisition.getHiringManager(),
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
                 "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=1"
         );
 
-        return List.of(new NotificationContext(user, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"));
+        Map<String, String> recruiterPlaceholders = Map.of(
+                "USER_NAME", position.getRecruiterName(),
+                "REQ_ID", String.valueOf(requisition.getId()),
+                "JOB_TITLE", requisition.getJobTitle()
+        );
+
+        return List.of(new NotificationContext(hiringManager, hiringManagerPlaceholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
+                new NotificationContext(recruiter, recruiterPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
     }
 }

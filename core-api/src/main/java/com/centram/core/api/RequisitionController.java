@@ -42,7 +42,7 @@ public class RequisitionController {
         return new ResponseEntity<>(requisitionResponseDto, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/manager_review/add", consumes = {"application/json"}, produces = {"application/json"})
+    @PostMapping(value = "/manager_review/add", consumes = {"application/json"}, produces = {"application/json"}) //notification for hiring manager
     public ResponseEntity<RequisitionManagerReview> saveRequisitionManagerReview(@RequestBody RequisitionManagerReview body) {
         return new ResponseEntity<>(requisitionService.saveRequisitionManagerReview(body), HttpStatus.OK);
     }
@@ -52,7 +52,7 @@ public class RequisitionController {
         return new ResponseEntity<>(requisitionService.getByRequisitionMangerReviewId(id), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/recruiter_team_lead/add", consumes = {"application/json"}, produces = {"application/json"})
+    @PostMapping(value = "/recruiter_team_lead/add", consumes = {"application/json"}, produces = {"application/json"}) //notification for head of recruitment
     public ResponseEntity<RequisitionRecruiterTeamLead> saveRequisitionRecruiterTeamLead(@RequestBody RequisitionRecruiterTeamLead body) {
         return new ResponseEntity<>(requisitionService.saveRequisitionRecruiterTeamLead(body), HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class RequisitionController {
         return new ResponseEntity<>(requisitionService.getByRequisitionRecruiterTeamLeadId(id), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/recruiter_review/add", consumes = {"application/json"}, produces = {"application/json"})
+    @PostMapping(value = "/recruiter_review/add", consumes = {"application/json"}, produces = {"application/json"}) //notification for head of business unit
     public ResponseEntity<RequisitionRecruiterReview> saveRequisitionRecruiterReview(@RequestBody RequisitionRecruiterReview body) {
         return new ResponseEntity<>(requisitionService.saveRequisitionRecruiterReview(body), HttpStatus.OK);
     }
