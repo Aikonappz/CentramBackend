@@ -323,7 +323,7 @@ public class RequisitionService {
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
             requisitionRecruiterTeamLead.setRequisition(requisition);
 
-            if ("Approver 2".equalsIgnoreCase(notificationStatus)) {
+            if ("Approver 1".equalsIgnoreCase(notificationStatus)) {
 
                 RequisitionManagerReview managerReview = requisitionManagerReviewRepository.findByRequisitionId(requisitionRecruiterTeamLead.getRequisition().getId())
                                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
@@ -366,7 +366,7 @@ public class RequisitionService {
                     .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
             requisitionRecruiterReview.setRequisition(requisition);
 
-            if ("Approver 3".equalsIgnoreCase(notificationStatus)) {
+            if ("Approver 2".equalsIgnoreCase(notificationStatus)) {
 
                 RequisitionRecruiterTeamLead requisitionRecruiterTeamLead = requisitionRecruiterTeamLeadRepository.findByRequisitionId(requisitionRecruiterReview.getRequisition().getId())
                         .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
