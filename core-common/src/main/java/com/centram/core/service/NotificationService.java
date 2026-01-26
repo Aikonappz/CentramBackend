@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -155,6 +156,7 @@ public class NotificationService {
         }
     }
 
+    @Async
     public <T> void sendNotification(T source, NotificationExtractor<T> extractor, String status, String name) {
         List<NotificationContext> contexts = extractor.extract(source, status, name);
 
