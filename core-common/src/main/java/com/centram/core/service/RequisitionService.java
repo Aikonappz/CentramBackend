@@ -155,7 +155,7 @@ public class RequisitionService {
     private String calculateFinalStatus(Requisition req) {
         Optional<RequisitionRecruiterReview> review = requisitionRecruiterReviewRepository.findByRequisitionId(req.getId());
 
-        if(review.isPresent()) return "4";
+        if(review.isPresent() && "Approver 4".equalsIgnoreCase(review.get().getNotificationStatus())) return "4";
 
         return "1";
     }
