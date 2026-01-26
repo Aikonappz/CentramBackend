@@ -469,7 +469,9 @@ public class RequisitionService {
             req.setHeadOfBusinessUnit(request.getHeadOfBusinessUnit());
             req.setHeadOfRecruitment(request.getHeadOfRecruitment());
             req = requisitionRepository.save(req);
-            notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
+            if ("Approver 1".equalsIgnoreCase(request.getNotificationStatus())) {
+                notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
+            }
             return req;
         }
 
@@ -513,7 +515,9 @@ public class RequisitionService {
         req.setJobStartDate(request.getJobStartDate());
 
         req = requisitionRepository.save(req);
-        notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
+        if ("Approver 1".equalsIgnoreCase(request.getNotificationStatus())) {
+            notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
+        }
         return req;
     }
 }
