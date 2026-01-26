@@ -310,7 +310,7 @@ public class RequisitionService {
     }
 
     public RequisitionManagerReview getByRequisitionMangerReviewId(BigInteger id) {
-        return requisitionManagerReviewRepository.findById(id)
+        return requisitionManagerReviewRepository.findByRequisitionId(id)
                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
     }
 
@@ -353,7 +353,7 @@ public class RequisitionService {
     }
 
     public RequisitionRecruiterTeamLead getByRequisitionRecruiterTeamLeadId(BigInteger id) {
-        return requisitionRecruiterTeamLeadRepository.findById(id)
+        return requisitionRecruiterTeamLeadRepository.findByRequisitionId(id)
                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
     }
 
@@ -399,35 +399,35 @@ public class RequisitionService {
                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
     }
 
-    @Transactional
-    public RequisitionCompleted saveRequisitionCompleted(RequisitionCompleted completed) {
-        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (completed.getRequisition() != null && completed.getRequisition().getId() != null) {
-            Requisition requisition = requisitionRepository.findById(completed.getRequisition().getId())
-                    .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
-            completed.setRequisition(requisition);
-        }
-
-        if (completed.getId() != null) {
-            completed = updateComplete(completed);
-        }
-        RequisitionCompleted result = requisitionCompletedRepository.save(completed);
-        notificationService.sendNotification(completed, requisitionCompletedExtractor, completed.getStatus(), loggedInUser.getName());
-        return result;
-    }
-
-    public RequisitionCompleted updateComplete(RequisitionCompleted completed) {
-        RequisitionCompleted existing = requisitionCompletedRepository.findById(completed.getId())
-                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
-
-        EntityUpdateService.updateEntity(completed, existing, requisitionCompletedMapper);
-        return existing;
-    }
-
-    public RequisitionCompleted getByRequisitionCompletedId(BigInteger id) {
-        return requisitionCompletedRepository.findById(id)
-                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
-    }
+//    @Transactional
+//    public RequisitionCompleted saveRequisitionCompleted(RequisitionCompleted completed) {
+//        LoggedInUser loggedInUser = (LoggedInUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (completed.getRequisition() != null && completed.getRequisition().getId() != null) {
+//            Requisition requisition = requisitionRepository.findById(completed.getRequisition().getId())
+//                    .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+//            completed.setRequisition(requisition);
+//        }
+//
+//        if (completed.getId() != null) {
+//            completed = updateComplete(completed);
+//        }
+//        RequisitionCompleted result = requisitionCompletedRepository.save(completed);
+//        notificationService.sendNotification(completed, requisitionCompletedExtractor, completed.getStatus(), loggedInUser.getName());
+//        return result;
+//    }
+//
+//    public RequisitionCompleted updateComplete(RequisitionCompleted completed) {
+//        RequisitionCompleted existing = requisitionCompletedRepository.findById(completed.getId())
+//                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+//
+//        EntityUpdateService.updateEntity(completed, existing, requisitionCompletedMapper);
+//        return existing;
+//    }
+//
+//    public RequisitionCompleted getByRequisitionCompletedId(BigInteger id) {
+//        return requisitionCompletedRepository.findById(id)
+//                .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
+//    }
 
     @Transactional
     public Requisition createOrUpdateFromBlankTemplate(BlankRequisitionRequestDto request) {
@@ -496,7 +496,7 @@ public class RequisitionService {
         req.setPayRangeMin(request.getPayRangeMin());
         req.setPayRangeMid(request.getPayRangeMid());
         req.setPayRangeMax(request.getPayRangeMax());
-        req.setRequisitionStatus("Open");
+        req.setRequisitionStatus(request.getRequisitionStatus());
         req.setPositionId(savedPos.getId());
         req.setHiringManager(request.getHiringManager());
         req.setHeadOfBusinessUnit(request.getHeadOfBusinessUnit());

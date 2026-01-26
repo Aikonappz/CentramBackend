@@ -30,4 +30,5 @@ public class BlankRequisitionRequestDto {
     private String headOfBusinessUnit;
     private String headOfRecruitment;
     private String notificationStatus;
+    private String requisitionStatus;
 }
