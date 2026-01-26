@@ -395,7 +395,7 @@ public class RequisitionService {
     }
 
     public RequisitionRecruiterReview getByRequisitionRecruiterReviewId(BigInteger id) {
-        return requisitionRecruiterReviewRepository.findById(id)
+        return requisitionRecruiterReviewRepository.findByRequisitionId(id)
                 .orElseThrow(() -> new AppException(GenericErrorCode.DATA_NOT_FOUND));
     }
 
