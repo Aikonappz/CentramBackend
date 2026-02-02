@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/job-postings")
+@RequestMapping("/api/v1/job-postings")
 public class JobPostingController {
 
     private final JobPostingService jobPostingService;
