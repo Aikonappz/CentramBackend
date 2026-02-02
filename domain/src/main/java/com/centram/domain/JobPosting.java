@@ -19,6 +19,12 @@ import java.time.LocalDate;
 @Audited
 @Table(
         name = "job_posting",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_job_posting_requisition",
+                        columnNames = {"requisition_id"}
+                )
+        },
         indexes = {
                 @Index(name = "job_posting_requisition_id_idx", columnList = "requisition_id"),
                 @Index(name = "job_posting_status_idx", columnList = "posting_status")

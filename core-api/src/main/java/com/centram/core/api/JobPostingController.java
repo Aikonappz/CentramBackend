@@ -31,10 +31,4 @@ public class JobPostingController {
     public ResponseEntity<List<JobPosting>> getAllJobPostings() {
         return ResponseEntity.ok(jobPostingService.getAllJobPostings());
     }
-
-
-    @GetMapping("/{requisitionId}")
-    public ResponseEntity<List<JobPosting>> getByRequisition(@PathVariable BigInteger requisitionId) {
-        return ResponseEntity.ok(jobPostingService.getByRequisitionId(requisitionId));
-    }
 }

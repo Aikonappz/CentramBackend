@@ -26,6 +26,12 @@ public class JobPostingService {
     @Transactional
     public JobPosting postJob(BigInteger requisitionId) {
 
+        if (jobPostingRepository.existsByRequisitionId(requisitionId)) {
+            throw new RuntimeException(
+                    "Job already posted for requisition id: " + requisitionId
+            );
+        }
+
         Requisition requisition = requisitionRepository.findById(requisitionId)
                 .orElseThrow(() -> new RuntimeException("Requisition not found"));
 
@@ -45,10 +51,6 @@ public class JobPostingService {
 
     public List<JobPosting> getAllJobPostings() {
         return jobPostingRepository.findAll();
-    }
-
-    public List<JobPosting> getByRequisitionId(BigInteger requisitionId) {
-        return jobPostingRepository.findByRequisitionId(requisitionId);
     }
 
 
