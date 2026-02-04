@@ -56,7 +56,7 @@ public class JobPostingService {
     }
 
     public JobPosting getJobPostStatus(BigInteger requisitionId) {
-        return jobPostingRepository.findByRequisitionId(requisitionId);
+        return jobPostingRepository.findByRequisitionId(requisitionId) .orElse(new JobPosting());
     }
 
 }
