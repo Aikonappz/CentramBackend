@@ -82,5 +82,28 @@ public class JobPostingService {
                 .build();
     }
 
+    public JobPostingResponseDto updateJobPosting(JobPostingDto dto) {
+
+        Optional<JobPosting> jobPosting = jobPostingRepository.findByRequisitionId(dto.getRequisitionId());
+        if(jobPosting.isEmpty()) throw new RuntimeException("Job already posted for requisition id: " + dto.getRequisitionId());
+        JobPosting entity = jobPosting.get();
+        if (dto.getJobPortalPostingStartDate() != null) {
+            entity.setPostingStartDate(dto.getJobPortalPostingStartDate());
+        }
+
+        if (dto.getJobPortalPostingEndDate() != null) {
+            entity.setPostingEndDate(dto.getJobPortalPostingEndDate());
+        }
+
+        if (dto.getJobPortalCareerSite() != null) {
+            entity.setPostingBoard(dto.getJobPortalCareerSite());
+        }
+
+        entity.setRepostAfterExpiration(dto.isRepostAfterExpiration());
+
+        JobPosting saved = jobPostingRepository.save(entity);
+
+        return mapToResponseDto(saved);
+    }
 
 }

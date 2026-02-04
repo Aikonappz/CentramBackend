@@ -20,9 +20,8 @@ public class JobPostingController {
     }
 
 
-    @PostMapping("/{requisitionId}")
+    @PostMapping("/save")
     public ResponseEntity<JobPostingResponseDto> postJob(@RequestBody JobPostingDto jobPostingDto) {
-
         return ResponseEntity.ok(jobPostingService.postJob(jobPostingDto));
     }
 
@@ -34,5 +33,10 @@ public class JobPostingController {
     @GetMapping("/get-status/{requisitionId}")
     public ResponseEntity<JobPostingResponseDto> getJobPostStatus(@PathVariable BigInteger requisitionId) {
         return ResponseEntity.ok(jobPostingService.getJobPostStatus(requisitionId));
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<JobPostingResponseDto> updateJobPosting(@RequestBody JobPostingDto dto) {
+        return ResponseEntity.ok(jobPostingService.updateJobPosting(dto));
     }
 }
