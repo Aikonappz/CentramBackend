@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -53,5 +55,8 @@ public class JobPostingService {
         return jobPostingRepository.findAll();
     }
 
+    public JobPosting getJobPostStatus(BigInteger requisitionId) {
+        return jobPostingRepository.findByRequisitionId(requisitionId);
+    }
 
 }

@@ -31,4 +31,9 @@ public class JobPostingController {
     public ResponseEntity<List<JobPosting>> getAllJobPostings() {
         return ResponseEntity.ok(jobPostingService.getAllJobPostings());
     }
+
+    @GetMapping("/get-status/{requisitionId}")
+    public ResponseEntity<JobPosting> getJobPostStatus(@PathVariable BigInteger requisitionId) {
+        return ResponseEntity.ok(jobPostingService.getJobPostStatus(requisitionId));
+    }
 }

@@ -7,4 +7,5 @@ import java.math.BigInteger;
 
 public interface JobPostingRepository extends JpaRepository<JobPosting, BigInteger> {
     boolean existsByRequisitionId(BigInteger requisitionId);
+    JobPosting findByRequisitionId(BigInteger requisitionId);
 }
