@@ -1,7 +1,8 @@
 package com.centram.core.api;
 
+import com.centram.common.dto.JobPostingDto;
+import com.centram.common.dto.JobPostingResponseDto;
 import com.centram.core.service.JobPostingService;
-import com.centram.domain.JobPosting;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,20 +21,18 @@ public class JobPostingController {
 
 
     @PostMapping("/{requisitionId}")
-    public ResponseEntity<JobPosting> postJob(@PathVariable BigInteger requisitionId) {
+    public ResponseEntity<JobPostingResponseDto> postJob(@RequestBody JobPostingDto jobPostingDto) {
 
-        return ResponseEntity.ok(
-                jobPostingService.postJob(requisitionId)
-        );
+        return ResponseEntity.ok(jobPostingService.postJob(jobPostingDto));
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<JobPosting>> getAllJobPostings() {
+    public ResponseEntity<List<JobPostingResponseDto>> getAllJobPostings() {
         return ResponseEntity.ok(jobPostingService.getAllJobPostings());
     }
 
     @GetMapping("/get-status/{requisitionId}")
-    public ResponseEntity<JobPosting> getJobPostStatus(@PathVariable BigInteger requisitionId) {
+    public ResponseEntity<JobPostingResponseDto> getJobPostStatus(@PathVariable BigInteger requisitionId) {
         return ResponseEntity.ok(jobPostingService.getJobPostStatus(requisitionId));
     }
 }

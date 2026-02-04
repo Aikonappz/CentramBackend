@@ -1,5 +1,7 @@
 package com.centram.core.service;
 
+import com.centram.common.dto.JobPostingDto;
+import com.centram.common.dto.JobPostingResponseDto;
 import com.centram.core.repository.JobPostingRepository;
 import com.centram.core.repository.RequisitionRepository;
 import com.centram.domain.JobPosting;
@@ -11,6 +13,8 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobPostingService {
@@ -26,37 +30,57 @@ public class JobPostingService {
 
 
     @Transactional
-    public JobPosting postJob(BigInteger requisitionId) {
+    public JobPostingResponseDto postJob(JobPostingDto jobPostingDto) {
 
-        if (jobPostingRepository.existsByRequisitionId(requisitionId)) {
-            throw new RuntimeException(
-                    "Job already posted for requisition id: " + requisitionId
-            );
+        if (jobPostingRepository.existsByRequisitionId(jobPostingDto.getRequisitionId())) {
+            throw new RuntimeException("Job already posted for requisition id: " + jobPostingDto.getRequisitionId());
         }
 
-        Requisition requisition = requisitionRepository.findById(requisitionId)
+        Requisition requisition = requisitionRepository.findById(jobPostingDto.getRequisitionId())
                 .orElseThrow(() -> new RuntimeException("Requisition not found"));
 
         JobPosting jobPosting = JobPosting.builder()
                 .requisitionId(requisition.getId())
                 .jobTitle(requisition.getJobTitle())
                 .locationId(requisition.getLocationId())
-                .postingStartDate(requisition.getJobPostingStartDate())
-                .postingEndDate(requisition.getJobPostingEndDate())
+                .postingStartDate(jobPostingDto.getJobPortalPostingStartDate())
+                .postingEndDate(jobPostingDto.getJobPortalPostingEndDate())
                 .postingType(requisition.getJobPostingType())
-                .postingBoard(requisition.getJobPostingBoard())
+                .postingBoard(jobPostingDto.getJobPortalCareerSite())
                 .postingStatus("POSTED")
+                .repostAfterExpiration(jobPostingDto.isRepostAfterExpiration())
                 .build();
 
-        return jobPostingRepository.save(jobPosting);
+        JobPosting result = jobPostingRepository.save(jobPosting);
+        return mapToResponseDto(result);
     }
 
-    public List<JobPosting> getAllJobPostings() {
-        return jobPostingRepository.findAll();
+    public List<JobPostingResponseDto> getAllJobPostings() {
+        return jobPostingRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public JobPosting getJobPostStatus(BigInteger requisitionId) {
-        return jobPostingRepository.findByRequisitionId(requisitionId) .orElse(new JobPosting());
+    public JobPostingResponseDto getJobPostStatus(BigInteger requisitionId) {
+        Optional<JobPosting> jobPosting = jobPostingRepository.findByRequisitionId(requisitionId);
+        if(jobPosting.isPresent()) return mapToResponseDto(jobPosting.get());
+        return new JobPostingResponseDto();
     }
+
+    private JobPostingResponseDto mapToResponseDto(JobPosting result) {
+        return JobPostingResponseDto.builder()
+                .id(result.getId())
+                .requisitionId(result.getRequisitionId())
+                .jobTitle(result.getJobTitle())
+                .locationId(result.getLocationId())
+                .jobPortalPostingStartDate(result.getPostingStartDate())
+                .jobPortalPostingEndDate(result.getPostingEndDate())
+                .jobPortalCareerSite(result.getPostingBoard())
+                .postingStatus(result.getPostingStatus())
+                .repostAfterExpiration(result.isRepostAfterExpiration())
+                .build();
+    }
+
 
 }

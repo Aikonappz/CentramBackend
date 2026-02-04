@@ -62,4 +62,7 @@ public class JobPosting extends BaseEntity implements Serializable {
 
     @Column(name = "posting_status", nullable = false)
     private String postingStatus;
+
+    @Column(name = "repost_after_expiration")
+    private boolean repostAfterExpiration;
 }
