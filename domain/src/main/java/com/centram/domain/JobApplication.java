@@ -18,8 +18,7 @@ import java.math.BigInteger;
 @Audited
 @Table(name = "job_application")
 public class JobApplication extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 7849918059593252571L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
