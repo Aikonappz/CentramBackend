@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter

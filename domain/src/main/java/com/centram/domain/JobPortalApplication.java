@@ -27,6 +27,7 @@ public class JobPortalApplication extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -9200994883150920000L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
     @Column(name = "candidate_id", nullable = false)
