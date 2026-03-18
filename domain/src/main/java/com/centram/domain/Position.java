@@ -82,6 +82,9 @@ public class Position extends BaseEntity implements Serializable {
     @Column(name = "to_be_hired")
     private Boolean toBeHired;
 
+    @Column(name = "currency")
+    private String currency;
+
     @Column(name = "min_pay")
     private BigDecimal minPay;
 

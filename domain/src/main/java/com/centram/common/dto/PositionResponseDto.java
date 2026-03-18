@@ -66,6 +66,7 @@ public class PositionResponseDto {
 
     private String businessUnitName;
     private String locationName;
+    private String currency;
 
 
 }

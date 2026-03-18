@@ -130,6 +130,7 @@ public class PositionService {
         positionResponseDto.setId(position.getId());
         positionResponseDto.setName(position.getName());
         positionResponseDto.setCode(position.getCode());
+        positionResponseDto.setCurrency(position.getCurrency());
         positionResponseDto.setStatus(position.getStatus().name());
         positionResponseDto.setStartDate(position.getStartDate());
         positionResponseDto.setJobCode(position.getJobCode());
