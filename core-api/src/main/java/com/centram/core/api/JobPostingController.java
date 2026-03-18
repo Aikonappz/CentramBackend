@@ -35,7 +35,7 @@ public class JobPostingController {
         return ResponseEntity.ok(jobPostingService.getJobPostStatus(requisitionId));
     }
 
-    @PatchMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<JobPostingResponseDto> updateJobPosting(@RequestBody JobPostingDto dto) {
         return ResponseEntity.ok(jobPostingService.updateJobPosting(dto));
     }
