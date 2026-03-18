@@ -5,9 +5,11 @@ import com.centram.domain.enumarator.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.LockModeType;
 import java.math.BigInteger;
 
 @Repository
@@ -16,4 +18,8 @@ public interface PositionRepository extends JpaRepository<Position, BigInteger> 
     Page<Position> findByNameContainingIgnoreCaseAndStatus(String name, Status status, Pageable pageable);
 //    @Query("SELECT DISTINCT p.jobCode FROM Position p WHERE p.jobCode IS NOT NULL")
 //    Page<String> findAllDistinctJobCodes(Pageable pageable);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT MAX(p.code) FROM Position p")
+    String findMaxPositionCode();
 }

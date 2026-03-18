@@ -67,4 +67,9 @@ public class PositionController {
 //    public ResponseEntity<PaginatedList<String>> getAllUniqueJobCodes(@PageableDefault(size = 10, page = 0, direction = Sort.Direction.ASC, sort = {"jobCode"}) Pageable pageable) {
 //        return new ResponseEntity<>(positionService.getAllUniqueJobCodes(pageable), HttpStatus.OK);
 //    }
+
+    @GetMapping("/next-position-code")
+    public String getNextPositionCode() {
+        return positionService.generatePositionCode();
+    }
 }

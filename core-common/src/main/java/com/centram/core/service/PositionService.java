@@ -198,4 +198,23 @@ public class PositionService {
 //        Page<String> page = positionRepository.findAllDistinctJobCodes(pageable);
 //        return new PaginatedList<>(page);
 //    }
+
+    @Transactional
+    public String generatePositionCode() {
+        String maxCode = positionRepository.findMaxPositionCode();
+
+        long base = 50000001L;
+
+        if (maxCode == null) {
+            return String.valueOf(base);
+        }
+
+        long max = Long.parseLong(maxCode);
+
+        if (max < base) {
+            return String.valueOf(base);
+        }
+
+        return String.valueOf(max + 1);
+    }
 }
