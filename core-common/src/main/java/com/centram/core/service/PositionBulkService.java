@@ -70,9 +70,11 @@ public class PositionBulkService {
         workbook.close();
     }
 
-//    @Async
+    @Async
     @Transactional
     public void processFileAsync(Long uploadId) {
+
+        long positionCodeCount = Long.parseLong(positionService.generatePositionCode());
 
         PositionBulkUpload audit = positionBulkUploadRepository.findById(uploadId).orElseThrow();
 
@@ -215,7 +217,7 @@ public class PositionBulkService {
 
                 Position p = new Position();
                 p.setName(name);
-                p.setCode(positionService.generatePositionCode());
+                p.setCode(String.valueOf(positionCodeCount++));
                 p.setStatus(status);
                 p.setStartDate(startDate);
                 p.setEndDate(endDate);
