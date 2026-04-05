@@ -15,11 +15,15 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DepartmentRepository extends PagingAndSortingRepository<Department, BigInteger> {
     @Query("select d from Department d where UPPER(d.name) = UPPER((:departmentName)) and d.organisationId = (:organisationId)")
     Department getDepartmentByName(@Param("departmentName") String departmentName, @Param("organisationId") BigInteger organisationId);
+
+    Optional<Department> findByName(String name);
+
 
     @Query("select d from Department d where d.organisationId = (:organisationId)")
     Page<Department> getDepartmentByOrganisation(@Param("organisationId") BigInteger organisationId, @Param("pageable") Pageable pageable);

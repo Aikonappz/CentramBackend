@@ -54,7 +54,7 @@ public class PositionBulkService {
 
         String[] columns = {
                 "name*", "code", "status*", "start_date*", "job_code", "fte",
-                "department_id*", "location", "cost_center",
+                "department_name*", "location", "cost_center",
                 "end_date", "pay_grad", "standard_hour",
                 "to_be_hired", "currency", "min_pay", "mid_pay", "max_pay", "recruiter_name"
         };
@@ -98,7 +98,7 @@ public class PositionBulkService {
                 String startDateStr = getCell(row, 3);
                 String jobCode = getCell(row, 4);
                 String fteStr = getCell(row, 5);
-                String deptIdStr = getCell(row, 6);
+                String deptName = getCell(row, 6);
                 String locationStr = getCell(row, 7);
                 String costCenter = getCell(row, 8);
                 String endDateStr = getCell(row, 9);
@@ -116,7 +116,7 @@ public class PositionBulkService {
                 if (isEmpty(name)) errors.add("name is required");
                 if (isEmpty(statusStr)) errors.add("status is required");
                 if (isEmpty(startDateStr)) errors.add("start_date is required");
-                if (isEmpty(deptIdStr)) errors.add("department_id is required");
+                if (isEmpty(deptName)) errors.add("department_name is required");
 
                 // status
                 Status status = null;
@@ -146,11 +146,10 @@ public class PositionBulkService {
 
                 // department
                 Department dept = null;
-                if (!isEmpty(deptIdStr)) {
+                if (!isEmpty(deptName)) {
                     try {
-                        BigInteger deptId = parseBigInteger(deptIdStr, "department_id", errors);
                         dept = departmentRepository
-                                .findById(deptId)
+                                .findByName(deptName)
                                 .orElse(null);
 
                         if (dept == null) errors.add("department not found");
