@@ -53,7 +53,7 @@ public class PositionBulkService {
         Row header = sheet.createRow(0);
 
         String[] columns = {
-                "name*", "code", "status*", "start_date*", "job_code", "fte",
+                "position_name*", "status*", "start_date*", "job_code", "fte",
                 "department_name*", "location", "cost_center",
                 "end_date", "pay_grad", "standard_hour",
                 "to_be_hired", "currency", "min_pay", "mid_pay", "max_pay", "recruiter_name"
@@ -91,9 +91,7 @@ public class PositionBulkService {
                 Row row = sheet.getRow(i);
                 List<String> errors = new ArrayList<>();
 
-                // ✅ Read values
-                String name = getCell(row, 0);
-                String code = getCell(row, 1);
+                String positionName = getCell(row, 0);
                 String statusStr = getCell(row, 2);
                 String startDateStr = getCell(row, 3);
                 String jobCode = getCell(row, 4);
@@ -111,14 +109,18 @@ public class PositionBulkService {
                 String maxPayStr = getCell(row, 16);
                 String recruiterName = getCell(row, 17);
 
-                // ================= VALIDATIONS =================
 
-                if (isEmpty(name)) errors.add("name is required");
+                if (isEmpty(positionName)) errors.add("position_name is required");
                 if (isEmpty(statusStr)) errors.add("status is required");
                 if (isEmpty(startDateStr)) errors.add("start_date is required");
                 if (isEmpty(deptName)) errors.add("department_name is required");
+                if (!isEmpty(positionName) && positionName.length() > 40) {
+                    errors.add("name must not exceed 40 characters");
+                }
+                if (!isEmpty(payGrad) && payGrad.length() > 20) {
+                    errors.add("pay_grad must not exceed 20 characters");
+                }
 
-                // status
                 Status status = null;
                 try {
                     status = Status.valueOf(statusStr);
@@ -126,7 +128,6 @@ public class PositionBulkService {
                     errors.add("invalid status");
                 }
 
-                // start date
                 LocalDate startDate = null;
                 try {
                     if (!isEmpty(startDateStr))
@@ -135,7 +136,6 @@ public class PositionBulkService {
                     errors.add("invalid start_date (yyyy-MM-dd)");
                 }
 
-                // end date
                 LocalDate endDate = null;
                 try {
                     if (!isEmpty(endDateStr))
@@ -144,7 +144,6 @@ public class PositionBulkService {
                     errors.add("invalid end_date (yyyy-MM-dd)");
                 }
 
-                // department
                 Department dept = null;
                 if (!isEmpty(deptName)) {
                     try {
@@ -159,7 +158,6 @@ public class PositionBulkService {
                     }
                 }
 
-                // fte
                 BigDecimal fte = null;
                 try {
                     if (!isEmpty(fteStr))
@@ -168,7 +166,6 @@ public class PositionBulkService {
                     errors.add("invalid fte");
                 }
 
-                // location
                 Long location = null;
                 try {
                     if (!isEmpty(locationStr))
@@ -177,7 +174,6 @@ public class PositionBulkService {
                     errors.add("invalid location");
                 }
 
-                // standard hour
                 Integer stdHour = null;
                 try {
                     if (!isEmpty(stdHourStr))
@@ -186,23 +182,19 @@ public class PositionBulkService {
                     errors.add("invalid standard_hour");
                 }
 
-                // boolean
                 Boolean toBeHired = null;
                 if (!isEmpty(toBeHiredStr)) {
                     toBeHired = Boolean.parseBoolean(toBeHiredStr);
                 }
 
-                // salary fields
                 BigDecimal minPay = parseDecimal(minPayStr, "min_pay", errors);
                 BigDecimal midPay = parseDecimal(midPayStr, "mid_pay", errors);
                 BigDecimal maxPay = parseDecimal(maxPayStr, "max_pay", errors);
 
-                // business validation
                 if (minPay != null && maxPay != null && minPay.compareTo(maxPay) > 0) {
                     errors.add("min_pay cannot be greater than max_pay");
                 }
 
-                // ================= ERROR HANDLE =================
 
                 if (!errors.isEmpty()) {
                     errorList.add(Map.of(
@@ -212,10 +204,9 @@ public class PositionBulkService {
                     continue;
                 }
 
-                // ================= ENTITY SET =================
 
                 Position p = new Position();
-                p.setName(name);
+                p.setName(positionName);
                 p.setCode(String.valueOf(positionCodeCount++));
                 p.setStatus(status);
                 p.setStartDate(startDate);
@@ -237,7 +228,6 @@ public class PositionBulkService {
                 validList.add(p);
             }
 
-            // ================= SAVE / FAIL =================
 
             if (!errorList.isEmpty()) {
                 audit.setStatus(BulkUploadStatus.FAILED);
@@ -280,7 +270,6 @@ public class PositionBulkService {
         try {
             if (val != null && !val.trim().isEmpty()) {
 
-                // handle decimal (101.0 → 101)
                 Double d = Double.parseDouble(val);
                 return BigDecimal.valueOf(d).toBigInteger();
 
