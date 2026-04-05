@@ -189,4 +189,23 @@ public class JobProfileService {
         jobCodeWrapperResponse.setContent(CollectionUtils.isEmpty(result) ? new ArrayList<>() : result);
         return jobCodeWrapperResponse;
     }
+
+    @Transactional
+    public String generateNextJobCode() {
+        String maxCode = jobRoleRepository.findMaxJobCode();
+
+        long base = 60000001L;
+
+        if (maxCode == null) {
+            return String.valueOf(base);
+        }
+
+        long max = Long.parseLong(maxCode);
+
+        if (max < base) {
+            return String.valueOf(base);
+        }
+
+        return String.valueOf(max + 1);
+    }
 }

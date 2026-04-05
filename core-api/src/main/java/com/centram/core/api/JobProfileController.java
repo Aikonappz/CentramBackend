@@ -120,4 +120,9 @@ public class JobProfileController {
         return new ResponseEntity<>(jobProfileService.getAllUniqueJobCodes(), HttpStatus.OK);
     }
 
+    @GetMapping("/next-job-code")
+    public String getNextJobCode() {
+        return jobProfileService.generateNextJobCode();
+    }
+
 }
