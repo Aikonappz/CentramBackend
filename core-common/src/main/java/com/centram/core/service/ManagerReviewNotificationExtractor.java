@@ -27,14 +27,14 @@ public class ManagerReviewNotificationExtractor implements NotificationExtractor
     @Override
     public List<NotificationContext> extract(RequisitionManagerReview review, String status, String name) {
         Requisition requisition = review.getRequisition();
-        User forwardUser = userRepository.findByFullName(requisition.getHeadOfRecruitment())
+        User recruitingManager = userRepository.findByFullName(requisition.getHeadOfRecruitment())
                 .orElseThrow(() -> new RuntimeException("Manager Notification Head of Recruitment not found"));
 
         Optional<Position> position = positionRepository.findById(requisition.getPositionId());
         if (position.isEmpty()) {
             throw new RuntimeException("Manager Notification Position not found");
         }
-        User backwardUser = userRepository.findByFullName(position.get().getRecruiterName())
+        User hiringManager = userRepository.findByFullName(requisition.getHiringManager())
                 .orElseThrow(() -> new RuntimeException("Manager Notification Recruiter not found"));
 
         User currentUser = userRepository.findByFullName(name)
@@ -45,7 +45,7 @@ public class ManagerReviewNotificationExtractor implements NotificationExtractor
                 : "http://localhost:3000/job-requisition/correction?reqId=" + requisition.getId() + "&stepper=0";
 
         Map<String, String> placeholders = Map.of(
-                "USER_NAME", status.equals("Approver 2") ? forwardUser.getFirstName() + " " + forwardUser.getLastName() : backwardUser.getFirstName() + " " + backwardUser.getLastName(),
+                "USER_NAME", status.equals("Approver 2") ? recruitingManager.getFirstName() + " " + recruitingManager.getLastName() : hiringManager.getFirstName() + " " + hiringManager.getLastName(),
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
@@ -59,10 +59,10 @@ public class ManagerReviewNotificationExtractor implements NotificationExtractor
         );
 
         if(status.equals("Approver 2")) {
-            return List.of(new NotificationContext(forwardUser, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
+            return List.of(new NotificationContext(recruitingManager, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
                     new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
         } else {
-            return List.of(new NotificationContext(backwardUser, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
+            return List.of(new NotificationContext(hiringManager, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
             new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE"));
         }
     }

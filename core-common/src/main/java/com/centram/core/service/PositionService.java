@@ -7,6 +7,7 @@ import com.centram.common.dto.RecruiterDTO;
 import com.centram.common.exeception.AppException;
 import com.centram.common.exeception.GenericErrorCode;
 import com.centram.common.utility.PaginatedList;
+import com.centram.common.vo.UserVO;
 import com.centram.core.repository.*;
 import com.centram.domain.*;
 import com.centram.domain.enumarator.Status;
@@ -21,6 +22,7 @@ import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PositionService {
@@ -42,6 +44,9 @@ public class PositionService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     PositionMapper positionMapper;
@@ -191,8 +196,18 @@ public class PositionService {
         positionRepository.save(position);
     }
 
-    public List<String> getRecruiters(RecruiterDTO dto) {
-        return userRepository.findRecruiterNamesByFilters(dto.getOrganisationId(), dto.getDivisionId(), dto.getDepartmentId(), dto.getBusinessUnitId());
+    public List<String> getRecruiters(RecruiterDTO dto, String role) {
+        Role roleId = roleRepository.findByName(role)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+       return userRepository.findUserNamesByFilter(
+                dto.getOrganisationId() == null ? null : dto.getOrganisationId().toBigInteger(),
+                dto.getBusinessUnitId() == null ? null : dto.getBusinessUnitId().toBigInteger(),
+                dto.getDivisionId() == null ? null : dto.getDivisionId().toBigInteger(),
+                dto.getDepartmentId() == null ? null : dto.getDepartmentId().toBigInteger(),
+                Status.ACTIVE.ordinal(),
+                roleId.getId());
+
     }
 
 //    public PaginatedList<String> getAllUniqueJobCodes(Pageable pageable) {

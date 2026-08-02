@@ -197,6 +197,11 @@ public class RequisitionService {
         requisitionResponseDto.setJobPostingType(req.getJobPostingType());
         requisitionResponseDto.setJobPostingBoard(req.getJobPostingBoard());
         requisitionResponseDto.setNotificationStatus(req.getNotificationStatus());
+        requisitionResponseDto.setRequisitionCode(req.getCode());
+        requisitionResponseDto.setCurrency(req.getCurrency());
+        requisitionResponseDto.setJobGrade(req.getJobGrade());
+        requisitionResponseDto.setJobLevel(req.getJobLevel());
+        requisitionResponseDto.setNumberOfOpenings(req.getNumberOfOpenings());
         Optional<Department> department = departmentRepository.findById(req.getDepartmentId());
         if (department.isPresent()) {
             Department dept = department.get();
@@ -519,5 +524,18 @@ public class RequisitionService {
             notificationService.sendNotification(req, requisitionNotificationExtractor, "FORWARD", loggedInUser.getName());
         }
         return req;
+    }
+
+    @Transactional
+    public String generateRequisitionCode() {
+        BigInteger maxCode = requisitionRepository.findMaxPositionCode();
+
+        BigInteger base = BigInteger.ONE;
+
+        if (maxCode == null || maxCode.compareTo(base) < 0) {
+            return base.toString();
+        }
+
+        return maxCode.add(BigInteger.ONE).toString();
     }
 }

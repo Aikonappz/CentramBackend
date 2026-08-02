@@ -75,19 +75,19 @@ public class RequisitionRecruiterReviewExtractor implements NotificationExtracto
                 "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=4"
         );
 
-        Map<String, String> requisitionCompletedBusinessUnitPlaceholders = Map.of(
-                "USER_NAME", requisition.getHeadOfBusinessUnit(),
-                "REQ_ID", String.valueOf(requisition.getId()),
-                "JOB_TITLE", requisition.getJobTitle(),
-                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=4"
-        );
+//        Map<String, String> requisitionCompletedBusinessUnitPlaceholders = Map.of(
+//                "USER_NAME", requisition.getHeadOfBusinessUnit(),
+//                "REQ_ID", String.valueOf(requisition.getId()),
+//                "JOB_TITLE", requisition.getJobTitle(),
+//                "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=4"
+//        );
 
 
         if (status.equals("Approver 4")) {
             return List.of(new NotificationContext(recruiter, requisitionCompletedRecruiterPlaceholders, "REQUISITION_COMPLETED_EMAIL_TEMPLATE"),
                     new NotificationContext(hiringManager, requisitionCompletedHiringManagerPlaceholders, "REQUISITION_COMPLETED_EMAIL_TEMPLATE"),
-                    new NotificationContext(backwardUser, requisitionCompletedRecruitmentPlaceholders, "REQUISITION_COMPLETED_EMAIL_TEMPLATE"),
-                    new NotificationContext(currentBackwardUser, requisitionCompletedBusinessUnitPlaceholders, "REQUISITION_COMPLETED_EMAIL_TEMPLATE")
+                    new NotificationContext(backwardUser, requisitionCompletedRecruitmentPlaceholders, "REQUISITION_COMPLETED_EMAIL_TEMPLATE")
+//                    new NotificationContext(currentBackwardUser, requisitionCompletedBusinessUnitPlaceholders, "REQUISITION_COMPLETED_EMAIL_TEMPLATE")
             );
         } else {
             return List.of(new NotificationContext(backwardUser, backwardUserPlaceHolders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),

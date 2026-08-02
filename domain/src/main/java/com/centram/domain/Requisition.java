@@ -36,6 +36,9 @@ public class Requisition extends BaseEntity implements Serializable {
     @Column(name = "id", columnDefinition = "BIGINT", unique = true)
     private BigInteger id;
 
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "requisition_status", columnDefinition = "VARCHAR(255) NOT NULL")
     private String requisitionStatus;
 
@@ -101,6 +104,18 @@ public class Requisition extends BaseEntity implements Serializable {
 
     @Column(name = "head_of_recruitment", columnDefinition = "VARCHAR(255)")
     private String headOfRecruitment;
+
+    @Column(name = "currency", columnDefinition = "VARCHAR(255)")
+    private String currency;
+
+    @Column(name = "jobGrade", columnDefinition = "VARCHAR(255)")
+    private String jobGrade;
+
+    @Column(name = "jobLevel", columnDefinition = "VARCHAR(255)")
+    private String jobLevel;
+
+    @Column(name = "numberOfOpenings")
+    private Long numberOfOpenings;
 
     @Column(name = "job_description", columnDefinition = "TEXT")
     private String jobDescription;

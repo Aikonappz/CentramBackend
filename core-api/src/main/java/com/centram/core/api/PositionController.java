@@ -60,7 +60,12 @@ public class PositionController {
 
     @PostMapping("/get-all/recruiters")
     public ResponseEntity<List<String>> getAllRecruiters(@RequestBody RecruiterDTO recruiterDTO){
-        return new ResponseEntity<>(positionService.getRecruiters(recruiterDTO),HttpStatus.OK);
+        return new ResponseEntity<>(positionService.getRecruiters(recruiterDTO, "RECRUITER"),HttpStatus.OK);
+    }
+
+    @PostMapping("/get-all/recruing-manager")
+    public ResponseEntity<List<String>> getAllRecruitingManager(@RequestBody RecruiterDTO recruiterDTO){
+        return new ResponseEntity<>(positionService.getRecruiters(recruiterDTO, "RECRUITING_MANAGER"),HttpStatus.OK);
     }
 
 //    @GetMapping("/get-all/jobcodes")

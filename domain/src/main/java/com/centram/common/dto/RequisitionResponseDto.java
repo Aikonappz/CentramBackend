@@ -92,4 +92,11 @@ public class RequisitionResponseDto {
     private String stepper1Status;
     private String stepper2Status;
     private String stepper3Status;
+    private String requisitionCode;
+
+    private String currency;
+    private String jobGrade;
+    private String jobLevel;
+    private Long numberOfOpenings;
+
 }

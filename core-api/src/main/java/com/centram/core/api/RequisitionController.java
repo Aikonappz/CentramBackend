@@ -87,4 +87,9 @@ public class RequisitionController {
         Requisition req = requisitionService.createOrUpdateFromBlankTemplate(request);
         return ResponseEntity.ok(req);
     }
+
+    @GetMapping("/next-requisition-code")
+    public String getNextPositionCode() {
+        return requisitionService.generateRequisitionCode();
+    }
 }

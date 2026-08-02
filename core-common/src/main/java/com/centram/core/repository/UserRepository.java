@@ -159,4 +159,26 @@ public interface UserRepository extends PagingAndSortingRepository<User, BigInte
             @Param("buId") BigDecimal businessUnitId
     );
 
+    @Query(value =
+            "SELECT CONCAT(u.first_name, ' ', u.last_name) " +
+                    "FROM user u " +
+                    "INNER JOIN department d ON u.department_id = d.id " +
+                    "INNER JOIN division dv ON d.division_id = dv.id " +
+                    "INNER JOIN business_unit bu ON dv.business_unit_id = bu.id " +
+                    "WHERE (:organisationId IS NULL OR u.organisation_id = :organisationId) " +
+                    "AND (:businessUnitId IS NULL OR bu.id = :businessUnitId) " +
+                    "AND (:divisionId IS NULL OR dv.id = :divisionId) " +
+                    "AND (:departmentId IS NULL OR d.id = :departmentId) " +
+                    "AND u.status = :status " +
+                    "AND u.roles LIKE CONCAT('%', :roleId, '%') " +
+                    "ORDER BY u.first_name",
+            nativeQuery = true)
+    List<String> findUserNamesByFilter(
+            @Param("organisationId") BigInteger organisationId,
+            @Param("businessUnitId") BigInteger businessUnitId,
+            @Param("divisionId") BigInteger divisionId,
+            @Param("departmentId") BigInteger departmentId,
+            @Param("status") Integer status,
+            @Param("roleId") BigInteger roleId);
+
 }

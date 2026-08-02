@@ -24,11 +24,11 @@ public class TeamLeadNotificationExtractor implements NotificationExtractor<Requ
     @Override
     public List<NotificationContext> extract(RequisitionRecruiterTeamLead lead, String status, String name) {
         Requisition requisition = lead.getRequisition();
-        User forwardUser = userRepository.findByFullName(requisition.getHeadOfBusinessUnit())
+        User recruiter = userRepository.findByFullName(requisition.getRecruiterName())
                 .orElseThrow(() -> new RuntimeException("Team Lead Notification Head of Business Unit not found"));
 
-        User backwardUser = userRepository.findByFullName(requisition.getHiringManager())
-                .orElseThrow(() -> new RuntimeException("Team Lead Notification Hiring Manager not found"));
+//        User backwardUser = userRepository.findByFullName(requisition.getHiringManager())
+//                .orElseThrow(() -> new RuntimeException("Team Lead Notification Hiring Manager not found"));
 
         User currentUser = userRepository.findByFullName(name)
                 .orElseThrow(() -> new RuntimeException("Team Lead Notification User not found"));
@@ -38,8 +38,9 @@ public class TeamLeadNotificationExtractor implements NotificationExtractor<Requ
                 : "http://localhost:3000/job-requisition/correction?reqId=" + requisition.getId() + "&stepper=2";
 
         Map<String, String> placeholders = Map.of(
-                "USER_NAME", status.equals("Approver 3") ? forwardUser.getFirstName()+" "+ forwardUser.getLastName() :
-                        backwardUser.getFirstName() + " " + backwardUser.getLastName(),
+//                "USER_NAME", status.equals("Approver 3") ? recruiter.getFirstName()+" "+ forwardUser.getLastName() :
+//                        backwardUser.getFirstName() + " " + backwardUser.getLastName(),
+                "USER_NAME", requisition.getRecruiterName(),
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
@@ -54,11 +55,11 @@ public class TeamLeadNotificationExtractor implements NotificationExtractor<Requ
 
 
         if(status.equals("Approver 3")) {
-            return List.of(new NotificationContext(forwardUser, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
+            return List.of(new NotificationContext(recruiter, placeholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
                     new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE")
             );
         } else {
-            return List.of(new NotificationContext(backwardUser, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
+            return List.of(new NotificationContext(recruiter, placeholders, "REQUISITION_CORRECTION_EMAIL_TEMPLATE"),
                     new NotificationContext(currentUser, currentUserPlaceholders, "REQUISITION_ROUTED_BACK_EMAIL_TEMPLATE")
             );
         }

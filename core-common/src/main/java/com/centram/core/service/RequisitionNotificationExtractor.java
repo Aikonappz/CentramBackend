@@ -31,21 +31,21 @@ public class RequisitionNotificationExtractor implements NotificationExtractor<R
         User recruiter = userRepository.findByFullName(position.getRecruiterName())
                 .orElseThrow(() -> new RuntimeException("Requisition notification Recruiter Name  not found")); //current user
 
-        Map<String, String> hiringManagerPlaceholders = Map.of(
-                "USER_NAME", requisition.getHiringManager(),
+        Map<String, String> recruiterPlaceholders = Map.of(
+                "USER_NAME", recruiter.getFirstName()+" "+ recruiter.getLastName(),
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle(),
                 "CREATOR_NAME", name,
                 "REQ_LINK", "http://localhost:3000/create/job-requisition?reqId=" + requisition.getId() + "&stepper=1"
         );
 
-        Map<String, String> recruiterPlaceholders = Map.of(
-                "USER_NAME", position.getRecruiterName(),
+        Map<String, String> hiringManagerPlaceholders = Map.of(
+                "USER_NAME", name,
                 "REQ_ID", String.valueOf(requisition.getId()),
                 "JOB_TITLE", requisition.getJobTitle()
         );
 
-        return List.of(new NotificationContext(hiringManager, hiringManagerPlaceholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
-                new NotificationContext(recruiter, recruiterPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
+        return List.of(new NotificationContext(recruiter, recruiterPlaceholders, "REQUISITION_CREATED_EMAIL_TEMPLATE"),
+                new NotificationContext(hiringManager, hiringManagerPlaceholders, "REQUISITION_ROUTED_FORWARD_EMAIL_TEMPLATE"));
     }
 }
